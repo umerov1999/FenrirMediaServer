@@ -1,0 +1,357 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{ab425bae-6ffe-4b3f-b87c-b6b959353c56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы включений">
+      <UniqueIdentifier>{34052ca4-8756-471c-8449-91dfe4066b48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\jpeg">
+      <UniqueIdentifier>{cb3c3885-6e6b-4ad9-ac0d-cc6ca15b4d2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\png">
+      <UniqueIdentifier>{f84d4372-7758-424f-8719-a12bbb689e14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\zlib">
+      <UniqueIdentifier>{3a533a1c-88d9-4062-843d-b846b48a3a7d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="./jpeg/cdjpeg.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jaricom.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcapistd.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcapimin.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcarith.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jccoefct.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jccolor.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcdctmgr.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jchuff.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcinit.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcmainct.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcmarker.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcmaster.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcomapi.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcparam.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcprepct.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jcsample.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jctrans.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdapimin.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdapistd.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdarith.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdatadst.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdatasrc.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdcoefct.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdcolor.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jddctmgr.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdhuff.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdinput.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdmainct.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdmarker.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdmaster.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdmerge.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdpostct.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdsample.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jdtrans.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jfdctflt.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jfdctfst.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jfdctint.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jidctflt.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jidctfst.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jidctint.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jmemmgr.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jmemnobs.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jquant1.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jquant2.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/jutils.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="./jpeg/transupp.c">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="libimage.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngpread.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngread.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngrio.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngrtran.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngrutil.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngset.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngtrans.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngwio.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngwrite.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngwtran.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngwutil.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\png.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngerror.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngget.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngmem.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzclose.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzlib.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzread.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzwrite.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\infback.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inffast.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inflate.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inftrees.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\trees.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\uncompr.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\zutil.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\adler32.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\compress.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\crc32.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg\jerror.cpp">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="./jpeg/bmp2jpeg.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/cderror.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/cdjpeg.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/jconfig.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/jdct.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/jerror.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/jinclude.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/jmemsys.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/jmorecfg.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/jpegint.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/jpeglib.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/jversion.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="./jpeg/transupp.h">
+      <Filter>Файлы исходного кода\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="libimage.h">
+      <Filter>Файлы включений</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pnginfo.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pnglibconf.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pngpriv.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pngstruct.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\png.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pngconf.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pngdebug.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\deflate.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\gzguts.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inffast.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inffixed.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inflate.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inftrees.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\trees.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zconf.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zlib.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zutil.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
