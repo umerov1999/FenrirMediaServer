@@ -222,6 +222,8 @@ protected:
 		this->create_time = create_time;
 		this->mod_time = mod_time;
 		this->file_size = file_size;
+		orig_dir = path_name;
+		orig_name = file_name;
 		fileName = WSTRUtils::wchar_to_UTF8(file_name);
 		path = path_name + L"\\" + file_name;
 		id = CRC32(WSTRUtils::wchar_to_UTF8(file_name));
@@ -238,6 +240,8 @@ protected:
 		this->mod_time = media.mod_time;
 		this->file_size = media.file_size;
 		this->fileName = media.fileName;
+		this->orig_dir = media.orig_dir;
+		this->orig_name = media.orig_name;
 	}
 public:
 	Media(const Media& media) {
@@ -250,9 +254,24 @@ public:
 		this->mod_time = media.mod_time;
 		this->file_size = media.file_size;
 		this->fileName = media.fileName;
+		this->orig_dir = media.orig_dir;
+		this->orig_name = media.orig_name;
 	}
 	const std::string& update_hash(time_t mod_time, time_t create_time) {
 		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(get_ext(WSTRUtils::UTF8_to_wchar(fileName)));
+		return hash;
+	}
+	const std::string& update_full_hash(std::wstring path_name, std::wstring file_name, time_t mod_time, time_t create_time) {
+		this->create_time = create_time;
+		this->mod_time = mod_time;
+		this->file_size = file_size;
+		orig_dir = path_name;
+		orig_name = file_name;
+		fileName = WSTRUtils::wchar_to_UTF8(file_name);
+		path = path_name + L"\\" + file_name;
+		id = CRC32(WSTRUtils::wchar_to_UTF8(file_name));
+		owner_id = CRC32(WSTRUtils::wchar_to_UTF8(path_name));
+		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(get_ext(file_name));
 		return hash;
 	}
 	const std::string &get_hash() const {
@@ -275,6 +294,12 @@ public:
 	}
 	const std::wstring& get_path() const {
 		return path;
+	}
+	const std::wstring& get_orig_dir() const {
+		return orig_dir;
+	}
+	const std::wstring& get_orig_name() const {
+		return orig_name;
 	}
 	const time_t& get_create_time() const {
 		return create_time;
@@ -312,6 +337,8 @@ protected:
 	std::string hash;
 	std::string fileName;
 	std::wstring path;
+	std::wstring orig_dir;
+	std::wstring orig_name;
 	int id;
 	int owner_id;
 	time_t mod_time;

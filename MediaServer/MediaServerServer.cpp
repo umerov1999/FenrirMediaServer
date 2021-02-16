@@ -522,7 +522,7 @@ static void AudioSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	list<Audio> result;
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
 	for (auto& i : mAudios) {
-		if (WSTRUtils::search(i.get_value().get_artist(), q) != string::npos || WSTRUtils::search(i.get_value().get_title(), q) != string::npos) {
+		if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_artist()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
 			result.push_back(i.get_value());
 		}
 	}
@@ -564,7 +564,7 @@ static void DiscographySearch(RequestParserStruct& Req, CLIENT_CONNECTION* clien
 	list<Audio> result;
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography);
 	for (auto& i : mDiscography) {
-		if (WSTRUtils::search(i.get_value().get_artist(), q) != string::npos || WSTRUtils::search(i.get_value().get_title(), q) != string::npos) {
+		if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_artist()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
 			result.push_back(i.get_value());
 		}
 	}
@@ -636,7 +636,7 @@ static void VideoSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	list<Video> result;
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mVideos);
 	for (auto& i : mVideos) {
-		if (WSTRUtils::search(i.get_value().get_description(), q) != string::npos || WSTRUtils::search(i.get_value().get_title(), q) != string::npos) {
+		if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_description()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
 			result.push_back(i.get_value());
 		}
 	}
@@ -1542,13 +1542,16 @@ DWORD WINAPI doScanCovers(LPVOID) {
 
 static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	if (!exist_get_post(Req, "hash")) {
+		SendErrorJSON(client, L"Не передан hash");
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
-		THREAD_ACCESS_RETURN(DEFAULT_GUARD_NAME, , &mDiscography, &mAudios, &mVideos)
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		SendErrorJSON(client, L"Hash не найден");
+		return;
 	}
 	Media media = *md;
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
@@ -1588,6 +1591,134 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
 }
 
+static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
+	if (!exist_get_post(Req, "hash") || !exist_get_post(Req, "name")) {
+		SendErrorJSON(client, L"Не передан hash или name");
+		return;
+	}
+	string hash = get_postUTF8(Req, "hash");
+	wstring new_fl = UTF8_to_wchar(trim(get_postUTF8(Req, "name")));
+	if (new_fl.empty()) {
+		SendErrorJSON(client, L"name пустой");
+		return;
+	}
+	new_fl = FixFileName(new_fl);
+	if (PathFileExistsW(new_fl.c_str())) {
+		SendErrorJSON(client, L"Файл существует с таким именем!");
+		return;
+	}
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	Media* md = look_MediaByHash(hash);
+	if (md == NULL) {
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		SendErrorJSON(client, L"Hash не найден");
+		return;
+	}
+	Media media = *md;
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	if (!MoveFileW(media.get_path().c_str(), (media.get_orig_dir() + L"\\" + new_fl).c_str())) {
+		SendErrorJSON(client, L"Переименовать не удалось!");
+		return;
+	}
+	HANDLE file_handle =
+		::CreateFileW((media.get_orig_dir() + L"\\" + new_fl).c_str(), FILE_WRITE_ATTRIBUTES,
+			NULL, NULL, OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL, 0);
+	if (file_handle != NULL)
+	{
+		time_t tm = time(0);
+		FILETIME FlTime;
+		UnixTimeToFileTime(tm, &FlTime);
+		::SetFileTime(file_handle, &FlTime, &FlTime, &FlTime);
+		CloseHandle(file_handle);
+
+		std::wstring cover = get_cover(media.get_hash());
+		if (PathFileExistsW(cover.c_str())) {
+			MoveFileW(cover.c_str(), get_cover(media.update_full_hash(media.get_orig_dir(), new_fl, tm, tm)).c_str());
+		}
+	}
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	PrintMessage(L"Пересканирование контента!", URGB(255, 200, 0));
+	for (auto& i : Audio_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO, true);
+	}
+	for (auto& i : Discography_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY, true);
+	}
+	for (auto& i : Video_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO, true);
+	}
+	PrintMessage(L" ");
+	sortFiles();
+
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
+}
+
+static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
+	if (!exist_get_post(Req, "hash")) {
+		SendErrorJSON(client, L"Не передан hash");
+		return;
+	}
+	string hash = get_postUTF8(Req, "hash");
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	Media* md = look_MediaByHash(hash);
+	if (md == NULL) {
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		SendErrorJSON(client, L"Hash не найден");
+		return;
+	}
+	Media media = *md;
+	std::wstring cover = get_cover(media.get_hash());
+	if (!DeleteFileW(media.get_path().c_str())) {
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		SendErrorJSON(client, L"Файл не удалён");
+		return;
+	}
+	if (PathFileExistsW(cover.c_str())) {
+		DeleteFileW(cover.c_str());
+	}
+
+	PrintMessage(L"Пересканирование контента!", URGB(255, 200, 0));
+	for (auto& i : Audio_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO, true);
+	}
+	for (auto& i : Discography_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY, true);
+	}
+	for (auto& i : Video_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO, true);
+	}
+	PrintMessage(L" ");
+	sortFiles();
+
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
+}
+
+static void GetFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
+	if (!exist_get_post(Req, "hash")) {
+		SendErrorJSON(client, L"Не передан hash");
+		return;
+	}
+	string hash = get_postUTF8(Req, "hash");
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	Media* md = look_MediaByHash(hash);
+	if (md == NULL) {
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		SendErrorJSON(client, L"Hash не найден");
+		return;
+	}
+	Media media = *md;
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	json data = json(json::value_t::object);
+	data.emplace("response", WSTRUtils::wchar_to_UTF8(media.get_orig_name()));
+
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", data.dump());
+}
+
 void InitMediaServer()
 {
 	WSADATA wsaData;
@@ -1606,7 +1737,10 @@ void InitMediaServer()
 		serverMethods.RegisterMethod(u8"method/discography.get", DiscographyGet, true, true);
 		serverMethods.RegisterMethod(u8"method/discography.search", DiscographySearch, true, true);
 		serverMethods.RegisterMethod(u8"method/get_media", GetMedia);
+		serverMethods.RegisterMethod(u8"method/delete_media", DeleteFileSrv);
 		serverMethods.RegisterMethod(u8"method/update_time", UpdateTime);
+		serverMethods.RegisterMethod(u8"method/update_file_name", UpdateFileName);
+		serverMethods.RegisterMethod(u8"method/get_file_name", GetFileName);
 		serverMethods.RegisterMethod(u8"method/get_cover", GetCover);
 		serverMethods.SetInited();
 	}
