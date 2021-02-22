@@ -482,6 +482,38 @@ static void AudioGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
 }
 
+static void AudioList(RequestParserStruct& Req, CLIENT_CONNECTION* client)
+{
+	if (exist_get_post(Req, "password")) {
+		string password = get_postUTF8(Req, "password");
+		if (client->server_config.password != password) {
+			if (client->server_config.isDebug) {
+				PrintMessage(L"DEBUG: метод AudioList неверный пароль", URGB(255, 0, 0));
+			}
+			SendHTTTPAnswerWithData(*client, "401 Unauthorized", "text/html; charset=utf-8", u8"Неверный пароль");
+			return;
+		}
+	}
+	else {
+		if (client->server_config.isDebug) {
+			PrintMessage(L"DEBUG: метод AudioList требует авторизацию", URGB(255, 0, 0));
+		}
+		SendHTTTPAnswerWithData(*client, "401 Unauthorized", "text/html; charset=utf-8", u8"DEBUG: метод AudioList требует авторизацию");
+		return;
+	}
+
+
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
+
+	json arr = json(json::value_t::array);
+
+	for (auto &i : mAudios) {
+		arr.push_back(i.get_value().get_file_name());
+	}
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", arr.dump(4));
+}
+
 static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography);
@@ -1742,6 +1774,7 @@ void InitMediaServer()
 		serverMethods.RegisterMethod(u8"method/update_file_name", UpdateFileName);
 		serverMethods.RegisterMethod(u8"method/get_file_name", GetFileName);
 		serverMethods.RegisterMethod(u8"method/get_cover", GetCover);
+		serverMethods.RegisterMethod(u8"method/audio.list", AudioList);
 		serverMethods.SetInited();
 	}
 

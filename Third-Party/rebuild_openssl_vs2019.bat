@@ -1,7 +1,7 @@
 @echo off
 set path=C:\Program Files\NASM;%path%
 C:
-set OPENSSL_VERSION=1.1.1i
+set OPENSSL_VERSION=1.1.1j
 set SEVENZIP="C:\Program Files\7-Zip-Zstandard\7z.exe"
 set VS2019="C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
 set VS2019_AMD64="C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
