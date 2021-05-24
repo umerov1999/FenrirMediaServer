@@ -1305,7 +1305,7 @@ template <typename TP> std::time_t to_time_t(TP tp)
 
 static void DeleteThumbs() {
 	WIN32_FIND_DATAW data;
-	HANDLE hFind = FindFirstFileW((wstring(CACHE_DIR) + L"\\*.jpg").c_str(), &data);
+	HANDLE hFind = FindFirstFileW((wstring(CACHE_DIR) + L"\\*.*").c_str(), &data);
 
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
@@ -1430,7 +1430,7 @@ void genVideoThumbs(bool is_OnlyNews) {
 	PrintMessage(L"Сканирование обложек у видео : " + to_wstring(tVideos.size()));
 	size_t ccn = 0;
 	for (auto& i : tVideos) {
-		if (is_OnlyNews && PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str())) {
+		if (is_OnlyNews && (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()) || PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err").c_str()))) {
 			ccn++;
 			continue;
 		}
@@ -1458,6 +1458,14 @@ void genVideoThumbs(bool is_OnlyNews) {
 		WaitForSingleObject(piProcInfo.hProcess, INFINITE);
 		CloseHandle(piProcInfo.hProcess);
 		CloseHandle(piProcInfo.hThread);
+		if (!PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()))
+		{
+			FlBin o;
+			if (o.wopen(wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err", OPENType::OPENWrite)) {
+				o << UTF8START << i.get_value().get_path();
+				o.Close();
+			}
+		}
 	}
 }
 
@@ -1477,7 +1485,7 @@ void genAudioThumbs(bool is_OnlyNews) {
 	PrintMessage(L"Сканирование обложек у аудио : " + to_wstring(tAudios.size()));
 	size_t ccn = 0;
 	for (auto& i : tAudios) {
-		if (is_OnlyNews && PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str())) {
+		if (is_OnlyNews && (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()) || PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err").c_str()))) {
 			ccn++;
 			continue;
 		}
@@ -1505,6 +1513,14 @@ void genAudioThumbs(bool is_OnlyNews) {
 		WaitForSingleObject(piProcInfo.hProcess, INFINITE);
 		CloseHandle(piProcInfo.hProcess);
 		CloseHandle(piProcInfo.hThread);
+		if (!PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()))
+		{
+			FlBin o;
+			if (o.wopen(wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err", OPENType::OPENWrite)) {
+				o << UTF8START << i.get_value().get_path();
+				o.Close();
+			}
+		}
 	}
 }
 
@@ -1524,7 +1540,7 @@ void genDiscographyThumbs(bool is_OnlyNews) {
 	PrintMessage(L"Сканирование обложек у дискографии : " + to_wstring(tAudios.size()));
 	size_t ccn = 0;
 	for (auto& i : tAudios) {
-		if (is_OnlyNews && PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str())) {
+		if (is_OnlyNews && (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()) || PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err").c_str()))) {
 			ccn++;
 			continue;
 		}
@@ -1552,6 +1568,14 @@ void genDiscographyThumbs(bool is_OnlyNews) {
 		WaitForSingleObject(piProcInfo.hProcess, INFINITE);
 		CloseHandle(piProcInfo.hProcess);
 		CloseHandle(piProcInfo.hThread);
+		if (!PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()))
+		{
+			FlBin o;
+			if (o.wopen(wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err", OPENType::OPENWrite)) {
+				o << UTF8START << i.get_value().get_path();
+				o.Close();
+			}
+		}
 	}
 }
 
@@ -1559,7 +1583,7 @@ DWORD WINAPI doScanCovers(LPVOID) {
 	dlgS.StartBT.EnableWindow(FALSE);
 	dlgS.ScanCovers.EnableWindow(FALSE);
 	dlgS.MediaFolders.EnableWindow(FALSE);
-	bool is_OnlyNews = dlgS.OnlyNews;
+	bool is_OnlyNews = dlgS.OnlyNews.GetCheck();
 	if (!is_OnlyNews) {
 		DeleteThumbs();
 	}

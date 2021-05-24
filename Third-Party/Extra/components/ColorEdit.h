@@ -59,7 +59,6 @@ public:
 	afx_msg std::vector<ColoredMessage> GetRenderedLines();
 	afx_msg std::wstring GetRenderedText();
 	afx_msg std::wstring GetFullText();
-	afx_msg std::string GetHTMLPage(bool Full);
 	afx_msg void Init(Align TextAlign, HBITMAP HBackgr = NULL);
 	afx_msg void SwitchBackground(HBITMAP HBackgr = NULL);
 	afx_msg void RegisterSpecialPatternOnce(const std::wstring &Pattern, URGB Color);

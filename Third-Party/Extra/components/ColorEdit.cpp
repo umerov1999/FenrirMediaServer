@@ -388,28 +388,6 @@ static std::string char_to_hex(unsigned char i)
 	return ret.data();
 }
 
-std::string ColorEdit::GetHTMLPage(bool Full)
-{
-	if (Inited == false)
-		return u8"Фатальная ошибка!!!!";
-	string Result;
-	if (Full == true)
-	{
-		THREAD_ACCESS_LOCK(Async, &Lines);
-		for (auto&i : Lines)
-			Result += (string("<p><font color=\"#") + char_to_hex(i.Color.r) + char_to_hex(i.Color.g) + char_to_hex(i.Color.b) + "\">" + wchar_to_UTF8(i.str) + "</font></p>\r\n");
-		THREAD_ACCESS_UNLOCK(Async, &Lines);
-	}
-	else
-	{
-		THREAD_ACCESS_LOCK(Async, &RenderedLines);
-		for (auto&i : RenderedLines)
-			Result += (string("<p><font color=\"#") + char_to_hex(i.Color.r) + char_to_hex(i.Color.g) + char_to_hex(i.Color.b) + "\">" + wchar_to_UTF8(i.str) + "</font></p>\r\n");
-		THREAD_ACCESS_UNLOCK(Async, &RenderedLines);
-	}
-	return Result;
-}
-
 void ColorEdit::OnPaint()
 {
 	CRect rect;
@@ -446,9 +424,10 @@ void ColorEdit::OnPaint()
 	dcMem.SelectObject(m_pFont);
 	TEXTMETRICW tm;
 	dcMem.GetTextMetricsW(&tm);
+	THREAD_ACCESS_LOCK(Async, &RenderedLines);
 	if (LinesChenged == true || ScrollChenged == true)
 	{
-		THREAD_ACCESS_LOCK(Async, &Lines, &RenderedLines);
+		THREAD_ACCESS_LOCK(Async, &Lines);
 		RenderedLines.clear();
 		if (ScrollChenged == false)
 		{
@@ -478,7 +457,7 @@ void ColorEdit::OnPaint()
 		}
 		ScrollChenged = false;
 		LinesChenged = false;
-		THREAD_ACCESS_UNLOCK(Async, &Lines, &RenderedLines);
+		THREAD_ACCESS_UNLOCK(Async, &Lines);
 	}
 	CRect recttemp = rect;
 	if(RenderedLines.size() <= 0)
@@ -533,7 +512,7 @@ void ColorEdit::OnPaint()
 		recttemp.top += tm.tmHeight;
 	}
 	pDC.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), &dcMem, 0, 0, SRCCOPY);
-	return CStatic::OnPaint();
+	THREAD_ACCESS_UNLOCK(Async, &RenderedLines);
 }
 
 #pragma pack(push, 4)                 

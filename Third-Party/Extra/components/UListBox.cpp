@@ -411,9 +411,10 @@ void UListBox::OnPaint()
 	TEXTMETRICW tm;
 	dcMem.GetTextMetricsW(&tm);
 	FontSizePX = tm.tmHeight;
+	THREAD_ACCESS_LOCK(Async, &RenderedLines);
 	if (LinesChenged == true || ScrollChenged == true)
 	{
-		THREAD_ACCESS_LOCK(Async, &Lines, &RenderedLines);
+		THREAD_ACCESS_LOCK(Async, &Lines);
 		RenderedLines.clear();
 		if (ScrollChenged == false)
 		{
@@ -429,7 +430,7 @@ void UListBox::OnPaint()
 		}
 		ScrollChenged = false;
 		LinesChenged = false;
-		THREAD_ACCESS_UNLOCK(Async, &Lines, &RenderedLines);
+		THREAD_ACCESS_UNLOCK(Async, &Lines);
 	}
 	CRect recttemp = rect;
 	if (RenderedLines.size() <= 0)
@@ -502,4 +503,5 @@ void UListBox::OnPaint()
 		recttemp.top += tm.tmHeight;
 	}
 	pDC.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), &dcMem, 0, 0, SRCCOPY);
+	THREAD_ACCESS_UNLOCK(Async, &RenderedLines);
 }
