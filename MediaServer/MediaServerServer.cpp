@@ -457,6 +457,7 @@ static void AudioGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
 	int count = from_get_post_int(Req, "count", 0);
 	int offset = from_get_post_int(Req, "offset", 0);
+	bool reverse = from_get_post_bool(Req, "reverse", false);
 	if (count < 0 || count > mAudios.size()) {
 		count = 0;
 	}
@@ -468,12 +469,23 @@ static void AudioGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	json arr = json(json::value_t::array);
 
 	if (offset <= mAudios.size() - 1) {
-		auto it = mAudios().begin();
-		for (size_t i = 0; i < offset; i++) {
-			it++;
+		if (reverse) {
+			auto it = mAudios().rbegin();
+			for (size_t i = 0; i < offset; i++) {
+				it++;
+			}
+			for (size_t i = 0; (it != mAudios().rend() && (count > 0 ? i < count : true)); i++, it++) {
+				arr.push_back(makeAudio((*it).get_value(), Req, client->isSSL));
+			}
 		}
-		for (size_t i = 0; (it != mAudios().end() && (count > 0 ? i < count : true)); i++, it++) {
-			arr.push_back(makeAudio((*it).get_value(), Req, client->isSSL));
+		else {
+			auto it = mAudios().begin();
+			for (size_t i = 0; i < offset; i++) {
+				it++;
+			}
+			for (size_t i = 0; (it != mAudios().end() && (count > 0 ? i < count : true)); i++, it++) {
+				arr.push_back(makeAudio((*it).get_value(), Req, client->isSSL));
+			}
 		}
 	}
 	payload += arr.dump();
@@ -519,6 +531,7 @@ static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography);
 	int count = from_get_post_int(Req, "count", 0);
 	int offset = from_get_post_int(Req, "offset", 0);
+	bool reverse = from_get_post_bool(Req, "reverse", false);
 	if (count < 0 || count > mDiscography.size()) {
 		count = 0;
 	}
@@ -530,12 +543,23 @@ static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	json arr = json(json::value_t::array);
 
 	if (offset <= mDiscography.size() - 1) {
-		auto it = mDiscography().begin();
-		for (size_t i = 0; i < offset; i++) {
-			it++;
+		if (reverse) {
+			auto it = mDiscography().rbegin();
+			for (size_t i = 0; i < offset; i++) {
+				it++;
+			}
+			for (size_t i = 0; (it != mDiscography().rend() && (count > 0 ? i < count : true)); i++, it++) {
+				arr.push_back(makeAudio((*it).get_value(), Req, client->isSSL));
+			}
 		}
-		for (size_t i = 0; (it != mDiscography().end() && (count > 0 ? i < count : true)); i++, it++) {
-			arr.push_back(makeAudio((*it).get_value(), Req, client->isSSL));
+		else {
+			auto it = mDiscography().begin();
+			for (size_t i = 0; i < offset; i++) {
+				it++;
+			}
+			for (size_t i = 0; (it != mDiscography().end() && (count > 0 ? i < count : true)); i++, it++) {
+				arr.push_back(makeAudio((*it).get_value(), Req, client->isSSL));
+			}
 		}
 	}
 	payload += arr.dump();

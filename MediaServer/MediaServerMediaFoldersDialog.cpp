@@ -49,7 +49,7 @@ BEGIN_MESSAGE_MAP(MediaServerMediaFoldersDialog, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON2, OnDeleteAudio)
 	ON_BN_CLICKED(IDC_BUTTON3, OnAddVideo)
 	ON_BN_CLICKED(IDC_BUTTON7, OnDeleteVideo)
-	ON_BN_CLICKED(IDC_BUTTON9, OnAddDiscography)
+	ON_BN_CLICKED(IDC_BUTTON8, OnAddDiscography)
 	ON_BN_CLICKED(IDC_BUTTON9, OnDeleteDiscography)
 END_MESSAGE_MAP()
 
