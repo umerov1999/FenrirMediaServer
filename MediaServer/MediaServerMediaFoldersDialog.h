@@ -24,9 +24,15 @@ public:
 	CListBox ListAudios;
 	CListBox ListDiscography;
 	CListBox ListVideos;
+	CListBox ListPhotoVideos;
 	CButton EraseAudios;
 	CButton EraseVideos;
+	CButton ErasePhotoVideos;
 	CButton EraseDiscography;
+	CButton AddAudios;
+	CButton AddVideos;
+	CButton AddPhotoVideos;
+	CButton AddDiscography;
 
 	wchar_t szBuf[512];
 
@@ -46,6 +52,9 @@ public:
 
 	afx_msg void OnAddVideo();
 	afx_msg void OnDeleteVideo();
+
+	afx_msg void OnAddPhotoVideo();
+	afx_msg void OnDeletePhotoVideo();
 
 	afx_msg void ReloadContent();
 	afx_msg BOOL PreTranslateMessage(MSG* pMsg);

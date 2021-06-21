@@ -45,12 +45,14 @@ public:
 		HttpPort = 0;
 		isSsl = false;
 		isDebug = false;
+		canEdit = false;
 	}
 	std::string password;
 	int HttpsPort;
 	int HttpPort;
 	bool isSsl;
 	bool isDebug;
+	bool canEdit;
 };
 
 #define USSL_CERTPART_BUNDLE 0
@@ -203,11 +205,12 @@ private:
 unsigned int CRC32(const std::string& data);
 
 class Media {
-protected:
+public:
 	enum class TYPE {
 		TYPE_NULL,
 		TYPE_AUDIO,
-		TYPE_VIDEO
+		TYPE_VIDEO,
+		TYPE_PHOTO
 	};
 	Media() {
 		type = TYPE::TYPE_NULL;
@@ -228,7 +231,7 @@ protected:
 		path = path_name + L"\\" + file_name;
 		id = CRC32(WSTRUtils::wchar_to_UTF8(file_name));
 		owner_id = CRC32(WSTRUtils::wchar_to_UTF8(path_name));
-		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(get_ext(file_name));
+		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
 	}
 	void operator=(const Media& media) {
 		this->type = media.type;
@@ -258,7 +261,7 @@ public:
 		this->orig_name = media.orig_name;
 	}
 	const std::string& update_hash(time_t mod_time, time_t create_time) {
-		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(get_ext(WSTRUtils::UTF8_to_wchar(fileName)));
+		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(WSTRUtils::UTF8_to_wchar(fileName))));
 		return hash;
 	}
 	const std::string& update_full_hash(std::wstring path_name, std::wstring file_name, time_t mod_time, time_t create_time) {
@@ -271,7 +274,7 @@ public:
 		path = path_name + L"\\" + file_name;
 		id = CRC32(WSTRUtils::wchar_to_UTF8(file_name));
 		owner_id = CRC32(WSTRUtils::wchar_to_UTF8(path_name));
-		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(get_ext(file_name));
+		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
 		return hash;
 	}
 	const std::string &get_hash() const {
@@ -282,6 +285,17 @@ public:
 
 	const TYPE &get_type() const {
 		return type;
+	}
+	const std::string getMimeType() const {
+		switch (type) {
+		case TYPE::TYPE_AUDIO:
+			return "audio/" + getMimeExt();
+		case TYPE::TYPE_VIDEO:
+			return "video/" + getMimeExt();
+		case TYPE::TYPE_PHOTO:
+			return "image/" + getMimeExt();
+		}
+		return "*/*";
 	}
 	const int& getId() const {
 		return id;
@@ -316,14 +330,46 @@ public:
 	bool operator!=(const Media& media) const {
 		return this->hash != media.hash;
 	}
-protected:
 	static std::wstring get_ext(const std::wstring& file_name) {
 		std::wstring tmp = file_name;
 		size_t n = tmp.find_last_of(L'.');
-		if (n != std::wstring::npos && n!= tmp.size() - 1) {
+		if (n != std::wstring::npos && n != tmp.size() - 1) {
 			return tmp.erase(0, n + 1);
 		}
 		return tmp;
+	}
+protected:
+	std::string getMimeExt() const {
+		std::wstring ex = get_ext(get_orig_name());
+		if (WSTRUtils::toLowerW(ex) == L"jpg" || WSTRUtils::toLowerW(ex) == L"jpeg") {
+			return "jpeg";
+		}
+		if (WSTRUtils::toLowerW(ex) == L"tiff") {
+			return "tiff";
+		}
+		if (WSTRUtils::toLowerW(ex) == L"png") {
+			return "png";
+		}
+		if (WSTRUtils::toLowerW(ex) == L"mp3") {
+			return "mpeg";
+		}
+		if (WSTRUtils::toLowerW(ex) == L"ogg") {
+			return "ogg";
+		}
+		if (WSTRUtils::toLowerW(ex) == L"mpg" || WSTRUtils::toLowerW(ex) == L"mpeg") {
+			return "mpeg";
+		}
+		if (WSTRUtils::toLowerW(ex) == L"mp4") {
+			return "mp4";
+		}
+		if (WSTRUtils::toLowerW(ex) == L"webm") {
+			return "webm";
+		}
+		if (WSTRUtils::toLowerW(ex) == L"avi") {
+			return "x-msvideo";
+		}
+
+		return "*";
 	}
 	static std::wstring strip_ext(const std::wstring& file_name) {
 		std::wstring tmp = file_name;
@@ -463,6 +509,32 @@ public:
 private:
 	std::string title;
 	std::string description;
+};
+
+class Photo : public Media {
+public:
+	Photo() : Media() {
+	}
+	Photo(const Photo& media) : Media(media) {
+		this->text = media.text;
+	}
+	void operator=(const Photo& media) {
+		this->text = media.text;
+		Media::operator=(media);
+	}
+	Photo(std::wstring path_name, std::wstring file_name, time_t mod_time, time_t create_time, unsigned long long file_size) : Media(Media::TYPE::TYPE_PHOTO, path_name, file_name, create_time, mod_time, file_size) {
+		std::wstring pth = path_name;
+		size_t hh = pth.find_last_of(L"\\/");
+		if (hh != std::wstring::npos) {
+			pth = pth.erase(0, hh + 1);
+		}
+		text = WSTRUtils::wchar_to_UTF8(pth) + "/" + WSTRUtils::wchar_to_UTF8(Media::strip_ext(file_name));
+	}
+	const std::string& get_text() const {
+		return text;
+	}
+private:
+	std::string text;
 };
 
 class ServerMethodInfo

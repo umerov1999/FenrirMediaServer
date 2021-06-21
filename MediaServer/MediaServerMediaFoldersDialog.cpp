@@ -17,6 +17,7 @@ static char THIS_FILE[] = __FILE__;
 extern list<wstring> Discography_Dirs;
 extern list<wstring> Audio_Dirs;
 extern list<wstring> Video_Dirs;
+extern list<wstring> Photo_Video_Dirs;
 extern std::wstring ExtractAppPath();
 
 MediaServerMediaFoldersDialog::MediaServerMediaFoldersDialog(CWnd* pParent /*=NULL*/)
@@ -34,9 +35,15 @@ void MediaServerMediaFoldersDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST1, ListAudios);
 	DDX_Control(pDX, IDC_LIST2, ListVideos);
 	DDX_Control(pDX, IDC_LIST3, ListDiscography);
+	DDX_Control(pDX, IDC_LIST4, ListPhotoVideos);
 	DDX_Control(pDX, IDC_BUTTON2, EraseAudios);
 	DDX_Control(pDX, IDC_BUTTON7, EraseVideos);
 	DDX_Control(pDX, IDC_BUTTON9, EraseDiscography);
+	DDX_Control(pDX, IDC_BUTTON11, ErasePhotoVideos);
+	DDX_Control(pDX, IDC_BUTTON1, AddAudios);
+	DDX_Control(pDX, IDC_BUTTON3, AddVideos);
+	DDX_Control(pDX, IDC_BUTTON8, AddDiscography);
+	DDX_Control(pDX, IDC_BUTTON10, AddPhotoVideos);
 }
 
 BEGIN_MESSAGE_MAP(MediaServerMediaFoldersDialog, CDialogEx)
@@ -48,9 +55,11 @@ BEGIN_MESSAGE_MAP(MediaServerMediaFoldersDialog, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, OnAddAudio)
 	ON_BN_CLICKED(IDC_BUTTON2, OnDeleteAudio)
 	ON_BN_CLICKED(IDC_BUTTON3, OnAddVideo)
+	ON_BN_CLICKED(IDC_BUTTON10, OnAddPhotoVideo)
 	ON_BN_CLICKED(IDC_BUTTON7, OnDeleteVideo)
 	ON_BN_CLICKED(IDC_BUTTON8, OnAddDiscography)
 	ON_BN_CLICKED(IDC_BUTTON9, OnDeleteDiscography)
+	ON_BN_CLICKED(IDC_BUTTON11, OnDeletePhotoVideo)
 END_MESSAGE_MAP()
 
 BOOL MediaServerMediaFoldersDialog::OnInitDialog()
@@ -62,6 +71,12 @@ BOOL MediaServerMediaFoldersDialog::OnInitDialog()
 	EraseAudios.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
 	EraseVideos.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
 	EraseDiscography.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
+	ErasePhotoVideos.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
+
+	AddAudios.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON3));
+	AddVideos.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON3));
+	AddDiscography.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON3));
+	AddPhotoVideos.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON3));
 
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
@@ -109,12 +124,15 @@ void MediaServerMediaFoldersDialog::ReloadContent()
 	ListAudios.ResetContent();
 	ListVideos.ResetContent();
 	ListDiscography.ResetContent();
+	ListPhotoVideos.ResetContent();
 	for (auto &i : Audio_Dirs)
 		ListAudios.AddString(i.c_str());
 	for (auto& i : Video_Dirs)
 		ListVideos.AddString(i.c_str());
 	for (auto& i : Discography_Dirs)
 		ListDiscography.AddString(i.c_str());
+	for (auto& i : Photo_Video_Dirs)
+		ListPhotoVideos.AddString(i.c_str());
 }
 
 static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
@@ -214,6 +232,28 @@ void MediaServerMediaFoldersDialog::OnAddVideo()
 	ReloadContent();
 }
 
+void MediaServerMediaFoldersDialog::OnAddPhotoVideo()
+{
+	CString res = ExtractAppPath().c_str();
+	if (BrowseFolder(res) == true)
+	{
+		if (res.GetLength() > 0 && PathFileExistsW(res.GetString()) == TRUE)
+		{
+			bool exist = false;
+			for (auto& i : Photo_Video_Dirs) {
+				if (Wcompare(i, res.GetString())) {
+					exist = true;
+					break;
+				}
+			}
+			if (!exist) {
+				Photo_Video_Dirs.push_back(res.GetString());
+			}
+		}
+	}
+	ReloadContent();
+}
+
 void MediaServerMediaFoldersDialog::OnDeleteAudio()
 {
 	int Sel = ListAudios.GetCurSel();
@@ -265,9 +305,26 @@ void MediaServerMediaFoldersDialog::OnDeleteVideo()
 	}
 }
 
+void MediaServerMediaFoldersDialog::OnDeletePhotoVideo()
+{
+	int Sel = ListPhotoVideos.GetCurSel();
+	if (Sel < 0)
+		return;
+	int HT = 0;
+	for (auto i = Photo_Video_Dirs.begin(); i != Photo_Video_Dirs.end(); i++, HT++)
+	{
+		if (HT == Sel)
+		{
+			Photo_Video_Dirs.erase(i);
+			ReloadContent();
+			return;
+		}
+	}
+}
+
 BOOL MediaServerMediaFoldersDialog::PreTranslateMessage(MSG* pMsg)
 {
-	if (pMsg->hwnd == ListAudios.GetSafeHwnd() || pMsg->hwnd == ListVideos.GetSafeHwnd() || pMsg->hwnd == ListDiscography.GetSafeHwnd())
+	if (pMsg->hwnd == ListAudios.GetSafeHwnd() || pMsg->hwnd == ListVideos.GetSafeHwnd() || pMsg->hwnd == ListDiscography.GetSafeHwnd() || pMsg->hwnd == ListPhotoVideos.GetSafeHwnd())
 	{
 		if (pMsg->message == WM_DROPFILES)
 		{
@@ -317,6 +374,21 @@ BOOL MediaServerMediaFoldersDialog::PreTranslateMessage(MSG* pMsg)
 							}
 							if (!exist) {
 								Discography_Dirs.push_back(szBuf);
+							}
+						}
+					}
+					else if (pMsg->hwnd == ListPhotoVideos.GetSafeHwnd()) {
+						if (PathFileExistsW(szBuf) == TRUE)
+						{
+							bool exist = false;
+							for (auto& i : Photo_Video_Dirs) {
+								if (Wcompare(i, szBuf)) {
+									exist = true;
+									break;
+								}
+							}
+							if (!exist) {
+								Photo_Video_Dirs.push_back(szBuf);
 							}
 						}
 					}

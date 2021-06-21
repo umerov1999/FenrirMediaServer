@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Res\Delete.ico" />
+    <Image Include="Res\folder_add.ico" />
     <Image Include="Res\Icon.ico" />
     <Image Include="Res\Logo.png" />
   </ItemGroup>

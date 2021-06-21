@@ -362,11 +362,27 @@ namespace WSTRUtils
 		return c;
 	}
 
+	static std::wstring toLowerW(const std::wstring& str) {
+		std::wstring v = str;
+		for (auto& i : v) {
+			i = ToWLower(i);
+		}
+		return v;
+	}
+
 	static char ToLower(char c)
 	{
 		if (c >= u8'A' && c <= u8'Z')
 			return c + (u8'z' > u8'Z' ? u8'z' - u8'Z' : u8'Z' - u8'z');
 		return c;
+	}
+
+	static std::string toLower(const std::string& str) {
+		std::string v = str;
+		for (auto& i : v) {
+			i = ToLower(i);
+		}
+		return v;
 	}
 
 	static bool compare(const std::string &Pattern, const std::string &Cmp)

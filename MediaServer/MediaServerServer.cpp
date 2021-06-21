@@ -41,10 +41,12 @@ extern void ClearMessages();
 static Map::Map<std::string, Audio> mDiscography;
 static Map::Map<std::string, Audio> mAudios;
 static Map::Map<std::string, Video> mVideos;
+static Map::Map<std::string, Photo> mPhotos;
 
 list<wstring> Discography_Dirs;
 list<wstring> Audio_Dirs;
 list<wstring> Video_Dirs;
+list<wstring> Photo_Video_Dirs;
 
 EXTERN_THREAD_ACCESS_GUARD_OBJECT
 
@@ -452,6 +454,39 @@ static json makeVideo(const Video& v, const RequestParserStruct& Req, bool isSSL
 	return data;
 }
 
+static json makePhoto(const Photo& p, const RequestParserStruct& Req, bool isSSL) {
+	json data = json(json::value_t::object);
+	data.emplace("id", p.getId());
+	data.emplace("owner_id", p.getOwnerId());
+	data.emplace("album_id", -311);
+	data.emplace("date", p.get_mod_time());
+	data.emplace("text", p.get_text());
+
+	json sizes = json(json::value_t::array);
+	json W = json(json::value_t::object);
+	W.emplace("type", "w");
+	W.emplace("width", "2080");
+	W.emplace("height", "1080");
+	W.emplace("url", (string)(isSSL ? "https" : "http") + "://" + Req.http_request.get_utf8("Host") + "/method/get_media?hash=" + p.get_hash());
+	sizes.push_back(W);
+
+	json S = json(json::value_t::object);
+	S.emplace("type", "s");
+	S.emplace("width", "512");
+	S.emplace("height", "512");
+	if (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(p.get_hash()) + L".jpg").c_str())) {
+		S.emplace("url", (string)(isSSL ? "https" : "http") + "://" + Req.http_request.get_utf8("Host") + "/method/get_cover?hash=" + p.get_hash());
+	}
+	else {
+		S.emplace("url", (string)(isSSL ? "https" : "http") + "://" + Req.http_request.get_utf8("Host") + "/method/get_media?hash=" + p.get_hash());
+	}
+
+	sizes.push_back(S);
+
+	data.emplace("sizes", sizes);
+	return data;
+}
+
 static void AudioGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
@@ -496,31 +531,12 @@ static void AudioGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 
 static void AudioList(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
-	if (exist_get_post(Req, "password")) {
-		string password = get_postUTF8(Req, "password");
-		if (client->server_config.password != password) {
-			if (client->server_config.isDebug) {
-				PrintMessage(L"DEBUG: метод AudioList неверный пароль", URGB(255, 0, 0));
-			}
-			SendHTTTPAnswerWithData(*client, "401 Unauthorized", "text/html; charset=utf-8", u8"Неверный пароль");
-			return;
-		}
-	}
-	else {
-		if (client->server_config.isDebug) {
-			PrintMessage(L"DEBUG: метод AudioList требует авторизацию", URGB(255, 0, 0));
-		}
-		SendHTTTPAnswerWithData(*client, "401 Unauthorized", "text/html; charset=utf-8", u8"DEBUG: метод AudioList требует авторизацию");
-		return;
-	}
-
-
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
 
 	json arr = json(json::value_t::array);
 
 	for (auto &i : mAudios) {
-		arr.push_back(i.get_value().get_file_name());
+		arr.push_back(i.get_value().get_artist() + " - " + i.get_value().get_title() + "." + wchar_to_UTF8(Media::get_ext(i.get_value().get_orig_name())));
 	}
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", arr.dump(4));
@@ -565,6 +581,48 @@ static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	payload += arr.dump();
 	payload += "} }";
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography);
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+}
+
+static void PhotosGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
+{
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mPhotos);
+	int count = from_get_post_int(Req, "count", 0);
+	int offset = from_get_post_int(Req, "offset", 0);
+	bool reverse = from_get_post_bool(Req, "reverse", false);
+	if (count < 0 || count > mPhotos.size()) {
+		count = 0;
+	}
+	if (offset < 0) {
+		offset = 0;
+	}
+	string payload = u8"{ \"response\": { \"count\": " + to_string(mPhotos.size()) + u8",\"items\": ";
+
+	json arr = json(json::value_t::array);
+
+	if (offset <= mPhotos.size() - 1) {
+		if (reverse) {
+			auto it = mPhotos().rbegin();
+			for (size_t i = 0; i < offset; i++) {
+				it++;
+			}
+			for (size_t i = 0; (it != mPhotos().rend() && (count > 0 ? i < count : true)); i++, it++) {
+				arr.push_back(makePhoto((*it).get_value(), Req, client->isSSL));
+			}
+		}
+		else {
+			auto it = mPhotos().begin();
+			for (size_t i = 0; i < offset; i++) {
+				it++;
+			}
+			for (size_t i = 0; (it != mPhotos().end() && (count > 0 ? i < count : true)); i++, it++) {
+				arr.push_back(makePhoto((*it).get_value(), Req, client->isSSL));
+			}
+		}
+	}
+	payload += arr.dump();
+	payload += "} }";
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mPhotos);
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
 }
 
@@ -652,11 +710,54 @@ static void DiscographySearch(RequestParserStruct& Req, CLIENT_CONNECTION* clien
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
 }
 
+static void PhotosSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
+{
+	string q = trim(get_postUTF8(Req, "q"));
+	if (q.length() <= 0) {
+		PhotosGet(Req, client);
+		return;
+	}
+	list<Photo> result;
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mPhotos);
+	for (auto& i : mPhotos) {
+		if (WSTRUtils::wsearch(i.get_value().get_path(), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
+			result.push_back(i.get_value());
+		}
+	}
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mPhotos);
+
+	int count = from_get_post_int(Req, "count", 0);
+	int offset = from_get_post_int(Req, "offset", 0);
+	if (count < 0 || count > result.size()) {
+		count = 0;
+	}
+	if (offset < 0) {
+		offset = 0;
+	}
+	string payload = u8"{ \"response\": { \"count\": " + to_string(result.size()) + u8",\"items\": ";
+
+	json arr = json(json::value_t::array);
+
+	if (offset <= result.size() - 1) {
+		auto it = result.begin();
+		for (size_t i = 0; i < offset; i++) {
+			it++;
+		}
+		for (size_t i = 0; (it != result.end() && (count > 0 ? i < count : true)); i++, it++) {
+			arr.push_back(makePhoto(*it, Req, client->isSSL));
+		}
+	}
+	payload += arr.dump();
+	payload += "} }";
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+}
+
 static void VideoGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mVideos);
 	int count = from_get_post_int(Req, "count", 0);
 	int offset = from_get_post_int(Req, "offset", 0);
+	bool reverse = from_get_post_bool(Req, "reverse", false);
 	if (count < 0 || count > mVideos.size()) {
 		count = 0;
 	}
@@ -668,12 +769,23 @@ static void VideoGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	json arr = json(json::value_t::array);
 
 	if (offset <= mVideos.size() - 1) {
-		auto it = mVideos().begin();
-		for (size_t i = 0; i < offset; i++) {
-			it++;
+		if (reverse) {
+			auto it = mVideos().rbegin();
+			for (size_t i = 0; i < offset; i++) {
+				it++;
+			}
+			for (size_t i = 0; (it != mVideos().rend() && (count > 0 ? i < count : true)); i++, it++) {
+				arr.push_back(makeVideo((*it).get_value(), Req, client->isSSL));
+			}
 		}
-		for (size_t i = 0; (it != mVideos().end() && (count > 0 ? i < count : true)); i++, it++) {
-			arr.push_back(makeVideo((*it).get_value(), Req, client->isSSL));
+		else {
+			auto it = mVideos().begin();
+			for (size_t i = 0; i < offset; i++) {
+				it++;
+			}
+			for (size_t i = 0; (it != mVideos().end() && (count > 0 ? i < count : true)); i++, it++) {
+				arr.push_back(makeVideo((*it).get_value(), Req, client->isSSL));
+			}
 		}
 	}
 	payload += arr.dump();
@@ -783,6 +895,9 @@ static Media* look_MediaByHash(const string& hash) {
 	else if (mDiscography.exist(hash)) {
 		return &mDiscography[hash];
 	}
+	else if (mPhotos.exist(hash)) {
+		return &mPhotos[hash];
+	}
 	return NULL;
 }
 
@@ -791,13 +906,13 @@ static void GetMedia(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		return;
 	}
 	std::string hash = get_postUTF8(Req, "hash");
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	Media *md = look_MediaByHash(hash);
 	if (md == NULL) {
-		THREAD_ACCESS_RETURN(DEFAULT_GUARD_NAME, , &mDiscography, &mAudios, &mVideos)
+		THREAD_ACCESS_RETURN(DEFAULT_GUARD_NAME, , &mDiscography, &mAudios, &mVideos, &mPhotos)
 	}
 	Media media = *md;
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 
 	FILE* fl;
 	if (_wfopen_s(&fl, media.get_path().c_str(), L"rb") != 0 || fl == NULL) {
@@ -817,7 +932,7 @@ static void GetMedia(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		HttpAnswer << "HTTP/1.1 " << "206 Partial Content" << ENDL
 			<< "Server: " << SERVER_NAME << ENDL
 			<< "Date: " << GetTimeGMT(0) << ENDL
-			<< "Content-Type: " << "audio/*" << ENDL
+			<< "Content-Type: " << media.getMimeType() << ENDL
 			<< "Content-Disposition: attachment; filename=\"" << media.get_file_name() << "\"" << ENDL;
 		if (sz > 0)
 			HttpAnswer << "Content-Length: " << off << ENDL;
@@ -875,8 +990,12 @@ static void GetMedia(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		HttpAnswer << "HTTP/1.1 " << "200 OK" << ENDL
 			<< "Server: " << SERVER_NAME << ENDL
 			<< "Date: " << GetTimeGMT(0) << ENDL
-			<< "Content-Type: " << "audio/*" << ENDL
+			<< "Content-Type: " << media.getMimeType() << ENDL
 			<< "Content-Disposition: attachment; filename=\"" << media.get_file_name() << "\"" << ENDL;
+		if (media.get_type() == Media::TYPE::TYPE_PHOTO) {
+			HttpAnswer << "Cache-Control: no-transform,public,max-age=345600,s-maxage=345600" << ENDL
+				<< "X-Cache: HIT" << ENDL;
+		}
 		if (sz > 0)
 			HttpAnswer << "Content-Length: " << sz << ENDL;
 		HttpAnswer << "Connection: keep-alive" << ENDL;
@@ -945,6 +1064,8 @@ static void GetCover(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		<< "Server: " << SERVER_NAME << ENDL
 		<< "Date: " << GetTimeGMT(0) << ENDL
 		<< "Content-Type: " << "image/jpeg" << ENDL
+		<< "Cache-Control: no-transform,public,max-age=345600,s-maxage=345600" << ENDL
+		<< "X-Cache: HIT" << ENDL
 		<< "Content-Disposition: attachment; filename=\"" << hash + "_cover.jpg" << "\"" << ENDL;
 	if (sz > 0)
 		HttpAnswer << "Content-Length: " << sz << ENDL;
@@ -1341,8 +1462,18 @@ static void DeleteThumbs() {
 	}
 }
 
-static bool isBadExt(const wstring& str) {
-	vector<wstring> skip = { L"jpg", L"jpeg", L"png", L"txt" };
+enum class TYPE_SCAN {
+	TYPE_SCAN_AUDIO,
+	TYPE_SCAN_DISCOGRAPHY,
+	TYPE_SCAN_VIDEO,
+	TYPE_SCAN_PHOTO
+};
+
+static bool isBadExt(const wstring& str, TYPE_SCAN type) {
+	vector<wstring> skip = { L"jpg", L"jpeg", L"png", L"gif", L"txt", L"pdf", L"doc", L"docx", L"ppt", L"pptx", L"ini", L"xml", L"html" };
+	if (type == TYPE_SCAN::TYPE_SCAN_PHOTO) {
+		skip = { L"gif", L"txt", L"pdf", L"doc", L"docx", L"ppt", L"pptx", L"ini", L"xml", L"html" };
+	}
 	for (auto& i : skip) {
 		size_t ll = str.find_last_of(L'.');
 		if (ll != wstring::npos && WSTRUtils::Wcompare(str.substr(ll + 1), i)) {
@@ -1352,27 +1483,25 @@ static bool isBadExt(const wstring& str) {
 	return false;
 }
 
-enum class TYPE_SCAN {
-	TYPE_SCAN_AUDIO,
-	TYPE_SCAN_DISCOGRAPHY,
-	TYPE_SCAN_VIDEO
-};
-
-static void scanFiles(const wstring &str, TYPE_SCAN type, bool is_main) {
-	if (is_main) {
-		switch (type)
-		{
-		case TYPE_SCAN::TYPE_SCAN_AUDIO:
-			mAudios().clear();
-			break;
-		case TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY:
-			mDiscography.clear();
-			break;
-		case TYPE_SCAN::TYPE_SCAN_VIDEO:
-			mVideos.clear();
-			break;
-		}
+static void cleanLoaded(TYPE_SCAN type) {
+	switch (type)
+	{
+	case TYPE_SCAN::TYPE_SCAN_AUDIO:
+		mAudios().clear();
+		break;
+	case TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY:
+		mDiscography.clear();
+		break;
+	case TYPE_SCAN::TYPE_SCAN_VIDEO:
+		mVideos.clear();
+		break;
+	case TYPE_SCAN::TYPE_SCAN_PHOTO:
+		mPhotos.clear();
+		break;
 	}
+}
+
+static void scanFiles(const wstring &str, TYPE_SCAN type, bool is_main = true) {
 	WIN32_FIND_DATAW data;
 	HANDLE hFind = FindFirstFileW((str + L"\\*.*").c_str(), &data);
 
@@ -1386,11 +1515,12 @@ static void scanFiles(const wstring &str, TYPE_SCAN type, bool is_main) {
 				scanFiles(str + L"\\" + test, type, false);
 			}
 			else {
-				if (isBadExt(data.cFileName)) {
+				if (isBadExt(data.cFileName, type)) {
 					continue;
 				}
 				Audio a;
 				Video v;
+				Photo p;
 				switch (type)
 				{
 				case TYPE_SCAN::TYPE_SCAN_AUDIO:
@@ -1404,6 +1534,17 @@ static void scanFiles(const wstring &str, TYPE_SCAN type, bool is_main) {
 				case TYPE_SCAN::TYPE_SCAN_VIDEO:
 					v = Video(str, data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
 					mVideos[v.get_hash()] = v;
+					break;
+				case TYPE_SCAN::TYPE_SCAN_PHOTO:
+					wstring fl = data.cFileName;
+					if (WSTRUtils::wsearch(fl, L".jpg") != wstring::npos || WSTRUtils::wsearch(fl, L".jpeg") != wstring::npos || WSTRUtils::wsearch(fl, L".png") != wstring::npos || WSTRUtils::wsearch(fl, L".tiff") != wstring::npos || WSTRUtils::wsearch(fl, L".webp") != wstring::npos) {
+						p = Photo(str, data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+						mPhotos[p.get_hash()] = p;
+					}
+					else {
+						v = Video(str, data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+						mVideos[v.get_hash()] = v;
+					}
 					break;
 				}
 			}
@@ -1422,6 +1563,9 @@ static void scanFiles(const wstring &str, TYPE_SCAN type, bool is_main) {
 		case TYPE_SCAN::TYPE_SCAN_VIDEO:
 			PrintMessage(to_wstring(mVideos.size()) + L" Видео.");
 			break;
+		case TYPE_SCAN::TYPE_SCAN_PHOTO:
+			PrintMessage(to_wstring(mPhotos.size()) + L" Фото.");
+			break;
 		}
 	}
 }
@@ -1436,6 +1580,24 @@ static void sortFiles() {
 	mAudios.sort(greator<Audio>);
 	mDiscography.sort(greator<Audio>);
 	mVideos.sort(greator<Video>);
+	mPhotos.sort(greator<Photo>);
+}
+
+static void doAfterFFMpegEnded(Map::Map<Media, PROCESS_INFORMATION> &handles) {
+	for (auto& s : handles) {
+		WaitForSingleObject(s.get_value().hProcess, INFINITE);
+		CloseHandle(s.get_value().hProcess);
+		CloseHandle(s.get_value().hThread);
+		if (!PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(s.get_key().get_hash()) + L".jpg").c_str()))
+		{
+			FlBin o;
+			if (o.wopen(wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(s.get_key().get_hash()) + L".err", OPENType::OPENWrite)) {
+				o << UTF8START << s.get_key().get_path();
+				o.Close();
+			}
+		}
+	}
+	handles.clear();
 }
 
 void genVideoThumbs(bool is_OnlyNews) {
@@ -1444,8 +1606,13 @@ void genVideoThumbs(bool is_OnlyNews) {
 			return;
 		}
 	}
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
+	for (auto& i : Photo_Video_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
+	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
 	}
 	Map::Map<std::string, Video> tVideos = mVideos;
 	wstring crdir;
@@ -1453,6 +1620,7 @@ void genVideoThumbs(bool is_OnlyNews) {
 	GetCurrentDirectoryW(MAX_PATH, (LPWSTR)crdir.c_str());
 	PrintMessage(L"Сканирование обложек у видео : " + to_wstring(tVideos.size()));
 	size_t ccn = 0;
+	Map::Map<Media, PROCESS_INFORMATION> handles;
 	for (auto& i : tVideos) {
 		if (is_OnlyNews && (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()) || PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err").c_str()))) {
 			ccn++;
@@ -1479,18 +1647,69 @@ void genVideoThumbs(bool is_OnlyNews) {
 			CloseHandle(piProcInfo.hThread);
 			continue;
 		}
-		WaitForSingleObject(piProcInfo.hProcess, INFINITE);
-		CloseHandle(piProcInfo.hProcess);
-		CloseHandle(piProcInfo.hThread);
-		if (!PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()))
-		{
-			FlBin o;
-			if (o.wopen(wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err", OPENType::OPENWrite)) {
-				o << UTF8START << i.get_value().get_path();
-				o.Close();
-			}
+		handles[i.get_value()] = piProcInfo;
+		if (handles.size() % 8 == 0) {
+			doAfterFFMpegEnded(handles);
 		}
 	}
+	if (handles.size() > 0)
+		doAfterFFMpegEnded(handles);
+}
+
+void genPhotoThumbs(bool is_OnlyNews) {
+	if (!PathFileExistsW(CACHE_DIR)) {
+		if (!CreateDirectoryW(CACHE_DIR, NULL)) {
+			return;
+		}
+	}
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
+	for (auto& i : Photo_Video_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
+	}
+	for (auto& i : Video_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
+	}
+	Map::Map<std::string, Photo> tPhotos = mPhotos;
+	wstring crdir;
+	crdir.resize(MAX_PATH + 1);
+	GetCurrentDirectoryW(MAX_PATH, (LPWSTR)crdir.c_str());
+	PrintMessage(L"Сканирование обложек у фото : " + to_wstring(tPhotos.size()));
+	size_t ccn = 0;
+	Map::Map<Media, PROCESS_INFORMATION> handles;
+	for (auto& i : tPhotos) {
+		if (is_OnlyNews && (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()) || PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err").c_str()))) {
+			ccn++;
+			continue;
+		}
+		PROCESS_INFORMATION piProcInfo;
+		STARTUPINFOW siStartInfo;
+		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
+		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
+		siStartInfo.cb = sizeof(STARTUPINFOW);
+		wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + (L" -loglevel panic -n -i \"" + i.get_value().get_path() + L"\" -vf scale=\"\'if(gt(a,1/1),512,-1)\':\'if(gt(a,1/1),-1,512)\'\" " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg"));
+		PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tPhotos.size()) + L") " + cmd);
+		if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
+			NULL,
+			NULL,
+			FALSE,                 // handles are inherited 
+			CREATE_NO_WINDOW,                    // creation flags 
+			NULL,                 // use parent's environment 
+			crdir.c_str(),                 // use parent's current directory 
+			&siStartInfo,         // STARTUPINFO pointer 
+			&piProcInfo))
+		{
+			CloseHandle(piProcInfo.hProcess);
+			CloseHandle(piProcInfo.hThread);
+			continue;
+		}
+		handles[i.get_value()] = piProcInfo;
+		if (handles.size() % 8 == 0) {
+			doAfterFFMpegEnded(handles);
+		}
+	}
+	if (handles.size() > 0)
+		doAfterFFMpegEnded(handles);
 }
 
 void genAudioThumbs(bool is_OnlyNews) {
@@ -1499,8 +1718,9 @@ void genAudioThumbs(bool is_OnlyNews) {
 			return;
 		}
 	}
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
 	}
 	Map::Map<std::string, Audio> tAudios = mAudios;
 	wstring crdir;
@@ -1508,6 +1728,8 @@ void genAudioThumbs(bool is_OnlyNews) {
 	GetCurrentDirectoryW(MAX_PATH, (LPWSTR)crdir.c_str());
 	PrintMessage(L"Сканирование обложек у аудио : " + to_wstring(tAudios.size()));
 	size_t ccn = 0;
+	size_t thr = 0;
+	Map::Map<Media, PROCESS_INFORMATION> handles;
 	for (auto& i : tAudios) {
 		if (is_OnlyNews && (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()) || PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err").c_str()))) {
 			ccn++;
@@ -1534,18 +1756,13 @@ void genAudioThumbs(bool is_OnlyNews) {
 			CloseHandle(piProcInfo.hThread);
 			continue;
 		}
-		WaitForSingleObject(piProcInfo.hProcess, INFINITE);
-		CloseHandle(piProcInfo.hProcess);
-		CloseHandle(piProcInfo.hThread);
-		if (!PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()))
-		{
-			FlBin o;
-			if (o.wopen(wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err", OPENType::OPENWrite)) {
-				o << UTF8START << i.get_value().get_path();
-				o.Close();
-			}
+		handles[i.get_value()] = piProcInfo;
+		if (handles.size() % 8 == 0) {
+			doAfterFFMpegEnded(handles);
 		}
 	}
+	if (handles.size() > 0)
+		doAfterFFMpegEnded(handles);
 }
 
 void genDiscographyThumbs(bool is_OnlyNews) {
@@ -1554,8 +1771,9 @@ void genDiscographyThumbs(bool is_OnlyNews) {
 			return;
 		}
 	}
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
 	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
 	}
 	Map::Map<std::string, Audio> tAudios = mDiscography;
 	wstring crdir;
@@ -1563,6 +1781,7 @@ void genDiscographyThumbs(bool is_OnlyNews) {
 	GetCurrentDirectoryW(MAX_PATH, (LPWSTR)crdir.c_str());
 	PrintMessage(L"Сканирование обложек у дискографии : " + to_wstring(tAudios.size()));
 	size_t ccn = 0;
+	Map::Map<Media, PROCESS_INFORMATION> handles;
 	for (auto& i : tAudios) {
 		if (is_OnlyNews && (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()) || PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err").c_str()))) {
 			ccn++;
@@ -1589,24 +1808,20 @@ void genDiscographyThumbs(bool is_OnlyNews) {
 			CloseHandle(piProcInfo.hThread);
 			continue;
 		}
-		WaitForSingleObject(piProcInfo.hProcess, INFINITE);
-		CloseHandle(piProcInfo.hProcess);
-		CloseHandle(piProcInfo.hThread);
-		if (!PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()))
-		{
-			FlBin o;
-			if (o.wopen(wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err", OPENType::OPENWrite)) {
-				o << UTF8START << i.get_value().get_path();
-				o.Close();
-			}
+		handles[i.get_value()] = piProcInfo;
+		if (handles.size() % 8 == 0) {
+			doAfterFFMpegEnded(handles);
 		}
 	}
+	if(handles.size() > 0)
+		doAfterFFMpegEnded(handles);
 }
 
 DWORD WINAPI doScanCovers(LPVOID) {
 	dlgS.StartBT.EnableWindow(FALSE);
 	dlgS.ScanCovers.EnableWindow(FALSE);
 	dlgS.MediaFolders.EnableWindow(FALSE);
+	dlgS.PhotosThumb.EnableWindow(FALSE);
 	bool is_OnlyNews = dlgS.OnlyNews.GetCheck();
 	if (!is_OnlyNews) {
 		DeleteThumbs();
@@ -1614,9 +1829,13 @@ DWORD WINAPI doScanCovers(LPVOID) {
 	genAudioThumbs(is_OnlyNews);
 	genDiscographyThumbs(is_OnlyNews);
 	genVideoThumbs(is_OnlyNews);
+	if (dlgS.PhotosThumb.GetCheck() == TRUE) {
+		genPhotoThumbs(is_OnlyNews);
+	}
 	dlgS.StartBT.EnableWindow(TRUE);
 	dlgS.ScanCovers.EnableWindow(TRUE);
 	dlgS.MediaFolders.EnableWindow(TRUE);
+	dlgS.PhotosThumb.EnableWindow(TRUE);
 	return 0;
 }
 
@@ -1626,15 +1845,15 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 		SendErrorJSON(client, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	HANDLE file_handle =
 		::CreateFileW(media.get_path().c_str(), FILE_WRITE_ATTRIBUTES,
 			NULL, NULL, OPEN_EXISTING,
@@ -1652,21 +1871,29 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 			MoveFileW(cover.c_str(), get_cover(media.update_hash(tm, tm)).c_str());
 		}
 	}
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	PrintMessage(L"Пересканирование контента!", URGB(255, 200, 0));
+
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
 	}
 	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+	}
+	for (auto& i : Photo_Video_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
 	}
 	PrintMessage(L" ");
 	sortFiles();
 
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
 }
@@ -1687,15 +1914,15 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 		SendErrorJSON(client, L"Файл существует с таким именем!");
 		return;
 	}
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 		SendErrorJSON(client, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	if (!MoveFileW(media.get_path().c_str(), (media.get_orig_dir() + L"\\" + new_fl).c_str())) {
 		SendErrorJSON(client, L"Переименовать не удалось!");
 		return;
@@ -1717,21 +1944,29 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 			MoveFileW(cover.c_str(), get_cover(media.update_full_hash(media.get_orig_dir(), new_fl, tm, tm)).c_str());
 		}
 	}
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	PrintMessage(L"Пересканирование контента!", URGB(255, 200, 0));
+
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
 	}
 	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+	}
+	for (auto& i : Photo_Video_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
 	}
 	PrintMessage(L" ");
 	sortFiles();
 
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
 }
@@ -1742,17 +1977,17 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 		SendErrorJSON(client, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
 	std::wstring cover = get_cover(media.get_hash());
 	if (!DeleteFileW(media.get_path().c_str())) {
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 		SendErrorJSON(client, L"Файл не удалён");
 		return;
 	}
@@ -1761,19 +1996,27 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	}
 
 	PrintMessage(L"Пересканирование контента!", URGB(255, 200, 0));
+
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
 	}
 	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+	}
+	for (auto& i : Photo_Video_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
 	}
 	PrintMessage(L" ");
 	sortFiles();
 
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
 }
@@ -1784,15 +2027,15 @@ static void GetFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 		SendErrorJSON(client, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 	json data = json(json::value_t::object);
 	data.emplace("response", WSTRUtils::wchar_to_UTF8(media.get_orig_name()));
 
@@ -1810,32 +2053,46 @@ void InitMediaServer()
 
 	if (serverMethods.GetInited() == false)
 	{
+		serverMethods.RegisterMethod(u8"method/audio.dumplist", AudioList, true, true);
+
 		serverMethods.RegisterMethod(u8"method/audio.get", AudioGet, true, true);
 		serverMethods.RegisterMethod(u8"method/video.get", VideoGet, true, true);
 		serverMethods.RegisterMethod(u8"method/audio.search", AudioSearch, true, true);
 		serverMethods.RegisterMethod(u8"method/video.search", VideoSearch, true, true);
 		serverMethods.RegisterMethod(u8"method/discography.get", DiscographyGet, true, true);
 		serverMethods.RegisterMethod(u8"method/discography.search", DiscographySearch, true, true);
+		serverMethods.RegisterMethod(u8"method/photos.get", PhotosGet, true, true);
+		serverMethods.RegisterMethod(u8"method/photos.search", PhotosSearch, true, true);
+
+		if (Startinit.canEdit) {
+			serverMethods.RegisterMethod(u8"method/delete_media", DeleteFileSrv, false, true);
+			serverMethods.RegisterMethod(u8"method/update_time", UpdateTime, false, true);
+			serverMethods.RegisterMethod(u8"method/update_file_name", UpdateFileName, false, true);
+			serverMethods.RegisterMethod(u8"method/get_file_name", GetFileName, false, true);
+		}
+
 		serverMethods.RegisterMethod(u8"method/get_media", GetMedia);
-		serverMethods.RegisterMethod(u8"method/delete_media", DeleteFileSrv);
-		serverMethods.RegisterMethod(u8"method/update_time", UpdateTime);
-		serverMethods.RegisterMethod(u8"method/update_file_name", UpdateFileName);
-		serverMethods.RegisterMethod(u8"method/get_file_name", GetFileName);
 		serverMethods.RegisterMethod(u8"method/get_cover", GetCover);
-		serverMethods.RegisterMethod(u8"method/audio.list", AudioList);
 		serverMethods.SetInited();
 	}
 
-	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos);
+	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
+	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
 	}
 	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+	}
+	for (auto& i : Photo_Video_Dirs) {
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO, true);
+		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
 	}
 	PrintMessage(L" ");
 	sortFiles();

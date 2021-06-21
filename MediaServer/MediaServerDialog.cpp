@@ -23,6 +23,7 @@ extern DWORD WINAPI doScanCovers(LPVOID);
 extern list<wstring> Discography_Dirs;
 extern list<wstring> Audio_Dirs;
 extern list<wstring> Video_Dirs;
+extern list<wstring> Photo_Video_Dirs;
 
 THREAD_ACCESS_GUARD_OBJECT
 
@@ -115,6 +116,7 @@ public:
 		isSsl = false;
 		BIsDebug = true;
 		OnlyNews = true;
+		PhotosThumb = false;
 	}
 	static bool GetComponent(CButton& checkbox)
 	{
@@ -154,6 +156,7 @@ public:
 			JSON_SERIALIZE(settings, isSsl);
 			JSON_SERIALIZE(settings, BIsDebug);
 			JSON_SERIALIZE(settings, OnlyNews);
+			JSON_SERIALIZE(settings, PhotosThumb);
 			JSON_SERIALIZE(settings, HTTPSPort);
 			JSON_SERIALIZE(settings, HTTPPort);
 			JSON_SERIALIZE(settings, ServerPassword);
@@ -163,6 +166,7 @@ public:
 			serialize_list(settings, "Discography_Dirs", createUTF8List(Discography_Dirs));
 			serialize_list(settings, "Audio_Dirs", createUTF8List(Audio_Dirs));
 			serialize_list(settings, "Video_Dirs", createUTF8List(Video_Dirs));
+			serialize_list(settings, "Photo_Video_Dirs", createUTF8List(Photo_Video_Dirs));
 
 			json fin(json::value_t::object);
 			fin.emplace("app_settings", settings);
@@ -203,6 +207,7 @@ public:
 				JSON_DESERIALIZE(settings, isSsl);
 				JSON_DESERIALIZE(settings, BIsDebug);
 				JSON_DESERIALIZE(settings, OnlyNews);
+				JSON_DESERIALIZE(settings, PhotosThumb);
 				JSON_DESERIALIZE(settings, HTTPSPort);
 				JSON_DESERIALIZE(settings, HTTPPort);
 				JSON_DESERIALIZE(settings, ServerPassword);
@@ -220,6 +225,10 @@ public:
 				list<string> dtv;
 				deserialize_list(settings, "Video_Dirs", dtv);
 				Video_Dirs = createWcharList(dtv);
+
+				list<string> dtp;
+				deserialize_list(settings, "Photo_Video_Dirs", dtp);
+				Photo_Video_Dirs = createWcharList(dtp);
 			}
 			catch (json::exception e) {
 				(win_message().message_type(MSG_TYPE::TYPE_ERROR).timeout(10) << e.what()).show();
@@ -326,6 +335,7 @@ public:
 	bool isSsl;
 	bool BIsDebug;
 	bool OnlyNews;
+	bool PhotosThumb;
 	USSL_CERT CertificateContent;
 };
 static SettingsClass pSettings;
@@ -449,6 +459,8 @@ void MediaServerDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO2, BUseHttp);
 	DDX_Control(pDX, IDC_CHECK1, BIsDebug);
 	DDX_Control(pDX, IDC_CHECK2, OnlyNews);
+	DDX_Control(pDX, IDC_CHECK3, CanEdit);
+	DDX_Control(pDX, IDC_CHECK4, PhotosThumb);
 }
 
 BEGIN_MESSAGE_MAP(MediaServerDialog, CDialogEx)
@@ -490,6 +502,8 @@ DWORD WINAPI InitMediaServerThread(LPVOID)
 	dlgS.MediaFolders.EnableWindow(FALSE);
 	dlgS.BIsDebug.EnableWindow(FALSE);
 	dlgS.OnlyNews.EnableWindow(FALSE);
+	dlgS.PhotosThumb.EnableWindow(FALSE);
+	dlgS.CanEdit.EnableWindow(FALSE);
 	dlgS.IsStart = true;
 
 	ClearMessages();
@@ -544,6 +558,8 @@ BOOL MediaServerDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	CanEdit.SetCheck(FALSE);
+
 	NeedAutoStart = false;
 	int argcou = 0;
 	LPWSTR* CommandLns = CommandLineToArgvW(XTPSkinMgr()->GetCommandLineTool().GetString(), &argcou);
@@ -586,6 +602,7 @@ BOOL MediaServerDialog::OnInitDialog()
 	OnProtocol();
 	DESERIALIZE_CONTROL(pSettings, BIsDebug);
 	DESERIALIZE_CONTROL(pSettings, OnlyNews);
+	DESERIALIZE_CONTROL(pSettings, PhotosThumb);
 	DESERIALIZE_CONTROL(pSettings, HTTPSPort);
 	DESERIALIZE_CONTROL(pSettings, HTTPPort);
 	DESERIALIZE_CONTROL(pSettings, ServerPassword);
@@ -749,12 +766,20 @@ static void cleanNonExist() {
 			Video_Dirs.erase(tmp);
 		}
 	}
+
+	for (auto i = Photo_Video_Dirs.begin(); i != Photo_Video_Dirs.end(); i++) {
+		if (!PathFileExistsW((*i).c_str())) {
+			auto tmp = i;
+			i--;
+			Photo_Video_Dirs.erase(tmp);
+		}
+	}
 }
 
 void MediaServerDialog::OnStart()
 {
 	cleanNonExist();
-	if (Audio_Dirs.empty() && Video_Dirs.empty()) {
+	if (Audio_Dirs.empty() && Video_Dirs.empty() && Discography_Dirs.empty() && Photo_Video_Dirs.empty()) {
 		OnMediaFolders();
 		return;
 	}
@@ -768,10 +793,12 @@ void MediaServerDialog::OnStart()
 	else if (BUseHttps.GetCheck() == TRUE) {
 		pSettings.isSsl = true;
 	}
+	Startinit.canEdit = CanEdit.GetCheck() == TRUE;
 	Startinit.isSsl = pSettings.isSsl;
 	SERIALIZE_CONTROL(pSettings, ServerPassword);
 	SERIALIZE_CONTROL(pSettings, BIsDebug);
 	SERIALIZE_CONTROL(pSettings, OnlyNews);
+	SERIALIZE_CONTROL(pSettings, PhotosThumb);
 	Startinit.isDebug = pSettings.BIsDebug;
 	pSettings.ServerPassword = trim(pSettings.ServerPassword);
 	if (pSettings.ServerPassword.length() <= 0)
@@ -825,7 +852,7 @@ void MediaServerDialog::OnScanCovers() {
 		return;
 	}
 	cleanNonExist();
-	if (Audio_Dirs.empty() && Video_Dirs.empty()) {
+	if (Audio_Dirs.empty() && Video_Dirs.empty() && Discography_Dirs.empty() && Photo_Video_Dirs.empty()) {
 		OnMediaFolders();
 		return;
 	}

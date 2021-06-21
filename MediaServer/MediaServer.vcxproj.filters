@@ -53,13 +53,13 @@
     <ClCompile Include="pch.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="..\Third-Party\Extra\app_style.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
     <ClCompile Include="CRC32.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="MediaServerMediaFoldersDialog.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Third-Party\Extra\app_style.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -81,6 +81,9 @@
       <Filter>Файлы ресурсов</Filter>
     </Image>
     <Image Include="Res\Delete.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Res\folder_add.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>

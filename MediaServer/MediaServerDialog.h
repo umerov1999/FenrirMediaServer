@@ -38,6 +38,8 @@ public:
 	CButton SelectSSL;
 	CButton ScanCovers;
 	CButton OnlyNews;
+	CButton CanEdit;
+	CButton PhotosThumb;
 	CButton MediaFolders;
 	bool IsStart;
 	bool IsAutostart;
