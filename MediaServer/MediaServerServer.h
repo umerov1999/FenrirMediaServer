@@ -10,9 +10,9 @@
 #define CACHE_DIR L"Thumbs"
 #define SOCKTIMEOUT 60 * 60
 #define BUFFERSIZE 8196
-#define POST_BODY_MAX 200 * 1024 * 1024
+#define POST_BODY_MAX 2 * 1024 * 1024
+#define POST_BODY_MULTIPART_MAX 50 * 1024 * 1024
 //#define CRITICAL_DEBUG 1
-//#define SUPPORT_MULTIPART 1
 //#define PRINT_SSL_ACCEPT_ERROR 1
 //#define PRINT_REDIRECT 1
 
@@ -142,7 +142,7 @@ public:
 	void erase(const std::string &name) {
 		paramsdata.erase(name);
 	}
-	const multipart_data& get_data(const std::string &name) const {
+	multipart_data get_data(const std::string &name) const {
 		return paramsdata[name];
 	}
 

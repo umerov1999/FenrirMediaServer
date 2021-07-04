@@ -25,6 +25,7 @@
 #include "json.hpp"
 #include "WSTRUtils.h"
 #include "ThreadAccessGuard.h"
+#include "../../Third-Party/USound/src/USound.h"
 using namespace std;
 using namespace nlohmann;
 using namespace WSTRUtils;
@@ -32,6 +33,8 @@ using namespace WSTRUtils;
 SOCKET HTTPSserver_sock = 0;
 USSL_CERT CertificateData;
 static ServerMethods serverMethods;
+
+static USound player;
 
 extern std::wstring ExtractAppPath();
 extern MediaServerDialog dlgS;
@@ -222,7 +225,46 @@ void InitOpenSSL()
 	SSL_load_error_strings();
 }
 
-SSL_CTX* initialize_ctx()
+static time_t ASN1_GetTimeT(ASN1_TIME* time) {
+	struct tm t;
+	const char* str = (const char*)time->data;
+	size_t i = 0;
+
+	memset(&t, 0, sizeof(t));
+
+	if (time->type == V_ASN1_UTCTIME) {
+		t.tm_year = (str[i++] - '0') * 10;
+		t.tm_year += (str[i++] - '0');
+		if (t.tm_year < 70)
+			t.tm_year += 100;
+	}
+	else if (time->type == V_ASN1_GENERALIZEDTIME) {
+		t.tm_year = (str[i++] - '0') * 1000;
+		t.tm_year += (str[i++] - '0') * 100;
+		t.tm_year += (str[i++] - '0') * 10;
+		t.tm_year += (str[i++] - '0');
+		t.tm_year -= 1900;
+	}
+	t.tm_mon = (str[i++] - '0') * 10;
+	t.tm_mon += (str[i++] - '0') - 1;
+	t.tm_mday = (str[i++] - '0') * 10;
+	t.tm_mday += (str[i++] - '0');
+	t.tm_hour = (str[i++] - '0') * 10;
+	t.tm_hour += (str[i++] - '0');
+	t.tm_min = (str[i++] - '0') * 10;
+	t.tm_min += (str[i++] - '0');
+	t.tm_sec = (str[i++] - '0') * 10;
+	t.tm_sec += (str[i++] - '0');
+
+	return mktime(&t);
+}
+
+inline void PrintSertValid(X509* Sert, const wstring& Name)
+{
+	PrintMessage(L"Сертификат " + Name + L" Действителен с " + GetTimeAT(ASN1_GetTimeT(X509_get_notBefore(Sert))) + L" по " + GetTimeAT(ASN1_GetTimeT(X509_get_notAfter(Sert))), URGB(140, 140, 140));
+}
+
+SSL_CTX* initialize_ctx(bool print_sert)
 {
 	BIO* CA_CERT = BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_CERT].data(), (int)CertificateData.CertPart[USSL_CERTPART_CERT].size());
 	BIO* CA_BUNDLE = BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_BUNDLE].data(), (int)CertificateData.CertPart[USSL_CERTPART_BUNDLE].size());
@@ -245,6 +287,12 @@ SSL_CTX* initialize_ctx()
 		goto error;
 	if (SSL_CTX_use_RSAPrivateKey(ctx, rsa) <= 0)
 		goto error;
+	if (print_sert == true)
+	{
+		PrintSertValid(cert, L"Certificate.crt");
+		PrintSertValid(bundle, L"Ca_Bundle.crt");
+		PrintMessage(L"    #Домен " + UTF8_to_wchar(CertificateData.Name), URGB(180, 0, 0));
+	}
 	return ctx;
 error:
 	(win_message().timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"OpenSSL Key Error : Невозможно создать Server CTX").show();
@@ -540,6 +588,21 @@ static void AudioList(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	}
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", arr.dump(4));
+}
+
+static void AudioRemotePlay(RequestParserStruct& Req, CLIENT_CONNECTION* client)
+{
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &player);
+	if (Req.multi_part.exist("audio")) {
+		player.Stop();
+		player.RegisterResourceMP3Sounds(Req.multi_part.get_data("audio").data);
+		player.PlayMemorySound(false, false);
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
+	} else {
+		player.Stop();
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 0 }");
+	}
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &player);
 }
 
 static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -1147,7 +1210,8 @@ size_t multipart::parse(const string& body, size_t offset, const std::string& bo
 	}
 
 	if (status == 2) {
-		name = sha512(dt.data);
+		//name = sha512(dt.data);
+		name = matches2[1];
 		dt.filename = matches2[2];
 	}
 	paramsdata[name] = dt;
@@ -1156,10 +1220,12 @@ size_t multipart::parse(const string& body, size_t offset, const std::string& bo
 }
 
 int parse_post_url_encoded_multipart(const CLIENT_CONNECTION& client, const string& RequestHTTP, int content_length, multipart& payload) {
-#ifdef SUPPORT_MULTIPART
 	std::regex e("Content-Type: multipart/form-data; boundary=([^\\r\\n\\t\\f\\v]*)", std::regex_constants::ECMAScript);
 	std::smatch matches;
 	if (std::regex_search(RequestHTTP, matches, e)) {
+		if (content_length >= POST_BODY_MULTIPART_MAX) {
+			return 3;
+		}
 		string boundary = matches[1];
 		boundary = "--" + boundary;
 
@@ -1187,9 +1253,6 @@ int parse_post_url_encoded_multipart(const CLIENT_CONNECTION& client, const stri
 		return 2;
 	}
 	return 0;
-#else
-	return 0;
-#endif
 }
 
 void HTTPParse(const string& HttpHeader, RequestParserStruct& hdr, const string& Connection, const multipart& mpart, const string& PostUrlEncoded)
@@ -1286,12 +1349,12 @@ bool ReciveHTTPRequest(const CLIENT_CONNECTION& client, string& RequestHTTP, mul
 		}
 		if (PaySize > 0)
 		{
-			if (PaySize >= POST_BODY_MAX) {
-				return false;
-			}
 			int status = parse_post_url_encoded_multipart(client, RequestHTTP, PaySize, mpart);
 			if (status == 0)
 			{
+				if (PaySize >= POST_BODY_MAX) {
+					return false;
+				}
 				PostUrlEncoded.resize(PaySize);
 				if (SSL_RecvData(client, PostUrlEncoded.data(), PaySize) == false)
 					return false;
@@ -2055,6 +2118,8 @@ void InitMediaServer()
 	{
 		serverMethods.RegisterMethod(u8"method/audio.dumplist", AudioList, true, true);
 
+		serverMethods.RegisterMethod(u8"method/audio.remoteplay", AudioRemotePlay, true, true);
+
 		serverMethods.RegisterMethod(u8"method/audio.get", AudioGet, true, true);
 		serverMethods.RegisterMethod(u8"method/video.get", VideoGet, true, true);
 		serverMethods.RegisterMethod(u8"method/audio.search", AudioSearch, true, true);
@@ -2076,7 +2141,7 @@ void InitMediaServer()
 		serverMethods.SetInited();
 	}
 
-	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &player);
 
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
@@ -2099,7 +2164,7 @@ void InitMediaServer()
 	
 	SSL_CTX* ctx = NULL;
 	if (Startinit.isSsl) {
-		ctx = initialize_ctx();
+		ctx = initialize_ctx(Startinit.isDebug);
 		if (ctx == NULL)
 			return;
 	}
