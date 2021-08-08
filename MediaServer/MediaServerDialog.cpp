@@ -19,6 +19,7 @@ extern InitServer Startinit;
 extern std::wstring ExtractAppPath();
 extern MediaServerDialog dlgS;
 extern DWORD WINAPI doScanCovers(LPVOID);
+extern void stopAudioPlay();
 
 extern list<wstring> Discography_Dirs;
 extern list<wstring> Audio_Dirs;
@@ -455,6 +456,7 @@ void MediaServerDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON4, ScanCovers);
 	DDX_Control(pDX, IDC_BUTTON5, MediaFolders);
 	DDX_Control(pDX, IDC_BUTTON6, BAutoStart);
+	DDX_Control(pDX, IDC_BUTTON7, BAudioStop);
 	DDX_Control(pDX, IDC_RADIO1, BUseHttps);
 	DDX_Control(pDX, IDC_RADIO2, BUseHttp);
 	DDX_Control(pDX, IDC_CHECK1, BIsDebug);
@@ -477,6 +479,7 @@ BEGIN_MESSAGE_MAP(MediaServerDialog, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON4, OnScanCovers)
 	ON_BN_CLICKED(IDC_BUTTON5, OnMediaFolders)
 	ON_BN_CLICKED(IDC_BUTTON6, OnAutostart)
+	ON_BN_CLICKED(IDC_BUTTON7, OnStopAudio)
 	ON_BN_CLICKED(IDC_RADIO1, OnProtocol)
 	ON_BN_CLICKED(IDC_RADIO2, OnProtocol)
 END_MESSAGE_MAP()
@@ -578,6 +581,8 @@ BOOL MediaServerDialog::OnInitDialog()
 	m_hCursor = AfxGetApp()->LoadCursor(MAKEINTRESOURCEW(IDC_CURSOR1));
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
+	BAudioStop.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON4));
+	BAudioStop.ShowWindow(FALSE);
 	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &Startinit);
 
 	std::string DataPic = GetDataFromResourceUtil(L"PNG", IDB_PNG1);
@@ -866,6 +871,15 @@ void MediaServerDialog::OnSelectSSL()
 	if (result != 1)
 		return;
 	ReadCert(fileDialog.GetPathName().GetString());
+}
+
+void MediaServerDialog::OnStopAudio() {
+	BAudioStop.ShowWindow(FALSE);
+	stopAudioPlay();
+}
+
+void MediaServerDialog::ToggleStopAudio(bool visible) {
+	BAudioStop.ShowWindow(visible ? TRUE : FALSE);
 }
 
 void MediaServerDialog::OnClose()

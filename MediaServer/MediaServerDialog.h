@@ -32,6 +32,7 @@ public:
 	CEdit SSLPathEd;
 	CEdit ServerPassword;
 	CButton BAutoStart;
+	CButton BAudioStop;
 	CButton BUseHttps;
 	CButton BUseHttp;
 	CButton BIsDebug;
@@ -61,6 +62,8 @@ public:
 	afx_msg void OnAutostart();
 	afx_msg void OnScanCovers();
 	afx_msg void OnMediaFolders();
+	afx_msg void OnStopAudio();
+	afx_msg void ToggleStopAudio(bool visible);
 
 	afx_msg void OnClose();
 	afx_msg void OnProtocol();

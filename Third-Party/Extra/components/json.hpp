@@ -3310,6 +3310,9 @@ template<template<class...> class Op, class... Args>
 using is_detected = typename detector<nonesuch, void, Op, Args...>::value_t;
 
 template<template<class...> class Op, class... Args>
+struct is_detected_lazy : is_detected<Op, Args...> { };
+
+template<template<class...> class Op, class... Args>
 using detected_t = typename detector<nonesuch, void, Op, Args...>::type;
 
 template<class Default, template<class...> class Op, class... Args>
@@ -3553,6 +3556,9 @@ template<class B1> struct conjunction<B1> : B1 { };
 template<class B1, class... Bn>
 struct conjunction<B1, Bn...>
 : std::conditional<bool(B1::value), conjunction<Bn...>, B1>::type {};
+
+// https://en.cppreference.com/w/cpp/types/negation
+template<class B> struct negation : std::integral_constant < bool, !B::value > { };
 
 // Reimplementation of is_constructible and is_default_constructible, due to them being broken for
 // std::pair and std::tuple until LWG 2367 fix (see https://cplusplus.github.io/LWG/lwg-defects.html#2367).
@@ -3829,6 +3835,20 @@ struct is_constructible_tuple : std::false_type {};
 
 template<typename T1, typename... Args>
 struct is_constructible_tuple<T1, std::tuple<Args...>> : conjunction<is_constructible<T1, Args>...> {};
+
+// to avoid useless casts (see https://github.com/nlohmann/json/issues/2893#issuecomment-889152324)
+template < typename T, typename U, enable_if_t < !std::is_same<T, U>::value, int > = 0 >
+T conditional_static_cast(U value)
+{
+    return static_cast<T>(value);
+}
+
+template<typename T, typename U, enable_if_t<std::is_same<T, U>::value, int> = 0>
+T conditional_static_cast(U value)
+{
+    return value;
+}
+
 }  // namespace detail
 }  // namespace nlohmann
 
@@ -4480,6 +4500,13 @@ namespace detail
 // constructors //
 //////////////////
 
+/*
+ * Note all external_constructor<>::construct functions need to call
+ * j.m_value.destroy(j.m_type) to avoid a memory leak in case j contains an
+ * allocated value (e.g., a string). See bug issue
+ * https://github.com/nlohmann/json/issues/2865 for more information.
+ */
+
 template<value_t> struct external_constructor;
 
 template<>
@@ -4488,6 +4515,7 @@ struct external_constructor<value_t::boolean>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, typename BasicJsonType::boolean_t b) noexcept
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::boolean;
         j.m_value = b;
         j.assert_invariant();
@@ -4500,6 +4528,7 @@ struct external_constructor<value_t::string>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, const typename BasicJsonType::string_t& s)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::string;
         j.m_value = s;
         j.assert_invariant();
@@ -4508,6 +4537,7 @@ struct external_constructor<value_t::string>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, typename BasicJsonType::string_t&& s)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::string;
         j.m_value = std::move(s);
         j.assert_invariant();
@@ -4518,6 +4548,7 @@ struct external_constructor<value_t::string>
                              int > = 0 >
     static void construct(BasicJsonType& j, const CompatibleStringType& str)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::string;
         j.m_value.string = j.template create<typename BasicJsonType::string_t>(str);
         j.assert_invariant();
@@ -4530,6 +4561,7 @@ struct external_constructor<value_t::binary>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, const typename BasicJsonType::binary_t& b)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::binary;
         j.m_value = typename BasicJsonType::binary_t(b);
         j.assert_invariant();
@@ -4538,6 +4570,7 @@ struct external_constructor<value_t::binary>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, typename BasicJsonType::binary_t&& b)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::binary;
         j.m_value = typename BasicJsonType::binary_t(std::move(b));;
         j.assert_invariant();
@@ -4550,6 +4583,7 @@ struct external_constructor<value_t::number_float>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, typename BasicJsonType::number_float_t val) noexcept
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::number_float;
         j.m_value = val;
         j.assert_invariant();
@@ -4562,6 +4596,7 @@ struct external_constructor<value_t::number_unsigned>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, typename BasicJsonType::number_unsigned_t val) noexcept
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::number_unsigned;
         j.m_value = val;
         j.assert_invariant();
@@ -4574,6 +4609,7 @@ struct external_constructor<value_t::number_integer>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, typename BasicJsonType::number_integer_t val) noexcept
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::number_integer;
         j.m_value = val;
         j.assert_invariant();
@@ -4586,6 +4622,7 @@ struct external_constructor<value_t::array>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, const typename BasicJsonType::array_t& arr)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::array;
         j.m_value = arr;
         j.set_parents();
@@ -4595,6 +4632,7 @@ struct external_constructor<value_t::array>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, typename BasicJsonType::array_t&& arr)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::array;
         j.m_value = std::move(arr);
         j.set_parents();
@@ -4608,6 +4646,8 @@ struct external_constructor<value_t::array>
     {
         using std::begin;
         using std::end;
+
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::array;
         j.m_value.array = j.template create<typename BasicJsonType::array_t>(begin(arr), end(arr));
         j.set_parents();
@@ -4617,6 +4657,7 @@ struct external_constructor<value_t::array>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, const std::vector<bool>& arr)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::array;
         j.m_value = value_t::array;
         j.m_value.array->reserve(arr.size());
@@ -4632,6 +4673,7 @@ struct external_constructor<value_t::array>
              enable_if_t<std::is_convertible<T, BasicJsonType>::value, int> = 0>
     static void construct(BasicJsonType& j, const std::valarray<T>& arr)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::array;
         j.m_value = value_t::array;
         j.m_value.array->resize(arr.size());
@@ -4650,6 +4692,7 @@ struct external_constructor<value_t::object>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, const typename BasicJsonType::object_t& obj)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::object;
         j.m_value = obj;
         j.set_parents();
@@ -4659,6 +4702,7 @@ struct external_constructor<value_t::object>
     template<typename BasicJsonType>
     static void construct(BasicJsonType& j, typename BasicJsonType::object_t&& obj)
     {
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::object;
         j.m_value = std::move(obj);
         j.set_parents();
@@ -4672,6 +4716,7 @@ struct external_constructor<value_t::object>
         using std::begin;
         using std::end;
 
+        j.m_value.destroy(j.m_type);
         j.m_type = value_t::object;
         j.m_value.object = j.template create<typename BasicJsonType::object_t>(begin(obj), end(obj));
         j.set_parents();
@@ -5238,7 +5283,7 @@ std::size_t hash(const BasicJsonType& j)
 #include <utility> // pair, declval
 
 #ifndef JSON_NO_IO
-    #include <cstdio>   //FILE *
+    #include <cstdio>   // FILE *
     #include <istream>  // istream
 #endif                  // JSON_NO_IO
 
@@ -8209,6 +8254,8 @@ struct is_sax_static_asserts
 }  // namespace detail
 }  // namespace nlohmann
 
+// #include <nlohmann/detail/meta/type_traits.hpp>
+
 // #include <nlohmann/detail/value_t.hpp>
 
 
@@ -8822,7 +8869,7 @@ class binary_reader
             case 0x9B: // array (eight-byte uint64_t for n follow)
             {
                 std::uint64_t len{};
-                return get_number(input_format_t::cbor, len) && get_cbor_array(static_cast<std::size_t>(len), tag_handler);
+                return get_number(input_format_t::cbor, len) && get_cbor_array(detail::conditional_static_cast<std::size_t>(len), tag_handler);
             }
 
             case 0x9F: // array (indefinite length)
@@ -8876,7 +8923,7 @@ class binary_reader
             case 0xBB: // map (eight-byte uint64_t for n follow)
             {
                 std::uint64_t len{};
-                return get_number(input_format_t::cbor, len) && get_cbor_object(static_cast<std::size_t>(len), tag_handler);
+                return get_number(input_format_t::cbor, len) && get_cbor_object(detail::conditional_static_cast<std::size_t>(len), tag_handler);
             }
 
             case 0xBF: // map (indefinite length)
@@ -9273,38 +9320,41 @@ class binary_reader
             return false;
         }
 
-        string_t key;
-        if (len != std::size_t(-1))
+        if (len != 0)
         {
-            for (std::size_t i = 0; i < len; ++i)
+            string_t key;
+            if (len != std::size_t(-1))
             {
-                get();
-                if (JSON_HEDLEY_UNLIKELY(!get_cbor_string(key) || !sax->key(key)))
+                for (std::size_t i = 0; i < len; ++i)
                 {
-                    return false;
-                }
+                    get();
+                    if (JSON_HEDLEY_UNLIKELY(!get_cbor_string(key) || !sax->key(key)))
+                    {
+                        return false;
+                    }
 
-                if (JSON_HEDLEY_UNLIKELY(!parse_cbor_internal(true, tag_handler)))
-                {
-                    return false;
+                    if (JSON_HEDLEY_UNLIKELY(!parse_cbor_internal(true, tag_handler)))
+                    {
+                        return false;
+                    }
+                    key.clear();
                 }
-                key.clear();
             }
-        }
-        else
-        {
-            while (get() != 0xFF)
+            else
             {
-                if (JSON_HEDLEY_UNLIKELY(!get_cbor_string(key) || !sax->key(key)))
+                while (get() != 0xFF)
                 {
-                    return false;
-                }
+                    if (JSON_HEDLEY_UNLIKELY(!get_cbor_string(key) || !sax->key(key)))
+                    {
+                        return false;
+                    }
 
-                if (JSON_HEDLEY_UNLIKELY(!parse_cbor_internal(true, tag_handler)))
-                {
-                    return false;
+                    if (JSON_HEDLEY_UNLIKELY(!parse_cbor_internal(true, tag_handler)))
+                    {
+                        return false;
+                    }
+                    key.clear();
                 }
-                key.clear();
             }
         }
 
@@ -16459,7 +16509,7 @@ class serializer
                     {
                         case error_handler_t::strict:
                         {
-                            std::string sn(3, '\0');
+                            std::string sn(9, '\0');
                             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
                             (std::snprintf)(&sn[0], sn.size(), "%.2X", byte);
                             JSON_THROW(type_error::create(316, "invalid UTF-8 byte at index " + std::to_string(i) + ": 0x" + sn, BasicJsonType()));
@@ -16554,7 +16604,7 @@ class serializer
             {
                 case error_handler_t::strict:
                 {
-                    std::string sn(3, '\0');
+                    std::string sn(9, '\0');
                     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
                     (std::snprintf)(&sn[0], sn.size(), "%.2X", static_cast<std::uint8_t>(s.back()));
                     JSON_THROW(type_error::create(316, "incomplete UTF-8 string; last byte: 0x" + sn, BasicJsonType()));
@@ -18166,53 +18216,55 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             binary = create<binary_t>(std::move(value));
         }
 
-        void destroy(value_t t) noexcept
+        void destroy(value_t t)
         {
-            // flatten the current json_value to a heap-allocated stack
-            std::vector<basic_json> stack;
+            if (t == value_t::array || t == value_t::object)
+            {
+                // flatten the current json_value to a heap-allocated stack
+                std::vector<basic_json> stack;
 
-            // move the top-level items to stack
-            if (t == value_t::array)
-            {
-                stack.reserve(array->size());
-                std::move(array->begin(), array->end(), std::back_inserter(stack));
-            }
-            else if (t == value_t::object)
-            {
-                stack.reserve(object->size());
-                for (auto&& it : *object)
+                // move the top-level items to stack
+                if (t == value_t::array)
                 {
-                    stack.push_back(std::move(it.second));
+                    stack.reserve(array->size());
+                    std::move(array->begin(), array->end(), std::back_inserter(stack));
                 }
-            }
-
-            while (!stack.empty())
-            {
-                // move the last item to local variable to be processed
-                basic_json current_item(std::move(stack.back()));
-                stack.pop_back();
-
-                // if current_item is array/object, move
-                // its children to the stack to be processed later
-                if (current_item.is_array())
+                else
                 {
-                    std::move(current_item.m_value.array->begin(), current_item.m_value.array->end(),
-                              std::back_inserter(stack));
-
-                    current_item.m_value.array->clear();
-                }
-                else if (current_item.is_object())
-                {
-                    for (auto&& it : *current_item.m_value.object)
+                    stack.reserve(object->size());
+                    for (auto&& it : *object)
                     {
                         stack.push_back(std::move(it.second));
                     }
-
-                    current_item.m_value.object->clear();
                 }
 
-                // it's now safe that current_item get destructed
-                // since it doesn't have any children
+                while (!stack.empty())
+                {
+                    // move the last item to local variable to be processed
+                    basic_json current_item(std::move(stack.back()));
+                    stack.pop_back();
+
+                    // if current_item is array/object, move
+                    // its children to the stack to be processed later
+                    if (current_item.is_array())
+                    {
+                        std::move(current_item.m_value.array->begin(), current_item.m_value.array->end(), std::back_inserter(stack));
+
+                        current_item.m_value.array->clear();
+                    }
+                    else if (current_item.is_object())
+                    {
+                        for (auto&& it : *current_item.m_value.object)
+                        {
+                            stack.push_back(std::move(it.second));
+                        }
+
+                        current_item.m_value.object->clear();
+                    }
+
+                    // it's now safe that current_item get destructed
+                    // since it doesn't have any children
+                }
             }
 
             switch (t)
@@ -18339,12 +18391,25 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return it;
     }
 
-    reference set_parent(reference j)
+    reference set_parent(reference j, std::size_t old_capacity = std::size_t(-1))
     {
 #if JSON_DIAGNOSTICS
+        if (old_capacity != std::size_t(-1))
+        {
+            // see https://github.com/nlohmann/json/issues/2838
+            JSON_ASSERT(type() == value_t::array);
+            if (JSON_HEDLEY_UNLIKELY(m_value.array->capacity() != old_capacity))
+            {
+                // capacity has changed: update all parents
+                set_parents();
+                return j;
+            }
+        }
+
         j.m_parent = this;
 #else
         static_cast<void>(j);
+        static_cast<void>(old_capacity);
 #endif
         return j;
     }
@@ -20379,17 +20444,19 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     @since version 1.0.0
     */
     template < typename ValueType, typename std::enable_if <
-                   !std::is_pointer<ValueType>::value&&
-                   !std::is_same<ValueType, detail::json_ref<basic_json>>::value&&
-                   !std::is_same<ValueType, typename string_t::value_type>::value&&
-                   !detail::is_basic_json<ValueType>::value
-                   && !std::is_same<ValueType, std::initializer_list<typename string_t::value_type>>::value
+                   detail::conjunction <
+                       detail::negation<std::is_pointer<ValueType>>,
+                       detail::negation<std::is_same<ValueType, detail::json_ref<basic_json>>>,
+                                        detail::negation<std::is_same<ValueType, typename string_t::value_type>>,
+                                        detail::negation<detail::is_basic_json<ValueType>>,
+                                        detail::negation<std::is_same<ValueType, std::initializer_list<typename string_t::value_type>>>,
+
 #if defined(JSON_HAS_CPP_17) && (defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1910 && _MSC_VER <= 1914))
-                   && !std::is_same<ValueType, typename std::string_view>::value
+                                                detail::negation<std::is_same<ValueType, std::string_view>>,
 #endif
-                   && detail::is_detected<detail::get_template_function, const basic_json_t&, ValueType>::value
-                   , int >::type = 0 >
-    JSON_EXPLICIT operator ValueType() const
+                                                detail::is_detected_lazy<detail::get_template_function, const basic_json_t&, ValueType>
+                                                >::value, int >::type = 0 >
+                                        JSON_EXPLICIT operator ValueType() const
     {
         // delegate the call to get<>() const
         return get<ValueType>();
@@ -22406,8 +22473,9 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         // add element to array (move semantics)
+        const auto old_capacity = m_value.array->capacity();
         m_value.array->push_back(std::move(val));
-        set_parent(m_value.array->back());
+        set_parent(m_value.array->back(), old_capacity);
         // if val is moved from, basic_json move constructor marks it null so we do not call the destructor
     }
 
@@ -22442,8 +22510,9 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         // add element to array
+        const auto old_capacity = m_value.array->capacity();
         m_value.array->push_back(val);
-        set_parent(m_value.array->back());
+        set_parent(m_value.array->back(), old_capacity);
     }
 
     /*!
@@ -22597,12 +22666,9 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         // add element to array (perfect forwarding)
-#ifdef JSON_HAS_CPP_17
-        return set_parent(m_value.array->emplace_back(std::forward<Args>(args)...));
-#else
+        const auto old_capacity = m_value.array->capacity();
         m_value.array->emplace_back(std::forward<Args>(args)...);
-        return set_parent(m_value.array->back());
-#endif
+        return set_parent(m_value.array->back(), old_capacity);
     }
 
     /*!
@@ -22678,6 +22744,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         // result.m_it.array_iterator = m_value.array->insert(pos.m_it.array_iterator, cnt, val);
         // but the return value of insert is missing in GCC 4.8, so it is written this way instead.
 
+        set_parents();
         return result;
     }
 
@@ -22715,7 +22782,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             }
 
             // insert to array and return iterator
-            return set_parents(insert_iterator(pos, val), static_cast<typename iterator::difference_type>(1));
+            return insert_iterator(pos, val);
         }
 
         JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name()), *this));
@@ -22766,7 +22833,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             }
 
             // insert to array and return iterator
-            return set_parents(insert_iterator(pos, cnt, val), static_cast<typename iterator::difference_type>(cnt));
+            return insert_iterator(pos, cnt, val);
         }
 
         JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name()), *this));
@@ -22828,7 +22895,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         // insert to array and return iterator
-        return set_parents(insert_iterator(pos, first.m_it.array_iterator, last.m_it.array_iterator), std::distance(first, last));
+        return insert_iterator(pos, first.m_it.array_iterator, last.m_it.array_iterator);
     }
 
     /*!
@@ -22870,7 +22937,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         // insert to array and return iterator
-        return set_parents(insert_iterator(pos, ilist.begin(), ilist.end()), static_cast<typename iterator::difference_type>(ilist.size()));
+        return insert_iterator(pos, ilist.begin(), ilist.end());
     }
 
     /*!

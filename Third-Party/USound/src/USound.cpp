@@ -93,6 +93,7 @@ void USound::PlayMemorySound(bool Loop, bool NoStop) const
 
 USound::~USound()
 {
+	Stop();
 	for (auto& i : ResourceSounds)
 		free(i.get_value());
 	ResourceSounds.clear();

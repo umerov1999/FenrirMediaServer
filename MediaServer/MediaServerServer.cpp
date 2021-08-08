@@ -597,9 +597,11 @@ static void AudioRemotePlay(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 		player.Stop();
 		player.RegisterResourceMP3Sounds(Req.multi_part.get_data("audio").data);
 		player.PlayMemorySound(false, false);
+		dlgS.ToggleStopAudio(true);
 		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
 	} else {
 		player.Stop();
+		dlgS.ToggleStopAudio(false);
 		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 0 }");
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &player);
@@ -2103,6 +2105,12 @@ static void GetFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	data.emplace("response", WSTRUtils::wchar_to_UTF8(media.get_orig_name()));
 
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", data.dump());
+}
+
+void stopAudioPlay() {
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &player);
+	player.Stop();
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &player);
 }
 
 void InitMediaServer()

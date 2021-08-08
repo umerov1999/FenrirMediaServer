@@ -1,8 +1,8 @@
 /* pnglibconf.h - library build configuration */
 
-/* libpng version 1.6.37 */
+/* libpng version 1.6.38.git */
 
-/* Copyright (c) 2018-2019 Cosmin Truta */
+/* Copyright (c) 2018-2020 Cosmin Truta */
 /* Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson */
 
 /* This code is released under the libpng license. */
@@ -123,7 +123,7 @@
 #define PNG_USER_MEM_SUPPORTED
 #define PNG_USER_TRANSFORM_INFO_SUPPORTED
 #define PNG_USER_TRANSFORM_PTR_SUPPORTED
-#define PNG_WARNINGS_SUPPORTED
+/*#undef PNG_WARNINGS_SUPPORTED*/
 #define PNG_WRITE_16BIT_SUPPORTED
 #define PNG_WRITE_ANCILLARY_CHUNKS_SUPPORTED
 #define PNG_WRITE_BGR_SUPPORTED
