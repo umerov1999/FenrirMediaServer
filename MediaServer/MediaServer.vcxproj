@@ -73,7 +73,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="MediaServerMediaFoldersDialog.h" />
-    <ClInclude Include="sha1.hpp" />
     <ClInclude Include="MediaServerServer.h" />
     <ClInclude Include="MediaServerDialog.h" />
     <ClInclude Include="resource.h" />
@@ -83,7 +82,6 @@
   <ItemGroup>
     <ClCompile Include="..\Third-Party\Extra\app_style.cpp" />
     <ClCompile Include="CommonLibraries.cpp" />
-    <ClCompile Include="CRC32.cpp" />
     <ClCompile Include="MediaServerMediaFoldersDialog.cpp" />
     <ClCompile Include="MediaServerServer.cpp" />
     <ClCompile Include="MediaServerDialog.cpp" />

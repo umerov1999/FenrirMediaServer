@@ -21,7 +21,6 @@
 #include "MediaServerDialog.h"
 #include <io.h>
 #include <fcntl.h>
-#include "sha512.h"
 #include "json.hpp"
 #include "WSTRUtils.h"
 #include "ThreadAccessGuard.h"

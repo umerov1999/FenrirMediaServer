@@ -59,6 +59,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ColorEdit.cpp" />
+    <ClCompile Include="crc32.cpp" />
     <ClCompile Include="CriticalDebug.cpp" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="pugixml\pugixml.cpp" />
@@ -68,6 +69,7 @@
   <ItemGroup>
     <ClInclude Include="base.hpp" />
     <ClInclude Include="ColorEdit.h" />
+    <ClInclude Include="crc32.h" />
     <ClInclude Include="CriticalDebug.h" />
     <ClInclude Include="FlBin.h" />
     <ClInclude Include="json.hpp" />
@@ -75,6 +77,7 @@
     <ClInclude Include="md5.h" />
     <ClInclude Include="pugixml\pugiconfig.hpp" />
     <ClInclude Include="pugixml\pugixml.hpp" />
+    <ClInclude Include="sha1.hpp" />
     <ClInclude Include="sha512.h" />
     <ClInclude Include="ThreadAccessGuard.h" />
     <ClInclude Include="UListBox.h" />

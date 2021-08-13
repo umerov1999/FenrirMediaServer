@@ -5,6 +5,7 @@
 #include <regex>
 #include "Map.h"
 #include "sha1.hpp"
+#include "crc32.h"
 #include "WSTRUtils.h"
 #define SERVER_NAME "Fenrir"
 #define CACHE_DIR L"Thumbs"
@@ -202,8 +203,6 @@ private:
 	std::string Data;
 };
 
-unsigned int CRC32(const std::string& data);
-
 class Media {
 public:
 	enum class TYPE {
@@ -229,8 +228,8 @@ public:
 		orig_name = file_name;
 		fileName = WSTRUtils::wchar_to_UTF8(file_name);
 		path = path_name + L"\\" + file_name;
-		id = CRC32(WSTRUtils::wchar_to_UTF8(file_name));
-		owner_id = CRC32(WSTRUtils::wchar_to_UTF8(path_name));
+		id = crc32(WSTRUtils::wchar_to_UTF8(file_name));
+		owner_id = crc32(WSTRUtils::wchar_to_UTF8(path_name));
 		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
 	}
 	void operator=(const Media& media) {
@@ -272,8 +271,8 @@ public:
 		orig_name = file_name;
 		fileName = WSTRUtils::wchar_to_UTF8(file_name);
 		path = path_name + L"\\" + file_name;
-		id = CRC32(WSTRUtils::wchar_to_UTF8(file_name));
-		owner_id = CRC32(WSTRUtils::wchar_to_UTF8(path_name));
+		id = crc32(WSTRUtils::wchar_to_UTF8(file_name));
+		owner_id = crc32(WSTRUtils::wchar_to_UTF8(path_name));
 		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
 		return hash;
 	}
