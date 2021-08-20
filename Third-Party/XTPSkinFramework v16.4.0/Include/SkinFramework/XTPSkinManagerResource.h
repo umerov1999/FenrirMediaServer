@@ -29,6 +29,7 @@
 
 #include <vector>
 #include "TMap.h"
+#include "Lz4Pack.h"
 
 struct MainThemesParams
 {
@@ -193,30 +194,31 @@ private:
 	MainThemesParams Themes;
 };
 
-class SkinThemeBuilderFromTar
+class SkinThemeBuilderFromPack
 {
 public:
-	SkinThemeBuilderFromTar()
+	SkinThemeBuilderFromPack()
 	{
 	}
-	SkinThemeBuilderFromTar(void*)
+	SkinThemeBuilderFromPack(void*)
 	{
 	}
-	SkinThemeBuilderFromTar(const SkinThemeBuilderFromTar&v)
+	SkinThemeBuilderFromPack(const SkinThemeBuilderFromPack&v)
 	{
 		Theme = v.Theme;
 		Files = v.Files;
 		ThemeIni = v.ThemeIni;
 	}
-	void operator=(const SkinThemeBuilderFromTar&v)
+	void operator=(const SkinThemeBuilderFromPack&v)
 	{
+		Files.clean();
 		Theme = v.Theme;
 		Files = v.Files;
 		ThemeIni = v.ThemeIni;
 	}
 	CString ThemeIni;
 	ThemeLoader Theme;
-	ToolkitProMap::Map<ToolkitProMap::wstring_compare_no_case, std::string> Files;
+	Lz4Pack::Decompressor Files;
 };
 
 class CXTPSkinImage;
@@ -255,7 +257,7 @@ public:
 	//     lpszResourcePath - Path to specified visual style
 	//     lpszIniFileName  - Name of the ini file to load
 	//-----------------------------------------------------------------------
-	virtual BOOL Open(const void* pSkinLibrary, int Size, LPCTSTR lpszIniFileName);
+	virtual BOOL Open(const void* pSkinLibrary, int Size, LPCTSTR lpszIniFileName, bool needClean);
 
 	//-----------------------------------------------------------------------
 	// Summary:
@@ -305,10 +307,10 @@ public:
 	CXTPSkinManager* GetSkinManager() const;
 
 protected:
-	static bool PrepareThemeTar(const void* pSkinLibrary, int Size, SkinThemeBuilderFromTar *m_hModule);
+	static bool PrepareThemePack(const void* pSkinLibrary, int Size, SkinThemeBuilderFromPack*m_hModule, bool needClean);
 	LPWSTR m_lpTextFile;            // Pointer to next string
 	LPWSTR m_lpTextFileEnd;         // Pointer to end of the file
-	SkinThemeBuilderFromTar m_hModule;              // Handle of the visual style
+	SkinThemeBuilderFromPack m_hModule;              // Handle of the visual style
 
 	CString m_strIniFileName;       // Ini file name.
 	CXTPSkinManager* m_pManager;    // Parent manager class.

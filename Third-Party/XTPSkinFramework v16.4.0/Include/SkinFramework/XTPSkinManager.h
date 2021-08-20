@@ -465,7 +465,7 @@ public:
 	// Returns:
 	//     TRUE if successful; otherwise returns FALSE
 	//-----------------------------------------------------------------------
-	BOOL SkinLoadMemory(const void* pSkinLibrary, int Size, LPCTSTR lpszIniFileName = NULL);
+	BOOL SkinLoadMemory(const void* pSkinLibrary, int Size, LPCTSTR lpszIniFileName = NULL, int mode = 0 /*mode = 0 - not clean, mode = 1 - need clean, mode = 2 - clone memory*/);
 	BOOL SkinLoadFile(LPCTSTR lpszSkinFileName, LPCTSTR lpszIniFileName = NULL);
 	BOOL SkinSwitchSchema(LPCTSTR lpszIniFileName);
 	void SkinRelease();
@@ -834,7 +834,7 @@ protected:
 	//     TRUE if successful, otherwise returns FALSE.
 	// See Also: FreeSkinData
 	//-----------------------------------------------------------------------
-	BOOL ReadSkinData(const void* pSkinLibrary, int Size, LPCTSTR lpszIniFileName);
+	BOOL ReadSkinData(const void* pSkinLibrary, int Size, LPCTSTR lpszIniFileName, bool needClean);
 
 	//-------------------------------------------------------------------------
 	// Summary:

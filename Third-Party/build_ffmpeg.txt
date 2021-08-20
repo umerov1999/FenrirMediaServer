@@ -1,0 +1,3 @@
+msys2_shell.cmd -mingw64 -full-path
+
+./configure --enable-asm --target-os=win64 --arch=x86_64 --disable-doc  --enable-cross-compile --disable-ffplay --disable-ffprobe --disable-shared --enable-static --prefix=${PWD}/installed --toolchain=msvc

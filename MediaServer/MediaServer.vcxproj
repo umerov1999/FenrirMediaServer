@@ -80,6 +80,7 @@
     <ClInclude Include="MediaServerInitMFC.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Third-Party\Extra\app_font.cpp" />
     <ClCompile Include="..\Third-Party\Extra\app_style.cpp" />
     <ClCompile Include="CommonLibraries.cpp" />
     <ClCompile Include="MediaServerMediaFoldersDialog.cpp" />
@@ -124,9 +125,6 @@
     <ProjectReference Include="..\Third-Party\USound\USound.vcxproj">
       <Project>{60da55f1-5825-3da3-bf06-0bafa6b95cdf}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="Res\Font.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -16,6 +16,7 @@ public:
     void update(std::istream &is);
     std::string final();
     static std::string from_file(const std::string &filename);
+    static std::string from_file(const std::wstring& filename);
     static std::string from_string(const std::string& str);
 
 private:
@@ -302,7 +303,15 @@ inline std::string SHA1::final()
 
 inline std::string SHA1::from_file(const std::string &filename)
 {
-    std::ifstream stream(filename.c_str(), std::ios::binary);
+    std::ifstream stream(filename, std::ios::binary);
+    SHA1 checksum;
+    checksum.update(stream);
+    return checksum.final();
+}
+
+inline std::string SHA1::from_file(const std::wstring& filename)
+{
+    std::ifstream stream(filename, std::ios::binary);
     SHA1 checksum;
     checksum.update(stream);
     return checksum.final();

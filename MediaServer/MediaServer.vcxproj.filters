@@ -56,6 +56,9 @@
     <ClCompile Include="MediaServerMediaFoldersDialog.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="..\Third-Party\Extra\app_font.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MediaServer.rc">
@@ -80,10 +83,5 @@
     <Image Include="Res\folder_add.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="Res\Font.ttf">
-      <Filter>Файлы ресурсов</Filter>
-    </Font>
   </ItemGroup>
 </Project>
