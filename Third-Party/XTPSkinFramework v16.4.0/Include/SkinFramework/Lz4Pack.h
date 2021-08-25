@@ -6,7 +6,7 @@
 
 namespace Lz4Pack
 {
-#define FILENAME_LEN 100
+#define FILENAME_LEN 255
 #define PACK_HEADER "CJSTYLE "
 #define lz4pack_min(a,b)(((a) < (b)) ? (a) : (b))
 #define lz4pack_max(a,b)(((a) > (b)) ? (a) : (b))
@@ -17,28 +17,29 @@ namespace Lz4Pack
 		PackerEntry() {
 			original_size = 0;
 			compressed_size = 0;
-			offset = 0;
 			memset(file_name, 0, FILENAME_LEN);
 			isDir = false;
 		}
-		int original_size;
-		int offset;
-		int compressed_size;
+		int32_t original_size;
+		int32_t compressed_size;
 		bool isDir;
 		char file_name[FILENAME_LEN];
 	};
 	class PackerHeader {
 	public:
 		PackerHeader() {
-			count = -1;
+			this->count = -1;
+			this->entries_compressed_size = -1;
 			memset(hdr, 0, 10);
 		}
-		void init_header(int count) {
-			memcpy(hdr, PACK_HEADER, strlen(PACK_HEADER));
+		PackerHeader(int count, int entries_compressed_size) {
 			this->count = count;
+			this->entries_compressed_size = entries_compressed_size;
+			memset(hdr, 0, sizeof(PACK_HEADER));
+			memcpy(hdr, PACK_HEADER, strlen(PACK_HEADER));
 		}
 		bool is_valid_header(const int buffer_size) {
-			return strncmp(hdr, PACK_HEADER, sizeof(hdr)) == 0 && count > 0 && buffer_size > count * sizeof(PackerEntry);
+			return strncmp(hdr, PACK_HEADER, sizeof(hdr)) == 0 && count > 0 && buffer_size > entries_compressed_size;
 		}
 		static bool check_header_size(int size) {
 			if (size <= sizeof(PackerHeader)) {
@@ -47,7 +48,8 @@ namespace Lz4Pack
 			return true;
 		}
 		char hdr[10];
-		int count;
+		int32_t count;
+		int32_t entries_compressed_size;
 	};
 #pragma pack (pop)
 
