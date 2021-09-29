@@ -2,7 +2,7 @@
 
 #include "resource.h"
 
-class MakeSSL : public CWinApp
+class MakeSSL : public CXTPWinApp
 {
 public:
 	virtual BOOL InitInstance();

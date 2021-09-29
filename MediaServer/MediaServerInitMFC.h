@@ -2,7 +2,7 @@
 
 #include "resource.h"
 
-class MediaServer : public CWinApp
+class MediaServer : public CXTPWinApp
 {
 public:
 	virtual BOOL InitInstance();

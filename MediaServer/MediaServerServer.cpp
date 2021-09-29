@@ -269,11 +269,15 @@ SSL_CTX* initialize_ctx(bool print_sert)
 	BIO* CA_BUNDLE = BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_BUNDLE].data(), (int)CertificateData.CertPart[USSL_CERTPART_BUNDLE].size());
 	BIO* CA_KEY = BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_KEY].data(), (int)CertificateData.CertPart[USSL_CERTPART_KEY].size());
 	SSL_CTX* ctx = SSL_CTX_new(SSLv23_server_method());
+
+	X509* cert = NULL;
+	X509* bundle = NULL;
+	RSA* rsa = NULL;
 	if (ctx == NULL)
 		goto error;
-	X509* cert = PEM_read_bio_X509(CA_CERT, NULL, 0, NULL);
-	X509* bundle = PEM_read_bio_X509(CA_BUNDLE, NULL, 0, NULL);
-	RSA* rsa = PEM_read_bio_RSAPrivateKey(CA_KEY, NULL, 0, NULL);
+	cert = PEM_read_bio_X509(CA_CERT, NULL, 0, NULL);
+	bundle = PEM_read_bio_X509(CA_BUNDLE, NULL, 0, NULL);
+	rsa = PEM_read_bio_RSAPrivateKey(CA_KEY, NULL, 0, NULL);
 
 	BIO_free(CA_CERT);
 	BIO_free(CA_BUNDLE);
@@ -546,7 +550,7 @@ static void AudioGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = u8"{ \"response\": { \"count\": " + to_string(mAudios.size()) + u8",\"items\": ";
+	string payload = "{ \"response\": { \"count\": " + to_string(mAudios.size()) + ",\"items\": ";
 
 	json arr = json(json::value_t::array);
 
@@ -597,11 +601,11 @@ static void AudioRemotePlay(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 		player.RegisterResourceMP3Sounds(Req.multi_part.get_data("audio").data);
 		player.PlayMemorySound(false, false);
 		dlgS.ToggleStopAudio(true);
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
 	} else {
 		player.Stop();
 		dlgS.ToggleStopAudio(false);
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 0 }");
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 0 }");
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &player);
 }
@@ -618,7 +622,7 @@ static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = u8"{ \"response\": { \"count\": " + to_string(mDiscography.size()) + u8",\"items\": ";
+	string payload = "{ \"response\": { \"count\": " + to_string(mDiscography.size()) + ",\"items\": ";
 
 	json arr = json(json::value_t::array);
 
@@ -660,7 +664,7 @@ static void PhotosGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = u8"{ \"response\": { \"count\": " + to_string(mPhotos.size()) + u8",\"items\": ";
+	string payload = "{ \"response\": { \"count\": " + to_string(mPhotos.size()) + ",\"items\": ";
 
 	json arr = json(json::value_t::array);
 
@@ -714,7 +718,7 @@ static void AudioSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = u8"{ \"response\": { \"count\": " + to_string(result.size()) + u8",\"items\": ";
+	string payload = "{ \"response\": { \"count\": " + to_string(result.size()) + ",\"items\": ";
 
 	json arr = json(json::value_t::array);
 
@@ -756,7 +760,7 @@ static void DiscographySearch(RequestParserStruct& Req, CLIENT_CONNECTION* clien
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = u8"{ \"response\": { \"count\": " + to_string(result.size()) + u8",\"items\": ";
+	string payload = "{ \"response\": { \"count\": " + to_string(result.size()) + ",\"items\": ";
 
 	json arr = json(json::value_t::array);
 
@@ -798,7 +802,7 @@ static void PhotosSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = u8"{ \"response\": { \"count\": " + to_string(result.size()) + u8",\"items\": ";
+	string payload = "{ \"response\": { \"count\": " + to_string(result.size()) + ",\"items\": ";
 
 	json arr = json(json::value_t::array);
 
@@ -828,7 +832,7 @@ static void VideoGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = u8"{ \"response\": { \"count\": " + to_string(mVideos.size()) + u8",\"items\": ";
+	string payload = "{ \"response\": { \"count\": " + to_string(mVideos.size()) + ",\"items\": ";
 
 	json arr = json(json::value_t::array);
 
@@ -881,7 +885,7 @@ static void VideoSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = u8"{ \"response\": { \"count\": " + to_string(result.size()) + u8",\"items\": ";
+	string payload = "{ \"response\": { \"count\": " + to_string(result.size()) + ",\"items\": ";
 
 	json arr = json(json::value_t::array);
 
@@ -1437,13 +1441,13 @@ static string GetConnectionIP(SOCKADDR_IN& FromAddr)
 void ServerMethods::RegisterMethod(const string& UTF8Path, void* Func, bool NeedHost, bool NeedAuth)
 {
 	if (Methods.exist(UTF8Path) == true)
-		throw runtime_error(u8"Метод существует");
+		throw runtime_error("Method Exist");
 
 	Methods[UTF8Path] = ServerMethodInfo(Func, NeedHost, NeedAuth);
 }
 
 static void SendErrorJSON(CLIENT_CONNECTION* client, const wstring &error) {
-	string error_t = u8"{ \"error\": {\"error_code\": 3,\"error_msg\" : \"" + wchar_to_UTF8(error) + "\"} }";
+	string error_t = "{ \"error\": {\"error_code\": 3,\"error_msg\" : \"" + wchar_to_UTF8(error) + "\"} }";
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", error_t);
 }
 
@@ -1918,6 +1922,16 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	}
 	Media media = *md;
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+
+	bool needAnswer = true;
+	if (!Startinit.canEdit) {
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1, \"requested\": 1 }");
+		needAnswer = false;
+		wstring pth = media.get_path();
+		if ((win_message().message_type(MSG_TYPE::TYPE_QUESTION).button_type(MSG_BUTTON::BUTTON_YESNO) << L"Обновить дату модификации " << pth << L"?").show() != IDYES)
+			return;
+	}
+
 	HANDLE file_handle =
 		::CreateFileW(media.get_path().c_str(), FILE_WRITE_ATTRIBUTES,
 			NULL, NULL, OPEN_EXISTING,
@@ -1958,8 +1972,9 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	sortFiles();
 
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
-
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
+	if (needAnswer) {
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+	}
 }
 
 static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
@@ -1987,8 +2002,23 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 	}
 	Media media = *md;
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+
+	bool needAnswer = true;
+	if (!Startinit.canEdit) {
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1, \"requested\": 1 }");
+		needAnswer = false;
+		wstring pth = media.get_path();
+		if ((win_message().message_type(MSG_TYPE::TYPE_QUESTION).button_type(MSG_BUTTON::BUTTON_YESNO) << L"Переменововать " << pth << L" в" << (media.get_orig_dir() + L"\\" + new_fl) << L"?").show() != IDYES)
+			return;
+	}
+
 	if (!MoveFileW(media.get_path().c_str(), (media.get_orig_dir() + L"\\" + new_fl).c_str())) {
-		SendErrorJSON(client, L"Переименовать не удалось!");
+		if (needAnswer) {
+			SendErrorJSON(client, L"Переименовать не удалось!");
+		}
+		else {
+			PrintMessage(L"Переименовать не удалось!", URGB(255, 200, 0));
+		}
 		return;
 	}
 	HANDLE file_handle =
@@ -2032,7 +2062,9 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
+	if (needAnswer) {
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+	}
 }
 
 static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
@@ -2050,9 +2082,26 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	}
 	Media media = *md;
 	std::wstring cover = get_cover(media.get_hash());
+
+	bool needAnswer = true;
+	if (!Startinit.canEdit) {
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1, \"requested\": 1 }");
+		needAnswer = false;
+		wstring pth = media.get_path();
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+		if ((win_message().message_type(MSG_TYPE::TYPE_QUESTION).button_type(MSG_BUTTON::BUTTON_YESNO) << L"Удалить файл " << pth << L"?").show() != IDYES)
+			return;
+		THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	}
+
 	if (!DeleteFileW(media.get_path().c_str())) {
 		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
-		SendErrorJSON(client, L"Файл не удалён");
+		if (needAnswer) {
+			SendErrorJSON(client, L"Файл не удалён");
+		}
+		else {
+			PrintMessage(L"Файл не удалён", URGB(255, 200, 0));
+		}
 		return;
 	}
 	if (PathFileExistsW(cover.c_str())) {
@@ -2082,7 +2131,9 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
 
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", u8"{ \"response\": 1 }");
+	if (needAnswer) {
+		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+	}
 }
 
 static void GetFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
@@ -2123,28 +2174,26 @@ void InitMediaServer()
 
 	if (serverMethods.GetInited() == false)
 	{
-		serverMethods.RegisterMethod(u8"method/audio.dumplist", AudioList, true, true);
+		serverMethods.RegisterMethod("method/audio.dumplist", AudioList, true, true);
 
-		serverMethods.RegisterMethod(u8"method/audio.remoteplay", AudioRemotePlay, true, true);
+		serverMethods.RegisterMethod("method/audio.remoteplay", AudioRemotePlay, true, true);
 
-		serverMethods.RegisterMethod(u8"method/audio.get", AudioGet, true, true);
-		serverMethods.RegisterMethod(u8"method/video.get", VideoGet, true, true);
-		serverMethods.RegisterMethod(u8"method/audio.search", AudioSearch, true, true);
-		serverMethods.RegisterMethod(u8"method/video.search", VideoSearch, true, true);
-		serverMethods.RegisterMethod(u8"method/discography.get", DiscographyGet, true, true);
-		serverMethods.RegisterMethod(u8"method/discography.search", DiscographySearch, true, true);
-		serverMethods.RegisterMethod(u8"method/photos.get", PhotosGet, true, true);
-		serverMethods.RegisterMethod(u8"method/photos.search", PhotosSearch, true, true);
+		serverMethods.RegisterMethod("method/audio.get", AudioGet, true, true);
+		serverMethods.RegisterMethod("method/video.get", VideoGet, true, true);
+		serverMethods.RegisterMethod("method/audio.search", AudioSearch, true, true);
+		serverMethods.RegisterMethod("method/video.search", VideoSearch, true, true);
+		serverMethods.RegisterMethod("method/discography.get", DiscographyGet, true, true);
+		serverMethods.RegisterMethod("method/discography.search", DiscographySearch, true, true);
+		serverMethods.RegisterMethod("method/photos.get", PhotosGet, true, true);
+		serverMethods.RegisterMethod("method/photos.search", PhotosSearch, true, true);
 
-		if (Startinit.canEdit) {
-			serverMethods.RegisterMethod(u8"method/delete_media", DeleteFileSrv, false, true);
-			serverMethods.RegisterMethod(u8"method/update_time", UpdateTime, false, true);
-			serverMethods.RegisterMethod(u8"method/update_file_name", UpdateFileName, false, true);
-			serverMethods.RegisterMethod(u8"method/get_file_name", GetFileName, false, true);
-		}
+		serverMethods.RegisterMethod("method/delete_media", DeleteFileSrv, false, true);
+		serverMethods.RegisterMethod("method/update_time", UpdateTime, false, true);
+		serverMethods.RegisterMethod("method/update_file_name", UpdateFileName, false, true);
+		serverMethods.RegisterMethod("method/get_file_name", GetFileName, false, true);
 
-		serverMethods.RegisterMethod(u8"method/get_media", GetMedia);
-		serverMethods.RegisterMethod(u8"method/get_cover", GetCover);
+		serverMethods.RegisterMethod("method/get_media", GetMedia);
+		serverMethods.RegisterMethod("method/get_cover", GetCover);
 		serverMethods.SetInited();
 	}
 

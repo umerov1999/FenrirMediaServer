@@ -14,7 +14,7 @@
 #include "id3v2lib.h"
 
 
-ID3v2_tag* load_tag(const char* file_name)
+ID3v2_tag* load_tag(const wchar_t* file_name)
 {
 
     // get header size
@@ -27,7 +27,7 @@ ID3v2_tag* load_tag(const char* file_name)
 
     // allocate buffer and fetch header
     FILE* file;
-    file = fopen(file_name, "rb");
+    file = _wfopen(file_name, L"rb");
     if(file == NULL)
     {
         perror("Error opening file");
@@ -95,13 +95,13 @@ ID3v2_tag* load_tag_with_buffer(const char *bytes, int length)
     return tag;
 }
 
-void remove_tag(const char* file_name)
+void remove_tag(const wchar_t* file_name)
 {
     FILE* file;
     FILE* temp_file;
     ID3v2_header* tag_header;
 
-    file = fopen(file_name, "r+b");
+    file = _wfopen(file_name, L"r+b");
     temp_file = tmpfile();
 
     tag_header = get_tag_header(file_name);
@@ -163,7 +163,7 @@ int get_tag_size(ID3v2_tag* tag)
     return size;
 }
 
-void set_tag(const char* file_name, ID3v2_tag* tag)
+void set_tag(const wchar_t* file_name, ID3v2_tag* tag)
 {
     if(tag == NULL)
     {
@@ -184,7 +184,7 @@ void set_tag(const char* file_name, ID3v2_tag* tag)
     // Create temp file and prepare to write
     FILE* file;
     FILE* temp_file;
-    file = fopen(file_name, "r+b");
+    file = _wfopen(file_name, L"r+b");
     temp_file = tmpfile();
 
     // Write to file
@@ -337,7 +337,7 @@ ID3v2_frame* tag_get_album_cover(ID3v2_tag* tag)
 /**
  * Setter functions
  */
-void set_text_frame(char* data, char encoding, char* frame_id, ID3v2_frame* frame)
+void set_text_frame(const char* data, char encoding, const char* frame_id, ID3v2_frame* frame)
 {
     // Set frame id and size
     memcpy(frame->frame_id, frame_id, 4);
@@ -354,7 +354,7 @@ void set_text_frame(char* data, char encoding, char* frame_id, ID3v2_frame* fram
     free(frame_data);
 }
 
-void set_comment_frame(char* data, char encoding, ID3v2_frame* frame)
+void set_comment_frame(const char* data, char encoding, ID3v2_frame* frame)
 {
     memcpy(frame->frame_id, COMMENT_FRAME_ID, 4);
     frame->size = 1 + 3 + 1 + (int) strlen(data); // encoding + language + description + comment
@@ -368,7 +368,7 @@ void set_comment_frame(char* data, char encoding, ID3v2_frame* frame)
     free(frame_data);
 }
 
-void set_album_cover_frame(char* album_cover_bytes, char* mimetype, int picture_size, ID3v2_frame* frame)
+void set_album_cover_frame(const void* album_cover_bytes, const char* mimetype, int picture_size, ID3v2_frame* frame)
 {
     memcpy(frame->frame_id, ALBUM_COVER_FRAME_ID, 4);
     frame->size = 1 + (int) strlen(mimetype) + 1 + 1 + 1 + picture_size; // encoding + mimetype + 00 + type + description + picture
@@ -384,7 +384,7 @@ void set_album_cover_frame(char* album_cover_bytes, char* mimetype, int picture_
     free(frame_data);
 }
 
-void tag_set_title(char* title, char encoding, ID3v2_tag* tag)
+void tag_set_title(const char* title, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* title_frame = NULL;
     if( ! (title_frame = tag_get_title(tag)))
@@ -396,7 +396,7 @@ void tag_set_title(char* title, char encoding, ID3v2_tag* tag)
     set_text_frame(title, encoding, TITLE_FRAME_ID, title_frame);
 }
 
-void tag_set_artist(char* artist, char encoding, ID3v2_tag* tag)
+void tag_set_artist(const char* artist, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* artist_frame = NULL;
     if( ! (artist_frame = tag_get_artist(tag)))
@@ -408,7 +408,7 @@ void tag_set_artist(char* artist, char encoding, ID3v2_tag* tag)
     set_text_frame(artist, encoding, ARTIST_FRAME_ID, artist_frame);
 }
 
-void tag_set_album(char* album, char encoding, ID3v2_tag* tag)
+void tag_set_album(const char* album, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* album_frame = NULL;
     if( ! (album_frame = tag_get_album(tag)))
@@ -420,7 +420,7 @@ void tag_set_album(char* album, char encoding, ID3v2_tag* tag)
     set_text_frame(album, encoding, ALBUM_FRAME_ID, album_frame);
 }
 
-void tag_set_album_artist(char* album_artist, char encoding, ID3v2_tag* tag)
+void tag_set_album_artist(const char* album_artist, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* album_artist_frame = NULL;
     if( ! (album_artist_frame = tag_get_album_artist(tag)))
@@ -432,7 +432,7 @@ void tag_set_album_artist(char* album_artist, char encoding, ID3v2_tag* tag)
     set_text_frame(album_artist, encoding, ALBUM_ARTIST_FRAME_ID, album_artist_frame);
 }
 
-void tag_set_genre(char* genre, char encoding, ID3v2_tag* tag)
+void tag_set_genre(const char* genre, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* genre_frame = NULL;
     if( ! (genre_frame = tag_get_genre(tag)))
@@ -444,7 +444,7 @@ void tag_set_genre(char* genre, char encoding, ID3v2_tag* tag)
     set_text_frame(genre, encoding, GENRE_FRAME_ID, genre_frame);
 }
 
-void tag_set_track(char* track, char encoding, ID3v2_tag* tag)
+void tag_set_track(const char* track, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* track_frame = NULL;
     if( ! (track_frame = tag_get_track(tag)))
@@ -456,7 +456,7 @@ void tag_set_track(char* track, char encoding, ID3v2_tag* tag)
     set_text_frame(track, encoding, TRACK_FRAME_ID, track_frame);
 }
 
-void tag_set_year(char* year, char encoding, ID3v2_tag* tag)
+void tag_set_year(const char* year, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* year_frame = NULL;
     if( ! (year_frame = tag_get_year(tag)))
@@ -468,7 +468,7 @@ void tag_set_year(char* year, char encoding, ID3v2_tag* tag)
     set_text_frame(year, encoding, YEAR_FRAME_ID, year_frame);
 }
 
-void tag_set_comment(char* comment, char encoding, ID3v2_tag* tag)
+void tag_set_comment(const char* comment, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* comment_frame = NULL;
     if( ! (comment_frame = tag_get_comment(tag)))
@@ -480,7 +480,7 @@ void tag_set_comment(char* comment, char encoding, ID3v2_tag* tag)
     set_comment_frame(comment, encoding, comment_frame);
 }
 
-void tag_set_disc_number(char* disc_number, char encoding, ID3v2_tag* tag)
+void tag_set_disc_number(const char* disc_number, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* disc_number_frame = NULL;
     if( ! (disc_number_frame = tag_get_disc_number(tag)))
@@ -492,7 +492,7 @@ void tag_set_disc_number(char* disc_number, char encoding, ID3v2_tag* tag)
     set_text_frame(disc_number, encoding, DISC_NUMBER_FRAME_ID, disc_number_frame);
 }
 
-void tag_set_composer(char* composer, char encoding, ID3v2_tag* tag)
+void tag_set_composer(const char* composer, char encoding, ID3v2_tag* tag)
 {
     ID3v2_frame* composer_frame = NULL;
     if( ! (composer_frame = tag_get_composer(tag)))
@@ -517,13 +517,13 @@ void tag_set_album_cover(const char* filename, ID3v2_tag* tag)
 
     fclose(album_cover);
 
-    char* mimetype = get_mime_type_from_filename(filename);
+    const char* mimetype = get_mime_type_from_filename(filename);
     tag_set_album_cover_from_bytes(album_cover_bytes, mimetype, image_size, tag);
 
     free(album_cover_bytes);
 }
 
-void tag_set_album_cover_from_bytes(char* album_cover_bytes, char* mimetype, int picture_size, ID3v2_tag* tag)
+void tag_set_album_cover_from_bytes(const void* album_cover_bytes, const char* mimetype, int picture_size, ID3v2_tag* tag)
 {
     ID3v2_frame* album_cover_frame = NULL;
     if( ! (album_cover_frame = tag_get_album_cover(tag)))

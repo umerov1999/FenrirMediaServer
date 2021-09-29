@@ -25,7 +25,6 @@ public:
 	ColorEdit Edk;
 	CButton StartBT;
 	CButton ButFolder;
-	CButton ButSSL;
 	CEdit CurrentDir;
 	CEdit HTTPSPort;
 	CEdit HTTPPort;

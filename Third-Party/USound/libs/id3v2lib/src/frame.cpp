@@ -83,7 +83,7 @@ ID3v2_frame_comment_content* parse_comment_frame_content(ID3v2_frame* frame)
     content->text->encoding = frame->data[0];
     content->text->size = frame->size - ID3_FRAME_ENCODING - ID3_FRAME_LANGUAGE - ID3_FRAME_SHORT_DESCRIPTION;
     memcpy(content->language, frame->data + ID3_FRAME_ENCODING, ID3_FRAME_LANGUAGE);
-    content->short_description = "\0"; // Ignore short description
+    content->short_description = (char*)"\0"; // Ignore short description
     memcpy(content->text->data, frame->data + ID3_FRAME_ENCODING + ID3_FRAME_LANGUAGE + 1, content->text->size);
     
     return content;

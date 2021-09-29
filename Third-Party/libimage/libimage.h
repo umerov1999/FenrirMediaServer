@@ -37,12 +37,14 @@ namespace LIB_IMAGE
 	public:
 		win_image()
 		{
-			not_released = false;
+			links = new size_t[1];
+			*links = 0;
 			hPicture = NULL;
 		}
 		win_image(HBITMAP Picture, win_image_size size)
 		{
-			not_released = false;
+			links = new size_t[1];
+			*links = 0;
 			hPicture = Picture;
 			if (Picture)
 				image_size = size;
@@ -51,17 +53,28 @@ namespace LIB_IMAGE
 		{
 			if (image.is_has_image())
 			{
-				image.not_released = true;
+				links = image.links;
+				(*links)++;
 				image_size = image.image_size;
 				hPicture = image.hPicture;
+			}
+			else {
+				links = new size_t[1];
+				*links = 0;
 			}
 		}
 		~win_image()
 		{
-			if (not_released == false && is_has_image())
+			if (*links == 0 && is_has_image())
 			{
 				DeleteObject(hPicture);
 				hPicture = NULL;
+			}
+			if (*links == 0) {
+				delete links;
+			}
+			else {
+				(*links)--;
 			}
 		}
 		bool is_has_image() const
@@ -82,13 +95,20 @@ namespace LIB_IMAGE
 			}
 			return *this;
 		}
-		win_image& operator=(win_image& image)
+		win_image& operator=(const win_image& image)
 		{
 			if (image.is_has_image())
 			{
-				if (hPicture)
-					DeleteObject(hPicture);
-				image.not_released = true;
+				if (*links == 0) {
+					delete links;
+					if (hPicture)
+						DeleteObject(hPicture);
+				}
+				else {
+					(*links)--;
+				}
+				links = image.links;
+				(*links)++;
 				image_size = image.image_size;
 				hPicture = image.hPicture;
 			}
@@ -107,12 +127,12 @@ namespace LIB_IMAGE
 		HBITMAP get_hBitmap(bool tnot_released = false)
 		{
 			if (tnot_released)
-				not_released = true;
+				*links = LONG_MAX;
 			return hPicture;
 		}
 
 	private:
-		bool not_released;
+		size_t* links;
 		HBITMAP hPicture;
 		win_image_size image_size;
 	};

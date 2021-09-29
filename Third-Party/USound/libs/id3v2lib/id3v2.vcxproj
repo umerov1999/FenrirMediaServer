@@ -61,9 +61,10 @@
       <StringPooling>true</StringPooling>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <Lib>
       <AdditionalOptions>

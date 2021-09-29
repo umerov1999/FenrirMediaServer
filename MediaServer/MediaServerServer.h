@@ -230,7 +230,7 @@ public:
 		path = path_name + L"\\" + file_name;
 		id = crc32(WSTRUtils::wchar_to_UTF8(file_name));
 		owner_id = crc32(WSTRUtils::wchar_to_UTF8(path_name));
-		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
+		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + "." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
 	}
 	void operator=(const Media& media) {
 		this->type = media.type;
@@ -260,7 +260,7 @@ public:
 		this->orig_name = media.orig_name;
 	}
 	const std::string& update_hash(time_t mod_time, time_t create_time) {
-		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(WSTRUtils::UTF8_to_wchar(fileName))));
+		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + "." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(WSTRUtils::UTF8_to_wchar(fileName))));
 		return hash;
 	}
 	const std::string& update_full_hash(std::wstring path_name, std::wstring file_name, time_t mod_time, time_t create_time) {
@@ -273,7 +273,7 @@ public:
 		path = path_name + L"\\" + file_name;
 		id = crc32(WSTRUtils::wchar_to_UTF8(file_name));
 		owner_id = crc32(WSTRUtils::wchar_to_UTF8(path_name));
-		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + u8"." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
+		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + "." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
 		return hash;
 	}
 	const std::string &get_hash() const {
@@ -407,21 +407,10 @@ static std::vector<std::wstring> wsplit(const std::wstring& input, const std::ws
 	return { first, last };
 }
 
-// trim from start
-static inline std::string& ltrim(std::string& s) {
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int c) {return !std::isspace(c); }));
-	return s;
-}
-
-// trim from end
-static inline std::string& rtrim(std::string& s) {
-	s.erase(std::find_if(s.rbegin(), s.rend(), [](int c) {return !std::isspace(c); }).base(), s.end());
-	return s;
-}
-
-// trim from both ends
-static inline std::string& trim(std::string& s) {
-	return ltrim(rtrim(s));
+inline std::string trim(const std::string& s)
+{
+	auto  wsfront = std::find_if_not(s.begin(), s.end(), [](int c) {return std::isspace(c); });
+	return std::string(wsfront, std::find_if_not(s.rbegin(), std::string::const_reverse_iterator(wsfront), [](int c) {return std::isspace(c); }).base());
 }
 
 static inline std::wstring sreplace(const std::wstring& s, const std::wstring& find, const std::wstring& replace) {

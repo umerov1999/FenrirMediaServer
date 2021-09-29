@@ -6,9 +6,11 @@
 #include <ctime>
 using namespace std;
 
+/*
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+*/
 
 extern void InitOpenSSL();
 
@@ -45,6 +47,7 @@ void MediaServer::CreateDialogMFC()
 
 void MediaServer::LoadStyle()
 {
+	XTPSkinMgr()->SetApplyOptions(XTPSkinManager()->GetApplyOptions() | xtpSkinApplyMetrics);
 	if (XTPSkinMgr()->SkinLoadMemory(APP_STYLE_DATA, APP_STYLE_SIZE) == FALSE)
 	{
 		(win_message().timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Стиль повреждён!").show();
@@ -73,7 +76,7 @@ MediaServer theApp;
 
 BOOL MediaServer::InitInstance()
 {
-	BOOL bRet = CWinApp::InitInstance();
+	AfxEnableControlContainer();
 	srand((unsigned int)time(0));
 
 	SetCurrentDirectoryW(ExtractAppPath().c_str());
@@ -83,5 +86,5 @@ BOOL MediaServer::InitInstance()
 	InitOpenSSL();
 	CreateDialogMFC();
 
-	return bRet;
+	return FALSE;
 }

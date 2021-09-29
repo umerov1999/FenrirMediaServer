@@ -34,10 +34,10 @@ int _has_id3v2tag(const char* raw_header)
     return 0;
 }
 
-ID3v2_header* get_tag_header(const char* file_name)
+ID3v2_header* get_tag_header(const wchar_t* file_name)
 {
     char buffer[ID3_HEADER];
-    FILE* file = fopen(file_name, "rb");
+    FILE* file = _wfopen(file_name, L"rb");
     if(file == NULL)
     {
         perror("Error opening file");

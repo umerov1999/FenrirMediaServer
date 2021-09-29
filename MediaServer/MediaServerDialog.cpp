@@ -494,7 +494,6 @@ DWORD WINAPI InitMediaServerThread(LPVOID)
 	dlgS.HTTPSPort.SetReadOnly(TRUE);
 	dlgS.HTTPPort.SetReadOnly(TRUE);
 	dlgS.ButFolder.EnableWindow(FALSE);
-	dlgS.ButSSL.EnableWindow(FALSE);
 	dlgS.StartBT.ShowWindow(FALSE);
 	dlgS.SelectSSL.ShowWindow(FALSE);
 	dlgS.BUseHttp.EnableWindow(FALSE);

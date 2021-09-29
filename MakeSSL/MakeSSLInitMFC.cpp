@@ -2,9 +2,11 @@
 #include "MakeSSLInitMFC.h"
 #include "MakeSSLDialog.h"
 
+/*
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+*/
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -26,6 +28,7 @@ void MakeSSL::CreateDialogMFC()
 
 void MakeSSL::LoadStyle()
 {
+	XTPSkinMgr()->SetApplyOptions(XTPSkinManager()->GetApplyOptions() | xtpSkinApplyMetrics);
 	if (XTPSkinMgr()->SkinLoadMemory(APP_STYLE_DATA, APP_STYLE_SIZE) == FALSE)
 	{
 		(win_message().timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Стиль повреждён!").show();
@@ -41,10 +44,10 @@ MakeSSL theApp;
 
 BOOL MakeSSL::InitInstance()
 {
-	BOOL bRet = CWinApp::InitInstance();
+	AfxEnableControlContainer();
 	srand((unsigned int)time(0));
 
 	LoadStyle();
 	CreateDialogMFC();
-	return bRet;
+	return FALSE;
 }

@@ -41,15 +41,16 @@
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../Third-Party/openssl/include;../Third-Party/XTPSkinFramework v16.4.0/Include;./;../Third-Party/Extra;../Third-Party/libimage;..\Third-Party\Extra\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Third-Party/openssl/include;../Third-Party/XTPSkinFramework v20.1.0/Include;./;../Third-Party/Extra;../Third-Party/libimage;..\Third-Party\Extra\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -57,7 +58,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
-      <AdditionalLibraryDirectories>../Third-Party/openssl/lib/x64;../Third-Party/XTPSkinFramework v16.4.0/Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Third-Party/openssl/lib/x64;../Third-Party/XTPSkinFramework v20.1.0/Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AddModuleNamesToAssembly>
       </AddModuleNamesToAssembly>
       <GenerateDebugInformation>false</GenerateDebugInformation>

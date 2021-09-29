@@ -15,7 +15,7 @@ void USound::RegisterResourceMP3Sounds(const string& data)
 	{
 		return;
 	}
-	std::shared_ptr<clMP3DataProvider>& det = CreateMp3WaveDataProvider(data.data(), (int)data.size());
+	const std::shared_ptr<clMP3DataProvider>& det = CreateMp3WaveDataProvider(data.data(), (int)data.size());
 	if (det == NULL)
 	{
 		return;
@@ -49,7 +49,7 @@ void USound::RegisterResourceOGGSounds(size_t count, HMODULE hModule, LPCWSTR Re
 				FreeResource(mem_block);
 			continue;
 		}
-		std::shared_ptr<clOGGDataProvider> &det = CreateOggWaveDataProvider(pointer, (int)Size);
+		const std::shared_ptr<clOGGDataProvider> &det = CreateOggWaveDataProvider(pointer, (int)Size);
 		if (det == NULL)
 		{
 			FreeResource(mem_block);
