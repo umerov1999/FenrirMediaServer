@@ -35,6 +35,7 @@ namespace LIB_IMAGE
 	class win_image
 	{
 	public:
+		static std::string decompress_gzip(const std::string& str);
 		win_image()
 		{
 			links = new size_t[1];

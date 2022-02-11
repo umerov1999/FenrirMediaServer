@@ -83,5 +83,8 @@
     <Image Include="Res\folder_add.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="Res\audio_stop.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>

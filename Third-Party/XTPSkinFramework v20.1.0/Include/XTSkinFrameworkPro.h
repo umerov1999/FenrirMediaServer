@@ -152,9 +152,11 @@
 #		define _XTPLIB_VISUALSTUDIO_VERSION "vc120"
 #	elif _MSC_VER > 1800 && _MSC_VER < 1900
 #		define _XTPLIB_VISUALSTUDIO_VERSION "vc141"
-#	elif _MSC_VER > 1900
+#	elif _MSC_VER > 1900 && _MSC_VER < 1930
 #		define _XTPLIB_VISUALSTUDIO_VERSION "vc142"
-#	elif
+#	elif _MSC_VER >= 1930
+#		define _XTPLIB_VISUALSTUDIO_VERSION "vc143"
+#	else
 #		error "Unknown Visual Studio version"
 #	endif
 

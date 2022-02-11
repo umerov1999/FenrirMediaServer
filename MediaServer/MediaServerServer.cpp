@@ -701,11 +701,21 @@ static void AudioSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 		AudioGet(Req, client);
 		return;
 	}
+	bool reverse = from_get_post_bool(Req, "reverse", false);
 	list<Audio> result;
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
-	for (auto& i : mAudios) {
-		if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_artist()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
-			result.push_back(i.get_value());
+	if (reverse) {
+		for (auto it = mAudios().rbegin(); it != mAudios().rend(); it++) {
+			if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(it->get_value().get_artist()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(it->get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
+				result.push_back(it->get_value());
+			}
+		}
+	}
+	else {
+		for (auto& i : mAudios) {
+			if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_artist()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
+				result.push_back(i.get_value());
+			}
 		}
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mAudios);
@@ -743,11 +753,21 @@ static void DiscographySearch(RequestParserStruct& Req, CLIENT_CONNECTION* clien
 		DiscographyGet(Req, client);
 		return;
 	}
+	bool reverse = from_get_post_bool(Req, "reverse", false);
 	list<Audio> result;
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography);
-	for (auto& i : mDiscography) {
-		if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_artist()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
-			result.push_back(i.get_value());
+	if (reverse) {
+		for (auto it = mDiscography().rbegin(); it != mDiscography().rend(); it++) {
+			if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(it->get_value().get_artist()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(it->get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
+				result.push_back(it->get_value());
+			}
+		}
+	}
+	else {
+		for (auto& i : mDiscography) {
+			if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_artist()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
+				result.push_back(i.get_value());
+			}
 		}
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography);
@@ -785,11 +805,21 @@ static void PhotosSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 		PhotosGet(Req, client);
 		return;
 	}
+	bool reverse = from_get_post_bool(Req, "reverse", false);
 	list<Photo> result;
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mPhotos);
-	for (auto& i : mPhotos) {
-		if (WSTRUtils::wsearch(i.get_value().get_path(), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
-			result.push_back(i.get_value());
+	if (reverse) {
+		for (auto it = mPhotos().rbegin(); it != mPhotos().rend(); it++) {
+			if (WSTRUtils::wsearch(it->get_value().get_path(), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
+				result.push_back(it->get_value());
+			}
+		}
+	}
+	else {
+		for (auto& i : mPhotos) {
+			if (WSTRUtils::wsearch(i.get_value().get_path(), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
+				result.push_back(i.get_value());
+			}
 		}
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mPhotos);
@@ -869,11 +899,21 @@ static void VideoSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 		VideoGet(Req, client);
 		return;
 	}
+	bool reverse = from_get_post_bool(Req, "reverse", false);
 	list<Video> result;
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mVideos);
-	for (auto& i : mVideos) {
-		if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_description()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
-			result.push_back(i.get_value());
+	if (reverse) {
+		for (auto it = mVideos().rbegin(); it != mVideos().rend(); it++) {
+			if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(it->get_value().get_description()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(it->get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
+				result.push_back(it->get_value());
+			}
+		}
+	}
+	else {
+		for (auto& i : mVideos) {
+			if (WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_description()), WSTRUtils::UTF8_to_wchar(q)) != string::npos || WSTRUtils::wsearch(WSTRUtils::UTF8_to_wchar(i.get_value().get_title()), WSTRUtils::UTF8_to_wchar(q)) != string::npos) {
+				result.push_back(i.get_value());
+			}
 		}
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mVideos);
