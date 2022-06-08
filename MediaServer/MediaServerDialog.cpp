@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "MediaServerDialog.h"
 #include "MediaServerMediaFoldersDialog.h"
-#include "MediaServerServer.h"
+#include "MediaServerTask.h"
 #include "ThreadAccessGuard.h"
 #include "WSTRUtils.h"
 #include "libimage.h"
@@ -118,6 +118,7 @@ public:
 		BIsDebug = true;
 		OnlyNews = true;
 		PhotosThumb = false;
+		ffmpeg_proc_count = 8;
 	}
 	static bool GetComponent(CButton& checkbox)
 	{
@@ -163,6 +164,7 @@ public:
 			JSON_SERIALIZE(settings, ServerPassword);
 			JSON_SERIALIZE(settings, CurrentDir);
 			JSON_SERIALIZE(settings, CertificateContent);
+			JSON_SERIALIZE(settings, ffmpeg_proc_count);
 
 			serialize_list(settings, "Discography_Dirs", createUTF8List(Discography_Dirs));
 			serialize_list(settings, "Audio_Dirs", createUTF8List(Audio_Dirs));
@@ -214,6 +216,7 @@ public:
 				JSON_DESERIALIZE(settings, ServerPassword);
 				JSON_DESERIALIZE(settings, CurrentDir);
 				JSON_DESERIALIZE(settings, CertificateContent);
+				JSON_DESERIALIZE(settings, ffmpeg_proc_count);
 
 				list<string> dt;
 				deserialize_list(settings, "Audio_Dirs", dt);
@@ -337,6 +340,7 @@ public:
 	bool BIsDebug;
 	bool OnlyNews;
 	bool PhotosThumb;
+	int ffmpeg_proc_count;
 	USSL_CERT CertificateContent;
 };
 static SettingsClass pSettings;
@@ -693,7 +697,10 @@ static bool BrowseFolder(CString &saved_path)
 	TCHAR path[MAX_PATH];
 	BROWSEINFOW bi = { 0 };
 	bi.lpszTitle = L"Выберите папку для хранения контента...";
-	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+	bi.ulFlags = BIF_EDITBOX | BIF_VALIDATE | BIF_BROWSEINCLUDEFILES;
+#if (WINVER >= 0x0501)
+	bi.ulFlags |= BIF_USENEWUI;
+#endif
 	bi.lpfn = BrowseCallbackProc;
 	bi.lParam = (LPARAM)saved_path.GetString();
 	LPITEMIDLIST pidl = SHBrowseForFolderW(&bi);
@@ -799,6 +806,7 @@ void MediaServerDialog::OnStart()
 	}
 	Startinit.canEdit = CanEdit.GetCheck() == TRUE;
 	Startinit.isSsl = pSettings.isSsl;
+	Startinit.ffmpeg_proc_count = pSettings.ffmpeg_proc_count;
 	SERIALIZE_CONTROL(pSettings, ServerPassword);
 	SERIALIZE_CONTROL(pSettings, BIsDebug);
 	SERIALIZE_CONTROL(pSettings, OnlyNews);
@@ -865,7 +873,12 @@ void MediaServerDialog::OnScanCovers() {
 
 void MediaServerDialog::OnSelectSSL()
 {
-	CFileDialog fileDialog(TRUE, L"ucert", NULL, NULL, L"SSL UCERT|*.ucert|");
+#if (WINVER >= 0x0400)
+	DWORD dwFlags = OFN_EXPLORER | OFN_OVERWRITEPROMPT;
+#else
+	DWORD dwFlags = OFN_OVERWRITEPROMPT;
+#endif
+	CFileDialog fileDialog(TRUE, L"ucert", NULL, dwFlags, L"SSL UCERT|*.ucert|");
 	int result = (int)fileDialog.DoModal();
 	if (result != 1)
 		return;

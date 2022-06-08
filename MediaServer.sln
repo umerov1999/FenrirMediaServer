@@ -27,6 +27,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvorbis", "Third-Party\US
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "minimp3", "Third-Party\USound\libs\minimp3\minimp3.vcxproj", "{969EF30B-B20F-3C3C-9ADC-376E34055A6A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XTPSkinFramework", "XTPSkinFramework", "{51D76BC2-779E-4DBD-BE41-E9492555BE4F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Codejock.SkinFramework.Static", "Third-Party\XTPSkinFramework v20.1.0\SkinFrameworkStatic_vc160.vcxproj", "{44399486-2259-2815-3336-338422327369}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UStyleViewer", "Third-Party\XTPSkinFramework v20.1.0\UStyleViewer\UStyleViewer.vcxproj", "{EE5416F9-F299-4C01-BFCC-99C098F160B0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SkinBuilder", "Third-Party\XTPSkinFramework v20.1.0\SkinBuilder\SkinBuilder.vcxproj", "{49D09CF9-44B0-407F-A5BA-581B3E4EE0E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|x64 = Release|x64
@@ -50,6 +58,12 @@ Global
 		{D9C2FDA1-8C50-390F-B9C2-4F5919E75505}.Release|x64.Build.0 = Release|x64
 		{969EF30B-B20F-3C3C-9ADC-376E34055A6A}.Release|x64.ActiveCfg = Release|x64
 		{969EF30B-B20F-3C3C-9ADC-376E34055A6A}.Release|x64.Build.0 = Release|x64
+		{44399486-2259-2815-3336-338422327369}.Release|x64.ActiveCfg = Release|x64
+		{44399486-2259-2815-3336-338422327369}.Release|x64.Build.0 = Release|x64
+		{EE5416F9-F299-4C01-BFCC-99C098F160B0}.Release|x64.ActiveCfg = Release|x64
+		{EE5416F9-F299-4C01-BFCC-99C098F160B0}.Release|x64.Build.0 = Release|x64
+		{49D09CF9-44B0-407F-A5BA-581B3E4EE0E3}.Release|x64.ActiveCfg = Release|x64
+		{49D09CF9-44B0-407F-A5BA-581B3E4EE0E3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +78,9 @@ Global
 		{1C22E4DD-1E42-3E22-A952-1CD0FD910E71} = {F7F33708-0A3D-44EA-9565-D80D970312A6}
 		{D9C2FDA1-8C50-390F-B9C2-4F5919E75505} = {F7F33708-0A3D-44EA-9565-D80D970312A6}
 		{969EF30B-B20F-3C3C-9ADC-376E34055A6A} = {F7F33708-0A3D-44EA-9565-D80D970312A6}
+		{44399486-2259-2815-3336-338422327369} = {51D76BC2-779E-4DBD-BE41-E9492555BE4F}
+		{EE5416F9-F299-4C01-BFCC-99C098F160B0} = {51D76BC2-779E-4DBD-BE41-E9492555BE4F}
+		{49D09CF9-44B0-407F-A5BA-581B3E4EE0E3} = {51D76BC2-779E-4DBD-BE41-E9492555BE4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B32CBEF9-E8B5-47D0-ACC7-9F34599540A5}

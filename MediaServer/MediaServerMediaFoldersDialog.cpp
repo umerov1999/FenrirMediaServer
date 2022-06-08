@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "MediaServerMediaFoldersDialog.h"
-#include "MediaServerServer.h"
+#include "MediaServerTask.h"
 using namespace std;
 using namespace WSTRUtils;
 #ifdef _DEBUG
@@ -66,6 +66,10 @@ BOOL MediaServerMediaFoldersDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	XTPSkinMgr()->AlphaEnableWindow(m_hWnd, 220);
+	ListAudios.Init();
+	ListVideos.Init();
+	ListDiscography.Init();
+	ListPhotoVideos.Init();
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON1);
 	m_hCursor = AfxGetApp()->LoadCursor(MAKEINTRESOURCEW(IDC_CURSOR1));
 	EraseAudios.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
@@ -121,18 +125,18 @@ HCURSOR MediaServerMediaFoldersDialog::OnQueryDragIcon()
 
 void MediaServerMediaFoldersDialog::ReloadContent()
 {
-	ListAudios.ResetContent();
-	ListVideos.ResetContent();
-	ListDiscography.ResetContent();
-	ListPhotoVideos.ResetContent();
+	ListAudios.Clear();
+	ListVideos.Clear();
+	ListDiscography.Clear();
+	ListPhotoVideos.Clear();
 	for (auto &i : Audio_Dirs)
-		ListAudios.AddString(i.c_str());
+		ListAudios.AddLine(i.c_str());
 	for (auto& i : Video_Dirs)
-		ListVideos.AddString(i.c_str());
+		ListVideos.AddLine(i.c_str());
 	for (auto& i : Discography_Dirs)
-		ListDiscography.AddString(i.c_str());
+		ListDiscography.AddLine(i.c_str());
 	for (auto& i : Photo_Video_Dirs)
-		ListPhotoVideos.AddString(i.c_str());
+		ListPhotoVideos.AddLine(i.c_str());
 }
 
 static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
@@ -147,7 +151,10 @@ static bool BrowseFolder(CString& saved_path)
 	TCHAR path[MAX_PATH];
 	BROWSEINFOW bi = { 0 };
 	bi.lpszTitle = L"Выберите папку для трансляции контента...";
-	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+	bi.ulFlags = BIF_EDITBOX | BIF_VALIDATE | BIF_BROWSEINCLUDEFILES;
+#if (WINVER >= 0x0501)
+	bi.ulFlags |= BIF_USENEWUI;
+#endif
 	bi.lpfn = BrowseCallbackProc;
 	bi.lParam = (LPARAM)saved_path.GetString();
 	LPITEMIDLIST pidl = SHBrowseForFolderW(&bi);
@@ -256,7 +263,7 @@ void MediaServerMediaFoldersDialog::OnAddPhotoVideo()
 
 void MediaServerMediaFoldersDialog::OnDeleteAudio()
 {
-	int Sel = ListAudios.GetCurSel();
+	int Sel = ListAudios.GetSelected();
 	if (Sel < 0)
 		return;
 	int HT = 0;
@@ -273,7 +280,7 @@ void MediaServerMediaFoldersDialog::OnDeleteAudio()
 
 void MediaServerMediaFoldersDialog::OnDeleteDiscography()
 {
-	int Sel = ListDiscography.GetCurSel();
+	int Sel = ListDiscography.GetSelected();
 	if (Sel < 0)
 		return;
 	int HT = 0;
@@ -290,7 +297,7 @@ void MediaServerMediaFoldersDialog::OnDeleteDiscography()
 
 void MediaServerMediaFoldersDialog::OnDeleteVideo()
 {
-	int Sel = ListVideos.GetCurSel();
+	int Sel = ListVideos.GetSelected();
 	if (Sel < 0)
 		return;
 	int HT = 0;
@@ -307,7 +314,7 @@ void MediaServerMediaFoldersDialog::OnDeleteVideo()
 
 void MediaServerMediaFoldersDialog::OnDeletePhotoVideo()
 {
-	int Sel = ListPhotoVideos.GetCurSel();
+	int Sel = ListPhotoVideos.GetSelected();
 	if (Sel < 0)
 		return;
 	int HT = 0;

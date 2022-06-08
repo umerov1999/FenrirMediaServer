@@ -119,7 +119,12 @@ void MakeSSLDialog::OnGen()
 	size_t Fnd = 0;
 	while ((Fnd = FlNm.find('.')) != std::string::npos)
 		FlNm.replace(Fnd, 1, L"_");
-	CFileDialog fileDialog(FALSE, L"ucert", FlNm.c_str(), OFN_OVERWRITEPROMPT, L"SSL UCERT|*.ucert|");
+#if (WINVER >= 0x0400)
+	DWORD dwFlags = OFN_EXPLORER | OFN_OVERWRITEPROMPT;
+#else
+	DWORD dwFlags = OFN_OVERWRITEPROMPT;
+#endif
+	CFileDialog fileDialog(FALSE, L"ucert", FlNm.c_str(), dwFlags, L"SSL UCERT|*.ucert|");
 	int result = (int)fileDialog.DoModal();
 	if (result != 1)
 		return;

@@ -24,7 +24,7 @@
     <ClInclude Include="MediaServerInitMFC.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="MediaServerServer.h">
+    <ClInclude Include="MediaServerTask.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
@@ -41,7 +41,7 @@
     <ClCompile Include="MediaServerDialog.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="MediaServerServer.cpp">
+    <ClCompile Include="MediaServerTask.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="CommonLibraries.cpp">

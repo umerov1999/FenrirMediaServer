@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
+#include "UListBox.h"
 #include "afxdialogex.h"
 
 class MediaServerMediaFoldersDialog : public CDialogEx
@@ -21,10 +22,10 @@ public:
 	HICON m_hIcon;
 	HCURSOR m_hCursor;
 
-	CListBox ListAudios;
-	CListBox ListDiscography;
-	CListBox ListVideos;
-	CListBox ListPhotoVideos;
+	UListBox ListAudios;
+	UListBox ListDiscography;
+	UListBox ListVideos;
+	UListBox ListPhotoVideos;
 	CButton EraseAudios;
 	CButton EraseVideos;
 	CButton ErasePhotoVideos;

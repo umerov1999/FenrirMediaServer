@@ -35,30 +35,24 @@
     <ClCompile>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <AssemblerListingLocation>Release/</AssemblerListingLocation>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4244;5105</DisableSpecificWarnings>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <SmallerTypeCheck>false</SmallerTypeCheck>
-      <StructMemberAlignment>Default</StructMemberAlignment>
       <PreprocessorDefinitions>NDEBUG;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
-      <StringPooling>true</StringPooling>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <OmitFramePointers>true</OmitFramePointers>
+      <StringPooling>true</StringPooling>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName)_vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
