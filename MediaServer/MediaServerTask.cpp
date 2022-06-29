@@ -50,6 +50,8 @@ list<wstring> Audio_Dirs;
 list<wstring> Video_Dirs;
 list<wstring> Photo_Video_Dirs;
 
+static Inode RootDir;
+
 EXTERN_THREAD_ACCESS_GUARD_OBJECT
 
 InitServer Startinit;
@@ -434,6 +436,11 @@ static bool from_get_post_bool(RequestParserStruct& Req, const string& str, bool
 	}
 }
 
+static void SendErrorJSON(CLIENT_CONNECTION* client, const wstring& error) {
+	string error_t = "{ \"error\": {\"error_code\": 3,\"error_msg\" : \"" + wchar_to_UTF8(error) + "\"} }";
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", error_t);
+}
+
 wstring Media::get_cover() const {
 	return wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(get_hash()) + L".jpg";
 }
@@ -529,11 +536,8 @@ static json makePhoto(const Photo& p, const RequestParserStruct& Req, bool isSSL
 	S.emplace("type", "s");
 	S.emplace("width", "512");
 	S.emplace("height", "512");
-	if (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(p.get_hash()) + L".jpg").c_str())) {
+	if (PathFileExistsW(p.get_cover().c_str())) {
 		S.emplace("url", (string)(isSSL ? "https" : "http") + "://" + Req.http_request.get_utf8("Host") + "/method/get_cover?hash=" + p.get_hash());
-	}
-	else {
-		S.emplace("url", (string)(isSSL ? "https" : "http") + "://" + Req.http_request.get_utf8("Host") + "/method/get_media?hash=" + p.get_hash());
 	}
 
 	sizes.push_back(S);
@@ -894,6 +898,63 @@ static void VideoGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	payload += "} }";
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mVideos);
 	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+}
+
+std::string Inode::serialize(const RequestParserStruct& Req, bool isSSL) {
+	json arr = json(json::value_t::array);
+	string payload = "{ \"response\": { \"count\": " + to_string(entries.size()) + ",\"items\": ";
+	for (auto& i : entries) {
+		if (i.type == InodeType::INODE_FOLDER && i.entries.size() <= 0) {
+			continue;
+		}
+		json data = json(json::value_t::object);
+		data.emplace("id", i.id);
+		data.emplace("owner_id", i.owner_id);
+		data.emplace("file_name", wchar_to_UTF8(i.name));
+		data.emplace("type", i.type);
+		data.emplace("modification_time", i.modification_time);
+		data.emplace("size", i.type == InodeType::INODE_FOLDER ? i.entries.size() : i.size);
+		if (i.type != InodeType::INODE_FOLDER) {
+			data.emplace("url", (string)(isSSL ? "https" : "http") + "://" + Req.http_request.get_utf8("Host") + "/method/get_media?hash=" + i.hash);
+		}
+
+		if (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.preview_hash) + L".jpg").c_str())) {
+			data.emplace("preview_url", (string)(isSSL ? "https" : "http") + "://" + Req.http_request.get_utf8("Host") + "/method/get_cover?hash=" + i.preview_hash);
+		}
+		arr.push_back(data);
+	}
+	payload += arr.dump();
+	payload += "} }";
+	return payload;
+}
+
+static void FSGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
+{
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &RootDir);
+	string dir = trim(get_postUTF8(Req, "dir"));
+	auto p = RootDir.find_by_path(UTF8_to_wchar(dir));
+	if (p == nullptr) {
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &RootDir);
+		SendErrorJSON(client, L"Неверный путь");
+		return;
+	}
+	string payload = p->serialize(Req, client->isSSL);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &RootDir);
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+}
+
+static void rebootPC(RequestParserStruct& Req, CLIENT_CONNECTION* client)
+{
+	string type = trim(get_postUTF8(Req, "type"));
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+	if (type == "win") {
+		system("shutdown /r");
+		dlgS.OnClose();
+	}
+	else if (type == "linux") {
+		system("start /unix /sbin/reboot");
+		dlgS.OnClose();
+	}
 }
 
 static void VideoSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -1490,11 +1551,6 @@ void ServerMethods::RegisterMethod(const string& UTF8Path, void* Func, bool Need
 	Methods[UTF8Path] = ServerMethodInfo(Func, NeedHost, NeedAuth);
 }
 
-static void SendErrorJSON(CLIENT_CONNECTION* client, const wstring &error) {
-	string error_t = "{ \"error\": {\"error_code\": 3,\"error_msg\" : \"" + wchar_to_UTF8(error) + "\"} }";
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", error_t);
-}
-
 void ServerMethods::Execute(const string& UTF8Path, RequestParserStruct& Req, void* ssl) const
 {
 	CLIENT_CONNECTION* client = (CLIENT_CONNECTION*)ssl;
@@ -1613,9 +1669,9 @@ static void cleanLoaded(TYPE_SCAN type) {
 	}
 }
 
-static void scanFiles(const wstring &str, TYPE_SCAN type, bool is_main = true) {
+static void scanFiles(const wstring &root, const wstring& offset, const wstring& dir_entry, bool scanFS, TYPE_SCAN type, bool is_main = true) {
 	WIN32_FIND_DATAW data;
-	HANDLE hFind = FindFirstFileW((str + L"\\*.*").c_str(), &data);
+	HANDLE hFind = FindFirstFileW(combine_root_path(root, offset, L"*.*").c_str(), &data);
 
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
@@ -1624,7 +1680,17 @@ static void scanFiles(const wstring &str, TYPE_SCAN type, bool is_main = true) {
 				if (test == L"." || test == L"..") {
 					continue;
 				}
-				scanFiles(str + L"\\" + test, type, false);
+				if (scanFS) {
+					auto dirPtr = RootDir.find_by_path(combine_root_path(dir_entry, offset, test));
+					if (!dirPtr) {
+						dirPtr = Inode(test).folder().attachTo(*RootDir.find_by_path(combine_path(dir_entry, offset)), root);
+					}
+					scanFiles(root, combine_path(offset, test), dir_entry, scanFS, type, false);
+					dirPtr->updateDir();
+				}
+				else {
+					scanFiles(root, combine_path(offset, test), dir_entry, scanFS, type, false);
+				}
 			}
 			else {
 				if (isBadExt(data.cFileName, type)) {
@@ -1636,26 +1702,46 @@ static void scanFiles(const wstring &str, TYPE_SCAN type, bool is_main = true) {
 				switch (type)
 				{
 				case TYPE_SCAN::TYPE_SCAN_AUDIO:
-					a = Audio(str, data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+					a = Audio(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
 					mAudios[a.get_hash()] = a;
+					if (scanFS) {
+						auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
+						Inode(data.cFileName).audio((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+					}
 					break;
 				case TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY:
-					a = Audio(str, data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+					a = Audio(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
 					mDiscography[a.get_hash()] = a;
+					if (scanFS) {
+						auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
+						Inode(data.cFileName).audio((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+					}
 					break;
 				case TYPE_SCAN::TYPE_SCAN_VIDEO:
-					v = Video(str, data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+					v = Video(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
 					mVideos[v.get_hash()] = v;
+					if (scanFS) {
+						auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
+						Inode(data.cFileName).video((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+					}
 					break;
 				case TYPE_SCAN::TYPE_SCAN_PHOTO:
 					wstring fl = data.cFileName;
 					if (WSTRUtils::wsearch(fl, L".jpg") != wstring::npos || WSTRUtils::wsearch(fl, L".jpeg") != wstring::npos || WSTRUtils::wsearch(fl, L".png") != wstring::npos || WSTRUtils::wsearch(fl, L".tiff") != wstring::npos || WSTRUtils::wsearch(fl, L".webp") != wstring::npos) {
-						p = Photo(str, data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+						p = Photo(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
 						mPhotos[p.get_hash()] = p;
+						if (scanFS) {
+							auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
+							Inode(data.cFileName).photo((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+						}
 					}
 					else {
-						v = Video(str, data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+						v = Video(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
 						mVideos[v.get_hash()] = v;
+						if (scanFS) {
+							auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
+							Inode(data.cFileName).video((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+						}
 					}
 					break;
 				}
@@ -1693,6 +1779,7 @@ static void sortFiles() {
 	mDiscography.sort(greator<Audio>);
 	mVideos.sort(greator<Video>);
 	mPhotos.sort(greator<Photo>);
+	RootDir.updateDir();
 }
 
 static void doAfterFFMpegEnded(Map::Map<Media, PROCESS_INFORMATION> &handles) {
@@ -1721,10 +1808,10 @@ void genVideoThumbs(bool is_OnlyNews) {
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
 	for (auto& i : Photo_Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		scanFiles(i, L"", L"", false, TYPE_SCAN::TYPE_SCAN_PHOTO);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		scanFiles(i, L"", L"", false, TYPE_SCAN::TYPE_SCAN_VIDEO);
 	}
 	Map::Map<std::string, Video> tVideos = mVideos;
 	wstring crdir;
@@ -1777,10 +1864,10 @@ void genPhotoThumbs(bool is_OnlyNews) {
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
 	for (auto& i : Photo_Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		scanFiles(i, L"", L"", false, TYPE_SCAN::TYPE_SCAN_PHOTO);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		scanFiles(i, L"", L"", false, TYPE_SCAN::TYPE_SCAN_VIDEO);
 	}
 	Map::Map<std::string, Photo> tPhotos = mPhotos;
 	wstring crdir;
@@ -1832,7 +1919,7 @@ void genAudioThumbs(bool is_OnlyNews) {
 	}
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
+		scanFiles(i, L"", L"", false, TYPE_SCAN::TYPE_SCAN_AUDIO);
 	}
 	Map::Map<std::string, Audio> tAudios = mAudios;
 	wstring crdir;
@@ -1959,15 +2046,15 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 		SendErrorJSON(client, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 
 	bool needAnswer = true;
 	if (!Startinit.canEdit) {
@@ -1995,29 +2082,38 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 			MoveFileW(cover.c_str(), get_cover(media.update_hash(tm, tm)).c_str());
 		}
 	}
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 	PrintMessage(L"Пересканирование контента!", URGB(255, 200, 0));
 
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
+	RootDir.clear();
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_AUDIO);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Photo_Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		Inode::updateDir(pp);
 	}
 	PrintMessage(L" ");
 	sortFiles();
 
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 	if (needAnswer) {
 		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
 	}
@@ -2039,26 +2135,26 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 		SendErrorJSON(client, L"Файл существует с таким именем!");
 		return;
 	}
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 		SendErrorJSON(client, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 
 	bool needAnswer = true;
 	if (!Startinit.canEdit) {
 		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1, \"requested\": 1 }");
 		needAnswer = false;
 		wstring pth = media.get_path();
-		if ((win_message().message_type(MSG_TYPE::TYPE_QUESTION).button_type(MSG_BUTTON::BUTTON_YESNO) << L"Переменововать " << pth << L" в" << (media.get_orig_dir() + L"\\" + new_fl) << L"?").show() != IDYES)
+		if ((win_message().message_type(MSG_TYPE::TYPE_QUESTION).button_type(MSG_BUTTON::BUTTON_YESNO) << L"Переменововать " << pth << L" в" << combine_path(media.get_orig_dir(), new_fl) << L"?").show() != IDYES)
 			return;
 	}
 
-	if (!MoveFileW(media.get_path().c_str(), (media.get_orig_dir() + L"\\" + new_fl).c_str())) {
+	if (!MoveFileW(media.get_path().c_str(), combine_path(media.get_orig_dir(), new_fl).c_str())) {
 		if (needAnswer) {
 			SendErrorJSON(client, L"Переименовать не удалось!");
 		}
@@ -2068,7 +2164,7 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 		return;
 	}
 	HANDLE file_handle =
-		::CreateFileW((media.get_orig_dir() + L"\\" + new_fl).c_str(), FILE_WRITE_ATTRIBUTES,
+		::CreateFileW(combine_path(media.get_orig_dir(), new_fl).c_str(), FILE_WRITE_ATTRIBUTES,
 			NULL, NULL, OPEN_EXISTING,
 			FILE_ATTRIBUTE_NORMAL, 0);
 	if (file_handle != NULL)
@@ -2084,29 +2180,38 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 			MoveFileW(cover.c_str(), get_cover(media.update_full_hash(media.get_orig_dir(), new_fl, tm, tm)).c_str());
 		}
 	}
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 	PrintMessage(L"Пересканирование контента!", URGB(255, 200, 0));
 
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
+	RootDir.clear();
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_AUDIO);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Photo_Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		Inode::updateDir(pp);
 	}
 	PrintMessage(L" ");
 	sortFiles();
 
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 
 	if (needAnswer) {
 		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
@@ -2119,10 +2224,10 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
-	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 		SendErrorJSON(client, L"Hash не найден");
 		return;
 	}
@@ -2134,14 +2239,14 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1, \"requested\": 1 }");
 		needAnswer = false;
 		wstring pth = media.get_path();
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 		if ((win_message().message_type(MSG_TYPE::TYPE_QUESTION).button_type(MSG_BUTTON::BUTTON_YESNO) << L"Удалить файл " << pth << L"?").show() != IDYES)
 			return;
-		THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+		THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 	}
 
 	if (!DeleteFileW(media.get_path().c_str())) {
-		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 		if (needAnswer) {
 			SendErrorJSON(client, L"Файл не удалён");
 		}
@@ -2160,22 +2265,31 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
+	RootDir.clear();
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_AUDIO);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Photo_Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		Inode::updateDir(pp);
 	}
 	PrintMessage(L" ");
 	sortFiles();
 
-	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 
 	if (needAnswer) {
 		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
@@ -2228,6 +2342,8 @@ void InitMediaServer()
 		serverMethods.RegisterMethod("method/video.get", VideoGet, true, true);
 		serverMethods.RegisterMethod("method/audio.search", AudioSearch, true, true);
 		serverMethods.RegisterMethod("method/video.search", VideoSearch, true, true);
+		serverMethods.RegisterMethod("method/fs.get", FSGet, true, true);
+		serverMethods.RegisterMethod("method/rebootPC", rebootPC, false, true);
 		serverMethods.RegisterMethod("method/discography.get", DiscographyGet, true, true);
 		serverMethods.RegisterMethod("method/discography.search", DiscographySearch, true, true);
 		serverMethods.RegisterMethod("method/photos.get", PhotosGet, true, true);
@@ -2243,23 +2359,32 @@ void InitMediaServer()
 		serverMethods.SetInited();
 	}
 
-	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &player);
+	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &player, &RootDir);
 
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_VIDEO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_PHOTO);
+	RootDir.clear();
 	for (auto& i : Audio_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_AUDIO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_AUDIO);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Photo_Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_PHOTO);
+		Inode::updateDir(pp);
 	}
 	for (auto& i : Video_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		auto pp = Inode::make_subRoot(i, RootDir);
+		scanFiles(i, L"", Inode::getName(pp), true, TYPE_SCAN::TYPE_SCAN_VIDEO);
+		Inode::updateDir(pp);
 	}
 	PrintMessage(L" ");
 	sortFiles();

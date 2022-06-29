@@ -536,4 +536,18 @@ namespace WSTRUtils
 	{
 		return wchar_to_Cp1251(UTF8_to_wchar(In));
 	}
+
+	static std::wstring combine_path(const std::wstring& folder, const std::wstring& child) {
+		if (folder.empty()) {
+			return child;
+		}
+		else if (child.empty()) {
+			return folder;
+		}
+		return folder + L"\\" + child;
+	}
+
+	static std::wstring combine_root_path(const std::wstring& root, const std::wstring& folder, const std::wstring& child) {
+		return combine_path(combine_path(root, folder), child);
+	}
 }

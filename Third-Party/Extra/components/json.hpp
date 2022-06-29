@@ -33,7 +33,7 @@ SOFTWARE.
  * contains the most recent documentation and should also be applicable to  *
  * previous versions; documentation for deprecated functions is not         *
  * removed, but marked deprecated. See "Generate documentation" section in  *
- * file docs/README.md.                                                      *
+ * file docs/README.md.                                                     *
 \****************************************************************************/
 
 #ifndef INCLUDE_NLOHMANN_JSON_HPP_
@@ -2684,6 +2684,10 @@ using is_detected_convertible =
     #define JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON 0
 #endif
 
+#ifndef JSON_DISABLE_ENUM_SERIALIZATION
+    #define JSON_DISABLE_ENUM_SERIALIZATION 0
+#endif
+
 #if JSON_HAS_THREE_WAY_COMPARISON
     #include <compare> // partial_ordering
 #endif
@@ -3374,7 +3378,7 @@ template<class...> struct conjunction : std::true_type { };
 template<class B> struct conjunction<B> : B { };
 template<class B, class... Bn>
 struct conjunction<B, Bn...>
-: std::conditional<bool(B::value), conjunction<Bn...>, B>::type {};
+: std::conditional<static_cast<bool>(B::value), conjunction<Bn...>, B>::type {};
 
 // https://en.cppreference.com/w/cpp/types/negation
 template<class B> struct negation : std::integral_constant < bool, !B::value > { };
@@ -3766,6 +3770,103 @@ template<typename T, typename U, enable_if_t<std::is_same<T, U>::value, int> = 0
 T conditional_static_cast(U value)
 {
     return value;
+}
+
+template<typename... Types>
+using all_integral = conjunction<std::is_integral<Types>...>;
+
+template<typename... Types>
+using all_signed = conjunction<std::is_signed<Types>...>;
+
+template<typename... Types>
+using all_unsigned = conjunction<std::is_unsigned<Types>...>;
+
+// there's a disjunction trait in another PR; replace when merged
+template<typename... Types>
+using same_sign = std::integral_constant < bool,
+      all_signed<Types...>::value || all_unsigned<Types...>::value >;
+
+template<typename OfType, typename T>
+using never_out_of_range = std::integral_constant < bool,
+      (std::is_signed<OfType>::value && (sizeof(T) < sizeof(OfType)))
+      || (same_sign<OfType, T>::value && sizeof(OfType) == sizeof(T)) >;
+
+template<typename OfType, typename T,
+         bool OfTypeSigned = std::is_signed<OfType>::value,
+         bool TSigned = std::is_signed<T>::value>
+struct value_in_range_of_impl2;
+
+template<typename OfType, typename T>
+#undef min
+#undef max
+struct value_in_range_of_impl2<OfType, T, false, false>
+{
+    static constexpr bool test(T val)
+    {
+        using CommonType = typename std::common_type<OfType, T>::type;
+        return static_cast<CommonType>(val) <= static_cast<CommonType>(std::numeric_limits<OfType>::max());
+    }
+};
+
+template<typename OfType, typename T>
+struct value_in_range_of_impl2<OfType, T, true, false>
+{
+    static constexpr bool test(T val)
+    {
+        using CommonType = typename std::common_type<OfType, T>::type;
+        return static_cast<CommonType>(val) <= static_cast<CommonType>(std::numeric_limits<OfType>::max());
+    }
+};
+
+template<typename OfType, typename T>
+struct value_in_range_of_impl2<OfType, T, false, true>
+{
+    static constexpr bool test(T val)
+    {
+        using CommonType = typename std::common_type<OfType, T>::type;
+        return val >= 0 && static_cast<CommonType>(val) <= static_cast<CommonType>(std::numeric_limits<OfType>::max());
+    }
+};
+
+
+template<typename OfType, typename T>
+struct value_in_range_of_impl2<OfType, T, true, true>
+{
+    static constexpr bool test(T val)
+    {
+        using CommonType = typename std::common_type<OfType, T>::type;
+        return static_cast<CommonType>(val) >= static_cast<CommonType>(std::numeric_limits<OfType>::min())
+               && static_cast<CommonType>(val) <= static_cast<CommonType>(std::numeric_limits<OfType>::max());
+    }
+};
+
+template<typename OfType, typename T,
+         bool NeverOutOfRange = never_out_of_range<OfType, T>::value,
+         typename = detail::enable_if_t<all_integral<OfType, T>::value>>
+struct value_in_range_of_impl1;
+
+template<typename OfType, typename T>
+struct value_in_range_of_impl1<OfType, T, false>
+{
+    static constexpr bool test(T val)
+    {
+        return value_in_range_of_impl2<OfType, T>::test(val);
+    }
+};
+
+template<typename OfType, typename T>
+struct value_in_range_of_impl1<OfType, T, true>
+{
+    static constexpr bool test(T /*val*/)
+    {
+        return true;
+    }
+};
+
+template<typename OfType, typename T>
+inline constexpr bool value_in_range_of(T val)
+{
+    return value_in_range_of_impl1<OfType, T>::test(val);
 }
 
 }  // namespace detail
@@ -4289,6 +4390,7 @@ inline void from_json(const BasicJsonType& j, typename BasicJsonType::number_int
     get_arithmetic_value(j, val);
 }
 
+#if !JSON_DISABLE_ENUM_SERIALIZATION
 template<typename BasicJsonType, typename EnumType,
          enable_if_t<std::is_enum<EnumType>::value, int> = 0>
 inline void from_json(const BasicJsonType& j, EnumType& e)
@@ -4297,6 +4399,7 @@ inline void from_json(const BasicJsonType& j, EnumType& e)
     get_arithmetic_value(j, val);
     e = static_cast<EnumType>(val);
 }
+#endif  // JSON_DISABLE_ENUM_SERIALIZATION
 
 // forward_list doesn't have an insert method
 template<typename BasicJsonType, typename T, typename Allocator,
@@ -5158,6 +5261,13 @@ inline void to_json(BasicJsonType& j, T b) noexcept
     external_constructor<value_t::boolean>::construct(j, b);
 }
 
+template<typename BasicJsonType,
+         enable_if_t<std::is_convertible<const std::vector<bool>::reference&, typename BasicJsonType::boolean_t>::value, int> = 0>
+inline void to_json(BasicJsonType& j, const std::vector<bool>::reference& b) noexcept
+{
+    external_constructor<value_t::boolean>::construct(j, static_cast<typename BasicJsonType::boolean_t>(b));
+}
+
 template<typename BasicJsonType, typename CompatibleString,
          enable_if_t<std::is_constructible<typename BasicJsonType::string_t, CompatibleString>::value, int> = 0>
 inline void to_json(BasicJsonType& j, const CompatibleString& s)
@@ -5192,6 +5302,7 @@ inline void to_json(BasicJsonType& j, CompatibleNumberIntegerType val) noexcept
     external_constructor<value_t::number_integer>::construct(j, static_cast<typename BasicJsonType::number_integer_t>(val));
 }
 
+#if !JSON_DISABLE_ENUM_SERIALIZATION
 template<typename BasicJsonType, typename EnumType,
          enable_if_t<std::is_enum<EnumType>::value, int> = 0>
 inline void to_json(BasicJsonType& j, EnumType e) noexcept
@@ -5199,6 +5310,7 @@ inline void to_json(BasicJsonType& j, EnumType e) noexcept
     using underlying_type = typename std::underlying_type<EnumType>::type;
     external_constructor<value_t::number_integer>::construct(j, static_cast<underlying_type>(e));
 }
+#endif  // JSON_DISABLE_ENUM_SERIALIZATION
 
 template<typename BasicJsonType>
 inline void to_json(BasicJsonType& j, const std::vector<bool>& e)
@@ -9208,7 +9320,8 @@ class binary_reader
             case 0x95:
             case 0x96:
             case 0x97:
-                return get_cbor_array(static_cast<std::size_t>(static_cast<unsigned int>(current) & 0x1Fu), tag_handler);
+                return get_cbor_array(
+                           conditional_static_cast<std::size_t>(static_cast<unsigned int>(current) & 0x1Fu), tag_handler);
 
             case 0x98: // array (one-byte uint8_t for n follows)
             {
@@ -9225,13 +9338,13 @@ class binary_reader
             case 0x9A: // array (four-byte uint32_t for n follow)
             {
                 std::uint32_t len{};
-                return get_number(input_format_t::cbor, len) && get_cbor_array(static_cast<std::size_t>(len), tag_handler);
+                return get_number(input_format_t::cbor, len) && get_cbor_array(conditional_static_cast<std::size_t>(len), tag_handler);
             }
 
             case 0x9B: // array (eight-byte uint64_t for n follow)
             {
                 std::uint64_t len{};
-                return get_number(input_format_t::cbor, len) && get_cbor_array(detail::conditional_static_cast<std::size_t>(len), tag_handler);
+                return get_number(input_format_t::cbor, len) && get_cbor_array(conditional_static_cast<std::size_t>(len), tag_handler);
             }
 
             case 0x9F: // array (indefinite length)
@@ -9262,7 +9375,7 @@ class binary_reader
             case 0xB5:
             case 0xB6:
             case 0xB7:
-                return get_cbor_object(static_cast<std::size_t>(static_cast<unsigned int>(current) & 0x1Fu), tag_handler);
+                return get_cbor_object(conditional_static_cast<std::size_t>(static_cast<unsigned int>(current) & 0x1Fu), tag_handler);
 
             case 0xB8: // map (one-byte uint8_t for n follows)
             {
@@ -9279,13 +9392,13 @@ class binary_reader
             case 0xBA: // map (four-byte uint32_t for n follow)
             {
                 std::uint32_t len{};
-                return get_number(input_format_t::cbor, len) && get_cbor_object(static_cast<std::size_t>(len), tag_handler);
+                return get_number(input_format_t::cbor, len) && get_cbor_object(conditional_static_cast<std::size_t>(len), tag_handler);
             }
 
             case 0xBB: // map (eight-byte uint64_t for n follow)
             {
                 std::uint64_t len{};
-                return get_number(input_format_t::cbor, len) && get_cbor_object(detail::conditional_static_cast<std::size_t>(len), tag_handler);
+                return get_number(input_format_t::cbor, len) && get_cbor_object(conditional_static_cast<std::size_t>(len), tag_handler);
             }
 
             case 0xBF: // map (indefinite length)
@@ -9932,7 +10045,7 @@ class binary_reader
             case 0x8D:
             case 0x8E:
             case 0x8F:
-                return get_msgpack_object(static_cast<std::size_t>(static_cast<unsigned int>(current) & 0x0Fu));
+                return get_msgpack_object(conditional_static_cast<std::size_t>(static_cast<unsigned int>(current) & 0x0Fu));
 
             // fixarray
             case 0x90:
@@ -9951,7 +10064,7 @@ class binary_reader
             case 0x9D:
             case 0x9E:
             case 0x9F:
-                return get_msgpack_array(static_cast<std::size_t>(static_cast<unsigned int>(current) & 0x0Fu));
+                return get_msgpack_array(conditional_static_cast<std::size_t>(static_cast<unsigned int>(current) & 0x0Fu));
 
             // fixstr
             case 0xA0:
@@ -10088,7 +10201,7 @@ class binary_reader
             case 0xDD: // array 32
             {
                 std::uint32_t len{};
-                return get_number(input_format_t::msgpack, len) && get_msgpack_array(static_cast<std::size_t>(len));
+                return get_number(input_format_t::msgpack, len) && get_msgpack_array(conditional_static_cast<std::size_t>(len));
             }
 
             case 0xDE: // map 16
@@ -10100,7 +10213,7 @@ class binary_reader
             case 0xDF: // map 32
             {
                 std::uint32_t len{};
-                return get_number(input_format_t::msgpack, len) && get_msgpack_object(static_cast<std::size_t>(len));
+                return get_number(input_format_t::msgpack, len) && get_msgpack_object(conditional_static_cast<std::size_t>(len));
             }
 
             // negative fixint
@@ -10669,6 +10782,11 @@ class binary_reader
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read,
                                             exception_message(input_format, "count in an optimized container must be positive", "size"), nullptr));
                 }
+                if (!value_in_range_of<std::size_t>(number))
+                {
+                    return sax->parse_error(chars_read, get_token_string(), out_of_range::create(408,
+                                            exception_message(input_format, "integer value overflow", "size"), nullptr));
+                }
                 result = static_cast<std::size_t>(number);
                 return true;
             }
@@ -10699,7 +10817,7 @@ class binary_reader
                 {
                     return false;
                 }
-                result = static_cast<std::size_t>(number);
+                result = conditional_static_cast<std::size_t>(number);
                 return true;
             }
 
@@ -10713,6 +10831,11 @@ class binary_reader
                 if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
                 {
                     return false;
+                }
+                if (!value_in_range_of<std::size_t>(number))
+                {
+                    return sax->parse_error(chars_read, get_token_string(), out_of_range::create(408,
+                                            exception_message(input_format, "integer value overflow", "size"), nullptr));
                 }
                 result = detail::conditional_static_cast<std::size_t>(number);
                 return true;
@@ -10758,7 +10881,11 @@ class binary_reader
                     for (auto i : dim)
                     {
                         result *= i;
-                        if (JSON_HEDLEY_UNLIKELY(!sax->number_integer(static_cast<number_integer_t>(i))))
+                        if (result == 0 || result == string_t::npos) // because dim elements shall not have zeros, result = 0 means overflow happened; it also can't be string_t::npos as it is used to initialize size in get_ubjson_size_type()
+                        {
+                            return sax->parse_error(chars_read, get_token_string(), out_of_range::create(408, exception_message(input_format, "excessive ndarray size caused overflow", "size"), nullptr));
+                        }
+                        if (JSON_HEDLEY_UNLIKELY(!sax->number_unsigned(static_cast<number_unsigned_t>(i))))
                         {
                             return false;
                         }
@@ -12268,7 +12395,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
                   "iter_impl only accepts (const) basic_json");
     // superficial check for the LegacyBidirectionalIterator named requirement
     static_assert(std::is_base_of<std::bidirectional_iterator_tag, std::bidirectional_iterator_tag>::value
-                  &&  std::is_base_of<std::bidirectional_iterator_tag, typename array_t::iterator::iterator_category>::value,
+                  &&  std::is_base_of<std::bidirectional_iterator_tag, typename std::iterator_traits<typename array_t::iterator>::iterator_category>::value,
                   "basic_json iterator assumes array and object type iterators satisfy the LegacyBidirectionalIterator named requirement.");
 
   public:
@@ -23463,6 +23590,7 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef NLOHMANN_CAN_CALL_STD_FUNC_IMPL
 #undef JSON_INLINE_VARIABLE
 #undef JSON_NO_UNIQUE_ADDRESS
+#undef JSON_DISABLE_ENUM_SERIALIZATION
 
 #ifndef JSON_TEST_KEEP_MACROS
     #undef JSON_CATCH

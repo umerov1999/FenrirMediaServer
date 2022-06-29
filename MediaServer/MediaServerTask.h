@@ -229,7 +229,7 @@ public:
 		orig_dir = path_name;
 		orig_name = file_name;
 		fileName = WSTRUtils::wchar_to_UTF8(file_name);
-		path = path_name + L"\\" + file_name;
+		path = WSTRUtils::combine_path(path_name, file_name);
 		id = crc32(WSTRUtils::wchar_to_UTF8(file_name));
 		owner_id = crc32(WSTRUtils::wchar_to_UTF8(path_name));
 		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + "." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
@@ -272,7 +272,7 @@ public:
 		orig_dir = path_name;
 		orig_name = file_name;
 		fileName = WSTRUtils::wchar_to_UTF8(file_name);
-		path = path_name + L"\\" + file_name;
+		path = WSTRUtils::combine_path(path_name, file_name);
 		id = crc32(WSTRUtils::wchar_to_UTF8(file_name));
 		owner_id = crc32(WSTRUtils::wchar_to_UTF8(path_name));
 		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + "." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
@@ -566,4 +566,190 @@ public:
 private:
 	Map::Map<std::string, ServerMethodInfo> Methods;
 	bool Inited;
+};
+
+class Inode {
+public:
+	static bool greator(const Inode& lhs, const Inode& rhs)
+	{
+		return lhs.modification_time > rhs.modification_time || lhs.type == InodeType::INODE_FOLDER && rhs.type != InodeType::INODE_FOLDER;
+	}
+	enum class InodeType {
+		INODE_ERROR = -1,
+		INODE_FOLDER,
+		INODE_PHOTO,
+		INODE_VIDEO,
+		INODE_AUDIO
+	};
+	Inode() {
+		type = InodeType::INODE_FOLDER;
+		size = 0;
+		modification_time = 0;
+		id = 1;
+		owner_id = 1;
+		parent = nullptr;
+	}
+	Inode(const std::wstring name) {
+		this->name = name;
+		type = InodeType::INODE_ERROR;
+		size = 0;
+		modification_time = 0;
+		id = 0;
+		owner_id = 0;
+		parent = nullptr;
+	}
+	static Inode* make_subRoot(const std::wstring path, Inode& parent) {
+		auto w = wsplit(path, L"\\\\|\\/");
+		if (w.size() > 0) {
+			std::wstring h = w[w.size() - 1];
+			if (parent.find_by_path(h) == nullptr) {
+				Inode sRt;
+				sRt.name = h;
+				parent.entries.push_back(sRt);
+				return &parent.entries.back();
+			}
+			return parent.find_by_path(h);
+		}
+		return nullptr;
+	}
+	Inode& folder() {
+		type = InodeType::INODE_FOLDER;
+		size = 0;
+		modification_time = 0;
+		return *this;
+	}
+	Inode& audio(long long size, time_t modification_time) {
+		type = InodeType::INODE_AUDIO;
+		this->size = size;
+		this->modification_time = modification_time;
+		return *this;
+	}
+	Inode& video(long long size, time_t modification_time) {
+		type = InodeType::INODE_VIDEO;
+		this->size = size;
+		this->modification_time = modification_time;
+		return *this;
+	}
+	Inode& photo(long long size, time_t modification_time) {
+		type = InodeType::INODE_PHOTO;
+		this->size = size;
+		this->modification_time = modification_time;
+		return *this;
+	}
+	static std::wstring get_ext(const std::wstring& file_name) {
+		std::wstring tmp = file_name;
+		size_t n = tmp.find_last_of(L'.');
+		if (n != std::wstring::npos && n != tmp.size() - 1) {
+			return tmp.erase(0, n + 1);
+		}
+		return tmp;
+	}
+	std::wstring getFullPath() {
+		std::wstring ret;
+		Inode* p = parent;
+		bool fst = true;
+		while (p != nullptr && (p->id != 1 && p->owner_id != 1)) {
+			if (fst) {
+				fst = false;
+				ret = p->name;
+			}
+			else {
+				ret = p->name + L"\\" + ret;
+			}
+			p = p->parent;
+		}
+		return ret;
+	}
+	static std::wstring getName(Inode* inode) {
+		if (inode == nullptr) {
+			return L"";
+		}
+		return inode->name;
+	}
+	static void updateDir(Inode* inode) {
+		if (inode == nullptr) {
+			return;
+		}
+		inode->updateDir();
+	}
+	void updateDir() {
+		if (type != InodeType::INODE_FOLDER) {
+			return;
+		}
+		entries.sort(greator);
+		for (auto& i : entries) {
+			if (i.type != InodeType::INODE_FOLDER) {
+				preview_hash = i.hash;
+				break;
+			}
+		}
+		if (entries.size() > 0) {
+			modification_time = (*entries.begin()).modification_time;
+		}
+		else {
+			modification_time = time(0);
+		}
+	}
+	Inode* attachTo(Inode& parentNode, const std::wstring&root) {
+		parent = &parentNode;
+		id = crc32(WSTRUtils::wchar_to_UTF8(name));
+		owner_id = crc32(WSTRUtils::wchar_to_UTF8(WSTRUtils::combine_root_path(root, getFullPath(), parentNode.name)));
+		if (type != InodeType::INODE_FOLDER) {
+			hash = std::to_string(modification_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(WSTRUtils::combine_root_path(root, getFullPath(), name))) + "." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(name)));
+			preview_hash = hash;
+		}
+		else {
+			entries.sort(greator);
+			for (auto& i : entries) {
+				if (i.type != InodeType::INODE_FOLDER) {
+					preview_hash = i.preview_hash;
+					modification_time = i.modification_time;
+					break;
+				}
+			}
+			if (modification_time <= 0) {
+				modification_time = time(0);
+			}
+		}
+		parentNode.entries.push_back(*this);
+		return &parentNode.entries.back();
+	}
+	Inode* find_by_path(const std::wstring& path) {
+		if (path.empty()) {
+			return this;
+		}
+		Inode* ret = this;
+		Inode* tp = this;
+		auto bb = wsplit(path, L"\\\\|\\/");
+		for (auto& i :bb) {
+			for (auto& s : tp->entries) {
+				if (s.name == i) {
+					tp = &s;
+					break;
+				}
+			}
+			if (tp == ret) {
+				return nullptr;
+			}
+			ret = tp;
+		}
+		return ret;
+	}
+
+	void clear() {
+		entries.clear();
+	}
+	std::string serialize(const RequestParserStruct& Req, bool isSSL);
+private:
+	std::wstring name;
+	std::string preview_hash;
+	std::string hash;
+	time_t modification_time;
+	InodeType type;
+	long long size;
+	Inode* parent;
+	std::list<Inode> entries;
+
+	int id;
+	int owner_id;
 };
