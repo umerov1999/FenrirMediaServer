@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPCasting.h"
 
@@ -1529,8 +1529,8 @@ void CXTPSkinObjectFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 
 		xMin += GetSystemMetrics(SM_CYSIZE) + 2 * GetSystemMetrics(SM_CXEDGE);
 
-		lpMMI->ptMinTrackSize.x = max(lpMMI->ptMinTrackSize.x, xMin);
-		lpMMI->ptMinTrackSize.y = max(lpMMI->ptMinTrackSize.y, yMin);
+		lpMMI->ptMinTrackSize.x = CXTP_max(lpMMI->ptMinTrackSize.x, xMin);
+		lpMMI->ptMinTrackSize.y = CXTP_max(lpMMI->ptMinTrackSize.y, yMin);
 	}
 
 	if (m_pManager->HasApplyOptions(xtpSkinApplyFrame | xtpSkinApplyMetrics)
@@ -1786,7 +1786,7 @@ void CXTPSkinObjectFrame::CalcScrollBarInfo(LPRECT lprc, XTP_SKINSCROLLBAR_POSIN
 
 	dwRange = ((DWORD)(pSBInfo->posMax - pSBInfo->posMin)) + 1;
 
-	cpx = min((pSBInfo->pxBottom - pSBInfo->pxTop) / 2, pSBInfo->cpxThumb);
+	cpx = CXTP_min((pSBInfo->pxBottom - pSBInfo->pxTop) / 2, pSBInfo->cpxThumb);
 
 	pSBInfo->pxUpArrow	 = pSBInfo->pxTop + cpx;
 	pSBInfo->pxDownArrow = pSBInfo->pxBottom - cpx;
@@ -1796,7 +1796,7 @@ void CXTPSkinObjectFrame::CalcScrollBarInfo(LPRECT lprc, XTP_SKINSCROLLBAR_POSIN
 		int i = MulDiv(pSBInfo->pxDownArrow - pSBInfo->pxUpArrow, pSBInfo->page,
 					   XTPToIntChecked(dwRange));
 
-		pSBInfo->cpxThumb = max(max(XTP_DPI_X(16), pSBInfo->cpxThumb / 2), i);
+		pSBInfo->cpxThumb = CXTP_max(CXTP_max(XTP_DPI_X(16), pSBInfo->cpxThumb / 2), i);
 	}
 
 	pSBInfo->pxMin = pSBInfo->pxTop + cpx;

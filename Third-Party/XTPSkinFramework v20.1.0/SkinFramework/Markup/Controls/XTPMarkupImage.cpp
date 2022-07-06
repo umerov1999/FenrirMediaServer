@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -183,9 +183,9 @@ CSize CXTPMarkupImage::MeasureArrangeHelper(CSize availableSize)
 				{
 					switch (stretch)
 					{
-						case xtpMarkupStretchUniform: cx = cy = min(cx, cy); break;
+						case xtpMarkupStretchUniform: cx = cy = CXTP_min(cx, cy); break;
 
-						case xtpMarkupStretchUniformToFill: cx = cy = max(cx, cy); break;
+						case xtpMarkupStretchUniformToFill: cx = cy = CXTP_max(cx, cy); break;
 					}
 				}
 

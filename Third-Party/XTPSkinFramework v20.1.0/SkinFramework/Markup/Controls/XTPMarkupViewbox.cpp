@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -219,8 +219,8 @@ CSize CXTPMarkupViewbox::ArrangeOverride(CSize szFinalSize)
 			case xtpMarkupStretchUniform:
 			{
 				// get Parent square with minimal side
-				rcChild = CRect(0, 0, min(rcParent.Width(), rcParent.Height()),
-								min(rcParent.Width(), rcParent.Height()));
+				rcChild = CRect(0, 0, CXTP_min(rcParent.Width(), rcParent.Height()),
+								CXTP_min(rcParent.Width(), rcParent.Height()));
 
 				// square has same width as Parent
 				if (rcChild.Width() == rcParent.Width())
@@ -252,8 +252,8 @@ CSize CXTPMarkupViewbox::ArrangeOverride(CSize szFinalSize)
 
 			case xtpMarkupStretchUniformToFill:
 			{
-				rcChild = CRect(0, 0, max(rcParent.Width(), rcParent.Height()),
-								max(rcParent.Width(), rcParent.Height()));
+				rcChild = CRect(0, 0, CXTP_max(rcParent.Width(), rcParent.Height()),
+								CXTP_max(rcParent.Width(), rcParent.Height()));
 
 				if (rcChild.Width() == rcParent.Width())
 				{

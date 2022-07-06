@@ -19,7 +19,7 @@
 
 #include "StdAfx.h"
 #include "float.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -510,10 +510,10 @@ CRect CXTPMarkupGdiPlusDeviceContext::GetPointsBoundRect(const POINT* points, in
 	for (int i = 0; i < nCount; i++)
 	{
 		const POINT& pt = points[i];
-		rc.left			= min(rc.left, pt.x);
-		rc.top			= min(rc.top, pt.y);
-		rc.right		= max(rc.right, pt.x);
-		rc.bottom		= max(rc.bottom, pt.y);
+		rc.left			= CXTP_min(rc.left, pt.x);
+		rc.top			= CXTP_min(rc.top, pt.y);
+		rc.right		= CXTP_max(rc.right, pt.x);
+		rc.bottom		= CXTP_max(rc.bottom, pt.y);
 	}
 
 	return rc;
@@ -525,10 +525,10 @@ Gdiplus::GpRectF CXTPMarkupGdiPlusDeviceContext::GetPointsBoundRect(const Gdiplu
 	for (int i = 0; i < nCount; i++)
 	{
 		const Gdiplus::GpPointF& pt = points[i];
-		rc.X						= min(rc.GetLeft(), pt.X);
-		rc.Y						= min(rc.GetTop(), pt.Y);
-		rc.Width					= max(rc.GetRight(), pt.X) - rc.X;
-		rc.Height					= max(rc.GetBottom(), pt.Y) - rc.Y;
+		rc.X						= CXTP_min(rc.GetLeft(), pt.X);
+		rc.Y						= CXTP_min(rc.GetTop(), pt.Y);
+		rc.Width					= CXTP_max(rc.GetRight(), pt.X) - rc.X;
+		rc.Height					= CXTP_max(rc.GetBottom(), pt.Y) - rc.Y;
 	}
 
 	return rc;

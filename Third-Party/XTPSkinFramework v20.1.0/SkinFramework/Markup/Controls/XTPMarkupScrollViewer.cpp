@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -172,7 +172,7 @@ CSize CXTPMarkupScrollViewer::ArrangeOverride(CSize szFinalSize)
 	{
 		if (m_yOffset > 0 && pContent->GetDesiredSize().cy < m_yOffset + szViewport.cy)
 		{
-			m_yOffset = max(0, pContent->GetDesiredSize().cy - szViewport.cy);
+			m_yOffset = CXTP_max(0, pContent->GetDesiredSize().cy - szViewport.cy);
 		}
 
 		SCROLLINFO si = { 0 };
@@ -190,7 +190,7 @@ CSize CXTPMarkupScrollViewer::ArrangeOverride(CSize szFinalSize)
 	{
 		if (m_xOffset > 0 && pContent->GetDesiredSize().cx < m_xOffset + szViewport.cx)
 		{
-			m_xOffset = max(0, pContent->GetDesiredSize().cx - szViewport.cx);
+			m_xOffset = CXTP_max(0, pContent->GetDesiredSize().cx - szViewport.cx);
 		}
 
 		SCROLLINFO si = { 0 };
@@ -212,8 +212,8 @@ CSize CXTPMarkupScrollViewer::ArrangeOverride(CSize szFinalSize)
 				  szFinalSize.cy));
 	}
 
-	CRect rcContent(0, 0, max(szViewport.cx, pContent->GetDesiredSize().cx),
-					max(szViewport.cy, pContent->GetDesiredSize().cy));
+	CRect rcContent(0, 0, CXTP_max(szViewport.cx, pContent->GetDesiredSize().cx),
+					CXTP_max(szViewport.cy, pContent->GetDesiredSize().cy));
 	rcContent.OffsetRect(-m_xOffset, -m_yOffset);
 	pContent->Arrange(rcContent);
 
@@ -273,7 +273,7 @@ CSize CXTPMarkupScrollViewer::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSi
 		szScroll.cx = m_pVerticalScrollBar->GetDesiredSize().cx;
 
 		if (szViewportSize.cx != INT_MAX)
-			szViewportSize.cx = max(0, szViewportSize.cx - szScroll.cx);
+			szViewportSize.cx = CXTP_max(0, szViewportSize.cx - szScroll.cx);
 	}
 	else
 	{
@@ -296,7 +296,7 @@ CSize CXTPMarkupScrollViewer::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSi
 		m_pHorizontalScrollBar->Measure(pDC, szAvailableSize);
 		szScroll.cy = m_pHorizontalScrollBar->GetDesiredSize().cy;
 		if (szViewportSize.cy != INT_MAX)
-			szViewportSize.cy = max(0, szViewportSize.cy - szScroll.cy);
+			szViewportSize.cy = CXTP_max(0, szViewportSize.cy - szScroll.cy);
 	}
 	else
 	{
@@ -319,8 +319,8 @@ CSize CXTPMarkupScrollViewer::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSi
 	}
 
 	pContent->Measure(pDC, szViewportSize);
-	return CSize(min(szAvailableSize.cx, pContent->GetDesiredSize().cx + szScroll.cx),
-				 min(szAvailableSize.cy, pContent->GetDesiredSize().cy + szScroll.cy));
+	return CSize(CXTP_min(szAvailableSize.cx, pContent->GetDesiredSize().cx + szScroll.cx),
+		CXTP_min(szAvailableSize.cy, pContent->GetDesiredSize().cy + szScroll.cy));
 }
 
 void CXTPMarkupScrollViewer::Scroll(int nBar, int nSBCode, int pos)
@@ -335,17 +335,17 @@ void CXTPMarkupScrollViewer::Scroll(int nBar, int nSBCode, int pos)
 
 	int nCurPos = si.nPos;
 	int nPage	= (int)si.nPage;
-	int nLimit	= max(0, si.nMax - max(nPage - 1, 0));
+	int nLimit	= CXTP_max(0, si.nMax - CXTP_max(nPage - 1, 0));
 
 	// decide what to do for each different scroll event
 	switch (nSBCode)
 	{
 		case SB_TOP: nCurPos = 0; break;
 		case SB_BOTTOM: nCurPos = nLimit; break;
-		case SB_LINEUP: nCurPos = max(nCurPos - 16, 0); break;
-		case SB_LINEDOWN: nCurPos = min(nCurPos + 16, nLimit); break;
-		case SB_PAGEUP: nCurPos = max(nCurPos - nPage, 0); break;
-		case SB_PAGEDOWN: nCurPos = min(nCurPos + nPage, nLimit); break;
+		case SB_LINEUP: nCurPos = CXTP_max(nCurPos - 16, 0); break;
+		case SB_LINEDOWN: nCurPos = CXTP_min(nCurPos + 16, nLimit); break;
+		case SB_PAGEUP: nCurPos = CXTP_max(nCurPos - nPage, 0); break;
+		case SB_PAGEDOWN: nCurPos = CXTP_min(nCurPos + nPage, nLimit); break;
 		case SB_THUMBTRACK:
 		case SB_THUMBPOSITION: nCurPos = pos; break;
 	}
@@ -369,7 +369,7 @@ int CXTPMarkupScrollViewer::GetScrollLimit(int nBar)
 	pScrollBar->GetScrollInfo(&si);
 
 	int nPage  = (int)si.nPage;
-	int nLimit = max(0, si.nMax - max(nPage - 1, 0));
+	int nLimit = CXTP_max(0, si.nMax - CXTP_max(nPage - 1, 0));
 
 	return nLimit;
 }

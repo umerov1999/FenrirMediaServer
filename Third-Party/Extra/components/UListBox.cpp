@@ -94,7 +94,13 @@ static void SetRange(CScrollBar* pScrollBar, int Min, int Max, int RenderedCount
 
 }
 
-void UListBox::Init(HBITMAP HBackgr, CallBackSelectTouch OnSelect, CallBackSelectTouch OnTouch)
+CRect UListBox::getRect() {
+	CRect backgr;
+	GetClientRect(&backgr);
+	return backgr;
+}
+
+void UListBox::Init(HBITMAP HBackgr, CallBackSelectTouch OnSelect, CallBackSelectTouch OnTouch, bool resize)
 {
 	if (Inited == true)
 		return;
@@ -112,7 +118,12 @@ void UListBox::Init(HBITMAP HBackgr, CallBackSelectTouch OnSelect, CallBackSelec
 	CRect backgr;
 	GetClientRect(&backgr);
 	if (HBackgr != NULL) {
-		Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
+		if (resize) {
+			Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
+		}
+		else {
+			Background.Attach(HBackgr);
+		}
 	}
 	SetRange(&Scroll, 0, 0, 0);
 	SetRange(&HorizScroll, 0, 0, 0);
@@ -123,13 +134,18 @@ void UListBox::Init(HBITMAP HBackgr, CallBackSelectTouch OnSelect, CallBackSelec
 	LinesChenged = true;
 }
 
-void UListBox::SwitchBackground(HBITMAP HBackgr) {
+void UListBox::SwitchBackground(HBITMAP HBackgr, bool resize) {
 	THREAD_ACCESS_LOCK(Async, &Background);
 	Background.DeleteObject();
 	CRect backgr;
 	GetClientRect(&backgr);
 	if (HBackgr != NULL) {
-		Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
+		if (resize) {
+			Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
+		}
+		else {
+			Background.Attach(HBackgr);
+		}
 	}
 	THREAD_ACCESS_UNLOCK(Async, &Background);
 }

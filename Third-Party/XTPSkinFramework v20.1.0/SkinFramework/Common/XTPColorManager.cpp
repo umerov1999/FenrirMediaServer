@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <math.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -700,9 +700,9 @@ void CXTPColorManager::RefreshColors(BOOL bResetCustomColors /*= TRUE*/)
 												  GetGValue(clrBackground) * .75,
 												  GetBValue(clrBackground) * .75);
 
-	m_arrStandardColor[COLOR_3DLIGHT]					  = RGB(min(GetRValue(clrBtn) + 15, 255),
-											min(GetGValue(clrBtn) + 15, 255),
-											min(GetBValue(clrBtn) + 15, 255));
+	m_arrStandardColor[COLOR_3DLIGHT]					  = RGB(CXTP_min(GetRValue(clrBtn) + 15, 255),
+											CXTP_min(GetGValue(clrBtn) + 15, 255),
+											CXTP_min(GetBValue(clrBtn) + 15, 255));
 	m_arrStandardColor[XPCOLOR_EDITCTRLBORDER]			  = GetColor(XPCOLOR_TOOLBAR_FACE);
 	m_arrStandardColor[XPCOLOR_HIGHLIGHT_DISABLED_BORDER] = GetColor(XPCOLOR_DISABLED);
 	m_arrStandardColor[XPCOLOR_TOOLBAR_GRAYTEXT]		  = m_arrStandardColor[XPCOLOR_DISABLED];

@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -100,14 +100,14 @@ CSize CXTPMarkupCheckBox::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize s
 	CXTPMarkupUIElement* pContent = GetContent();
 	if (pContent != NULL)
 	{
-		CSize availableSize(max(0, szAvailableSize.cx - size3.cx),
-							max(0, szAvailableSize.cy - size3.cy));
+		CSize availableSize(CXTP_max(0, szAvailableSize.cx - size3.cx),
+							CXTP_max(0, szAvailableSize.cy - size3.cy));
 		pContent->Measure(pDC, availableSize);
 
 		CSize desiredSize = pContent->GetDesiredSize();
 
 		return CSize(desiredSize.cx + size3.cx,
-					 max(m_pMarkupContext->ScaleY(13), desiredSize.cy + size3.cy));
+					 CXTP_max(m_pMarkupContext->ScaleY(13), desiredSize.cy + size3.cy));
 	}
 
 	return size3;

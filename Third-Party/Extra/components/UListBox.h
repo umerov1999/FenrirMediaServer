@@ -52,8 +52,8 @@ public:
 
 	afx_msg void AddLine(const std::wstring &Line);
 	afx_msg void UpdateLines();
-	afx_msg void Init(HBITMAP HBackgr = NULL, CallBackSelectTouch OnSelect = NULL, CallBackSelectTouch OnTouch = NULL);
-	afx_msg void SwitchBackground(HBITMAP HBackgr = NULL);
+	afx_msg void Init(HBITMAP HBackgr = NULL, CallBackSelectTouch OnSelect = NULL, CallBackSelectTouch OnTouch = NULL, bool resize = true);
+	afx_msg void SwitchBackground(HBITMAP HBackgr = NULL, bool resize = true);
 	afx_msg void RegisterSpecialPatternOnce(const std::wstring &Pattern, URGB Color);
 	afx_msg void Select(int Id);
 	afx_msg void Clear();
@@ -63,6 +63,7 @@ public:
 	afx_msg int GetCount();
 	afx_msg std::wstring GetLine(int Idx);
 	afx_msg std::wstring GetSelectedLine();
+	afx_msg CRect getRect();
 protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnPaint();

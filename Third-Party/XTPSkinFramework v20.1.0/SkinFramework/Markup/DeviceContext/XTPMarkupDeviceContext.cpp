@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <math.h>
 #include <ActivScp.h>
@@ -715,7 +715,7 @@ void CXTPMarkupDeviceContext::FillRectangle(CRect rc, CXTPMarkupBrush* pBrush)
 
 			lpPixel += (cx - rcClipBox.right);
 
-			int y = max(1, cy - rcClipBox.bottom);
+			int y = CXTP_max(1, cy - rcClipBox.bottom);
 
 			if (y > 1)
 			{

@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -508,7 +508,7 @@ void CXTPMarkupTextBlock::CloseLine(CLineIterator& li, int nWidth)
 		while (pPart)
 		{
 			li.pLine->m_nWidth += pPart->size.Width;
-			li.pLine->m_nBaseline = max(li.pLine->m_nBaseline,
+			li.pLine->m_nBaseline = CXTP_max(li.pLine->m_nBaseline,
 										static_cast<FLOAT>(pPart->nBaseline));
 			pPart				  = pPart->m_pNextChain;
 		}
@@ -516,13 +516,13 @@ void CXTPMarkupTextBlock::CloseLine(CLineIterator& li, int nWidth)
 		pPart = li.pLine->m_arrParts.GetHead();
 		while (pPart)
 		{
-			li.pLine->m_nHeight = max(li.pLine->m_nHeight,
+			li.pLine->m_nHeight = CXTP_max(li.pLine->m_nHeight,
 									  pPart->size.Height - static_cast<float>(pPart->nBaseline)
 										  + li.pLine->m_nBaseline);
 			pPart				= pPart->m_pNextChain;
 		}
 
-		li.nMaxWidth = max(li.nMaxWidth, li.pLine->m_nWidth);
+		li.nMaxWidth = CXTP_max(li.nMaxWidth, li.pLine->m_nWidth);
 
 		li.x = 0;
 		li.y += li.pLine->m_nHeight;
@@ -786,8 +786,8 @@ CSize CXTPMarkupTextBlock::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize 
 {
 	CSize size3 = GetPadding()->GetSize();
 
-	CSize availableSize(max(0, szAvailableSize.cx - size3.cx),
-						max(0, szAvailableSize.cy - size3.cy));
+	CSize availableSize(CXTP_max(0, szAvailableSize.cx - size3.cx),
+						CXTP_max(0, szAvailableSize.cy - size3.cy));
 
 	CalculateLines(pDC, availableSize.cx);
 
@@ -896,7 +896,7 @@ void CXTPMarkupTextBlock::RenderTextDecorations(CXTPMarkupDrawingContext* pDC, C
 	rc.Offset(part->ptOffset.X, part->ptOffset.Y);
 
 	int nTopDecoration = 0;
-	int nLineHeight	   = max(1, part->nBaseline / 4);
+	int nLineHeight	   = CXTP_max(1, part->nBaseline / 4);
 	if (pTextDecorations->GetValue() == 1) // Underline
 	{
 		int nLineTop   = static_cast<int>(rc.GetBottom()) - part->nBaseline + nLineHeight;

@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "GraphicLibrary/GdiPlus/XTPGdiPlus.h"
 
 #include "Common/XTPTypeId.h"
@@ -588,10 +588,10 @@ void CXTPFrameShadow::ComputeData()
 	GetClientRect(m_pPCD->clientRect);
 	CSize clientSize = m_pPCD->clientRect.Size();
 
-	UINT nSize = m_nOuterSize + min(m_nInnerSize, UINT((clientSize.cx - m_nOuterSize * 2) / 2));
+	UINT nSize = m_nOuterSize + CXTP_min(m_nInnerSize, UINT((clientSize.cx - m_nOuterSize * 2) / 2));
 	m_pPCD->size.cx = XTPToLongChecked(nSize);
 
-	nSize = m_nOuterSize + min(m_nInnerSize, UINT((clientSize.cy - m_nOuterSize * 2) / 2));
+	nSize = m_nOuterSize + CXTP_min(m_nInnerSize, UINT((clientSize.cy - m_nOuterSize * 2) / 2));
 	m_pPCD->size.cy = XTPToLongChecked(nSize);
 
 	m_pPCD->startColor = Color(0xff, GetRValue(m_crColor), GetGValue(m_crColor),

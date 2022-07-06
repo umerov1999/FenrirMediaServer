@@ -29,6 +29,7 @@
 #	include "Common/XTPCasting.h"
 
 #	include "Common/Base/Diagnostic/XTPDisableNoisyWarnings.h"
+#include "Common/Base/cxminmax.h"
 
 // deprecated
 #	define CXTMaskEditT CXTPMaskEditT
@@ -798,7 +799,7 @@ public:
 		if (nEndPos == -1)
 			nEndPos = m_strWindowText.GetLength();
 		else
-			nEndPos = min(nEndPos, m_strWindowText.GetLength());
+			nEndPos = CXTP_min(nEndPos, m_strWindowText.GetLength());
 
 		CString strBuffer;
 

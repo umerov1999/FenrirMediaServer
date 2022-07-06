@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -112,8 +112,8 @@ CRect CXTPMarkupThickness::HelperDeflateRect(CRect rt, CXTPMarkupThickness* thic
 		return rt;
 
 	return CRect(CPoint(rt.left + thick->m_left, rt.top + thick->m_top),
-				 CSize(max(0, (rt.Width() - thick->m_left) - thick->m_right),
-					   max(0, (rt.Height() - thick->m_top) - thick->m_bottom)));
+				 CSize(CXTP_max(0, (rt.Width() - thick->m_left) - thick->m_right),
+					 CXTP_max(0, (rt.Height() - thick->m_top) - thick->m_bottom)));
 }
 
 CXTPMarkupObject* CXTPMarkupThickness::ConvertFrom(CXTPMarkupBuilder* pBuilder,

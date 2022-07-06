@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPFramework.h"
 
 #include "Common/XTPCasting.h"
@@ -235,7 +235,7 @@ int CXTPMarkupGrid::GetColumnSpan(CXTPMarkupUIElement* pElement)
 	if (!pColumnSpan)
 		return 1;
 
-	return max(1, (int)*pColumnSpan);
+	return CXTP_max(1, (int)*pColumnSpan);
 }
 
 int CXTPMarkupGrid::GetRowSpan(CXTPMarkupUIElement* pElement)
@@ -245,7 +245,7 @@ int CXTPMarkupGrid::GetRowSpan(CXTPMarkupUIElement* pElement)
 	if (!pRowSpan)
 		return 1;
 
-	return max(1, (int)*pRowSpan);
+	return CXTP_max(1, (int)*pRowSpan);
 }
 
 void CXTPMarkupGrid::SetPropertyObject(CXTPMarkupBuilder* pBuilder,
@@ -310,7 +310,7 @@ void CXTPMarkupGrid::ValidateDefinitionsLayout(CXTPMarkupDefinitionCollection* p
 			case CXTPMarkupGridLength::unitTypePixel:
 				pDefinition->m_nSizeType = sizeTypePixel;
 				nPositiveInfinity		 = (int)pDefinition->GetUserSize()->GetValue();
-				nUserMinSize			 = max(nUserMinSize, min(nPositiveInfinity, nUserMaxSize));
+				nUserMinSize			 = CXTP_max(nUserMinSize, CXTP_min(nPositiveInfinity, nUserMaxSize));
 				break;
 
 			case CXTPMarkupGridLength::unitTypeStar:
@@ -319,7 +319,7 @@ void CXTPMarkupGrid::ValidateDefinitionsLayout(CXTPMarkupDefinitionCollection* p
 		}
 
 		pDefinition->UpdateMinSize(nUserMinSize);
-		pDefinition->m_nMeasureSize = max(nUserMinSize, min(nPositiveInfinity, nUserMaxSize));
+		pDefinition->m_nMeasureSize = CXTP_max(nUserMinSize, CXTP_min(nPositiveInfinity, nUserMaxSize));
 	}
 }
 
@@ -377,11 +377,11 @@ void CXTPMarkupGrid::ValidateCells()
 			continue;
 
 		CELLCACHE& cache   = m_pCellCachesCollection[i];
-		cache.nColumnIndex = min(GetColumn(pElement), m_pDefinitionsU->GetCount() - 1);
-		cache.nRowIndex	   = min(GetRow(pElement), m_pDefinitionsV->GetCount() - 1);
-		cache.nColumnSpan  = min(GetColumnSpan(pElement),
+		cache.nColumnIndex = CXTP_min(GetColumn(pElement), m_pDefinitionsU->GetCount() - 1);
+		cache.nRowIndex	   = CXTP_min(GetRow(pElement), m_pDefinitionsV->GetCount() - 1);
+		cache.nColumnSpan  = CXTP_min(GetColumnSpan(pElement),
 								 m_pDefinitionsU->GetCount() - cache.nColumnIndex);
-		cache.nRowSpan	 = min(GetRowSpan(pElement), m_pDefinitionsV->GetCount() - cache.nRowIndex);
+		cache.nRowSpan	 = CXTP_min(GetRowSpan(pElement), m_pDefinitionsV->GetCount() - cache.nRowIndex);
 		cache.nSizeTypeU = GetLengthTypeForRange(m_pDefinitionsU, cache.nColumnIndex,
 												 cache.nColumnSpan);
 		cache.nSizeTypeV = GetLengthTypeForRange(m_pDefinitionsV, cache.nRowIndex, cache.nRowSpan);
@@ -554,7 +554,7 @@ void CXTPMarkupGrid::EnsureMinSizeInDefinitionRange(CXTPMarkupDefinitionCollecti
 		double preferredSize				  = pDefinition->GetPreferredSize();
 		double maxSize						  = IsNan(pDefinition->GetUserMaxSize())
 													? minSize
-													: max(minSize, pDefinition->GetUserMaxSize());
+													: CXTP_max(minSize, pDefinition->GetUserMaxSize());
 
 		dTotalMinSize += minSize;
 		dTotalPreferedSize += preferredSize;
@@ -587,7 +587,7 @@ void CXTPMarkupGrid::EnsureMinSizeInDefinitionRange(CXTPMarkupDefinitionCollecti
 			}
 			while (index < count)
 			{
-				double a = min(d / ((double)(count - index)),
+				double a = CXTP_min(d / ((double)(count - index)),
 							   pTempDefinitions[index]->GetPreferredSize());
 				if (a > pTempDefinitions[index]->m_nMinSize)
 				{
@@ -608,7 +608,7 @@ void CXTPMarkupGrid::EnsureMinSizeInDefinitionRange(CXTPMarkupDefinitionCollecti
 				double num16 = pTempDefinitions[n]->GetPreferredSize();
 				double num17 = num16 + (d / ((double)((count - nCountAuto) - n)));
 				pTempDefinitions[n]->UpdateMinSize(
-					(int)min(num17, pTempDefinitions[n]->m_nSizeCache));
+					(int)CXTP_min(num17, pTempDefinitions[n]->m_nSizeCache));
 				d -= pTempDefinitions[n]->m_nMinSize - num16;
 				n++;
 			}
@@ -617,7 +617,7 @@ void CXTPMarkupGrid::EnsureMinSizeInDefinitionRange(CXTPMarkupDefinitionCollecti
 				double num18 = pTempDefinitions[n]->m_nMinSize;
 				double num19 = num18 + (d / ((double)(count - n)));
 				pTempDefinitions[n]->UpdateMinSize(
-					(int)(min(num19, pTempDefinitions[n]->m_nSizeCache)));
+					(int)(CXTP_min(num19, pTempDefinitions[n]->m_nSizeCache)));
 				d -= pTempDefinitions[n]->m_nMinSize - num18;
 				n++;
 			}
@@ -714,7 +714,7 @@ void CXTPMarkupGrid::ResolveStar(CXTPMarkupDefinitionCollection* pDefinitions, d
 					pDefinition->m_nMeasureSize = num4;
 					double num5					= IsNan(pDefinition->GetUserMaxSize())
 													  ? pDefinition->m_nMinSize
-													  : max(pDefinition->m_nMinSize, pDefinition->GetUserMaxSize());
+													  : CXTP_max(pDefinition->m_nMinSize, pDefinition->GetUserMaxSize());
 					pDefinition->m_nSizeCache	= num5 / num4;
 				}
 				else
@@ -751,10 +751,10 @@ void CXTPMarkupGrid::ResolveStar(CXTPMarkupDefinitionCollection* pDefinitions, d
 			}
 			else
 			{
-				int num10 = (int)(max((double)(availableSize - num2), (double)0)
+				int num10 = (int)(CXTP_max((double)(availableSize - num2), (double)0)
 								  * (nMeasureSize / pDefinition->m_nSizeCache));
-				nMinSize  = min(num10, pDefinition->GetUserMaxSize());
-				nMinSize  = max(pDefinition->m_nMinSize, nMinSize);
+				nMinSize  = CXTP_min(num10, pDefinition->GetUserMaxSize());
+				nMinSize  = CXTP_max(pDefinition->m_nMinSize, nMinSize);
 			}
 			pDefinition->m_nMeasureSize = nMinSize;
 			num2 += nMinSize;
@@ -779,8 +779,8 @@ CSize CXTPMarkupGrid::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize const
 
 			pElement->Measure(pDC, constraint);
 
-			size.cx = max(size.cx, pElement->GetDesiredSize().cx);
-			size.cy = max(size.cy, pElement->GetDesiredSize().cy);
+			size.cx = CXTP_max(size.cx, pElement->GetDesiredSize().cx);
+			size.cy = CXTP_max(size.cy, pElement->GetDesiredSize().cy);
 		}
 
 		return size;
@@ -957,7 +957,7 @@ void CXTPMarkupGrid::SetFinalSize(CXTPMarkupDefinitionCollection* pDefinitions, 
 				pDefinition->m_nMeasureSize = d;
 				int num6					= IsNan(pDefinition->GetUserMaxSize())
 												  ? pDefinition->m_nMinSize
-												  : max(pDefinition->m_nMinSize, pDefinition->GetUserMaxSize());
+												  : CXTP_max(pDefinition->m_nMinSize, pDefinition->GetUserMaxSize());
 				pDefinition->m_nSizeCache	= (double)num6 / (double)d;
 			}
 		}
@@ -976,8 +976,8 @@ void CXTPMarkupGrid::SetFinalSize(CXTPMarkupDefinitionCollection* pDefinitions, 
 					break;
 			}
 			int nUserMaxSize		  = pDefinition->GetUserMaxSize();
-			pDefinition->m_nSizeCache = max(pDefinition->m_nMinSize,
-											min(nMinSizeForArrange, nUserMaxSize));
+			pDefinition->m_nSizeCache = CXTP_max(pDefinition->m_nMinSize,
+											CXTP_min(nMinSizeForArrange, nUserMaxSize));
 			num3 += pDefinition->m_nSizeCache;
 		}
 	}
@@ -1005,10 +1005,10 @@ void CXTPMarkupGrid::SetFinalSize(CXTPMarkupDefinitionCollection* pDefinitions, 
 			}
 			else
 			{
-				double num13 = max((double)(finalSize - num3), (double)0)
+				double num13 = CXTP_max((double)(finalSize - num3), (double)0)
 							   * (nMeasureSize / pDefinition->m_nSizeCache);
-				num11 = min((int)num13, pDefinition->GetUserMaxSize());
-				num11 = max(pDefinition->m_nMinSize, num11);
+				num11 = CXTP_min((int)num13, pDefinition->GetUserMaxSize());
+				num11 = CXTP_max(pDefinition->m_nMinSize, num11);
 			}
 			pDefinition->m_nSizeCache = num11;
 			num3 += num11;
@@ -1024,7 +1024,7 @@ void CXTPMarkupGrid::SetFinalSize(CXTPMarkupDefinitionCollection* pDefinitions, 
 		{
 			double num16 = pTempDefinitions[k]->m_nSizeCache
 						   + (num14 / ((double)(pDefinitions->GetCount() - k)));
-			num16 = min(max(num16, pTempDefinitions[k]->m_nMinSize),
+			num16 = CXTP_min(CXTP_max(num16, pTempDefinitions[k]->m_nMinSize),
 						pTempDefinitions[k]->m_nSizeCache);
 			num14 -= num16 - pTempDefinitions[k]->m_nSizeCache;
 			pTempDefinitions[k]->m_nSizeCache = num16;

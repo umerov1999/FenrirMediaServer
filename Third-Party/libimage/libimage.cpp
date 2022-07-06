@@ -1,10 +1,13 @@
 ﻿#include <iostream>
 #include <string>
+#include <vector>
 #include <sstream>
+#include <thread>
 #include <Windows.h>
 #include "jpeglib.h"
 #include "png.h"
 #include "libimage.h"
+#include "thorvg.h"
 #include "zlib.h"
 using namespace std;
 #define BitmapWidth(cx, bpp)  (((((cx) * (bpp)) + 31) & ~31) >> 3)
@@ -655,18 +658,18 @@ std::string win_image::decompress_gzip(const std::string& str)
 	zs.avail_in = str.size();
 
 	int ret;
-	char outbuffer[32768];
+	std::vector<char> outbuffer(32768);
 	std::string outstring;
 
 	// get the decompressed bytes blockwise using repeated calls to inflate
 	do {
-		zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
+		zs.next_out = reinterpret_cast<Bytef*>(outbuffer.data());
 		zs.avail_out = sizeof(outbuffer);
 
 		ret = inflate(&zs, 0);
 
 		if (outstring.size() < zs.total_out) {
-			outstring.append(outbuffer,
+			outstring.append(outbuffer.data(),
 				zs.total_out - outstring.size());
 		}
 
@@ -682,4 +685,83 @@ std::string win_image::decompress_gzip(const std::string& str)
 	}
 
 	return outstring;
+}
+
+win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetHeight, const void* pDataBuffer, int nBufferSize, uint32_t bgColor) {
+	win_image_size size;
+	unique_ptr<tvg::SwCanvas> canvas;
+	//Canvas Engine
+	tvg::CanvasEngine tvgEngine = tvg::CanvasEngine::Sw;
+
+	//Threads Count
+	auto threads = thread::hardware_concurrency();
+
+	//Initialize ThorVG Engine
+	if (tvg::Initializer::init(tvgEngine, threads) != tvg::Result::Success) {
+		return win_image(PrepareFromBufferPNG(hwnd, ERROR_ICON, ERROR_ICON_SIZE, size.size_x, size.size_y), size);
+	}
+
+	//Create a Canvas
+	canvas = tvg::SwCanvas::gen();
+	if (!canvas) {
+		tvg::Initializer::term(tvg::CanvasEngine::Sw);
+		return win_image(PrepareFromBufferPNG(hwnd, ERROR_ICON, ERROR_ICON_SIZE, size.size_x, size.size_y), size);
+	}
+
+	auto picture = tvg::Picture::gen();
+	tvg::Result result = picture->load((const char*)pDataBuffer, nBufferSize, "svg", false);
+	if (result != tvg::Result::Success) {
+		tvg::Initializer::term(tvg::CanvasEngine::Sw);
+		return win_image(PrepareFromBufferPNG(hwnd, ERROR_ICON, ERROR_ICON_SIZE, size.size_x, size.size_y), size);
+	}
+	if (targetWidth == 0 || targetHeight == 0) {
+		float fw, fh;
+		picture->size(&fw, &fh);
+		targetWidth = static_cast<uint32_t>(fw);
+		targetHeight = static_cast<uint32_t>(fh);
+	}
+	else {
+		picture->size(targetWidth, targetHeight);
+	}
+	size.size_x = targetWidth;
+	size.size_y = targetHeight;
+	HBITMAP hOutputImage = (HBITMAP)CreateDIB(hwnd, targetWidth, targetHeight, 32);
+	if (hOutputImage == NULL) {
+		tvg::Initializer::term(tvg::CanvasEngine::Sw);
+		return win_image(PrepareFromBufferPNG(hwnd, ERROR_ICON, ERROR_ICON_SIZE, size.size_x, size.size_y), size);
+	}
+
+	BITMAP btmOutputImage;
+	::GetObject(hOutputImage, sizeof(BITMAP), &btmOutputImage);
+
+	unsigned char* pImageBuffer = (unsigned char*)btmOutputImage.bmBits;
+	if (canvas->target((uint32_t*)pImageBuffer, targetWidth, targetWidth, targetHeight, tvg::SwCanvas::ARGB8888_STRAIGHT) != tvg::Result::Success) {
+		tvg::Initializer::term(tvg::CanvasEngine::Sw);
+		DeleteObject(hOutputImage);
+		return win_image(PrepareFromBufferPNG(hwnd, ERROR_ICON, ERROR_ICON_SIZE, size.size_x, size.size_y), size);
+	}
+	//Background color if needed
+	if (bgColor != 0xffffffff) {
+		uint8_t r = (uint8_t)((bgColor & 0xff0000) >> 16);
+		uint8_t g = (uint8_t)((bgColor & 0x00ff00) >> 8);
+		uint8_t b = (uint8_t)((bgColor & 0x0000ff));
+
+		auto shape = tvg::Shape::gen();
+		shape->appendRect(0, 0, targetWidth, targetHeight, 0, 0);
+		shape->fill(r, g, b, 255);
+
+		if (canvas->push(move(shape)) != tvg::Result::Success) {
+			tvg::Initializer::term(tvg::CanvasEngine::Sw);
+			DeleteObject(hOutputImage);
+			return win_image(PrepareFromBufferPNG(hwnd, ERROR_ICON, ERROR_ICON_SIZE, size.size_x, size.size_y), size);
+		}
+	}
+
+	//Drawing
+	canvas->push(move(picture));
+	canvas->draw();
+	canvas->sync();
+	canvas->clear(true);
+	tvg::Initializer::term(tvg::CanvasEngine::Sw);
+	return win_image(hOutputImage, size);
 }

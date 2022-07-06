@@ -1025,6 +1025,9 @@
     <ClInclude Include="SkinFramework\SkinFramework\TMap.h">
       <Filter>Source\SkinFramework</Filter>
     </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\cxminmax.h">
+      <Filter>Source\Common\Common.Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SkinFramework\Common\XTPActiveScriptEngine.cpp">

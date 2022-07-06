@@ -101,7 +101,13 @@ static void SetRange(CScrollBar* pScrollBar, int Min, int Max, int RenderedCount
 	
 }
 
-void ColorEdit::Init(Align TextAlign, HBITMAP HBackgr)
+CRect ColorEdit::getRect() {
+	CRect backgr;
+	GetClientRect(&backgr);
+	return backgr;
+}
+
+void ColorEdit::Init(Align TextAlign, HBITMAP HBackgr, bool resize)
 {
 	if (Inited == true)
 		return;
@@ -120,7 +126,12 @@ void ColorEdit::Init(Align TextAlign, HBITMAP HBackgr)
 	CRect backgr;
 	GetClientRect(&backgr);
 	if (HBackgr != NULL) {
-		Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
+		if (resize) {
+			Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
+		}
+		else {
+			Background.Attach(HBackgr);
+		}
 	}
 	SetRange(&Scroll, 0, 0, 0);
 	SetRange(&HorizScroll, 0, 0, 0);
@@ -128,13 +139,18 @@ void ColorEdit::Init(Align TextAlign, HBITMAP HBackgr)
 	LinesChenged = true;
 }
 
-void ColorEdit::SwitchBackground(HBITMAP HBackgr) {
+void ColorEdit::SwitchBackground(HBITMAP HBackgr, bool resize) {
 	THREAD_ACCESS_LOCK(Async, &Background);
 	Background.DeleteObject();
 	CRect backgr;
 	GetClientRect(&backgr);
 	if (HBackgr != NULL) {
-		Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
+		if (resize) {
+			Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
+		}
+		else {
+			Background.Attach(HBackgr);
+		}
 	}
 	THREAD_ACCESS_UNLOCK(Async, &Background);
 }

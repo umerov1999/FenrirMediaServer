@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -488,7 +488,7 @@ void CXTPMarkupBuilder::CStringBuilder::Add(LPCWSTR lpszWord)
 
 	if (m_nAlloc < m_nLength + nWordLength + 1)
 	{
-		int nAlloc		= m_nLength + max(256, nWordLength + 1);
+		int nAlloc		= m_nLength + CXTP_max(256, nWordLength + 1);
 		LPWSTR lpszData = new WCHAR[XTPToUIntChecked(nAlloc)];
 
 		if (m_nLength > 0)

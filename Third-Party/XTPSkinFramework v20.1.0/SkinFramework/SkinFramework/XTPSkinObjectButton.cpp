@@ -17,7 +17,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPFramework.h"
 #define XTP_INTERNAL_UXTHEME_INCLUSION
@@ -622,11 +622,11 @@ void CXTPSkinObjectButton::DrawButtonText(CDC* pDC, int nPart, int nState)
 				{
 					// Try to leave a border all around text.  That causes
 					// focus to hug text.
-					rc.top	  = max(rcClient.top, y - GetMetrics()->m_cyBorder);
-					rc.bottom = min(rcClient.bottom, rc.top + GetMetrics()->m_cyEdge + cy);
+					rc.top	  = CXTP_max(rcClient.top, y - GetMetrics()->m_cyBorder);
+					rc.bottom = CXTP_min(rcClient.bottom, rc.top + GetMetrics()->m_cyEdge + cy);
 
-					rc.left	 = max(rcClient.left, x - GetMetrics()->m_cxBorder);
-					rc.right = min(rcClient.right, rc.left + GetMetrics()->m_cxEdge + cx);
+					rc.left	 = CXTP_max(rcClient.left, x - GetMetrics()->m_cxBorder);
+					rc.right = CXTP_min(rcClient.right, rc.left + GetMetrics()->m_cxEdge + cx);
 				}
 			}
 			else

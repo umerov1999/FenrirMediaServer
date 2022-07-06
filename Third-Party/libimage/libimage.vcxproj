@@ -71,6 +71,39 @@
     <ClCompile Include="png\pngwrite.c" />
     <ClCompile Include="png\pngwtran.c" />
     <ClCompile Include="png\pngwutil.c" />
+    <ClCompile Include="thorvg\src\raw\tvgRawLoader.cpp" />
+    <ClCompile Include="thorvg\src\svg\tvgSvgCssStyle.cpp" />
+    <ClCompile Include="thorvg\src\svg\tvgSvgLoader.cpp" />
+    <ClCompile Include="thorvg\src\svg\tvgSvgPath.cpp" />
+    <ClCompile Include="thorvg\src\svg\tvgSvgSceneBuilder.cpp" />
+    <ClCompile Include="thorvg\src\svg\tvgSvgUtil.cpp" />
+    <ClCompile Include="thorvg\src\svg\tvgXmlParser.cpp" />
+    <ClCompile Include="thorvg\src\sw_engine\tvgSwFill.cpp" />
+    <ClCompile Include="thorvg\src\sw_engine\tvgSwImage.cpp" />
+    <ClCompile Include="thorvg\src\sw_engine\tvgSwMath.cpp" />
+    <ClCompile Include="thorvg\src\sw_engine\tvgSwMemPool.cpp" />
+    <ClCompile Include="thorvg\src\sw_engine\tvgSwRaster.cpp" />
+    <ClCompile Include="thorvg\src\sw_engine\tvgSwRenderer.cpp" />
+    <ClCompile Include="thorvg\src\sw_engine\tvgSwRle.cpp" />
+    <ClCompile Include="thorvg\src\sw_engine\tvgSwShape.cpp" />
+    <ClCompile Include="thorvg\src\sw_engine\tvgSwStroke.cpp" />
+    <ClCompile Include="thorvg\src\tvgAccessor.cpp" />
+    <ClCompile Include="thorvg\src\tvgBezier.cpp" />
+    <ClCompile Include="thorvg\src\tvgCanvas.cpp" />
+    <ClCompile Include="thorvg\src\tvgFill.cpp" />
+    <ClCompile Include="thorvg\src\tvgGlCanvas.cpp" />
+    <ClCompile Include="thorvg\src\tvgInitializer.cpp" />
+    <ClCompile Include="thorvg\src\tvgLinearGradient.cpp" />
+    <ClCompile Include="thorvg\src\tvgLoader.cpp" />
+    <ClCompile Include="thorvg\src\tvgPaint.cpp" />
+    <ClCompile Include="thorvg\src\tvgPicture.cpp" />
+    <ClCompile Include="thorvg\src\tvgRadialGradient.cpp" />
+    <ClCompile Include="thorvg\src\tvgRender.cpp" />
+    <ClCompile Include="thorvg\src\tvgSaver.cpp" />
+    <ClCompile Include="thorvg\src\tvgScene.cpp" />
+    <ClCompile Include="thorvg\src\tvgShape.cpp" />
+    <ClCompile Include="thorvg\src\tvgSwCanvas.cpp" />
+    <ClCompile Include="thorvg\src\tvgTaskScheduler.cpp" />
     <ClCompile Include="zlib\adler32.c" />
     <ClCompile Include="zlib\compress.c" />
     <ClCompile Include="zlib\crc32.c" />
@@ -109,6 +142,40 @@
     <ClInclude Include="png\pnglibconf.h" />
     <ClInclude Include="png\pngpriv.h" />
     <ClInclude Include="png\pngstruct.h" />
+    <ClInclude Include="thorvg\inc\thorvg.h" />
+    <ClInclude Include="thorvg\src\config.h" />
+    <ClInclude Include="thorvg\src\raw\tvgRawLoader.h" />
+    <ClInclude Include="thorvg\src\svg\tvgSvgCssStyle.h" />
+    <ClInclude Include="thorvg\src\svg\tvgSvgLoader.h" />
+    <ClInclude Include="thorvg\src\svg\tvgSvgLoaderCommon.h" />
+    <ClInclude Include="thorvg\src\svg\tvgSvgPath.h" />
+    <ClInclude Include="thorvg\src\svg\tvgSvgSceneBuilder.h" />
+    <ClInclude Include="thorvg\src\svg\tvgSvgUtil.h" />
+    <ClInclude Include="thorvg\src\svg\tvgXmlParser.h" />
+    <ClInclude Include="thorvg\src\sw_engine\tvgSwCommon.h" />
+    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterAvx.h" />
+    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterC.h" />
+    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterNeon.h" />
+    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterTexmap.h" />
+    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterTexmapInternal.h" />
+    <ClInclude Include="thorvg\src\sw_engine\tvgSwRenderer.h" />
+    <ClInclude Include="thorvg\src\tvgArray.h" />
+    <ClInclude Include="thorvg\src\tvgBezier.h" />
+    <ClInclude Include="thorvg\src\tvgBinaryDesc.h" />
+    <ClInclude Include="thorvg\src\tvgCanvasImpl.h" />
+    <ClInclude Include="thorvg\src\tvgCommon.h" />
+    <ClInclude Include="thorvg\src\tvgFill.h" />
+    <ClInclude Include="thorvg\src\tvgIteratorAccessor.h" />
+    <ClInclude Include="thorvg\src\tvgLoader.h" />
+    <ClInclude Include="thorvg\src\tvgLoadModule.h" />
+    <ClInclude Include="thorvg\src\tvgMath.h" />
+    <ClInclude Include="thorvg\src\tvgPaint.h" />
+    <ClInclude Include="thorvg\src\tvgPictureImpl.h" />
+    <ClInclude Include="thorvg\src\tvgRender.h" />
+    <ClInclude Include="thorvg\src\tvgSaveModule.h" />
+    <ClInclude Include="thorvg\src\tvgSceneImpl.h" />
+    <ClInclude Include="thorvg\src\tvgShapeImpl.h" />
+    <ClInclude Include="thorvg\src\tvgTaskScheduler.h" />
     <ClInclude Include="zlib\crc32.h" />
     <ClInclude Include="zlib\deflate.h" />
     <ClInclude Include="zlib\gzguts.h" />
@@ -153,7 +220,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>./jpeg;./png;./zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./jpeg;./png;./zlib;./thorvg/inc;./thorvg/src;./thorvg/src/svg;./thorvg/src/raw;./thorvg/src/sw_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>

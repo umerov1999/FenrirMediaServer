@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPCasting.h"
 #include "Common/XTPFramework.h"
@@ -160,7 +160,7 @@ void CXTPScrollBase::CalcScrollBarInfo(LPRECT lprc, XTP_SCROLLBAR_POSINFO* pSBIn
 
 	dwRange = ((DWORD)(pSBInfo->posMax - pSBInfo->posMin)) + 1;
 
-	cpx = min((pSBInfo->pxBottom - pSBInfo->pxTop) / 2, pSBInfo->cpxThumb);
+	cpx = CXTP_min((pSBInfo->pxBottom - pSBInfo->pxTop) / 2, pSBInfo->cpxThumb);
 
 	pSBInfo->pxUpArrow	 = pSBInfo->pxTop + cpx;
 	pSBInfo->pxDownArrow = pSBInfo->pxBottom - cpx;
@@ -170,7 +170,7 @@ void CXTPScrollBase::CalcScrollBarInfo(LPRECT lprc, XTP_SCROLLBAR_POSINFO* pSBIn
 		int i = MulDiv(pSBInfo->pxDownArrow - pSBInfo->pxUpArrow, pSBInfo->page,
 					   XTPToIntChecked(dwRange));
 
-		pSBInfo->cpxThumb = max(pSBInfo->cpxThumb / 2, i);
+		pSBInfo->cpxThumb = CXTP_max(pSBInfo->cpxThumb / 2, i);
 	}
 
 	if (pPaintManager->m_cThumb > 0)

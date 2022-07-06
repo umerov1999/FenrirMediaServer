@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPCasting.h"
 
@@ -227,7 +227,7 @@ void CXTPSkinObjectHeader::OnDraw(CDC* pDC)
 			nState = m_bLBtnDown ? HIS_PRESSED : HIS_HOT;
 		}
 
-		rcBackground.left = max(rcBackground.left, rcItem.right);
+		rcBackground.left = CXTP_max(rcBackground.left, rcItem.right);
 
 		pClass->DrawThemeBackground(&dc, HP_HEADERITEM, nState, &rcItem);
 
@@ -343,7 +343,7 @@ void CXTPSkinObjectHeader::DrawItemEntry(CDC* pDC, int nIndex, CRect rcItem, int
 
 			pt.x += sz.cx + iBitmapMargin + XTP_DPI_X(9);
 			if (pt.x + cxBitmap > rcItem.right - XTP_DPI_X(3))
-				pt.x = max(rcItem.left + XTP_DPI_X(6), rcItem.right - XTP_DPI_X(3) - cxBitmap);
+				pt.x = CXTP_max(rcItem.left + XTP_DPI_X(6), rcItem.right - XTP_DPI_X(3) - cxBitmap);
 			if (nState == HIS_PRESSED)
 				pt.x++;
 
@@ -372,7 +372,7 @@ void CXTPSkinObjectHeader::DrawItemEntry(CDC* pDC, int nIndex, CRect rcItem, int
 
 		pt.x += sz.cx + iBitmapMargin + XTP_DPI_X(9);
 		if (pt.x + XTP_DPI_X(9) > rcItem.right - XTP_DPI_X(3))
-			pt.x = max(rcItem.left + XTP_DPI_X(6), rcItem.right - XTP_DPI_X(3) - XTP_DPI_X(9));
+			pt.x = CXTP_max(rcItem.left + XTP_DPI_X(6), rcItem.right - XTP_DPI_X(3) - XTP_DPI_X(9));
 
 		CSize szGlyph(XTP_DPI_X(14), XTP_DPI_Y(14));
 		CRect rcGlyph(pt.x - szGlyph.cx / 2, pt.y - szGlyph.cy / 2, pt.x + szGlyph.cx / 2,

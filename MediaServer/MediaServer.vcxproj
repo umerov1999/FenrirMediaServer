@@ -41,9 +41,9 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../Third-Party/openssl/include;../Third-Party/XTPSkinFramework v20.1.0/SkinFramework;./;../Third-Party/Extra;../Third-Party/libimage;..\Third-Party\Extra\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Third-Party/openssl/include;../Third-Party/XTPSkinFramework v20.1.0/SkinFramework;./;../Third-Party/Extra;../Third-Party/libimage;../Third-Party/Extra/components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -83,7 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Third-Party\Extra\app_font.cpp" />
-    <ClCompile Include="..\Third-Party\Extra\app_style.cpp" />
+    <ClCompile Include="..\Third-Party\Extra\app_style_blue.cpp" />
     <ClCompile Include="CommonLibraries.cpp" />
     <ClCompile Include="MediaServerMediaFoldersDialog.cpp" />
     <ClCompile Include="MediaServerTask.cpp" />
@@ -98,13 +98,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\Cursor.cur" />
+    <None Include="Res\Logo.svg" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Res\audio_stop.ico" />
     <Image Include="Res\Delete.ico" />
     <Image Include="Res\folder_add.ico" />
     <Image Include="Res\Icon.ico" />
-    <Image Include="Res\Logo.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Third-Party\Extra\components\components_mfc.vcxproj">

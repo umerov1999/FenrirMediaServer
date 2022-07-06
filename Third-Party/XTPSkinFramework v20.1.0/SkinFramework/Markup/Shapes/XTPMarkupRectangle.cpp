@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -115,8 +115,8 @@ void CXTPMarkupRectangle::OnRender(CXTPMarkupDrawingContext* pDC)
 		return;
 
 	double nRadiusX = GetRadiusX(), nRadiusY = GetRadiusY();
-	nRadiusX = min((double)(rc.Width() - nStroke) / 2, nRadiusX);
-	nRadiusY = min((double)(rc.Height() - nStroke) / 2, nRadiusY);
+	nRadiusX = CXTP_min((double)(rc.Width() - nStroke) / 2, nRadiusX);
+	nRadiusY = CXTP_min((double)(rc.Height() - nStroke) / 2, nRadiusY);
 
 	double* pnCorners = NULL;
 	if (nRadiusX > 0 && nRadiusY > 0)

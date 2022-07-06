@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <math.h>
 #include <float.h>
@@ -160,14 +160,14 @@ BOOL AFX_CDECL CXTPMathUtils::HitTestLineSegment(double x1, double y1, double x2
 
 	do
 	{
-		if (xPoint < min(x1, x2) - nLineThickness)
+		if (xPoint < CXTP_min(x1, x2) - nLineThickness)
 			break;
-		if (xPoint > max(x1, x2) + nLineThickness)
+		if (xPoint > CXTP_max(x1, x2) + nLineThickness)
 			break;
 
-		if (yPoint < min(y1, y2) - nLineThickness)
+		if (yPoint < CXTP_min(y1, y2) - nLineThickness)
 			break;
-		if (yPoint > max(y1, y2) + nLineThickness)
+		if (yPoint > CXTP_max(y1, y2) + nLineThickness)
 			break;
 
 		double d = sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));

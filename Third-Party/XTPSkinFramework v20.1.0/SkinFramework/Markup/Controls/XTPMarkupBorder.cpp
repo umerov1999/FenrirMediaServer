@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -135,8 +135,8 @@ CSize CXTPMarkupBorder::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize szA
 	{
 		CSize size4(size2.cx + size3.cx, size2.cy + size3.cy);
 
-		CSize availableSize(max(0, szAvailableSize.cx - size4.cx),
-							max(0, szAvailableSize.cy - size4.cy));
+		CSize availableSize(CXTP_max(0, szAvailableSize.cx - size4.cx),
+							CXTP_max(0, szAvailableSize.cy - size4.cy));
 		m_pChild->Measure(pDC, availableSize);
 
 		CSize desiredSize = m_pChild->GetDesiredSize();
@@ -203,7 +203,7 @@ void CXTPMarkupBorder::OnRender(CXTPMarkupDrawingContext* pDC)
 			{
 				double dStroke = (double)pBorderThickness->GetLeft() / 2.0;
 				for (int i = 0; i < 8; i++)
-					pnCorners[i] = max(.0, pnCorners[i] - dStroke);
+					pnCorners[i] = CXTP_max(.0, pnCorners[i] - dStroke);
 			}
 
 			pDC->FillRectangle(CRect(point, point2), pBackground, pnCorners);

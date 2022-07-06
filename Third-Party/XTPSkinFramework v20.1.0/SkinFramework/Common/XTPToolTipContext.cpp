@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #if _MSC_VER < 1200
 #	define _XTP_EXCLUDE_HTML
 #else
@@ -616,19 +616,19 @@ CSize CXTPToolTipContextToolTip::GetToolSize(TOOLITEM* lpToolInfo)
 	CRect rcText(0, 0, nMaxTipWidth - szMargin.cx, 0);
 
 	if (bDrawTitle)
-		rcText.right = max(szTitle.cx, nMaxTipWidth - szMargin.cx)
+		rcText.right = CXTP_max(szTitle.cx, nMaxTipWidth - szMargin.cx)
 					   - (XTP_DPI_X(10) + XTP_DPI_X(15));
 
 	dc.DrawText(str, rcText, dwFlags | DT_CALCRECT | DT_WORDBREAK);
 	dc.SelectObject(pOldFont);
 
 	CSize sz(0, 0);
-	sz.cy = max(szImage.cy, rcText.Height());
+	sz.cy = CXTP_max(szImage.cy, rcText.Height());
 	sz.cx = szImage.cx + rcText.Width();
 
 	if (bDrawTitle)
 	{
-		sz.cx = max(sz.cx + XTP_DPI_X(10) + XTP_DPI_X(15), szTitle.cx);
+		sz.cx = CXTP_max(sz.cx + XTP_DPI_X(10) + XTP_DPI_X(15), szTitle.cx);
 		sz.cy += szTitle.cy;
 	}
 
@@ -1411,7 +1411,7 @@ CSize CXTPToolTipContext::COffice2013ToolTip::GetToolSize(TOOLITEM* lpToolInfo)
 	CSize sz = szText;
 	if (bDrawTitle)
 	{
-		sz.cx = max(sz.cx, szTitle.cx);
+		sz.cx = CXTP_max(sz.cx, szTitle.cx);
 		sz.cy += szTitle.cy;
 	}
 

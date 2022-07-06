@@ -19,7 +19,7 @@
 
 #include "stdafx.h"
 #include "Common/Resource.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPCasting.h"
 #include "Common/XTPFramework.h"
@@ -868,8 +868,8 @@ BOOL CXTPSplitterTracker::Track(CWnd* pTrackWnd, CRect rcAvail, CRect& rectTrack
 			pTrackWnd->ClientToScreen(&point);
 			point += ptOffset;
 
-			point.x = max(min(point.x, rcAvail.right), rcAvail.left);
-			point.y = max(min(point.y, rcAvail.bottom), rcAvail.top);
+			point.x = CXTP_max(CXTP_min(point.x, rcAvail.right), rcAvail.left);
+			point.y = CXTP_max(CXTP_min(point.y, rcAvail.bottom), rcAvail.top);
 
 			if (bHoriz)
 			{
@@ -987,8 +987,8 @@ BOOL CXTPDrawHelpers::GradientFill(HDC hdc, PTRIVERTEX pVertex, ULONG dwNumVerte
 void CXTPDrawHelpers::GradientFillSlow(CDC* pDC, LPCRECT lpRect, COLORREF crFrom, COLORREF crTo,
 									   BOOL bHorz)
 {
-	int cx = max(1, lpRect->right - lpRect->left);
-	int cy = max(1, lpRect->bottom - lpRect->top);
+	int cx = CXTP_max(1, lpRect->right - lpRect->left);
+	int cy = CXTP_max(1, lpRect->bottom - lpRect->top);
 
 	CRect rc;
 	pDC->GetClipBox(&rc);
@@ -1296,7 +1296,7 @@ COLORREF CXTPDrawHelpers::BlendColors(COLORREF crA, COLORREF crB, double fAmount
 	int btG			= (int)(GetGValue(crA) * fAmountA + GetGValue(crB) * fAmountB);
 	int btB			= (int)(GetBValue(crA) * fAmountA + GetBValue(crB) * fAmountB);
 
-	return RGB(min(255, btR), (BYTE)min(255, btG), (BYTE)min(255, btB));
+	return RGB(CXTP_min(255, btR), (BYTE)CXTP_min(255, btG), (BYTE)CXTP_min(255, btB));
 }
 
 COLORREF CXTPDrawHelpers::DarkenColor(long lScale, COLORREF lColor)
@@ -1364,7 +1364,7 @@ COLORREF CXTPDrawHelpers::RGBtoHSL(COLORREF rgb)
 	nS = nS * 240 / 255;
 	nL = nL * 240 / 255;
 
-	return RGB((BYTE)min(nH, 239), (BYTE)min(nS, 240), (BYTE)min(nL, 240));
+	return RGB((BYTE)CXTP_min(nH, 239), (BYTE)CXTP_min(nS, 240), (BYTE)CXTP_min(nL, 240));
 }
 
 void AFX_CDECL CXTPDrawHelpers::RGBtoHSL(COLORREF clr, double& h, double& s, double& l)
@@ -1463,7 +1463,7 @@ COLORREF CXTPDrawHelpers::HSLtoRGB(COLORREF hsl)
 		g  = HueToRGB(m1, m2, nH);
 		b  = HueToRGB(m1, m2, nH - (255 / 3));
 	}
-	return RGB((BYTE)min(r, 255), (BYTE)min(g, 255), (BYTE)min(b, 255));
+	return RGB((BYTE)CXTP_min(r, 255), (BYTE)CXTP_min(g, 255), (BYTE)CXTP_min(b, 255));
 }
 
 COLORREF CXTPDrawHelpers::HSLtoRGB(double h, double s, double l)
@@ -2897,9 +2897,9 @@ int CXTPPrintPageHeaderFooter::Calc3ColSizes(CDC* pDC, int nW, const CString& st
 	if (!nW || !nW1 && !nW2 && !nW3)
 		return 0;
 
-	nW1 = max(nW1, 1);
-	nW2 = max(nW2, 1);
-	nW3 = max(nW3, 1);
+	nW1 = CXTP_max(nW1, 1);
+	nW2 = CXTP_max(nW2, 1);
+	nW3 = CXTP_max(nW3, 1);
 
 	int nYmin		 = INT_MAX;
 	int nYminMetric	 = INT_MAX;
@@ -2930,7 +2930,7 @@ int CXTPPrintPageHeaderFooter::Calc3ColSizes(CDC* pDC, int nW, const CString& st
 			if (nY[3] > nYmin)
 				break;
 
-			int nY123 = max(max(nY[1], nY[2]), max(nY[1], nY[3]));
+			int nY123 = CXTP_max(CXTP_max(nY[1], nY[2]), CXTP_max(nY[1], nY[3]));
 
 			int nM			= nW / 3;
 			int nY123Metric = abs(nM - nX[1]) + abs(nM - nX[2]) + abs(nM - nX[3]);
@@ -2968,7 +2968,7 @@ int CXTPPrintPageHeaderFooter::Calc3ColSizes(CDC* pDC, int nW, const CString& st
 	rsz3.cx = nXforYmin[3];
 	rsz3.cy = pDC->DrawText(str3, &rcText3, uFlags | DT_RIGHT);
 
-	return max(max(rsz1.cy, rsz2.cy), max(rsz1.cy, rsz3.cy));
+	return CXTP_max(CXTP_max(rsz1.cy, rsz2.cy), CXTP_max(rsz1.cy, rsz3.cy));
 }
 
 void CXTPPrintPageHeaderFooter::Draw(CDC* pDC, CRect& rcRect, BOOL bCalculateOnly)

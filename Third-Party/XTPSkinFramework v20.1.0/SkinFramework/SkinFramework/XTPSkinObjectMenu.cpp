@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPCasting.h"
 
@@ -1001,7 +1001,7 @@ void CXTPSkinPopupMenu::RecalcItemsSize(CDC* pDC)
 			{
 				BITMAP bmpInfo;
 				::GetObject(hbm, sizeof(BITMAP), &bmpInfo);
-				m_nGripperWidth = max(m_nGripperWidth,
+				m_nGripperWidth = CXTP_max(m_nGripperWidth,
 									  bmpInfo.bmWidth + XTP_DPI_X(4)
 										  + (IsMenuThemed() ? XTP_DPI_X(5) + XTP_DPI_X(3) : 0));
 			}
@@ -1019,7 +1019,7 @@ void CXTPSkinPopupMenu::RecalcItemsSize(CDC* pDC)
 			{
 				szText	  = pDC->GetTextExtent(strMenuText);
 				szText.cx = m_nGripperWidth + szText.cx + XTP_DPI_X(55);
-				szText.cy = max(szText.cy, XTP_DPI_Y(20));
+				szText.cy = CXTP_max(szText.cy, XTP_DPI_Y(20));
 
 				if (pItem->IsSeparator())
 				{
@@ -1078,12 +1078,12 @@ void CXTPSkinPopupMenu::RecalcItemsSize(CDC* pDC)
 			if (IsMenuThemed())
 			{
 				szText.cx = m_nGripperWidth + szText.cx + szShortcut.cx + XTP_DPI_X(55);
-				szText.cy = max(szText.cy, XTP_DPI_Y(22));
+				szText.cy = CXTP_max(szText.cy, XTP_DPI_Y(22));
 			}
 			else
 			{
 				szText.cx = m_nGripperWidth + szText.cx + szShortcut.cx + XTP_DPI_X(44);
-				szText.cy = max(szText.cy, XTP_DPI_Y(17));
+				szText.cy = CXTP_max(szText.cy, XTP_DPI_Y(17));
 			}
 
 			if (bDefault)
@@ -1102,7 +1102,7 @@ void CXTPSkinPopupMenu::RecalcItemsSize(CDC* pDC)
 			}
 
 			x += m_nMaxWidthColumn + XTP_DPI_X(MENUBREAK_SPACING);
-			nMaxHeight		  = max(nMaxHeight, y);
+			nMaxHeight		  = CXTP_max(nMaxHeight, y);
 			y				  = m_rcBorder.top;
 			m_nMaxWidthColumn = 0;
 		}
@@ -1116,12 +1116,12 @@ void CXTPSkinPopupMenu::RecalcItemsSize(CDC* pDC)
 				BITMAP bmpInfo;
 				::GetObject(hbm, sizeof(BITMAP), &bmpInfo);
 
-				szText.cy = max(szText.cy, bmpInfo.bmHeight + XTP_DPI_Y(4));
+				szText.cy = CXTP_max(szText.cy, bmpInfo.bmHeight + XTP_DPI_Y(4));
 			}
 		}
 
 		CRect rcItem(x, y, x + szText.cx, y + szText.cy);
-		m_nMaxWidthColumn = max(m_nMaxWidthColumn, szText.cx);
+		m_nMaxWidthColumn = CXTP_max(m_nMaxWidthColumn, szText.cx);
 
 		pItem->m_rcItem = rcItem;
 
@@ -1168,7 +1168,7 @@ int CXTPSkinPopupMenu::RecalcItemsHeight(int nScreenArea)
 
 		if (pItem->IsMenuBreak())
 		{
-			nColumnHeightMax = max(nColumnHeightMax, nColumnHeight);
+			nColumnHeightMax = CXTP_max(nColumnHeightMax, nColumnHeight);
 			nColumnHeight	 = 0;
 			nColumnArea		 = nScreenArea;
 		}
@@ -1181,7 +1181,7 @@ int CXTPSkinPopupMenu::RecalcItemsHeight(int nScreenArea)
 		nColumnArea -= nHeight;
 	}
 
-	nColumnHeightMax = max(nColumnHeightMax, nColumnHeight);
+	nColumnHeightMax = CXTP_max(nColumnHeightMax, nColumnHeight);
 
 	return nColumnHeightMax;
 }
@@ -2111,7 +2111,7 @@ CPoint CXTPSkinPopupMenuState::PositionHierarchy(CXTPSkinPopupMenu* pSubMenu,
 			pt.x					 = rcItem.right - sz.cx;
 			pSubMenu->m_bDroppedLeft = TRUE;
 		}
-		pt.x = min(pt.x, rcMonitor.right - sz.cx);
+		pt.x = CXTP_min(pt.x, rcMonitor.right - sz.cx);
 	}
 	else
 	{
@@ -2149,8 +2149,8 @@ CPoint CXTPSkinPopupMenuState::PositionHierarchy(CXTPSkinPopupMenu* pSubMenu,
 			pt.y = rcMonitor.bottom - sz.cy;
 	}
 
-	pt.x = max(pt.x, rcMonitor.left);
-	pt.y = max(pt.y, rcMonitor.top);
+	pt.x = CXTP_max(pt.x, rcMonitor.left);
+	pt.y = CXTP_max(pt.y, rcMonitor.top);
 
 	CRect rcPopup(pt.x, pt.y, pt.x + sz.cx, pt.y + sz.cy);
 	rcPopup.DeflateRect(XTP_DPI_X(3), XTP_DPI_Y(3));

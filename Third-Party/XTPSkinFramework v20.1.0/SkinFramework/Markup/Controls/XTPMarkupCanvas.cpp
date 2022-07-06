@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPFramework.h"
 
 #include "Common/XTPTypeId.h"
@@ -133,8 +133,8 @@ CSize CXTPMarkupCanvas::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize /*a
 		pElement->Measure(pDC, CSize(INT_MAX, INT_MAX));
 		CSize sz = pElement->GetDesiredSize();
 
-		cx = max(cx, sz.cx);
-		cy = max(cy, sz.cy);
+		cx = CXTP_max(cx, sz.cx);
+		cy = CXTP_max(cy, sz.cy);
 	}
 
 	return CSize(cx, cy);

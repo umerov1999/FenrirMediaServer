@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPCasting.h"
 
@@ -234,7 +234,7 @@ void CXTPSkinObjectComboBox::OnDraw(CDC* pDC)
 		::FillRect(memDC.GetSafeHdc(),
 				   CRect(rc.left, rc.top,
 						 rc.left
-							 + max(GetMetrics()->m_cxVScroll + XTP_DPI_X(1),
+							 + CXTP_max(GetMetrics()->m_cxVScroll + XTP_DPI_X(1),
 								   GetMetrics()->m_cxOsVScroll + XTP_DPI_X(3)),
 						 rc.bottom),
 				   hBrush);
@@ -243,7 +243,7 @@ void CXTPSkinObjectComboBox::OnDraw(CDC* pDC)
 	{
 		::FillRect(memDC.GetSafeHdc(),
 				   CRect(rc.right
-							 - max(GetMetrics()->m_cxVScroll + XTP_DPI_X(1),
+							 - CXTP_max(GetMetrics()->m_cxVScroll + XTP_DPI_X(1),
 								   GetMetrics()->m_cxOsVScroll + XTP_DPI_X(3)),
 						 rc.top, rc.right, rc.bottom),
 				   hBrush);

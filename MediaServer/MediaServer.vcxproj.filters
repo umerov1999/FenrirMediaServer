@@ -50,13 +50,13 @@
     <ClCompile Include="pch.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\Third-Party\Extra\app_style.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="MediaServerMediaFoldersDialog.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="..\Third-Party\Extra\app_font.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Third-Party\Extra\app_style_blue.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -69,12 +69,12 @@
     <None Include="Res\Cursor.cur">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="Res\Logo.svg">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Res\Icon.ico">
-      <Filter>Файлы ресурсов</Filter>
-    </Image>
-    <Image Include="Res\Logo.png">
       <Filter>Файлы ресурсов</Filter>
     </Image>
     <Image Include="Res\Delete.ico">

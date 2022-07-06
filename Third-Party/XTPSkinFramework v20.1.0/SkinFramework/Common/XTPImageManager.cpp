@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "GraphicLibrary/GdiPlus/XTPGdiPlus.h"
 
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
@@ -3283,7 +3283,7 @@ HBITMAP CXTPImageManagerIcon::ReadDIBBitmap(CArchive& ar, LPBYTE* lpBits)
 		return NULL;
 	}
 
-	MEMCPY_S(pBitsDest, pBitsSrc, min(dwBitsCount, pBitmapInfo->bmiHeader.biSizeImage));
+	MEMCPY_S(pBitsDest, pBitsSrc, CXTP_min(dwBitsCount, pBitmapInfo->bmiHeader.biSizeImage));
 
 	FREE(pBitsSrc);
 	FREE(pBitmapInfo);
@@ -5414,7 +5414,7 @@ BOOL CXTPImageManager::DoDisableBitmap(HBITMAP hBmp, COLORREF clrDisabledLight,
 							 + lprgbBitmap[x].rgbRed * 299)
 							/ 1000;
 				nGray = nGray + (255 - nGray) * nBlackAndWhiteContrast / 255;
-				nGray = min(nGray, 255);
+				nGray = CXTP_min(nGray, 255);
 
 				lprgbBitmap[x].rgbBlue	= BYTE(nGray);
 				lprgbBitmap[x].rgbGreen = BYTE(nGray);

@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPFramework.h"
 
 #include "Common/XTPCasting.h"
@@ -71,7 +71,7 @@ void CXTPMarkupDefinitionBase::OnBeforeLayout()
 
 void CXTPMarkupDefinitionBase::UpdateMinSize(int nMinSize)
 {
-	m_nMinSize = max(m_nMinSize, nMinSize);
+	m_nMinSize = CXTP_max(m_nMinSize, nMinSize);
 }
 
 int CXTPMarkupDefinitionBase::GetUserMinSize() const

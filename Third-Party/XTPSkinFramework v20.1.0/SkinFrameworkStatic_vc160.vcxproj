@@ -47,7 +47,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>SkinFramework;SkinFramework/Common;./;SkinFramework/GraphicLibrary/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_LIB;NDEBUG;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_LIB;NDEBUG;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>
@@ -74,6 +74,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="SkinFramework\Common\Base\cxminmax.h" />
     <ClInclude Include="SkinFramework\GraphicLibrary\lz4\lz4.h" />
     <ClInclude Include="SkinFramework\GraphicLibrary\lz4\lz4hc.h" />
     <ClInclude Include="SkinFramework\SkinFramework\Lz4Pack.h" />

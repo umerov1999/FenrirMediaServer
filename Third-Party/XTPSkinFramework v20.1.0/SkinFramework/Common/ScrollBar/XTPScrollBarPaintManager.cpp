@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPFramework.h"
 #include "Common/XTPSystemHelpers.h"
@@ -76,7 +76,7 @@ void CXTPScrollBarPaintManager::RefreshMetrics()
 void CXTPScrollBarPaintManager::DrawArrowGlyph(CDC* pDC, CRect rcArrow, XTPArrowGlyph glyph,
 											   BOOL bEnabled, COLORREF clrText)
 {
-	int nHeight = min(rcArrow.Width(), rcArrow.Height());
+	int nHeight = CXTP_min(rcArrow.Width(), rcArrow.Height());
 	if (XTP_DPI_Y(6) <= nHeight)
 	{
 		COLORREF clr;

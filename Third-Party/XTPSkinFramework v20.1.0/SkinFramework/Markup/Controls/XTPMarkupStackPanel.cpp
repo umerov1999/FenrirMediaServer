@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPFramework.h"
 
 #include "Common/XTPCasting.h"
@@ -106,11 +106,11 @@ CSize CXTPMarkupStackPanel::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize
 		if (bHorizontal)
 		{
 			size.cx += desiredSize.cx;
-			size.cy = max(size.cy, desiredSize.cy);
+			size.cy = CXTP_max(size.cy, desiredSize.cy);
 		}
 		else
 		{
-			size.cx = max(size.cx, desiredSize.cx);
+			size.cx = CXTP_max(size.cx, desiredSize.cx);
 			size.cy += desiredSize.cy;
 		}
 	}
@@ -137,14 +137,14 @@ CSize CXTPMarkupStackPanel::ArrangeOverride(CSize arrangeSize)
 			finalRect.left += width;
 			width			 = pElement->GetDesiredSize().cx;
 			finalRect.right	 = finalRect.left + width;
-			finalRect.bottom = max(arrangeSize.cy, pElement->GetDesiredSize().cy);
+			finalRect.bottom = CXTP_max(arrangeSize.cy, pElement->GetDesiredSize().cy);
 		}
 		else
 		{
 			finalRect.top += width;
 			width			 = pElement->GetDesiredSize().cy;
 			finalRect.bottom = finalRect.top + width;
-			finalRect.right	 = max(arrangeSize.cx, pElement->GetDesiredSize().cx);
+			finalRect.right	 = CXTP_max(arrangeSize.cx, pElement->GetDesiredSize().cx);
 		}
 
 		pElement->Arrange(finalRect);

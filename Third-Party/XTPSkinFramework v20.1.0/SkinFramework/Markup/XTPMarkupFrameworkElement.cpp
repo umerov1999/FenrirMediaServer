@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPCasting.h"
 #include "Common/XTPFramework.h"
 
@@ -200,18 +200,18 @@ CSize CXTPMarkupFrameworkElement::MeasureCore(CXTPMarkupDrawingContext* pDC, CSi
 	long num  = pMargin->GetLeft() + pMargin->GetRight();
 	long num2 = pMargin->GetTop() + pMargin->GetBottom();
 
-	CSize transformSpaceBounds = CSize(max(SafeSum(szAvailableSize.cx, -num), 0),
-									   max(SafeSum(szAvailableSize.cy, -num2), 0));
+	CSize transformSpaceBounds = CSize(CXTP_max(SafeSum(szAvailableSize.cx, -num), 0),
+									   CXTP_max(SafeSum(szAvailableSize.cy, -num2), 0));
 
 	m_mmBounds.Update(this);
 
-	transformSpaceBounds.cx = max(m_mmBounds.nMinWidth,
-								  min(transformSpaceBounds.cx, m_mmBounds.nMaxWidth));
-	transformSpaceBounds.cy = max(m_mmBounds.nMinHeight,
-								  min(transformSpaceBounds.cy, m_mmBounds.nMaxHeight));
+	transformSpaceBounds.cx = CXTP_max(m_mmBounds.nMinWidth,
+								  CXTP_min(transformSpaceBounds.cx, m_mmBounds.nMaxWidth));
+	transformSpaceBounds.cy = CXTP_max(m_mmBounds.nMinHeight,
+								  CXTP_min(transformSpaceBounds.cy, m_mmBounds.nMaxHeight));
 
 	CSize size2 = MeasureOverride(pDC, transformSpaceBounds);
-	size2		= CSize(max(size2.cx, m_mmBounds.nMinWidth), max(size2.cy, m_mmBounds.nMinHeight));
+	size2		= CSize(CXTP_max(size2.cx, m_mmBounds.nMinWidth), CXTP_max(size2.cy, m_mmBounds.nMinHeight));
 	CSize size	= size2;
 
 	BOOL fClip = FALSE;
@@ -254,7 +254,7 @@ CSize CXTPMarkupFrameworkElement::MeasureCore(CXTPMarkupDrawingContext* pDC, CSi
 		m_szUnclippedDesiredSize = size;
 	}
 
-	return CSize(max(0, width), max(0, height));
+	return CSize(CXTP_max(0, width), CXTP_max(0, height));
 }
 
 BOOL CXTPMarkupFrameworkElement::GetClipToBounds() const
@@ -279,16 +279,16 @@ BOOL CXTPMarkupFrameworkElement::GetLayoutClip(CRect& rc) const
 	int num		 = m_mmBounds.nMaxWidth == INT_MAX ? szRenderSize.cx : m_mmBounds.nMaxWidth;
 	int num2	 = m_mmBounds.nMaxHeight == INT_MAX ? szRenderSize.cy : m_mmBounds.nMaxHeight;
 	BOOL bFlag	 = bClipToBounds || num < szRenderSize.cx || num2 < szRenderSize.cy;
-	szRenderSize = CSize(min(szRenderSize.cx, m_mmBounds.nMaxWidth),
-						 min(szRenderSize.cy, m_mmBounds.nMaxHeight));
+	szRenderSize = CSize(CXTP_min(szRenderSize.cx, m_mmBounds.nMaxWidth),
+						 CXTP_min(szRenderSize.cy, m_mmBounds.nMaxHeight));
 
 	CXTPMarkupThickness* pMargin = GetMargin();
 
 	long num3 = pMargin->GetLeft() + pMargin->GetRight();
 	long num4 = pMargin->GetTop() + pMargin->GetBottom();
 
-	CSize szClientSize = CSize(max(m_rcFinalRect.Width() - num3, 0),
-							   max(m_rcFinalRect.Height() - num4, 0));
+	CSize szClientSize = CSize(CXTP_max(m_rcFinalRect.Width() - num3, 0),
+							   CXTP_max(m_rcFinalRect.Height() - num4, 0));
 	BOOL bFlag2		   = bClipToBounds || szClientSize.cx < szRenderSize.cx
 				  || szClientSize.cy < szRenderSize.cy;
 
@@ -341,8 +341,8 @@ void CXTPMarkupFrameworkElement::ArrangeCore(CRect rcFinalRect)
 	long num  = pMargin->GetLeft() + pMargin->GetRight();
 	long num2 = pMargin->GetTop() + pMargin->GetBottom();
 
-	size.cx = max(0, (size.cx - num));
-	size.cy = max(0, (size.cy - num2));
+	size.cx = CXTP_max(0, (size.cx - num));
+	size.cy = CXTP_max(0, (size.cy - num2));
 
 	CSize untransformedDS(0, 0);
 	if (!m_bUnclippedDesiredSize)
@@ -376,14 +376,14 @@ void CXTPMarkupFrameworkElement::ArrangeCore(CRect rcFinalRect)
 		size.cy = untransformedDS.cy;
 	}
 
-	long num3 = max(untransformedDS.cx, m_mmBounds.nMaxWidth);
+	long num3 = CXTP_max(untransformedDS.cx, m_mmBounds.nMaxWidth);
 	if (num3 < size.cx)
 	{
 		m_bNeedsClipBounds = TRUE;
 		size.cx			   = num3;
 	}
 
-	long num4 = max(untransformedDS.cy, m_mmBounds.nMaxHeight);
+	long num4 = CXTP_max(untransformedDS.cy, m_mmBounds.nMaxHeight);
 	if (num4 < size.cy)
 	{
 		m_bNeedsClipBounds = TRUE;
@@ -393,16 +393,16 @@ void CXTPMarkupFrameworkElement::ArrangeCore(CRect rcFinalRect)
 	CSize size7	   = ArrangeOverride(size);
 	m_szRenderSize = size7;
 
-	CSize inkSize = CSize(min(size7.cx, m_mmBounds.nMaxWidth),
-						  min(size7.cy, m_mmBounds.nMaxHeight));
+	CSize inkSize = CSize(CXTP_min(size7.cx, m_mmBounds.nMaxWidth),
+						  CXTP_min(size7.cy, m_mmBounds.nMaxHeight));
 
 	if (inkSize.cx < size7.cx || inkSize.cy < size7.cy)
 	{
 		m_bNeedsClipBounds = TRUE;
 	}
 
-	CSize clientSize = CSize(max(0, rcFinalRect.Width() - num),
-							 max(0, rcFinalRect.Height() - num2));
+	CSize clientSize = CSize(CXTP_max(0, rcFinalRect.Width() - num),
+							CXTP_max(0, rcFinalRect.Height() - num2));
 
 	if (clientSize.cx < inkSize.cx || clientSize.cy < inkSize.cy)
 	{

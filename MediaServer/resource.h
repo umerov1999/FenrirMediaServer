@@ -9,7 +9,7 @@
 #define IDD_DIALOG1                     5
 #define IDD_DIALOG2                     6
 #define IDC_CURSOR1                     7
-#define IDB_PNG1                        8
+#define IDB_SVG1                        8
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON2                     1002
 #define IDC_BUTTON3                     1003

@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPCasting.h"
 
@@ -526,8 +526,8 @@ BOOL CXTPSkinImage::DrawImageTile(CDC* pDCDest, const CRect& rcDest, CDC* pDCSrc
 	if (rcSrc.bottom <= rcSrc.top || rcDest.bottom <= rcDest.top)
 		return TRUE;
 
-	int nHeight = bTile & TILE_VERTICAL ? min(rcSrc.Height(), rcDest.Height()) : rcDest.Height();
-	int nWidth	= bTile & TILE_HORIZONTAL ? min(rcSrc.Width(), rcDest.Width()) : rcDest.Width();
+	int nHeight = bTile & TILE_VERTICAL ? CXTP_min(rcSrc.Height(), rcDest.Height()) : rcDest.Height();
+	int nWidth	= bTile & TILE_HORIZONTAL ? CXTP_min(rcSrc.Width(), rcDest.Width()) : rcDest.Width();
 
 	for (int x = rcDest.left; x < rcDest.right; x += nWidth)
 	{

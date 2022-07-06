@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPFramework.h"
 
 #include "Common/XTPCasting.h"
@@ -136,8 +136,8 @@ CSize CXTPMarkupDockPanel::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize 
 		if (pElement == NULL)
 			continue;
 
-		CSize availableSize(max(0, constraint.cx - nTotalWidth),
-							max(0, constraint.cy - nTotalHeight));
+		CSize availableSize(CXTP_max(0, constraint.cx - nTotalWidth),
+							CXTP_max(0, constraint.cy - nTotalHeight));
 		pElement->Measure(pDC, availableSize);
 
 		CSize desiredSize = pElement->GetDesiredSize();
@@ -145,19 +145,19 @@ CSize CXTPMarkupDockPanel::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize 
 		{
 			case xtpMarkupDockLeft:
 			case xtpMarkupDockRight:
-				nMaxHeight = max(nMaxHeight, nTotalHeight + desiredSize.cy);
+				nMaxHeight = CXTP_max(nMaxHeight, nTotalHeight + desiredSize.cy);
 				nTotalWidth += desiredSize.cx;
 				break;
 
 			case xtpMarkupDockTop:
 			case xtpMarkupDockBottom:
-				nMaxWidth = max(nMaxWidth, nTotalWidth + desiredSize.cx);
+				nMaxWidth = CXTP_max(nMaxWidth, nTotalWidth + desiredSize.cx);
 				nTotalHeight += desiredSize.cy;
 				break;
 		}
 	}
 
-	return CSize(max(nMaxWidth, nTotalWidth), max(nMaxHeight, nTotalHeight));
+	return CSize(CXTP_max(nMaxWidth, nTotalWidth), CXTP_max(nMaxHeight, nTotalHeight));
 }
 
 CSize CXTPMarkupDockPanel::ArrangeOverride(CSize arrangeSize)
@@ -174,8 +174,8 @@ CSize CXTPMarkupDockPanel::ArrangeOverride(CSize arrangeSize)
 			continue;
 
 		CSize desiredSize = pElement->GetDesiredSize();
-		CRect rcFinalRect(xLeft, yTop, xLeft + max(0, arrangeSize.cx - (xLeft + xRight)),
-						  yTop + max(0, arrangeSize.cy - (yTop + yBottom)));
+		CRect rcFinalRect(xLeft, yTop, xLeft + CXTP_max(0, arrangeSize.cx - (xLeft + xRight)),
+						  yTop + CXTP_max(0, arrangeSize.cy - (yTop + yBottom)));
 
 		if (i < nLastChild)
 		{
@@ -193,13 +193,13 @@ CSize CXTPMarkupDockPanel::ArrangeOverride(CSize arrangeSize)
 
 				case xtpMarkupDockRight:
 					xRight += desiredSize.cx;
-					rcFinalRect.left  = max(0, arrangeSize.cx - xRight);
+					rcFinalRect.left  = CXTP_max(0, arrangeSize.cx - xRight);
 					rcFinalRect.right = rcFinalRect.left + desiredSize.cx;
 					break;
 
 				case xtpMarkupDockBottom:
 					yBottom += desiredSize.cy;
-					rcFinalRect.top	   = max(0, arrangeSize.cy - yBottom);
+					rcFinalRect.top	   = CXTP_max(0, arrangeSize.cy - yBottom);
 					rcFinalRect.bottom = rcFinalRect.top + desiredSize.cy;
 					break;
 			}

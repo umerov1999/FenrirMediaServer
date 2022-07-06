@@ -588,8 +588,9 @@ BOOL MediaServerDialog::OnInitDialog()
 	BAudioStop.ShowWindow(FALSE);
 	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &Startinit);
 
-	std::string DataPic = GetDataFromResourceUtil(L"PNG", IDB_PNG1);
-	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromBufferAutoType(Edk.m_hWnd, DataPic.data(), (int)DataPic.size()).get_hBitmap(true));
+	std::string DataPic = GetDataFromResourceUtil(L"SVG", IDB_SVG1);
+	auto mk = Edk.getRect();
+	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size(), 0x000000).get_hBitmap(true), false);
 
 #ifdef _WIN64
 	const wchar_t* ARCH = L"x64";

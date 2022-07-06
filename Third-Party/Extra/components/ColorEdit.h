@@ -59,11 +59,12 @@ public:
 	afx_msg std::vector<ColoredMessage> GetRenderedLines();
 	afx_msg std::wstring GetRenderedText();
 	afx_msg std::wstring GetFullText();
-	afx_msg void Init(Align TextAlign, HBITMAP HBackgr = NULL);
-	afx_msg void SwitchBackground(HBITMAP HBackgr = NULL);
+	afx_msg void Init(Align TextAlign, HBITMAP HBackgr = NULL, bool resize = true);
+	afx_msg void SwitchBackground(HBITMAP HBackgr = NULL, bool resize = true);
 	afx_msg void RegisterSpecialPatternOnce(const std::wstring &Pattern, URGB Color);
 	afx_msg Align GetTextAlign() const { return TextAlign; }
 	afx_msg ColoredMessage GetLastLine();
+	afx_msg CRect getRect();
 protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnPaint();

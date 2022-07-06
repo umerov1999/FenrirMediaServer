@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPCasting.h"
 #include "Common/XTPFramework.h"
 
@@ -134,7 +134,7 @@ CSize CXTPMarkupWrapPanel::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize 
 
 		if (nLineWidth + nDesiredWidth > nTotalWidth)
 		{
-			nPanelWidth = max(nPanelWidth, nLineWidth);
+			nPanelWidth = CXTP_max(nPanelWidth, nLineWidth);
 			nPanelHeight += nLineHeight;
 
 			nLineWidth	= nDesiredWidth;
@@ -143,11 +143,11 @@ CSize CXTPMarkupWrapPanel::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize 
 		else
 		{
 			nLineWidth += nDesiredWidth;
-			nLineHeight = max(nLineHeight, nDesiredHeight);
+			nLineHeight = CXTP_max(nLineHeight, nDesiredHeight);
 		}
 	}
 
-	nPanelWidth = max(nPanelWidth, nLineWidth);
+	nPanelWidth = CXTP_max(nPanelWidth, nLineWidth);
 	nPanelHeight += nLineHeight;
 
 	return bHorizontal ? CSize(nPanelWidth, nPanelHeight) : CSize(nPanelHeight, nPanelWidth);
@@ -232,7 +232,7 @@ CSize CXTPMarkupWrapPanel::ArrangeOverride(CSize arrangeSize)
 		else
 		{
 			nLineWidth += nDesiredWidth;
-			nLineHeight = max(nLineHeight, nDesiredHeight);
+			nLineHeight = CXTP_max(nLineHeight, nDesiredHeight);
 		}
 	}
 

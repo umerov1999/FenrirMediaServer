@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -109,7 +109,7 @@ CSize CXTPMarkupPath::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize szAva
 
 	CRect rcBounds = pData->GetBounds();
 
-	CSize szBound(max(rcBounds.Width(), rcBounds.right), max(rcBounds.Height(), rcBounds.bottom));
+	CSize szBound(CXTP_max(rcBounds.Width(), rcBounds.right), CXTP_max(rcBounds.Height(), rcBounds.bottom));
 
 	if (GetStretch() != xtpMarkupStretchNone)
 	{

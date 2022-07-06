@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -108,8 +108,8 @@ CSize CXTPMarkupButton::MeasureOverride(CXTPMarkupDrawingContext* pDC, CSize szA
 	CXTPMarkupUIElement* pContent = GetContent();
 	if (pContent != NULL)
 	{
-		CSize availableSize(max(0, szAvailableSize.cx - size3.cx),
-							max(0, szAvailableSize.cy - size3.cy));
+		CSize availableSize(CXTP_max(0, szAvailableSize.cx - size3.cx),
+			CXTP_max(0, szAvailableSize.cy - size3.cy));
 		pContent->Measure(pDC, availableSize);
 
 		CSize desiredSize = pContent->GetDesiredSize();

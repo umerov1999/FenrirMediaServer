@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <math.h>
 #include <ActivScp.h>
@@ -129,8 +129,8 @@ CSize CXTPMarkupLine::MeasureOverride(CXTPMarkupDrawingContext* /*pDC*/, CSize s
 	int y1 = GetY1();
 	int y2 = GetY2();
 
-	int x = max(x1, x2);
-	int y = max(y1, y2);
+	int x = CXTP_max(x1, x2);
+	int y = CXTP_max(y1, y2);
 
 	if ((x1 == x2 || y1 == y2) && GetStroke())
 	{
@@ -164,8 +164,8 @@ void CXTPMarkupLine::GetPoints(int& x1, int& y1, int& x2, int& y2) const
 
 	if (GetStretch() != xtpMarkupStretchNone)
 	{
-		int x = max(x1, x2);
-		int y = max(y1, y2);
+		int x = CXTP_max(x1, x2);
+		int y = CXTP_max(y1, y2);
 
 		CSize sz = GetRenderSize();
 		if (x1 == x2)
@@ -225,7 +225,7 @@ CXTPMarkupInputElement* CXTPMarkupLine::InputHitTestOverride(CPoint point) const
 
 	double s = (double)nStroke / 2.0;
 
-	if (xp + s < min(x, 0) || xp - s > max(x, 0) || yp + s < min(y, 0) || yp - s > max(y, 0))
+	if (xp + s < CXTP_min(x, 0) || xp - s > CXTP_max(x, 0) || yp + s < CXTP_min(y, 0) || yp - s > CXTP_max(y, 0))
 		return NULL;
 
 	if (x == 0)

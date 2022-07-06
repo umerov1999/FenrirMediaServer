@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPCasting.h"
 
@@ -1745,7 +1745,7 @@ BOOL CXTPSkinManagerSchema::DrawWindowPart(CXTPSkinObjectFrame* pFrame, CBitmap&
 
 	if (rcSizingMargins.top + rcSizingMargins.bottom > rcDest.Height())
 	{
-		rcSizingMargins.bottom = max(0, rcDest.Height() - rcSizingMargins.top);
+		rcSizingMargins.bottom = CXTP_max(0, rcDest.Height() - rcSizingMargins.top);
 	}
 
 	pImage->DrawImage(&dc, rcDest, rcSrc, rcSizingMargins, clrTransparent, ST_STRETCH, FALSE);

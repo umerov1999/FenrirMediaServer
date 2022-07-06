@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "SkinFramework/XTPSkinManagerColorFilter.h"
 
 #include "Common/Base/Diagnostic/XTPDisableNoisyWarnings.h"
@@ -62,8 +62,8 @@ RGBQUAD RGBtoHSL(RGBQUAD lRGBColor)
 	G = lRGBColor.rgbGreen;
 	B = lRGBColor.rgbBlue;
 
-	cMax = max(max(R, G), B); /* calculate lightness */
-	cMin = min(min(R, G), B);
+	cMax = CXTP_max(CXTP_max(R, G), B); /* calculate lightness */
+	cMin = CXTP_min(CXTP_min(R, G), B);
 	L	 = (BYTE)((((cMax + cMin) * HSLMAX) + RGBMAX) / (2 * RGBMAX));
 
 	if (cMax == cMin)
@@ -212,9 +212,9 @@ CXTPSkinManagerColorFilterShiftRGB::CXTPSkinManagerColorFilterShiftRGB(long r, l
 
 void CXTPSkinManagerColorFilterShiftRGB::ApplyColorFilter(COLORREF& clr)
 {
-	int rgbRed	 = (BYTE)max(0, min(255, (int)(GetRValue(clr) + m_r)));
-	int rgbGreen = (BYTE)max(0, min(255, (int)(GetGValue(clr) + m_g)));
-	int rgbBlue	 = (BYTE)max(0, min(255, (int)(GetBValue(clr) + m_b)));
+	int rgbRed	 = (BYTE)CXTP_max(0, CXTP_min(255, (int)(GetRValue(clr) + m_r)));
+	int rgbGreen = (BYTE)CXTP_max(0, CXTP_min(255, (int)(GetGValue(clr) + m_g)));
+	int rgbBlue	 = (BYTE)CXTP_max(0, CXTP_min(255, (int)(GetBValue(clr) + m_b)));
 
 	clr = RGB(rgbRed, rgbGreen, rgbBlue);
 }

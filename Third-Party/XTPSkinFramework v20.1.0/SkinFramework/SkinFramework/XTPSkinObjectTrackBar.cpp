@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/XTPTypeId.h"
 #include "Common/XTPCasting.h"
 
@@ -131,7 +131,7 @@ int CXTPSkinObjectTrackBar::LogToPhys(DWORD dwPos)
 
 	int lLogMin	  = (int)SendMessage(UINT(TBM_GETRANGEMIN));
 	int lLogMax	  = (int)SendMessage(TBM_GETRANGEMAX);
-	int iSizePhys = max(1, rc.right - rc.left);
+	int iSizePhys = CXTP_max(1, rc.right - rc.left);
 
 	int x;
 	x = rc.left;
@@ -207,7 +207,7 @@ void CXTPSkinObjectTrackBar::FillDrawRect()
 	m_drawRect.rc			= rc;
 	m_drawRect.iThumbHeight = iThumbHeight;
 	m_drawRect.iThumbWidth	= iThumbWidth;
-	m_drawRect.iSizePhys	= max(1, rc.right - rc.left);
+	m_drawRect.iSizePhys	= CXTP_max(1, rc.right - rc.left);
 	m_drawRect.dwStyle		= dwStyle;
 }
 

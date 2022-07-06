@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "Common/Base/cxminmax.h"
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 #include <ActivScp.h>
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
@@ -698,7 +698,7 @@ void CXTPMarkupScrollBar::CalcScrollBarInfo(LPRECT lprc, XTP_SCROLLBAR_POSINFO* 
 	int nRange = (pSBInfo->posMax - pSBInfo->posMin) + 1;
 	ASSERT(0 < nRange);
 
-	int cpx = min((pSBInfo->pxBottom - pSBInfo->pxTop) / 2, pSBInfo->cpxThumb);
+	int cpx = CXTP_min((pSBInfo->pxBottom - pSBInfo->pxTop) / 2, pSBInfo->cpxThumb);
 
 	pSBInfo->pxUpArrow	 = pSBInfo->pxTop + cpx;
 	pSBInfo->pxDownArrow = pSBInfo->pxBottom - cpx;
@@ -706,7 +706,7 @@ void CXTPMarkupScrollBar::CalcScrollBarInfo(LPRECT lprc, XTP_SCROLLBAR_POSINFO* 
 	if (pSBInfo->page != 0)
 	{
 		int i = MulDiv(pSBInfo->pxDownArrow - pSBInfo->pxUpArrow, pSBInfo->page, nRange);
-		pSBInfo->cpxThumb = max(max(16, pSBInfo->cpxThumb / 2), i);
+		pSBInfo->cpxThumb = CXTP_max(CXTP_max(16, pSBInfo->cpxThumb / 2), i);
 	}
 
 	pSBInfo->pxMin = pSBInfo->pxTop + cpx;
