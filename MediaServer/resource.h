@@ -3,13 +3,13 @@
 // Используется MediaServer.rc
 //
 #define IDI_ICON1                       1
-#define IDI_ICON2                       2
-#define IDI_ICON3                       3
-#define IDI_ICON4                       4
-#define IDD_DIALOG1                     5
-#define IDD_DIALOG2                     6
-#define IDC_CURSOR1                     7
-#define IDB_SVG1                        8
+#define IDD_DIALOG1                     2
+#define IDD_DIALOG2                     3
+#define IDC_CURSOR1                     4
+#define IDB_SVG1                        5
+#define IDI_SVG2                        6
+#define IDI_SVG3                        7
+#define IDI_SVG4                        8
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON2                     1002
 #define IDC_BUTTON3                     1003

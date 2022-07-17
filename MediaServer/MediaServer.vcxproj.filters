@@ -72,18 +72,18 @@
     <None Include="Res\Logo.svg">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="Res\Delete.svg">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
+    <None Include="Res\folder_add.svg">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
+    <None Include="Res\audio_stop.svg">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Res\Icon.ico">
-      <Filter>Файлы ресурсов</Filter>
-    </Image>
-    <Image Include="Res\Delete.ico">
-      <Filter>Файлы ресурсов</Filter>
-    </Image>
-    <Image Include="Res\folder_add.ico">
-      <Filter>Файлы ресурсов</Filter>
-    </Image>
-    <Image Include="Res\audio_stop.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>

@@ -2678,7 +2678,7 @@ static void _svgLoaderParserXmlOpen(SvgLoaderData* loader, const char* content, 
         sz = attrs - content;
         while ((sz > 0) && (isspace(content[sz - 1]))) sz--;
         if ((unsigned)sz >= sizeof(tagName)) return;
-        strncpy_s(tagName, content, sz);
+        strncpy(tagName, content, sz);
         tagName[sz] = '\0';
         attrsLength = length - sz;
     }
@@ -3044,7 +3044,7 @@ static bool _svgLoaderParserForValidCheckXmlOpen(SvgLoaderData* loader, const ch
         sz = attrs - content;
         while ((sz > 0) && (isspace(content[sz - 1]))) sz--;
         if ((unsigned)sz >= sizeof(tagName)) return false;
-        strncpy_s(tagName, content, sz);
+        strncpy(tagName, content, sz);
         tagName[sz] = '\0';
         attrsLength = length - sz;
     }
@@ -3225,8 +3225,12 @@ bool SvgLoader::resize(Paint* paint, float w, float h)
         auto ty = 0.0f;
         auto tw = this->w * scale;
         auto th = this->h * scale;
-        if (tw > th) ty -= (h - th) * 0.5f;
-        else tx -= (w - tw) * 0.5f;
+        //if (tw > th) ty -= (h - th) * 0.5f;
+        //else tx -= (w - tw) * 0.5f;
+        //PATCH UMEROV
+        ty -= (h - th) * 0.5f;
+        tx -= (w - tw) * 0.5f;
+        //PATCH UMEROV
         paint->translate(-tx, -ty);
     } else {
         //Align

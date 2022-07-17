@@ -71,6 +71,37 @@
     <ClCompile Include="png\pngwrite.c" />
     <ClCompile Include="png\pngwtran.c" />
     <ClCompile Include="png\pngwutil.c" />
+    <ClCompile Include="rlottie\src\lottie\lottieanimation.cpp" />
+    <ClCompile Include="rlottie\src\lottie\lottieitem.cpp" />
+    <ClCompile Include="rlottie\src\lottie\lottieitem_capi.cpp" />
+    <ClCompile Include="rlottie\src\lottie\lottiekeypath.cpp" />
+    <ClCompile Include="rlottie\src\lottie\lottieloader.cpp" />
+    <ClCompile Include="rlottie\src\lottie\lottiemodel.cpp" />
+    <ClCompile Include="rlottie\src\lottie\lottieparser.cpp" />
+    <ClCompile Include="rlottie\src\vector\freetype\v_ft_math.cpp" />
+    <ClCompile Include="rlottie\src\vector\freetype\v_ft_raster.cpp" />
+    <ClCompile Include="rlottie\src\vector\freetype\v_ft_stroker.cpp" />
+    <ClCompile Include="rlottie\src\vector\stb\stb_image.cpp" />
+    <ClCompile Include="rlottie\src\vector\varenaalloc.cpp" />
+    <ClCompile Include="rlottie\src\vector\vbezier.cpp" />
+    <ClCompile Include="rlottie\src\vector\vbitmap.cpp" />
+    <ClCompile Include="rlottie\src\vector\vbrush.cpp" />
+    <ClCompile Include="rlottie\src\vector\vdasher.cpp" />
+    <ClCompile Include="rlottie\src\vector\vdebug.cpp" />
+    <ClCompile Include="rlottie\src\vector\vdrawable.cpp" />
+    <ClCompile Include="rlottie\src\vector\vdrawhelper.cpp" />
+    <ClCompile Include="rlottie\src\vector\vdrawhelper_common.cpp" />
+    <ClCompile Include="rlottie\src\vector\vdrawhelper_sse2.cpp" />
+    <ClCompile Include="rlottie\src\vector\velapsedtimer.cpp" />
+    <ClCompile Include="rlottie\src\vector\vimageloader.cpp" />
+    <ClCompile Include="rlottie\src\vector\vinterpolator.cpp" />
+    <ClCompile Include="rlottie\src\vector\vmatrix.cpp" />
+    <ClCompile Include="rlottie\src\vector\vpainter.cpp" />
+    <ClCompile Include="rlottie\src\vector\vpath.cpp" />
+    <ClCompile Include="rlottie\src\vector\vpathmesure.cpp" />
+    <ClCompile Include="rlottie\src\vector\vraster.cpp" />
+    <ClCompile Include="rlottie\src\vector\vrect.cpp" />
+    <ClCompile Include="rlottie\src\vector\vrle.cpp" />
     <ClCompile Include="thorvg\src\raw\tvgRawLoader.cpp" />
     <ClCompile Include="thorvg\src\svg\tvgSvgCssStyle.cpp" />
     <ClCompile Include="thorvg\src\svg\tvgSvgLoader.cpp" />
@@ -142,6 +173,44 @@
     <ClInclude Include="png\pnglibconf.h" />
     <ClInclude Include="png\pngpriv.h" />
     <ClInclude Include="png\pngstruct.h" />
+    <ClInclude Include="rlottie\inc\colorreplace.h" />
+    <ClInclude Include="rlottie\inc\rlottie.h" />
+    <ClInclude Include="rlottie\inc\rlottiecommon.h" />
+    <ClInclude Include="rlottie\src\lottie\lottiefiltermodel.h" />
+    <ClInclude Include="rlottie\src\lottie\lottieitem.h" />
+    <ClInclude Include="rlottie\src\lottie\lottiekeypath.h" />
+    <ClInclude Include="rlottie\src\lottie\lottiemodel.h" />
+    <ClInclude Include="rlottie\src\vector\config.h" />
+    <ClInclude Include="rlottie\src\vector\freetype\v_ft_math.h" />
+    <ClInclude Include="rlottie\src\vector\freetype\v_ft_raster.h" />
+    <ClInclude Include="rlottie\src\vector\freetype\v_ft_stroker.h" />
+    <ClInclude Include="rlottie\src\vector\freetype\v_ft_types.h" />
+    <ClInclude Include="rlottie\src\vector\stb\stb_image.h" />
+    <ClInclude Include="rlottie\src\vector\varenaalloc.h" />
+    <ClInclude Include="rlottie\src\vector\vbezier.h" />
+    <ClInclude Include="rlottie\src\vector\vbitmap.h" />
+    <ClInclude Include="rlottie\src\vector\vbrush.h" />
+    <ClInclude Include="rlottie\src\vector\vcowptr.h" />
+    <ClInclude Include="rlottie\src\vector\vdasher.h" />
+    <ClInclude Include="rlottie\src\vector\vdebug.h" />
+    <ClInclude Include="rlottie\src\vector\vdrawable.h" />
+    <ClInclude Include="rlottie\src\vector\vdrawhelper.h" />
+    <ClInclude Include="rlottie\src\vector\velapsedtimer.h" />
+    <ClInclude Include="rlottie\src\vector\vglobal.h" />
+    <ClInclude Include="rlottie\src\vector\vimageloader.h" />
+    <ClInclude Include="rlottie\src\vector\vinterpolator.h" />
+    <ClInclude Include="rlottie\src\vector\vline.h" />
+    <ClInclude Include="rlottie\src\vector\vmatrix.h" />
+    <ClInclude Include="rlottie\src\vector\vpainter.h" />
+    <ClInclude Include="rlottie\src\vector\vpath.h" />
+    <ClInclude Include="rlottie\src\vector\vpathmesure.h" />
+    <ClInclude Include="rlottie\src\vector\vpoint.h" />
+    <ClInclude Include="rlottie\src\vector\vraster.h" />
+    <ClInclude Include="rlottie\src\vector\vrect.h" />
+    <ClInclude Include="rlottie\src\vector\vrle.h" />
+    <ClInclude Include="rlottie\src\vector\vsharedptr.h" />
+    <ClInclude Include="rlottie\src\vector\vstackallocator.h" />
+    <ClInclude Include="rlottie\src\vector\vtaskqueue.h" />
     <ClInclude Include="thorvg\inc\thorvg.h" />
     <ClInclude Include="thorvg\src\config.h" />
     <ClInclude Include="thorvg\src\raw\tvgRawLoader.h" />
@@ -220,7 +289,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>./jpeg;./png;./zlib;./thorvg/inc;./thorvg/src;./thorvg/src/svg;./thorvg/src/raw;./thorvg/src/sw_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./jpeg;./png;./zlib;./rlottie/inc;./rlottie/src/lottie;./rlottie/src/vector;./rlottie/src/vector/freetype;./thorvg/inc;./thorvg/src;./thorvg/src/svg;./thorvg/src/raw;./thorvg/src/sw_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>

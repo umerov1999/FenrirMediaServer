@@ -97,13 +97,13 @@
     <ResourceCompile Include="MediaServer.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Res\audio_stop.svg" />
     <None Include="Res\Cursor.cur" />
+    <None Include="Res\Delete.svg" />
+    <None Include="Res\folder_add.svg" />
     <None Include="Res\Logo.svg" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Res\audio_stop.ico" />
-    <Image Include="Res\Delete.ico" />
-    <Image Include="Res\folder_add.ico" />
     <Image Include="Res\Icon.ico" />
   </ItemGroup>
   <ItemGroup>

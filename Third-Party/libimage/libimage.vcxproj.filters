@@ -16,6 +16,27 @@
     <Filter Include="Файлы исходного кода\zlib">
       <UniqueIdentifier>{3a533a1c-88d9-4062-843d-b846b48a3a7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\rlottie">
+      <UniqueIdentifier>{5b3c6561-4ce3-49ff-b42b-36c81ef34d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\rlottie\src">
+      <UniqueIdentifier>{6cd1df83-b445-4ca2-ba39-cd6376720750}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\rlottie\src\lottie">
+      <UniqueIdentifier>{57539945-4383-416f-8586-cd7a139cd5c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\rlottie\src\vector">
+      <UniqueIdentifier>{7817fa96-d41f-4ab3-a501-f11ee02fb64c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\rlottie\src\vector\freetype">
+      <UniqueIdentifier>{b8d6d3f9-bd4e-4869-89e2-e7201aaa6b97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\rlottie\src\vector\stb">
+      <UniqueIdentifier>{18dd94f6-8dab-40ee-a4aa-61f4c866ae78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\rlottie\inc">
+      <UniqueIdentifier>{dbb30465-5171-46a4-836d-1426c98e2bd2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Файлы исходного кода\thorvg">
       <UniqueIdentifier>{9ed503e4-b337-4f4f-909a-09bf781ec377}</UniqueIdentifier>
     </Filter>
@@ -273,6 +294,99 @@
     <ClCompile Include="jpeg\jerror.cpp">
       <Filter>Файлы исходного кода\jpeg</Filter>
     </ClCompile>
+    <ClCompile Include="rlottie\src\lottie\lottieanimation.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\lottie\lottieitem.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\lottie\lottieitem_capi.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\lottie\lottiekeypath.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\lottie\lottieloader.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\lottie\lottiemodel.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\lottie\lottieparser.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vbezier.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vbitmap.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vbrush.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vdasher.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vdebug.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vdrawable.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vdrawhelper.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vdrawhelper_common.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vdrawhelper_sse2.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\velapsedtimer.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vimageloader.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vinterpolator.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vmatrix.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vpainter.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vpath.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vpathmesure.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vraster.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vrect.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\vrle.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\varenaalloc.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\freetype\v_ft_raster.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\freetype\v_ft_stroker.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\freetype\v_ft_math.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="rlottie\src\vector\stb\stb_image.cpp">
+      <Filter>Файлы исходного кода\rlottie\src\vector\stb</Filter>
+    </ClCompile>
     <ClCompile Include="thorvg\src\tvgShape.cpp">
       <Filter>Файлы исходного кода\thorvg\src</Filter>
     </ClCompile>
@@ -469,6 +583,120 @@
     </ClInclude>
     <ClInclude Include="zlib\crc32.h">
       <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\lottie\lottiefiltermodel.h">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\lottie\lottieitem.h">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\lottie\lottiekeypath.h">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\lottie\lottiemodel.h">
+      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\varenaalloc.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vbezier.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vbitmap.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vbrush.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vcowptr.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vdasher.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vdebug.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vdrawable.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vdrawhelper.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\velapsedtimer.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vglobal.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vimageloader.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vinterpolator.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vline.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vmatrix.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vpainter.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vpath.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vpathmesure.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vpoint.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vraster.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vrect.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vrle.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vsharedptr.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vstackallocator.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\vtaskqueue.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\freetype\v_ft_math.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\freetype\v_ft_raster.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\freetype\v_ft_stroker.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\freetype\v_ft_types.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\stb\stb_image.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\src\vector\config.h">
+      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\inc\rlottie.h">
+      <Filter>Файлы исходного кода\rlottie\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\inc\rlottiecommon.h">
+      <Filter>Файлы исходного кода\rlottie\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="rlottie\inc\colorreplace.h">
+      <Filter>Файлы исходного кода\rlottie\inc</Filter>
     </ClInclude>
     <ClInclude Include="thorvg\inc\thorvg.h">
       <Filter>Файлы исходного кода\thorvg\inc</Filter>

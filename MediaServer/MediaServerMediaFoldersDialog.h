@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "UListBox.h"
 #include "afxdialogex.h"
+#include "libimage.h"
 
 class MediaServerMediaFoldersDialog : public CDialogEx
 {
@@ -21,6 +22,9 @@ protected:
 public:
 	HICON m_hIcon;
 	HCURSOR m_hCursor;
+
+	LIB_IMAGE::win_image Pdelete;
+	LIB_IMAGE::win_image PAdd;
 
 	UListBox ListAudios;
 	UListBox ListDiscography;

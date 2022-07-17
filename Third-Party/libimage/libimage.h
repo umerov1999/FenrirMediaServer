@@ -138,8 +138,12 @@ namespace LIB_IMAGE
 		win_image_size image_size;
 	};
 
-	win_image PrepareImageFromBufferByType(HWND hwnd, const void* pDataBuffer, int nBufferSize, win_image_type Type);
-	win_image PrepareImageFromBufferAutoType(HWND hwnd, const void* pDataBuffer, int nBufferSize);
+	win_image PrepareImageFromBufferByType(HWND hwnd, const void* pDataBuffer, int nBufferSize, win_image_type Type, bool show_error_bitmap = true);
+	win_image PrepareImageFromBufferAutoType(HWND hwnd, const void* pDataBuffer, int nBufferSize, bool show_error_bitmap = true);
 	win_image PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetHeight, const void* pDataBuffer, int nBufferSize, uint32_t bgColor = 0xffffffff);
+	HBITMAP PrepareImageFromSVGResourceToIcon(HWND hwnd, int Res, int padding = 16, uint32_t bgColor = 0xffffffff);
+	win_image PrepareImageFromSVGResource(HWND hwnd, int Res, int padding = 16, uint32_t bgColor = 0xffffffff);
 	std::string GetDataFromResourceUtil(std::wstring ResType, int Res, HMODULE hMod = GetModuleHandleW(NULL));
+	//OnlyTest
+	void CreateBMPFile(LPCTSTR pszFile, HBITMAP hBMP);
 }

@@ -584,13 +584,14 @@ BOOL MediaServerDialog::OnInitDialog()
 	m_hCursor = AfxGetApp()->LoadCursor(MAKEINTRESOURCEW(IDC_CURSOR1));
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
-	BAudioStop.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON4));
+	
+	BAudioStop.SetBitmap(PrepareImageFromSVGResourceToIcon(BAudioStop.m_hWnd, IDI_SVG4));
 	BAudioStop.ShowWindow(FALSE);
 	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &Startinit);
 
 	std::string DataPic = GetDataFromResourceUtil(L"SVG", IDB_SVG1);
 	auto mk = Edk.getRect();
-	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size(), 0x000000).get_hBitmap(true), false);
+	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true), false);
 
 #ifdef _WIN64
 	const wchar_t* ARCH = L"x64";

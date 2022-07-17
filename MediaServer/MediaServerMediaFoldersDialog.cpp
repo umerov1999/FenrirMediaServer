@@ -72,15 +72,19 @@ BOOL MediaServerMediaFoldersDialog::OnInitDialog()
 	ListPhotoVideos.Init();
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON1);
 	m_hCursor = AfxGetApp()->LoadCursor(MAKEINTRESOURCEW(IDC_CURSOR1));
-	EraseAudios.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
-	EraseVideos.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
-	EraseDiscography.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
-	ErasePhotoVideos.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
 
-	AddAudios.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON3));
-	AddVideos.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON3));
-	AddDiscography.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON3));
-	AddPhotoVideos.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON3));
+	Pdelete = LIB_IMAGE::PrepareImageFromSVGResource(EraseAudios.m_hWnd, IDI_SVG2);
+	PAdd = LIB_IMAGE::PrepareImageFromSVGResource(AddAudios.m_hWnd, IDI_SVG3);
+
+	EraseAudios.SetBitmap(Pdelete.get_hBitmap());
+	EraseVideos.SetBitmap(Pdelete.get_hBitmap());
+	EraseDiscography.SetBitmap(Pdelete.get_hBitmap());
+	ErasePhotoVideos.SetBitmap(Pdelete.get_hBitmap());
+
+	AddAudios.SetBitmap(PAdd.get_hBitmap());
+	AddVideos.SetBitmap(PAdd.get_hBitmap());
+	AddDiscography.SetBitmap(PAdd.get_hBitmap());
+	AddPhotoVideos.SetBitmap(PAdd.get_hBitmap());
 
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
