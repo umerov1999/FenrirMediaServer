@@ -49,9 +49,10 @@ extern USSL_CERT CertificateData;
 struct UCERTHeader
 {
 	char Magic[10];
+	time_t created;
 	unsigned short utf8_domaine_name_length;
-	unsigned int ca_bundle_size;
 	unsigned int certificate_size;
+	unsigned int ca_bundle_size;
 	unsigned int private_key_size;
 };
 #pragma pack(pop)
@@ -266,7 +267,7 @@ private:
 		}
 		obj.emplace(key, arr);
 	}
-	static void serialize(json& obj, const string &key, const USSL_CERT &value)
+	static void serialize(json& obj, const string& key, const USSL_CERT& value)
 	{
 		json elem = json(json::value_t::object);
 		if (value.Inited)
@@ -274,9 +275,15 @@ private:
 			serialize(elem, "time_created", value.AddTime);
 			serialize(elem, "is_inited", value.Inited);
 			serialize(elem, "domain_name", value.Name);
-			serialize(elem, "ssl_ca_cert_base64", base64::encode(value.CertPart[USSL_CERTPART_CERT]));
-			serialize(elem, "ssl_ca_bundle_base64", base64::encode(value.CertPart[USSL_CERTPART_BUNDLE]));
-			serialize(elem, "ssl_key_base64", base64::encode(value.CertPart[USSL_CERTPART_KEY]));
+			if (value.CertPart.exist(USSL_CERTPART_CERT) && !value.CertPart[USSL_CERTPART_CERT].empty()) {
+				serialize(elem, "ssl_cert_base64", base64::encode(value.CertPart[USSL_CERTPART_CERT]));
+			}
+			if (value.CertPart.exist(USSL_CERTPART_BUNDLE) && !value.CertPart[USSL_CERTPART_BUNDLE].empty()) {
+				serialize(elem, "ssl_ca_bundle_base64", base64::encode(value.CertPart[USSL_CERTPART_BUNDLE]));
+			}
+			if (value.CertPart.exist(USSL_CERTPART_KEY) && !value.CertPart[USSL_CERTPART_KEY].empty()) {
+				serialize(elem, "ssl_key_base64", base64::encode(value.CertPart[USSL_CERTPART_KEY]));
+			}
 		}
 		obj.emplace(key, elem);
 	}
@@ -313,22 +320,36 @@ private:
 			}
 		}
 	}
-	static void deserialize(const json& obj, const string &key, USSL_CERT& value)
+	static void deserialize(const json& obj, const string& key, USSL_CERT& value)
 	{
 		if (obj.find(key) != obj.end())
 		{
 			json vl = obj.at(key);
-			value.CertPart.resize(3);
 			deserialize(vl, "time_created", value.AddTime);
 			deserialize(vl, "is_inited", value.Inited);
 			deserialize(vl, "domain_name", value.Name);
-			deserialize(vl, "ssl_ca_cert_base64", value.CertPart[USSL_CERTPART_CERT]);
+			deserialize(vl, "ssl_cert_base64", value.CertPart[USSL_CERTPART_CERT]);
 			deserialize(vl, "ssl_ca_bundle_base64", value.CertPart[USSL_CERTPART_BUNDLE]);
 			deserialize(vl, "ssl_key_base64", value.CertPart[USSL_CERTPART_KEY]);
 
-			value.CertPart[USSL_CERTPART_CERT] = base64::decode(value.CertPart[USSL_CERTPART_CERT]);
-			value.CertPart[USSL_CERTPART_BUNDLE] = base64::decode(value.CertPart[USSL_CERTPART_BUNDLE]);
-			value.CertPart[USSL_CERTPART_KEY] = base64::decode(value.CertPart[USSL_CERTPART_KEY]);
+			if (!value.CertPart[USSL_CERTPART_CERT].empty()) {
+				value.CertPart[USSL_CERTPART_CERT] = base64::decode(value.CertPart[USSL_CERTPART_CERT]);
+			}
+			else {
+				value.CertPart.erase(USSL_CERTPART_CERT);
+			}
+			if (!value.CertPart[USSL_CERTPART_BUNDLE].empty()) {
+				value.CertPart[USSL_CERTPART_BUNDLE] = base64::decode(value.CertPart[USSL_CERTPART_BUNDLE]);
+			}
+			else {
+				value.CertPart.erase(USSL_CERTPART_BUNDLE);
+			}
+			if (!value.CertPart[USSL_CERTPART_KEY].empty()) {
+				value.CertPart[USSL_CERTPART_KEY] = base64::decode(value.CertPart[USSL_CERTPART_KEY]);
+			}
+			else {
+				value.CertPart.erase(USSL_CERTPART_KEY);
+			}
 		}
 	}
 public:
@@ -345,7 +366,7 @@ public:
 };
 static SettingsClass pSettings;
 
-static void ReadCert(const wstring &FilePath)
+static void ReadCert(const wstring& FilePath)
 {
 	win_message msg(dlgS.m_hWnd);
 	msg.message_type(MSG_TYPE::TYPE_ERROR);
@@ -369,19 +390,22 @@ static void ReadCert(const wstring &FilePath)
 	fread((void*)UTF8CertName.data(), 1, hdr.utf8_domaine_name_length, ucert);
 
 	CertificateData.Name = UTF8CertName;
-	CertificateData.AddTime = wchar_to_UTF8(GetTimeLocal());
+	CertificateData.AddTime = wchar_to_UTF8(GetTimeAT(hdr.created));
 	string TempBuf;
-	TempBuf.resize(hdr.ca_bundle_size);
-	fread((void*)TempBuf.data(), 1, hdr.ca_bundle_size, ucert);
-	CertificateData.CertPart.push_back(TempBuf);
 
 	TempBuf.resize(hdr.certificate_size);
 	fread((void*)TempBuf.data(), 1, hdr.certificate_size, ucert);
-	CertificateData.CertPart.push_back(TempBuf);
+	CertificateData.CertPart[USSL_CERTPART_CERT] = TempBuf;
+
+	if (hdr.ca_bundle_size > 0) {
+		TempBuf.resize(hdr.ca_bundle_size);
+		fread((void*)TempBuf.data(), 1, hdr.ca_bundle_size, ucert);
+		CertificateData.CertPart[USSL_CERTPART_BUNDLE] = TempBuf;
+	}
 
 	TempBuf.resize(hdr.private_key_size);
 	fread((void*)TempBuf.data(), 1, hdr.private_key_size, ucert);
-	CertificateData.CertPart.push_back(TempBuf);
+	CertificateData.CertPart[USSL_CERTPART_KEY] = TempBuf;
 	CertificateData.Inited = true;
 	fclose(ucert);
 	pSettings.CertificateContent = CertificateData;

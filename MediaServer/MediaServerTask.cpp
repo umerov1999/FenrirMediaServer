@@ -269,37 +269,62 @@ inline void PrintSertValid(X509* Sert, const wstring& Name)
 
 SSL_CTX* initialize_ctx(bool print_sert)
 {
-	BIO* CA_CERT = BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_CERT].data(), (int)CertificateData.CertPart[USSL_CERTPART_CERT].size());
-	BIO* CA_BUNDLE = BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_BUNDLE].data(), (int)CertificateData.CertPart[USSL_CERTPART_BUNDLE].size());
-	BIO* CA_KEY = BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_KEY].data(), (int)CertificateData.CertPart[USSL_CERTPART_KEY].size());
+	auto CA_CERT = std::shared_ptr<BIO>(BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_CERT].data(), (int)CertificateData.CertPart[USSL_CERTPART_CERT].size()), BIO_free);
+	auto CA_KEY = std::shared_ptr<BIO>(BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_KEY].data(), (int)CertificateData.CertPart[USSL_CERTPART_KEY].size()), BIO_free);
 	SSL_CTX* ctx = SSL_CTX_new(TLS_server_method());
-
-	X509* cert = NULL;
+	BIO* CA_BUNDLE = NULL;
 	X509* bundle = NULL;
+	X509* cert = NULL;
 	EVP_PKEY* rsa = NULL;
+	X509* p = NULL;
+	bool first = true;
+	int bundle_part = 0;
+
 	if (ctx == NULL)
 		goto error;
-	cert = PEM_read_bio_X509(CA_CERT, NULL, 0, NULL);
-	bundle = PEM_read_bio_X509(CA_BUNDLE, NULL, 0, NULL);
 
-	rsa = PEM_read_bio_PrivateKey(CA_KEY, NULL, 0, NULL);
+	
+	while ((p = PEM_read_bio_X509(CA_CERT.get(), NULL, 0, NULL)) != NULL) {
+		if (first) {
+			if (SSL_CTX_use_certificate(ctx, p) <= 0)
+				goto error;
+			first = false;
+			if (print_sert) {
+				PrintSertValid(p, L"Certificate.crt");
+			}
+		}
+		else {
+			if (SSL_CTX_add_extra_chain_cert(ctx, p) <= 0)
+				goto error;
+			if (print_sert) {
+				PrintSertValid(p, L"Ca_Bundle[" + to_wstring(++bundle_part) + L"].crt");
+			}
+		}
+	}
+	rsa = PEM_read_bio_PrivateKey(CA_KEY.get(), NULL, 0, NULL);
 
-	BIO_free(CA_CERT);
-	BIO_free(CA_BUNDLE);
-	BIO_free(CA_KEY);
-	if (cert == NULL || bundle == NULL || rsa == NULL)
+	if (first || rsa == NULL)
 		goto error;
-	if (SSL_CTX_use_certificate(ctx, cert) <= 0)
-		goto error;
-	if (SSL_CTX_add_extra_chain_cert(ctx, bundle) <= 0)
-		goto error;
+	if (CertificateData.CertPart.exist(USSL_CERTPART_BUNDLE) && !CertificateData.CertPart[USSL_CERTPART_BUNDLE].empty()) {
+		CA_BUNDLE = BIO_new_mem_buf(CertificateData.CertPart[USSL_CERTPART_BUNDLE].data(), (int)CertificateData.CertPart[USSL_CERTPART_BUNDLE].size());
+		if (!CA_BUNDLE) {
+			goto error;
+		}
+		while ((p = PEM_read_bio_X509(CA_BUNDLE, NULL, 0, NULL)) != NULL) {
+			if (SSL_CTX_add_extra_chain_cert(ctx, p) <= 0) {
+				BIO_free(CA_BUNDLE);
+				goto error;
+			}
 
+			if (print_sert) {
+				PrintSertValid(p, L"Ca_Bundle[" + to_wstring(++bundle_part) + L"].crt");
+			}
+		}
+		BIO_free(CA_BUNDLE);
+	}
 	if (SSL_CTX_use_PrivateKey(ctx, rsa) <= 0)
 		goto error;
-	if (print_sert == true)
-	{
-		PrintSertValid(cert, L"Certificate.crt");
-		PrintSertValid(bundle, L"Ca_Bundle.crt");
+	if (print_sert) {
 		PrintMessage(L"    #Домен " + UTF8_to_wchar(CertificateData.Name), URGB(180, 0, 0));
 	}
 	return ctx;

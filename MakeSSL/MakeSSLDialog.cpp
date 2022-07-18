@@ -19,9 +19,10 @@ using namespace WSTRUtils;
 struct UCERTHeader
 {
 	char Magic[10];
+	time_t created;
 	unsigned short utf8_domaine_name_length;
-	unsigned int ca_bundle_size;
 	unsigned int certificate_size;
+	unsigned int ca_bundle_size;
 	unsigned int private_key_size;
 };
 #pragma pack(pop)
@@ -110,7 +111,7 @@ void MakeSSLDialog::OnGen()
 	File2.GetWindowTextW(Cert2Str);
 	File3.GetWindowTextW(Cert3Str);
 	EDomaine.GetWindowTextW(DomaineNameStr);
-	if (Cert1Str.GetLength() <= 0 || Cert2Str.GetLength() <= 0 || Cert3Str.GetLength() <= 0 || DomaineNameStr.GetLength() <= 0)
+	if (Cert1Str.GetLength() <= 0 || Cert3Str.GetLength() <= 0 || DomaineNameStr.GetLength() <= 0)
 	{
 		(msg << L"Не все поля заполнены!").show();
 		return;
@@ -129,47 +130,60 @@ void MakeSSLDialog::OnGen()
 	if (result != 1)
 		return;
 	FILE*ucert = NULL, *cert1 = NULL, *cert2 = NULL, *cert3 = NULL;
-	if (_wfopen_s(&ucert, fileDialog.GetPathName().GetString(), L"wb") != 0 || _wfopen_s(&cert1, Cert1Str.GetString(), L"rb") != 0 || _wfopen_s(&cert2, Cert2Str.GetString(), L"rb") != 0 || _wfopen_s(&cert3, Cert3Str.GetString(), L"rb") != 0)
+	if (_wfopen_s(&ucert, fileDialog.GetPathName().GetString(), L"wb") != 0 || _wfopen_s(&cert1, Cert1Str.GetString(), L"rb") != 0 || _wfopen_s(&cert3, Cert3Str.GetString(), L"rb") != 0)
 	{
 		if (ucert)
 			fclose(ucert);
 		if (cert1)
 			fclose(cert1);
-		if (cert2)
-			fclose(cert2);
 		if (cert3)
 			fclose(cert3);
 		(msg << L"Нет доступа к файлам!").show();
 		return;
 	}
+	_wfopen_s(&cert2, Cert2Str.GetString(), L"rb");
+
 	fseek(cert1, 0, SEEK_END);
-	fseek(cert2, 0, SEEK_END);
+	if (cert2 != nullptr) {
+		fseek(cert2, 0, SEEK_END);
+	}
 	fseek(cert3, 0, SEEK_END);
-	std::vector<char>Cer1Data(ftell(cert1)), Cer2Data(ftell(cert2)), Cer3Data(ftell(cert3));
+	std::vector<char>Cer1Data(ftell(cert1)), Cer3Data(ftell(cert3));
+	std::vector<char>Cer2Data;
+	if (cert2 != nullptr) {
+		Cer2Data.resize(ftell(cert2));
+		fseek(cert2, 0, SEEK_SET);
+	}
 	fseek(cert1, 0, SEEK_SET);
-	fseek(cert2, 0, SEEK_SET);
 	fseek(cert3, 0, SEEK_SET);
 
 	fread(Cer1Data.data(), 1, Cer1Data.size(), cert1);
-	fread(Cer2Data.data(), 1, Cer2Data.size(), cert2);
+	if (cert2 != nullptr) {
+		fread(Cer2Data.data(), 1, Cer2Data.size(), cert2);
+	}
 	fread(Cer3Data.data(), 1, Cer3Data.size(), cert3);
 
 	fclose(cert1);
-	fclose(cert2);
+	if (cert2 != nullptr) {
+		fclose(cert2);
+	}
 	fclose(cert3);
 
 	UCERTHeader hdr;
 	memset(&hdr, 0, sizeof(UCERTHeader));
 	memcpy(hdr.Magic, UMagic, strlen(UMagic));
 	std::string UName = wchar_to_UTF8(DomaineNameStr.GetString());
+	hdr.created = time(0);
 	hdr.utf8_domaine_name_length = (unsigned short)UName.length();
-	hdr.ca_bundle_size = (unsigned short)Cer1Data.size();
-	hdr.certificate_size = (unsigned short)Cer2Data.size();
+	hdr.certificate_size = (unsigned short)Cer1Data.size();
+	hdr.ca_bundle_size = (unsigned short)Cer2Data.size();
 	hdr.private_key_size = (unsigned short)Cer3Data.size();
 	fwrite(&hdr, sizeof(UCERTHeader), 1, ucert);
 	fwrite(UName.data(), 1, UName.length(), ucert);
 	fwrite(Cer1Data.data(), 1, Cer1Data.size(), ucert);
-	fwrite(Cer2Data.data(), 1, Cer2Data.size(), ucert);
+	if (!Cer2Data.empty()) {
+		fwrite(Cer2Data.data(), 1, Cer2Data.size(), ucert);
+	}
 	fwrite(Cer3Data.data(), 1, Cer3Data.size(), ucert);
 	fclose(ucert);
 	(msg.message_type(MSG_TYPE::TYPE_INFO) << L"Успешно!").show();

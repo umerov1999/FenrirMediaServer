@@ -58,8 +58,8 @@ public:
 	int ffmpeg_proc_count;
 };
 
-#define USSL_CERTPART_BUNDLE 0
-#define USSL_CERTPART_CERT 1
+#define USSL_CERTPART_CERT 0
+#define USSL_CERTPART_BUNDLE 1
 #define USSL_CERTPART_KEY 2
 
 struct USSL_CERT
@@ -71,7 +71,7 @@ struct USSL_CERT
 	bool Inited;
 	std::string Name;
 	std::string AddTime;
-	std::vector<std::string>CertPart;
+	Map::Map<int, std::string>CertPart;
 };
 
 class ACCEPT_STRUCT
