@@ -2,7 +2,7 @@
 set path=C:\Program Files\NASM;%path%
 C:
 cd C:/
-set OPENSSL_VERSION=3.0.3
+set OPENSSL_VERSION=3.0.5
 set SEVENZIP="C:\Program Files\7-Zip\7z.exe"
 set VS2022_AMD64="C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 
@@ -24,7 +24,11 @@ CALL %VS2022_AMD64%
 C:
 
 cd \openssl-src-win64-VS2022
-perl Configure VC-WIN64A no-shared no-weak-ssl-ciphers --prefix=C:\openssl-%OPENSSL_VERSION%-64bit-release-static-VS2022 -D_WIN32_WINNT=0x0600
+
+powershell -Command "(gc Configurations/10-main.conf) -replace '/Zi /Fdossl_static.pdb', '' | Out-File -Encoding ascii Configurations/10-main.conf"
+powershell -Command "(gc Configurations/10-main.conf) -replace '\"-g\"', '\"\"' | Out-File -Encoding ascii Configurations/10-main.conf"
+
+perl Configure VC-WIN64A --release no-shared no-engine no-module no-crypto-mdebug no-tests no-external-tests no-legacy no-weak-ssl-ciphers --prefix=C:\openssl-%OPENSSL_VERSION%-64bit-release-static-VS2022 -D_WIN32_WINNT=0x0600
 nmake -f Makefile install
 
 cd ../

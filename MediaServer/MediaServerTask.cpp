@@ -24,7 +24,10 @@
 #include "json.hpp"
 #include "WSTRUtils.h"
 #include "ThreadAccessGuard.h"
+#include "do_curl.h"
 #include "../../Third-Party/USound/src/USound.h"
+#define VKAPI_VERSION "5.131"
+#include "vk_api_interface.h"
 using namespace std;
 using namespace nlohmann;
 using namespace WSTRUtils;
@@ -49,6 +52,7 @@ list<wstring> Discography_Dirs;
 list<wstring> Audio_Dirs;
 list<wstring> Video_Dirs;
 list<wstring> Photo_Video_Dirs;
+void* template_ff = NULL;
 
 static Inode RootDir;
 
@@ -1097,6 +1101,129 @@ static Media* look_MediaByHash(const string& hash) {
 		return &mPhotos[hash];
 	}
 	return NULL;
+}
+
+bool VK_APIMETHOD::VK_APIMETHOD_doCapcha(const std::string& captcha_img, const std::string& user_agent, std::string& code) {
+	return false;
+}
+
+void VK_APIMETHOD::VK_APIMETHOD_doLimit(const std::string& Method) {
+}
+
+bool do_convert_mp3(const wstring& in, const wstring& out) {
+	PrintMessage(L"Преобразование " + in + L" в " + out);
+	PROCESS_INFORMATION piProcInfo;
+	STARTUPINFOW siStartInfo;
+	ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
+	ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
+	siStartInfo.cb = sizeof(STARTUPINFOW);
+	wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + L" -loglevel panic -n -i \"" + in + L"\" -ab 320k -q 1 -map a -id3v2_version 4 \"" + out + L"\"");
+	PrintMessage(cmd);
+	if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
+		NULL,
+		NULL,
+		FALSE,                 // handles are inherited 
+		CREATE_NO_WINDOW,                    // creation flags 
+		NULL,                 // use parent's environment 
+		ExtractAppPath().c_str(),                 // use parent's current directory 
+		&siStartInfo,         // STARTUPINFO pointer 
+		&piProcInfo))
+	{
+		CloseHandle(piProcInfo.hProcess);
+		CloseHandle(piProcInfo.hThread);
+		return false;
+	}
+	WaitForSingleObject(piProcInfo.hProcess, INFINITE);
+	CloseHandle(piProcInfo.hProcess);
+	CloseHandle(piProcInfo.hThread);
+	if (!PathFileExistsW(out.c_str())) {
+		return false;
+	}
+	FILE* test;
+	if (_wfopen_s(&test, out.c_str(), L"rb") != 0) {
+		return false;
+	}
+	fseek(test, 0, SEEK_END);
+	if (ftell(test) <= 0) {
+		fclose(test);
+		return false;
+	}
+	fclose(test);
+	return true;
+}
+
+static void AudioUpload(RequestParserStruct& Req, CLIENT_CONNECTION* client)
+{
+	if (!exist_get_post(Req, "hash")) {
+		SendErrorJSON(client, L"Не передан hash");
+		return;
+	}
+	if (!exist_get_post(Req, "access_token")) {
+		SendErrorJSON(client, L"Не передан access_token");
+		return;
+	}
+	if (!exist_get_post(Req, "user_agent")) {
+		SendErrorJSON(client, L"Не передан user_agent");
+		return;
+	}
+	string hash = get_postUTF8(Req, "hash");
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios);
+	Media* md = look_MediaByHash(hash);
+	if (md == NULL) {
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios);
+		SendErrorJSON(client, L"Hash не найден");
+		return;
+	}
+	Audio l = (*(Audio*)md);
+	wstring pth = (*md).get_path();
+	wstring cn = ExtractAppPath() + L"\\converted.mp3";
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios);
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+
+	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &template_ff);
+	PrintMessage(L"Загрузка: " + pth, URGB(120, 0, 255));
+	DeleteFileW(cn.c_str());
+	if (pth.find(L".mp3") == wstring::npos) {
+		if (!do_convert_mp3(pth, cn)) {
+			DeleteFileW(cn.c_str());
+			THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &template_ff);
+			return;
+		}
+		pth = cn;
+	}
+
+	VK_APIMETHOD Akkount(get_postUTF8(Req, "access_token"), get_postUTF8(Req, "user_agent"));
+	VKAPI_ANSWER Answer = Akkount["audio.getUploadServer"]();
+	if (Answer.IsError == true || Answer.Object.find("response") == Answer.Object.end() || Answer.Object.at("response").find("upload_url") == Answer.Object.at("response").end())
+	{
+		PrintMessage(L"ERROR: " + UTF8_to_wchar(Answer.Object), URGB(255, 255, 150));
+		DeleteFileW(cn.c_str());
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &template_ff);
+		return;
+	}
+	string url = Answer.Object.at("response").at("upload_url").get<string>();
+	string rt;
+	if (DoCurlMultipart(url, pth, "file", "audio.mp3", get_postUTF8(Req, "user_agent"), rt, true) <= 0) {
+		PrintMessage(L"ERROR: " + UTF8_to_wchar(rt), URGB(255, 255, 150));
+		DeleteFileW(cn.c_str());
+		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &template_ff);
+		return;
+	}
+	DeleteFileW(cn.c_str());
+	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &template_ff);
+	try {
+		auto v = json::parse(rt);
+		VKAPI_ANSWER P = (Akkount["audio.save"] << VK("audio", v.at("audio").get<string>()) << VK("hash", v.at("hash").get<string>()) << VKI("server", v.at("server").get<int>()) << VK("artist", l.get_artist()) << VK("title", l.get_title()))();
+		if (P.IsError) {
+			PrintMessage(L"ERROR: " + UTF8_to_wchar(Answer.Object), URGB(255, 255, 150));
+			return;
+		}
+		PrintMessage(L"Успешно загружен: " + pth, URGB(0, 255, 0));
+	}
+	catch (json::exception e) {
+		PrintMessage(L"ERROR: " + UTF8_to_wchar(e.what()), URGB(255, 255, 150));
+		return;
+	}
 }
 
 static void GetMedia(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
@@ -2381,10 +2508,13 @@ void InitMediaServer()
 
 		serverMethods.RegisterMethod("method/get_media", GetMedia);
 		serverMethods.RegisterMethod("method/get_cover", GetCover);
+		if (PathFileExistsW((ExtractAppPath() + L"\\" + L"ffmpeg.exe").c_str())) {
+			serverMethods.RegisterMethod("method/audio.upload", AudioUpload, true, true);
+		}
 		serverMethods.SetInited();
 	}
 
-	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &player, &RootDir);
+	THREAD_ACCESS_REGISTER_POINTERS(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &player, &RootDir, &template_ff);
 
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_AUDIO);
 	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);

@@ -43,7 +43,7 @@
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../Third-Party/openssl/include;../Third-Party/XTPSkinFramework v20.1.0/SkinFramework;./;../Third-Party/Extra;../Third-Party/libimage;../Third-Party/Extra/components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Third-Party/openssl/include;../Third-Party/XTPSkinFramework v20.1.0/SkinFramework;./;../Third-Party/Extra;../Third-Party/libimage;../Third-Party/Extra/components;../Third-Party/libcurl/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -59,7 +59,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
-      <AdditionalLibraryDirectories>../Third-Party/openssl/lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Third-Party/openssl/lib/x64;../Third-Party/libcurl/lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AddModuleNamesToAssembly>
       </AddModuleNamesToAssembly>
       <GenerateDebugInformation>false</GenerateDebugInformation>

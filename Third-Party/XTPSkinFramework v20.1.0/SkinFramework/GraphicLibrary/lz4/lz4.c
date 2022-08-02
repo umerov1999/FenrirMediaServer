@@ -124,6 +124,7 @@
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)  /* Visual Studio 2005+ */
 #  include <intrin.h>               /* only present in VS2005+ */
 #  pragma warning(disable : 4127)   /* disable: C4127: conditional expression is constant */
+#  pragma warning(disable : 6237)   /* disable: C6237: conditional expression is always 0 */
 #endif  /* _MSC_VER */
 
 #ifndef LZ4_FORCE_INLINE
@@ -205,7 +206,10 @@ void  LZ4_free(void* p);
 #endif
 
 #include <string.h>   /* memset, memcpy */
-#define MEM_INIT(p,v,s)   memset((p),(v),(s))
+#if !defined(LZ4_memset)
+#  define LZ4_memset(p,v,s) memset((p),(v),(s))
+#endif
+#define MEM_INIT(p,v,s)   LZ4_memset((p),(v),(s))
 
 
 /*-************************************
@@ -316,10 +320,20 @@ typedef enum {
  * memcpy() as if it were standard compliant, so it can inline it in freestanding
  * environments. This is needed when decompressing the Linux Kernel, for example.
  */
-#if defined(__GNUC__) && (__GNUC__ >= 4)
-#define LZ4_memcpy(dst, src, size) __builtin_memcpy(dst, src, size)
-#else
-#define LZ4_memcpy(dst, src, size) memcpy(dst, src, size)
+#if !defined(LZ4_memcpy)
+#  if defined(__GNUC__) && (__GNUC__ >= 4)
+#    define LZ4_memcpy(dst, src, size) __builtin_memcpy(dst, src, size)
+#  else
+#    define LZ4_memcpy(dst, src, size) memcpy(dst, src, size)
+#  endif
+#endif
+
+#if !defined(LZ4_memmove)
+#  if defined(__GNUC__) && (__GNUC__ >= 4)
+#    define LZ4_memmove __builtin_memmove
+#  else
+#    define LZ4_memmove memmove
+#  endif
 #endif
 
 static unsigned LZ4_isLittleEndian(void)
@@ -524,7 +538,7 @@ static unsigned LZ4_NbCommonBytes (reg_t val)
 * including _tzcnt_u64. Therefore, we need to neuter the _tzcnt_u64 code path for ARM64EC.
 ****************************************************************************************************/
 #         if defined(__clang__) && (__clang_major__ < 10)
-            /* Avoid undefined clang-cl intrinics issue.
+            /* Avoid undefined clang-cl intrinsics issue.
              * See https://github.com/lz4/lz4/pull/1017 for details. */
             return (unsigned)__builtin_ia32_tzcnt_u64(val) >> 3;
 #         else
@@ -685,7 +699,7 @@ typedef enum { noDictIssue = 0, dictSmall } dictIssue_directive;
 int LZ4_versionNumber (void) { return LZ4_VERSION_NUMBER; }
 const char* LZ4_versionString(void) { return LZ4_VERSION_STRING; }
 int LZ4_compressBound(int isize)  { return LZ4_COMPRESSBOUND(isize); }
-int LZ4_sizeofState(void) { return LZ4_STREAMSIZE; }
+int LZ4_sizeofState(void) { return sizeof(LZ4_stream_t); }
 
 
 /*-****************************************
@@ -1442,7 +1456,7 @@ int LZ4_compress_destSize(const char* src, char* dst, int* srcSizePtr, int targe
 LZ4_stream_t* LZ4_createStream(void)
 {
     LZ4_stream_t* const lz4s = (LZ4_stream_t*)ALLOC(sizeof(LZ4_stream_t));
-    LZ4_STATIC_ASSERT(LZ4_STREAMSIZE >= sizeof(LZ4_stream_t_internal));    /* A compilation error here means LZ4_STREAMSIZE is not large enough */
+    LZ4_STATIC_ASSERT(sizeof(LZ4_stream_t) >= sizeof(LZ4_stream_t_internal));
     DEBUGLOG(4, "LZ4_createStream %p", lz4s);
     if (lz4s == NULL) return NULL;
     LZ4_initStream(lz4s, sizeof(*lz4s));
@@ -1702,7 +1716,7 @@ int LZ4_saveDict (LZ4_stream_t* LZ4_dict, char* safeBuffer, int dictSize)
     if (dictSize > 0) {
         const BYTE* const previousDictEnd = dict->dictionary + dict->dictSize;
         assert(dict->dictionary);
-        memmove(safeBuffer, previousDictEnd - dictSize, dictSize);
+        LZ4_memmove(safeBuffer, previousDictEnd - dictSize, dictSize);
     }
 
     dict->dictionary = (const BYTE*)safeBuffer;
@@ -1919,7 +1933,7 @@ LZ4_decompress_generic(
 
                 if (length <= (size_t)(lowPrefix-match)) {
                     /* match fits entirely within external dictionary : just copy */
-                    memmove(op, dictEnd - (lowPrefix-match), length);
+                    LZ4_memmove(op, dictEnd - (lowPrefix-match), length);
                     op += length;
                 } else {
                     /* match stretches into both external dictionary and current block */
@@ -2063,7 +2077,7 @@ LZ4_decompress_generic(
                         goto _output_error;
                     }
                 }
-                memmove(op, ip, length);  /* supports overlapping memory regions; only matters for in-place decompression scenarios */
+                LZ4_memmove(op, ip, length);  /* supports overlapping memory regions; only matters for in-place decompression scenarios */
                 ip += length;
                 op += length;
                 /* Necessarily EOF when !partialDecoding.
@@ -2108,7 +2122,7 @@ LZ4_decompress_generic(
 
                 if (length <= (size_t)(lowPrefix-match)) {
                     /* match fits entirely within external dictionary : just copy */
-                    memmove(op, dictEnd - (lowPrefix-match), length);
+                    LZ4_memmove(op, dictEnd - (lowPrefix-match), length);
                     op += length;
                 } else {
                     /* match stretches into both external dictionary and current block */
@@ -2322,9 +2336,8 @@ int LZ4_decompress_fast_doubleDict(const char* source, char* dest, int originalS
 
 LZ4_streamDecode_t* LZ4_createStreamDecode(void)
 {
-    LZ4_streamDecode_t* lz4s = (LZ4_streamDecode_t*) ALLOC_AND_ZERO(sizeof(LZ4_streamDecode_t));
-    LZ4_STATIC_ASSERT(LZ4_STREAMDECODESIZE >= sizeof(LZ4_streamDecode_t_internal));    /* A compilation error here means LZ4_STREAMDECODESIZE is not large enough */
-    return lz4s;
+    LZ4_STATIC_ASSERT(sizeof(LZ4_streamDecode_t) >= sizeof(LZ4_streamDecode_t_internal));
+    return (LZ4_streamDecode_t*) ALLOC_AND_ZERO(sizeof(LZ4_streamDecode_t));
 }
 
 int LZ4_freeStreamDecode (LZ4_streamDecode_t* LZ4_stream)
@@ -2549,7 +2562,7 @@ int LZ4_uncompress_unknownOutputSize (const char* source, char* dest, int isize,
 
 /* Obsolete Streaming functions */
 
-int LZ4_sizeofStreamState(void) { return LZ4_STREAMSIZE; }
+int LZ4_sizeofStreamState(void) { return sizeof(LZ4_stream_t); }
 
 int LZ4_resetStreamState(void* state, char* inputBuffer)
 {

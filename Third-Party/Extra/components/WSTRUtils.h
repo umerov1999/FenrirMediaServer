@@ -550,4 +550,33 @@ namespace WSTRUtils
 	static std::wstring combine_root_path(const std::wstring& root, const std::wstring& folder, const std::wstring& child) {
 		return combine_path(combine_path(root, folder), child);
 	}
+
+	static void BindStdHandlesToConsole()
+	{
+		AllocConsole();
+
+		FILE* fl1, *fl2, *fl3;
+		_wfreopen_s(&fl1, L"CONIN$", L"r", stdin);
+		_wfreopen_s(&fl2, L"CONOUT$", L"w", stderr);
+		_wfreopen_s(&fl3, L"CONOUT$", L"w", stdout);
+
+		HANDLE hStdout = CreateFileW(L"CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
+			NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		HANDLE hStdin = CreateFileW(L"CONIN$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
+			NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+		SetStdHandle(STD_OUTPUT_HANDLE, hStdout);
+		SetStdHandle(STD_ERROR_HANDLE, hStdout);
+		SetStdHandle(STD_INPUT_HANDLE, hStdin);
+
+		std::wclog.clear();
+		std::clog.clear();
+		std::wcout.clear();
+		std::cout.clear();
+		std::wcerr.clear();
+		std::cerr.clear();
+		std::wcin.clear();
+		std::cin.clear();
+		std::cout << "         Terminal...            " << std::endl << std::endl;
+	}
 }

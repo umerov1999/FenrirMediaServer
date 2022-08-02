@@ -4,6 +4,7 @@
 #pragma comment(lib, "wldap32.lib")
 #pragma comment(lib, "Crypt32.lib")
 #pragma comment(lib, "Shlwapi.lib")
-#pragma message("[Including SSL...]")
+#pragma message("[Including SSL,CURL...]")
 #pragma comment(lib, "libcrypto.lib")
 #pragma comment(lib, "libssl.lib")
+#pragma comment(lib, "libcurl_a.lib")

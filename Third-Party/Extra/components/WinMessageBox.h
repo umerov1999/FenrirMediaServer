@@ -3,8 +3,16 @@
 #include <string>
 #include <Windows.h>
 #include "WSTRUtils.h"
-#define WIN_MESSAGE_BITMAPWIDTH(cx, bpp)  (((((cx) * (bpp)) + 31) & ~31) >> 3)
 
+#ifdef NO_MFC
+#define FONT_NAME L"MS Shell Dlg"
+#define FONT_NAME_LENGTH 13
+#else
+#define FONT_NAME L"Montserrat Alternates Light"
+#define FONT_NAME_LENGTH 29
+#endif
+
+#define WIN_MESSAGE_BITMAPWIDTH(cx, bpp)  (((((cx) * (bpp)) + 31) & ~31) >> 3)
 static const int IDC_TYPE = 14882;
 static const int  IDC_MESSAGE = 14881;
 static const int  IDC_BYES = 14883;
@@ -26,7 +34,7 @@ static struct {
 	WORD   windowClass;
 	WCHAR  wszTitle[1];
 	short  pointsize;
-	WCHAR  wszFont[13];
+	WCHAR  wszFont[FONT_NAME_LENGTH];
 
 	struct {
 		DWORD  style;
@@ -98,7 +106,7 @@ static struct {
 		WORD   cbCreationData;
 	} icon;
 
-} g_DebugDlgTemplate = {
+} g_MsgDlgTemplate = {
 
 DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_VISIBLE | WS_CAPTION | WS_SYSMENU,
 0x1,
@@ -108,7 +116,7 @@ DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_VISIBLE | WS_CAPT
 0,
 L"",
 9,
-L"MS Shell Dlg",
+FONT_NAME,
 
    {
    WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON | WS_TABSTOP,
@@ -2512,7 +2520,7 @@ public:
 		HINSTANCE hinst = phParrent ? (HINSTANCE)(LONG_PTR)GetWindowLongPtr(phParrent, GWLP_HINSTANCE)
 			: (HINSTANCE)GetModuleHandle(NULL);
 
-		int ret = (int)DialogBoxIndirectParamW(hinst, (LPCDLGTEMPLATEW)&g_DebugDlgTemplate, phParrent, DlgProc, (LPARAM)this);
+		int ret = (int)DialogBoxIndirectParamW(hinst, (LPCDLGTEMPLATEW)&g_MsgDlgTemplate, phParrent, DlgProc, (LPARAM)this);
 		if (this->hIcon != NULL)
 		{
 			DeleteObject(this->hIcon);

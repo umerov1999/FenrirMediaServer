@@ -17,6 +17,9 @@
     <ClCompile Include="CTar.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="do_curl.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
     <ClCompile Include="sha512.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -52,6 +55,9 @@
     <ClInclude Include="CTar.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="do_curl.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="FlBin.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -65,6 +71,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="ThreadAccessGuard.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="UsrInf.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_api_interface.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="WinMessageBox.h">
