@@ -1,8 +1,12 @@
-set VS2019_AMD64="C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-CALL %VS2019_AMD64%
+#Patch configure
+del "enabled libmp3lame        && require "libmp3lame >= 3.98.3" lame/lame.h lame_set_VBR_quality -lmp3lame $libm_extralibs"
+#Patch libmp3lame.c
+Add #pragma comment(lib, "lame_mp3.lib")
+Replace #include "lame.h"
 
-C:
-cd "C:/Program Files/msys64"
+CALL "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+
+cd /d "C:/msys64"
 msys2_shell.cmd -mingw64 -full-path
 
-./configure --enable-asm --target-os=win64 --arch=x86_64 --enable-nonfree --enable-stripping --disable-doc  --enable-cross-compile --disable-ffplay --disable-ffprobe --disable-shared --enable-static --prefix=${PWD}/installed --toolchain=msvc
+./configure --enable-libmp3lame --enable-asm --target-os=win64 --arch=x86_64 --enable-nonfree --enable-stripping --disable-doc  --enable-cross-compile --disable-ffplay --disable-ffprobe --disable-shared --enable-static --prefix=${PWD}/installed --toolchain=msvc

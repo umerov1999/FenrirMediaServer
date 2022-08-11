@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include "json.hpp"
 #include "WSTRUtils.h"
+#include "zstd.h"
 #include "ThreadAccessGuard.h"
 #include "do_curl.h"
 #include "../../Third-Party/USound/src/USound.h"
@@ -408,21 +409,6 @@ bool SSL_RecvDataString(const CLIENT_CONNECTION& client, string& BinData, int Si
 	return SSL_RecvData(client, BinData.data(), Size);
 }
 
-bool SendHTTTPAnswerWithData(const CLIENT_CONNECTION& client, const string &CodeAnsw, const string &ContentType, const string& Data)
-{
-	ostringstream HttpAnswer;
-	HttpAnswer << "HTTP/1.1 " << CodeAnsw << ENDL
-		<< "Server: " << SERVER_NAME << ENDL
-		<< "Date: " << GetTimeGMT(0) << ENDL
-		<< "Content-Type: " << ContentType << ENDL;
-	if (Data.size() > 0)
-		HttpAnswer << "Content-Length: " << Data.size() << ENDL;
-	HttpAnswer << ENDL;
-	if (SSL_SendData(client, HttpAnswer.str()) == false || SSL_SendData(client, Data) == false)
-		return false;
-	return true;
-}
-
 static bool exist_get_post(RequestParserStruct& Req, const string& str) {
 	return Req.http_get_param.exist(str) || Req.http_post_param.exist(str);
 }
@@ -439,6 +425,73 @@ static string get_postUTF8(RequestParserStruct& Req, const string& str) {
 		return Req.http_get_param.get_utf8(str);
 	}
 	return Req.http_post_param.get_utf8(str);
+}
+
+bool SendHTTTPAnswerWithData(const CLIENT_CONNECTION& client, const string &CodeAnsw, const string &ContentType, const string& Data)
+{
+	ostringstream HttpAnswer;
+	HttpAnswer << "HTTP/1.1 " << CodeAnsw << ENDL
+		<< "Server: " << SERVER_NAME << ENDL
+		<< "Date: " << GetTimeGMT(0) << ENDL
+		<< "Content-Type: " << ContentType << ENDL;
+	if (Data.size() > 0)
+		HttpAnswer << "Content-Length: " << Data.size() << ENDL;
+	HttpAnswer << ENDL;
+	if (SSL_SendData(client, HttpAnswer.str()) == false || SSL_SendData(client, Data) == false)
+		return false;
+	return true;
+}
+
+bool SendHTTTPAnswerWithTree(const CLIENT_CONNECTION& client, RequestParserStruct& Req, const string& CodeAnsw, const json& tree)
+{
+	bool isMessagePack = Req.http_request.exist("X-Response-Format") && Req.http_request.get_utf8("X-Response-Format") == "msgpack";
+	bool supportCompressZstd = Req.http_request.exist("Accept-Encoding") && Req.http_request.get_utf8("Accept-Encoding").find("zstd") != string::npos;
+	ostringstream HttpAnswer;
+	HttpAnswer << "HTTP/1.1 " << CodeAnsw << ENDL
+		<< "Server: " << SERVER_NAME << ENDL
+		<< "Date: " << GetTimeGMT(0) << ENDL;
+
+	string src;
+	string dst;
+	if (isMessagePack) {
+		auto v = json::to_msgpack(tree);
+		src.resize(v.size());
+		memcpy(src.data(), v.data(), v.size());
+		HttpAnswer << "Content-Type: " << "application/x-msgpack; charset=utf-8" << ENDL;
+	}
+	else {
+		src = tree.dump();
+		HttpAnswer << "Content-Type: " << "application/json; charset=utf-8" << ENDL;
+	}
+	bool compressed = false;
+	if (supportCompressZstd) {
+		size_t const cBuffSize = ZSTD_compressBound(src.size());
+		dst.resize(cBuffSize);
+		auto dstp = const_cast<void*>(static_cast<const void*>(dst.c_str()));
+		auto srcp = static_cast<const void*>(src.c_str());
+		size_t const cSize = ZSTD_compress(dstp, cBuffSize, srcp, src.size(), ZSTD_fast);
+		auto code = ZSTD_isError(cSize);
+		if (!code) {
+			dst.resize(cSize);
+		}
+		compressed = true;
+		HttpAnswer << "Content-Encoding: zstd" << ENDL;
+	}
+	if (compressed) {
+		if (dst.size() > 0)
+			HttpAnswer << "Content-Length: " << dst.size() << ENDL;
+		HttpAnswer << ENDL;
+		if (SSL_SendData(client, HttpAnswer.str()) == false || SSL_SendData(client, dst) == false)
+			return false;
+	}
+	else {
+		if (src.size() > 0)
+			HttpAnswer << "Content-Length: " << src.size() << ENDL;
+		HttpAnswer << ENDL;
+		if (SSL_SendData(client, HttpAnswer.str()) == false || SSL_SendData(client, src) == false)
+			return false;
+	}
+	return true;
 }
 
 static int from_get_post_int(RequestParserStruct& Req, const string& str, int default_param = 0) {
@@ -465,9 +518,37 @@ static bool from_get_post_bool(RequestParserStruct& Req, const string& str, bool
 	}
 }
 
-static void SendErrorJSON(CLIENT_CONNECTION* client, const wstring& error) {
-	string error_t = "{ \"error\": {\"error_code\": 3,\"error_msg\" : \"" + wchar_to_UTF8(error) + "\"} }";
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", error_t);
+template<typename T>
+static void SendSingleResponseJSON(CLIENT_CONNECTION* client, RequestParserStruct& Req, T status) {
+	json response = json::object();
+	response.emplace("response", status);
+	SendHTTTPAnswerWithTree(*client, Req, "200 OK", response);
+}
+
+template<typename T>
+static void SendPendingSingleResponseJSON(CLIENT_CONNECTION* client, RequestParserStruct& Req, T status) {
+	json response = json::object();
+	response.emplace("response", status);
+	response.emplace("requested", 1);
+	SendHTTTPAnswerWithTree(*client, Req, "200 OK", response);
+}
+
+static void SendItemsJSON(CLIENT_CONNECTION* client, RequestParserStruct& Req, size_t elements, const json& tree) {
+	json response = json::object();
+	json info = json::object();
+	info.emplace("count", elements);
+	info.emplace("items", tree);
+	response.emplace("response", info);
+	SendHTTTPAnswerWithTree(*client, Req, "200 OK", response);
+}
+
+static void SendErrorJSON(CLIENT_CONNECTION* client, RequestParserStruct& Req, const wstring& error) {
+	json response = json::object();
+	json error_t = json::object();
+	error_t.emplace("error_code", 3);
+	error_t.emplace("error_msg", wchar_to_UTF8(error));
+	response.emplace("error", error_t);
+	SendHTTTPAnswerWithTree(*client, Req, "200 OK", response);
 }
 
 wstring Media::get_cover() const {
@@ -587,8 +668,6 @@ static void AudioGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = "{ \"response\": { \"count\": " + to_string(mAudios.size()) + ",\"items\": ";
-
 	json arr = json(json::value_t::array);
 
 	if (offset <= mAudios.size() - 1) {
@@ -611,10 +690,9 @@ static void AudioGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 			}
 		}
 	}
-	payload += arr.dump();
-	payload += "} }";
+	auto z_count = mAudios.size();
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+	SendItemsJSON(client, Req, z_count, arr);
 }
 
 static void AudioList(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -638,11 +716,11 @@ static void AudioRemotePlay(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 		player.RegisterResourceMP3Sounds(Req.multi_part.get_data("audio").data);
 		player.PlayMemorySound(false, false);
 		dlgS.ToggleStopAudio(true);
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+		SendSingleResponseJSON(client, Req, 1);
 	} else {
 		player.Stop();
 		dlgS.ToggleStopAudio(false);
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 0 }");
+		SendSingleResponseJSON(client, Req, 0);
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &player);
 }
@@ -659,8 +737,6 @@ static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = "{ \"response\": { \"count\": " + to_string(mDiscography.size()) + ",\"items\": ";
-
 	json arr = json(json::value_t::array);
 
 	if (offset <= mDiscography.size() - 1) {
@@ -683,10 +759,9 @@ static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 			}
 		}
 	}
-	payload += arr.dump();
-	payload += "} }";
+	auto z_count = mDiscography.size();
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography);
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+	SendItemsJSON(client, Req, z_count, arr);
 }
 
 static void PhotosGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -701,8 +776,6 @@ static void PhotosGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = "{ \"response\": { \"count\": " + to_string(mPhotos.size()) + ",\"items\": ";
-
 	json arr = json(json::value_t::array);
 
 	if (offset <= mPhotos.size() - 1) {
@@ -725,10 +798,9 @@ static void PhotosGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 			}
 		}
 	}
-	payload += arr.dump();
-	payload += "} }";
+	auto z_count = mPhotos.size();
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mPhotos);
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+	SendItemsJSON(client, Req, z_count, arr);
 }
 
 static void AudioSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -765,8 +837,6 @@ static void AudioSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = "{ \"response\": { \"count\": " + to_string(result.size()) + ",\"items\": ";
-
 	json arr = json(json::value_t::array);
 
 	if (offset <= result.size() - 1) {
@@ -778,9 +848,7 @@ static void AudioSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 			arr.push_back(makeAudio(*it, Req, client->isSSL));
 		}
 	}
-	payload += arr.dump();
-	payload += "} }";
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+	SendItemsJSON(client, Req, result.size(), arr);
 }
 
 static void DiscographySearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -817,8 +885,6 @@ static void DiscographySearch(RequestParserStruct& Req, CLIENT_CONNECTION* clien
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = "{ \"response\": { \"count\": " + to_string(result.size()) + ",\"items\": ";
-
 	json arr = json(json::value_t::array);
 
 	if (offset <= result.size() - 1) {
@@ -830,9 +896,7 @@ static void DiscographySearch(RequestParserStruct& Req, CLIENT_CONNECTION* clien
 			arr.push_back(makeAudio(*it, Req, client->isSSL));
 		}
 	}
-	payload += arr.dump();
-	payload += "} }";
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+	SendItemsJSON(client, Req, result.size(), arr);
 }
 
 static void PhotosSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -869,8 +933,6 @@ static void PhotosSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = "{ \"response\": { \"count\": " + to_string(result.size()) + ",\"items\": ";
-
 	json arr = json(json::value_t::array);
 
 	if (offset <= result.size() - 1) {
@@ -882,9 +944,7 @@ static void PhotosSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 			arr.push_back(makePhoto(*it, Req, client->isSSL));
 		}
 	}
-	payload += arr.dump();
-	payload += "} }";
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+	SendItemsJSON(client, Req, result.size(), arr);
 }
 
 static void VideoGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -899,8 +959,6 @@ static void VideoGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = "{ \"response\": { \"count\": " + to_string(mVideos.size()) + ",\"items\": ";
-
 	json arr = json(json::value_t::array);
 
 	if (offset <= mVideos.size() - 1) {
@@ -923,15 +981,14 @@ static void VideoGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 			}
 		}
 	}
-	payload += arr.dump();
-	payload += "} }";
+	auto z_count = mVideos.size();
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mVideos);
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+	SendItemsJSON(client, Req, z_count, arr);
 }
 
-std::string Inode::serialize(const RequestParserStruct& Req, bool isSSL) {
+json Inode::serialize(const RequestParserStruct& Req, bool isSSL, size_t& count) {
 	json arr = json(json::value_t::array);
-	string payload = "{ \"response\": { \"count\": " + to_string(entries.size()) + ",\"items\": ";
+	count = entries.size();
 	for (auto& i : entries) {
 		if (i.type == InodeType::INODE_FOLDER && i.entries.size() <= 0) {
 			continue;
@@ -952,9 +1009,7 @@ std::string Inode::serialize(const RequestParserStruct& Req, bool isSSL) {
 		}
 		arr.push_back(data);
 	}
-	payload += arr.dump();
-	payload += "} }";
-	return payload;
+	return arr;
 }
 
 static void FSGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -964,18 +1019,19 @@ static void FSGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	auto p = RootDir.find_by_path(UTF8_to_wchar(dir));
 	if (p == nullptr) {
 		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &RootDir);
-		SendErrorJSON(client, L"Неверный путь");
+		SendErrorJSON(client, Req, L"Неверный путь");
 		return;
 	}
-	string payload = p->serialize(Req, client->isSSL);
+	size_t z_count = 0;
+	json payload = p->serialize(Req, client->isSSL, z_count);
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &RootDir);
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+	SendItemsJSON(client, Req, z_count, payload);
 }
 
 static void rebootPC(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
 	string type = trim(get_postUTF8(Req, "type"));
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+	SendSingleResponseJSON(client, Req, 1);
 	if (type == "win") {
 		system("shutdown /r");
 		dlgS.OnClose();
@@ -1019,8 +1075,6 @@ static void VideoSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	if (offset < 0) {
 		offset = 0;
 	}
-	string payload = "{ \"response\": { \"count\": " + to_string(result.size()) + ",\"items\": ";
-
 	json arr = json(json::value_t::array);
 
 	if (offset <= result.size() - 1) {
@@ -1032,9 +1086,7 @@ static void VideoSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 			arr.push_back(makeVideo(*it, Req, client->isSSL));
 		}
 	}
-	payload += arr.dump();
-	payload += "} }";
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", payload);
+	SendItemsJSON(client, Req, result.size(), arr);
 }
 
 static bool hasRange(CLIENT_CONNECTION* client, Media media, RequestParserStruct& Req, long long& from, long long& to, long long size) {
@@ -1117,7 +1169,7 @@ bool do_convert_mp3(const wstring& in, const wstring& out) {
 	ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 	ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 	siStartInfo.cb = sizeof(STARTUPINFOW);
-	wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + L" -loglevel panic -n -i \"" + in + L"\" -ab 320k -q 1 -map a -id3v2_version 4 \"" + out + L"\"");
+	wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + L" -loglevel panic -n -i \"" + in + L"\" -ab 320k -acodec libmp3lame -q 1 -map a -id3v2_version 4 \"" + out + L"\"");
 	PrintMessage(cmd);
 	if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
 		NULL,
@@ -1155,15 +1207,15 @@ bool do_convert_mp3(const wstring& in, const wstring& out) {
 static void AudioUpload(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
 	if (!exist_get_post(Req, "hash")) {
-		SendErrorJSON(client, L"Не передан hash");
+		SendErrorJSON(client, Req, L"Не передан hash");
 		return;
 	}
 	if (!exist_get_post(Req, "access_token")) {
-		SendErrorJSON(client, L"Не передан access_token");
+		SendErrorJSON(client, Req, L"Не передан access_token");
 		return;
 	}
 	if (!exist_get_post(Req, "user_agent")) {
-		SendErrorJSON(client, L"Не передан user_agent");
+		SendErrorJSON(client, Req, L"Не передан user_agent");
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
@@ -1171,14 +1223,14 @@ static void AudioUpload(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
 		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios);
-		SendErrorJSON(client, L"Hash не найден");
+		SendErrorJSON(client, Req, L"Hash не найден");
 		return;
 	}
 	Audio l = (*(Audio*)md);
 	wstring pth = (*md).get_path();
 	wstring cn = ExtractAppPath() + L"\\converted.mp3";
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios);
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+	SendSingleResponseJSON(client, Req, 1);
 
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &template_ff);
 	PrintMessage(L"Загрузка: " + pth, URGB(120, 0, 255));
@@ -1714,7 +1766,7 @@ void ServerMethods::Execute(const string& UTF8Path, RequestParserStruct& Req, vo
 		if (client->server_config.isDebug) {
 			PrintMessage(L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" требует http заголовок Host", URGB(255, 0, 0));
 		}
-		SendErrorJSON(client, L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" требует http заголовок Host");
+		SendErrorJSON(client, Req, L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" требует http заголовок Host");
 		return;
 	}
 	if (info.NeedAuth && exist_get_post(Req, "password")) {
@@ -1723,7 +1775,7 @@ void ServerMethods::Execute(const string& UTF8Path, RequestParserStruct& Req, vo
 			if (client->server_config.isDebug) {
 				PrintMessage(L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" неверный пароль", URGB(255, 0, 0));
 			}
-			SendErrorJSON(client, L"Неверный пароль");
+			SendErrorJSON(client, Req, L"Неверный пароль");
 			return;
 		}
 	}
@@ -1731,7 +1783,7 @@ void ServerMethods::Execute(const string& UTF8Path, RequestParserStruct& Req, vo
 		if (client->server_config.isDebug) {
 			PrintMessage(L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" требует авторизацию", URGB(255, 0, 0));
 		}
-		SendErrorJSON(client, L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" требует авторизацию");
+		SendErrorJSON(client, Req, L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" требует авторизацию");
 		return;
 	}
 	((method_t)Methods.at(UTF8Path).Func)(Req, (CLIENT_CONNECTION*)ssl);
@@ -2194,7 +2246,7 @@ DWORD WINAPI doScanCovers(LPVOID) {
 
 static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	if (!exist_get_post(Req, "hash")) {
-		SendErrorJSON(client, L"Не передан hash");
+		SendErrorJSON(client, Req, L"Не передан hash");
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
@@ -2202,7 +2254,7 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
 		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
-		SendErrorJSON(client, L"Hash не найден");
+		SendErrorJSON(client, Req, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
@@ -2210,7 +2262,7 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 
 	bool needAnswer = true;
 	if (!Startinit.canEdit) {
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1, \"requested\": 1 }");
+		SendPendingSingleResponseJSON(client, Req, 1);
 		needAnswer = false;
 		wstring pth = media.get_path();
 		if ((win_message().message_type(MSG_TYPE::TYPE_QUESTION).button_type(MSG_BUTTON::BUTTON_YESNO) << L"Обновить дату модификации " << pth << L"?").show() != IDYES)
@@ -2267,31 +2319,31 @@ static void UpdateTime(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 	if (needAnswer) {
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+		SendSingleResponseJSON(client, Req, 1);
 	}
 }
 
 static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	if (!exist_get_post(Req, "hash") || !exist_get_post(Req, "name")) {
-		SendErrorJSON(client, L"Не передан hash или name");
+		SendErrorJSON(client, Req, L"Не передан hash или name");
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
 	wstring new_fl = UTF8_to_wchar(trim(get_postUTF8(Req, "name")));
 	if (new_fl.empty()) {
-		SendErrorJSON(client, L"name пустой");
+		SendErrorJSON(client, Req, L"name пустой");
 		return;
 	}
 	new_fl = FixFileName(new_fl);
 	if (PathFileExistsW(new_fl.c_str())) {
-		SendErrorJSON(client, L"Файл существует с таким именем!");
+		SendErrorJSON(client, Req, L"Файл существует с таким именем!");
 		return;
 	}
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
 		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
-		SendErrorJSON(client, L"Hash не найден");
+		SendErrorJSON(client, Req, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
@@ -2299,7 +2351,7 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 
 	bool needAnswer = true;
 	if (!Startinit.canEdit) {
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1, \"requested\": 1 }");
+		SendPendingSingleResponseJSON(client, Req, 1);
 		needAnswer = false;
 		wstring pth = media.get_path();
 		if ((win_message().message_type(MSG_TYPE::TYPE_QUESTION).button_type(MSG_BUTTON::BUTTON_YESNO) << L"Переменововать " << pth << L" в" << combine_path(media.get_orig_dir(), new_fl) << L"?").show() != IDYES)
@@ -2308,7 +2360,7 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 
 	if (!MoveFileW(media.get_path().c_str(), combine_path(media.get_orig_dir(), new_fl).c_str())) {
 		if (needAnswer) {
-			SendErrorJSON(client, L"Переименовать не удалось!");
+			SendErrorJSON(client, Req, L"Переименовать не удалось!");
 		}
 		else {
 			PrintMessage(L"Переименовать не удалось!", URGB(255, 200, 0));
@@ -2366,13 +2418,13 @@ static void UpdateFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) 
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 
 	if (needAnswer) {
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+		SendSingleResponseJSON(client, Req, 1);
 	}
 }
 
 static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	if (!exist_get_post(Req, "hash")) {
-		SendErrorJSON(client, L"Не передан hash");
+		SendErrorJSON(client, Req, L"Не передан hash");
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
@@ -2380,7 +2432,7 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
 		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
-		SendErrorJSON(client, L"Hash не найден");
+		SendErrorJSON(client, Req, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
@@ -2388,7 +2440,7 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 
 	bool needAnswer = true;
 	if (!Startinit.canEdit) {
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1, \"requested\": 1 }");
+		SendPendingSingleResponseJSON(client, Req, 1);
 		needAnswer = false;
 		wstring pth = media.get_path();
 		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
@@ -2400,7 +2452,7 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	if (!DeleteFileW(media.get_path().c_str())) {
 		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 		if (needAnswer) {
-			SendErrorJSON(client, L"Файл не удалён");
+			SendErrorJSON(client, Req, L"Файл не удалён");
 		}
 		else {
 			PrintMessage(L"Файл не удалён", URGB(255, 200, 0));
@@ -2444,13 +2496,13 @@ static void DeleteFileSrv(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos, &RootDir);
 
 	if (needAnswer) {
-		SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", "{ \"response\": 1 }");
+		SendSingleResponseJSON(client, Req, 1);
 	}
 }
 
 static void GetFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	if (!exist_get_post(Req, "hash")) {
-		SendErrorJSON(client, L"Не передан hash");
+		SendErrorJSON(client, Req, L"Не передан hash");
 		return;
 	}
 	string hash = get_postUTF8(Req, "hash");
@@ -2458,15 +2510,13 @@ static void GetFileName(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 	Media* md = look_MediaByHash(hash);
 	if (md == NULL) {
 		THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
-		SendErrorJSON(client, L"Hash не найден");
+		SendErrorJSON(client, Req, L"Hash не найден");
 		return;
 	}
 	Media media = *md;
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography, &mAudios, &mVideos, &mPhotos);
-	json data = json(json::value_t::object);
-	data.emplace("response", WSTRUtils::wchar_to_UTF8(media.get_orig_name()));
 
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", data.dump());
+	SendSingleResponseJSON(client, Req, WSTRUtils::wchar_to_UTF8(media.get_orig_name()));
 }
 
 void stopAudioPlay() {

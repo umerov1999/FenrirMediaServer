@@ -550,7 +550,7 @@ namespace WSTRUtils
 	static std::wstring combine_root_path(const std::wstring& root, const std::wstring& folder, const std::wstring& child) {
 		return combine_path(combine_path(root, folder), child);
 	}
-
+#ifdef BIND_CONSOLE
 	static void BindStdHandlesToConsole()
 	{
 		AllocConsole();
@@ -579,4 +579,5 @@ namespace WSTRUtils
 		std::cin.clear();
 		std::cout << "         Terminal...            " << std::endl << std::endl;
 	}
+#endif
 }

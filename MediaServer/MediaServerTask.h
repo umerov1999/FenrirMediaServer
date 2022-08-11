@@ -3,6 +3,7 @@
 #include <vector>
 #include <ctime>
 #include <regex>
+#include "json.hpp"
 #include "Map.h"
 #include "sha1.hpp"
 #include "crc32.h"
@@ -739,7 +740,7 @@ public:
 	void clear() {
 		entries.clear();
 	}
-	std::string serialize(const RequestParserStruct& Req, bool isSSL);
+	nlohmann::json serialize(const RequestParserStruct& Req, bool isSSL, size_t &count);
 private:
 	std::wstring name;
 	std::string preview_hash;

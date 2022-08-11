@@ -40,20 +40,23 @@
     <Filter Include="Файлы исходного кода\thorvg">
       <UniqueIdentifier>{9ed503e4-b337-4f4f-909a-09bf781ec377}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\thorvg\src">
-      <UniqueIdentifier>{8243f498-cdd3-46a9-afc7-838a9e19e1ff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы исходного кода\thorvg\inc">
       <UniqueIdentifier>{50304e6c-1459-4902-8789-1528fe9135ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\thorvg\src\raw">
-      <UniqueIdentifier>{6b26d055-0044-43d0-a818-28240d1a7023}</UniqueIdentifier>
+    <Filter Include="Файлы исходного кода\thorvg\lib">
+      <UniqueIdentifier>{351cc8ea-6d49-458e-90c5-07d52225020d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\thorvg\src\svg">
-      <UniqueIdentifier>{42b2c6d5-0801-4ce1-b28b-3ceef53f659e}</UniqueIdentifier>
+    <Filter Include="Файлы исходного кода\thorvg\loaders">
+      <UniqueIdentifier>{22438a27-d4a5-433c-98a1-532e8dc73ee6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\thorvg\src\sw_engine">
-      <UniqueIdentifier>{76918942-82b6-49cf-9a0c-f14f15f8ada2}</UniqueIdentifier>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\raw">
+      <UniqueIdentifier>{a4edeeaa-6f3e-470e-8e7b-9a7599e460f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\svg">
+      <UniqueIdentifier>{2efb54a5-16a0-45bd-b71a-37a45162f21f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\lib\sw_engine">
+      <UniqueIdentifier>{e960df56-6557-47b8-be90-cf3f96591fca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -387,104 +390,104 @@
     <ClCompile Include="rlottie\src\vector\stb\stb_image.cpp">
       <Filter>Файлы исходного кода\rlottie\src\vector\stb</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgShape.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgCssStyle.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgSwCanvas.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgTaskScheduler.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgPath.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgAccessor.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgSceneBuilder.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgBezier.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgUtil.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgCanvas.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgXmlParser.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgFill.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\loaders\raw\tvgRawLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\raw</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgGlCanvas.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\sw_engine\tvgSwFill.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgInitializer.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\sw_engine\tvgSwImage.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgLinearGradient.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\sw_engine\tvgSwMath.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgLoader.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\sw_engine\tvgSwMemPool.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgPaint.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\sw_engine\tvgSwRaster.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgPicture.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\sw_engine\tvgSwRenderer.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgRadialGradient.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\sw_engine\tvgSwRle.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgRender.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\sw_engine\tvgSwShape.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgSaver.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\sw_engine\tvgSwStroke.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\tvgScene.cpp">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgAccessor.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\raw\tvgRawLoader.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\raw</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgBezier.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\svg\tvgSvgCssStyle.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgCanvas.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\svg\tvgSvgLoader.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgFill.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\svg\tvgSvgPath.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgGlCanvas.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\svg\tvgSvgSceneBuilder.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgInitializer.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\svg\tvgSvgUtil.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgLinearGradient.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\svg\tvgXmlParser.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\sw_engine\tvgSwFill.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgPaint.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\sw_engine\tvgSwImage.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgPicture.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\sw_engine\tvgSwMath.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgRadialGradient.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\sw_engine\tvgSwMemPool.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgRender.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\sw_engine\tvgSwRaster.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgSaver.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\sw_engine\tvgSwRenderer.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgScene.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\sw_engine\tvgSwRle.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgShape.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\sw_engine\tvgSwShape.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgSwCanvas.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\sw_engine\tvgSwStroke.cpp">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClCompile Include="thorvg\src\lib\tvgTaskScheduler.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -701,104 +704,104 @@
     <ClInclude Include="thorvg\inc\thorvg.h">
       <Filter>Файлы исходного кода\thorvg\inc</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgShapeImpl.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgCssStyle.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgTaskScheduler.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\config.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgLoaderCommon.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgArray.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgPath.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgBezier.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgSceneBuilder.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgBinaryDesc.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgUtil.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgCanvasImpl.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgXmlParser.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgCommon.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\loaders\raw\tvgRawLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\raw</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgFill.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\sw_engine\tvgSwCommon.h">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgIteratorAccessor.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\sw_engine\tvgSwRasterAvx.h">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgLoader.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\sw_engine\tvgSwRasterC.h">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgLoadModule.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\sw_engine\tvgSwRasterNeon.h">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgMath.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\sw_engine\tvgSwRasterTexmap.h">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgPaint.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\sw_engine\tvgSwRasterTexmapInternal.h">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgPictureImpl.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\sw_engine\tvgSwRenderer.h">
+      <Filter>Файлы исходного кода\thorvg\lib\sw_engine</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgRender.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\config.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgSaveModule.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgArray.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\tvgSceneImpl.h">
-      <Filter>Файлы исходного кода\thorvg\src</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgBezier.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\raw\tvgRawLoader.h">
-      <Filter>Файлы исходного кода\thorvg\src\raw</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgBinaryDesc.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\svg\tvgSvgCssStyle.h">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgCanvasImpl.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\svg\tvgSvgLoader.h">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgCommon.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\svg\tvgSvgLoaderCommon.h">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgFill.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\svg\tvgSvgPath.h">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgIteratorAccessor.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\svg\tvgSvgSceneBuilder.h">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgLoader.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\svg\tvgSvgUtil.h">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgLoadModule.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\svg\tvgXmlParser.h">
-      <Filter>Файлы исходного кода\thorvg\src\svg</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgMath.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\sw_engine\tvgSwCommon.h">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgPaint.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterAvx.h">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgPictureImpl.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterC.h">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgRender.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterNeon.h">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgSaveModule.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterTexmap.h">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgSceneImpl.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\sw_engine\tvgSwRasterTexmapInternal.h">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgShapeImpl.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\sw_engine\tvgSwRenderer.h">
-      <Filter>Файлы исходного кода\thorvg\src\sw_engine</Filter>
+    <ClInclude Include="thorvg\src\lib\tvgTaskScheduler.h">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

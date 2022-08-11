@@ -7,7 +7,6 @@
 #include <sstream>
 #include <string>
 
-
 class SHA1
 {
 public:
