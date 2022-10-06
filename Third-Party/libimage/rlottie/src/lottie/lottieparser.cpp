@@ -2003,6 +2003,7 @@ model::Stroke *LottieParserImpl::parseStrokeObject()
 void LottieParserImpl::parseGradientProperty(model::Gradient *obj,
                                              const char *     key)
 {
+    obj->colorMap = colorMap;
     if (0 == strcmp(key, "t")) {
         if (PeekType() != kNumberType) {
             parsingError = true;

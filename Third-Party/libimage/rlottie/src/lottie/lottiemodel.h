@@ -1025,6 +1025,7 @@ public:
     Property<Gradient::Data> mGradient;           /* "g" */
     int                      mColorPoints{-1};
     bool                     mEnabled{true}; /* "fillEnabled" */
+    ColorReplace* colorMap{ nullptr };
 };
 
 class GradientStroke : public Gradient {

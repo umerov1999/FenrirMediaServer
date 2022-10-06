@@ -269,6 +269,7 @@ void model::Gradient::populate(VGradientStops &stops, int frameNo) const
 #else
         model::Color color = model::Color(ptr[1], ptr[2], ptr[3]);
 #endif
+        color.colorMap = colorMap;
         if (opacityArraySize) {
             float opacity = getOpacityAtPosition(opacityPtr, opacityArraySize, colorStop);
             stops.push_back(std::make_pair(colorStop, color.toColor(opacity)));
