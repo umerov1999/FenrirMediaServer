@@ -152,7 +152,29 @@ void UListBox::SwitchBackground(HBITMAP HBackgr, bool resize) {
 
 void UListBox::RegisterSpecialPatternOnce(const wstring &Pattern, URGB Color)
 {
+	THREAD_ACCESS_LOCK(Async, &Lines);
 	OnceSpecials[Pattern] = Color;
+	LinesChenged = true;
+	THREAD_ACCESS_UNLOCK(Async, &Lines);
+	InvalidateRect(NULL);
+}
+
+void UListBox::UnRegisterSpecialPatternOnce(const wstring& Pattern)
+{
+	THREAD_ACCESS_LOCK(Async, &Lines);
+	OnceSpecials.erase(Pattern);
+	LinesChenged = true;
+	THREAD_ACCESS_UNLOCK(Async, &Lines);
+	InvalidateRect(NULL);
+}
+
+void UListBox::ClearSpecialPatternOnce()
+{
+	THREAD_ACCESS_LOCK(Async, &Lines);
+	OnceSpecials.clear();
+	LinesChenged = true;
+	THREAD_ACCESS_UNLOCK(Async, &Lines);
+	InvalidateRect(NULL);
 }
 
 UListBox::~UListBox()
@@ -215,10 +237,10 @@ void UListBox::Clear()
 {
 	SelectedId = -1;
 	TouchId = -1;
-	LinesChenged = true;
 	THREAD_ACCESS_LOCK(Async, &Lines, &RenderedLines);
 	Lines.clear();
 	RenderedLines.clear();
+	LinesChenged = true;
 	THREAD_ACCESS_UNLOCK(Async, &Lines, &RenderedLines);
 	InvalidateRect(NULL);
 }

@@ -66,6 +66,7 @@
     <ClCompile Include="CriticalDebug.cpp" />
     <ClCompile Include="CTar.cpp" />
     <ClCompile Include="do_curl.cpp" />
+    <ClCompile Include="lz4.c" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="pugixml\pugixml.cpp" />
     <ClCompile Include="sha512.cpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="do_curl.h" />
     <ClInclude Include="FlBin.h" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="lz4.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="pugixml\pugiconfig.hpp" />

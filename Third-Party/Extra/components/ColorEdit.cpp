@@ -107,12 +107,13 @@ CRect ColorEdit::getRect() {
 	return backgr;
 }
 
-void ColorEdit::Init(Align TextAlign, HBITMAP HBackgr, bool resize)
+void ColorEdit::Init(Align TextAlign, HBITMAP HBackgr, bool resize, bool isFullTextMode)
 {
 	if (Inited == true)
 		return;
 	m_pFont.Attach((HFONT)GetParent()->SendMessageW(WM_GETFONT, 0, 0));
 	this->TextAlign = TextAlign;
+	this->FullText = isFullTextMode;
 
 	RECT scrollpos;
 	GetClientRect(&scrollpos);
@@ -157,7 +158,29 @@ void ColorEdit::SwitchBackground(HBITMAP HBackgr, bool resize) {
 
 void ColorEdit::RegisterSpecialPatternOnce(const wstring &Pattern, URGB Color)
 {
+	THREAD_ACCESS_LOCK(Async, &Lines);
 	OnceSpecials[Pattern] = Color;
+	THREAD_ACCESS_UNLOCK(Async, &Lines);
+	LinesChenged = true;
+	InvalidateRect(NULL);
+}
+
+void ColorEdit::UnRegisterSpecialPatternOnce(const wstring& Pattern)
+{
+	THREAD_ACCESS_LOCK(Async, &Lines);
+	OnceSpecials.erase(Pattern);
+	LinesChenged = true;
+	THREAD_ACCESS_UNLOCK(Async, &Lines);
+	InvalidateRect(NULL);
+}
+
+void ColorEdit::ClearSpecialPatternOnce()
+{
+	THREAD_ACCESS_LOCK(Async, &Lines);
+	OnceSpecials.clear();
+	LinesChenged = true;
+	THREAD_ACCESS_UNLOCK(Async, &Lines);
+	InvalidateRect(NULL);
 }
 
 ColorEdit::~ColorEdit()

@@ -43,6 +43,7 @@ extern std::wstring ExtractAppPath();
 extern MediaServerDialog dlgS;
 extern void PrintMessage(const wstring &Msg, URGB Color = URGB(255, 255, 255));
 extern void ClearMessages();
+extern void ClearLine();
 
 static Map::Map<std::string, Audio> mDiscography;
 static Map::Map<std::string, Audio> mAudios;
@@ -2035,7 +2036,12 @@ void genVideoThumbs(bool is_OnlyNews) {
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 		siStartInfo.cb = sizeof(STARTUPINFOW);
 		wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + (L" -loglevel panic -n -i \"" + i.get_value().get_path() + L"\" -ss 00:00:04 -frames 1 -q:v 1 -vf scale=960:-2 -q:v 3 " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg"));
-		PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tVideos.size()) + L") " + cmd);
+		if (Startinit.isDebug) {
+			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tVideos.size()) + L") " + cmd);
+		}
+		else {
+			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tVideos.size()) + L") " + i.get_value().get_path());
+		}
 		if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
 			NULL,
 			NULL,
@@ -2053,10 +2059,17 @@ void genVideoThumbs(bool is_OnlyNews) {
 		handles[i.get_value()] = piProcInfo;
 		if (handles.size() % Startinit.ffmpeg_proc_count == 0) {
 			doAfterFFMpegEnded(handles);
+			for (int i = 0; i < Startinit.ffmpeg_proc_count; i++) {
+				ClearLine();
+			}
 		}
 	}
+	auto enr = handles.size();
 	if (handles.size() > 0)
 		doAfterFFMpegEnded(handles);
+	for (int i = 0; i < enr; i++) {
+		ClearLine();
+	}
 }
 
 void genPhotoThumbs(bool is_OnlyNews) {
@@ -2091,7 +2104,12 @@ void genPhotoThumbs(bool is_OnlyNews) {
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 		siStartInfo.cb = sizeof(STARTUPINFOW);
 		wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + (L" -loglevel panic -n -i \"" + i.get_value().get_path() + L"\" -vf scale=\"\'if(gt(a,1/1),512,-1)\':\'if(gt(a,1/1),-1,512)\'\" " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg"));
-		PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tPhotos.size()) + L") " + cmd);
+		if (Startinit.isDebug) {
+			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tPhotos.size()) + L") " + cmd);
+		}
+		else {
+			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tPhotos.size()) + L") " + i.get_value().get_path());
+		}
 		if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
 			NULL,
 			NULL,
@@ -2109,10 +2127,17 @@ void genPhotoThumbs(bool is_OnlyNews) {
 		handles[i.get_value()] = piProcInfo;
 		if (handles.size() % Startinit.ffmpeg_proc_count == 0) {
 			doAfterFFMpegEnded(handles);
+			for (int i = 0; i < Startinit.ffmpeg_proc_count; i++) {
+				ClearLine();
+			}
 		}
 	}
+	auto enr = handles.size();
 	if (handles.size() > 0)
 		doAfterFFMpegEnded(handles);
+	for (int i = 0; i < enr; i++) {
+		ClearLine();
+	}
 }
 
 void genAudioThumbs(bool is_OnlyNews) {
@@ -2144,7 +2169,12 @@ void genAudioThumbs(bool is_OnlyNews) {
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 		siStartInfo.cb = sizeof(STARTUPINFOW);
 		wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + (L" -loglevel panic -n -i \"" + i.get_value().get_path() + L"\" " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg"));
-		PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tAudios.size()) + L") " + cmd);
+		if (Startinit.isDebug) {
+			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tAudios.size()) + L") " + cmd);
+		}
+		else {
+			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tAudios.size()) + L") " + i.get_value().get_path());
+		}
 		if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
 			NULL,
 			NULL,
@@ -2162,65 +2192,19 @@ void genAudioThumbs(bool is_OnlyNews) {
 		handles[i.get_value()] = piProcInfo;
 		if (handles.size() % Startinit.ffmpeg_proc_count == 0) {
 			doAfterFFMpegEnded(handles);
+			for (int i = 0; i < Startinit.ffmpeg_proc_count; i++) {
+				ClearLine();
+			}
 		}
 	}
+	auto enr = handles.size();
 	if (handles.size() > 0)
 		doAfterFFMpegEnded(handles);
-}
 
-/*
-void genDiscographyThumbs(bool is_OnlyNews) {
-	if (!PathFileExistsW(CACHE_DIR)) {
-		if (!CreateDirectoryW(CACHE_DIR, NULL)) {
-			return;
-		}
+	for (int i = 0; i < enr; i++) {
+		ClearLine();
 	}
-	cleanLoaded(TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
-	for (auto& i : Discography_Dirs) {
-		scanFiles(i, TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY);
-	}
-	Map::Map<std::string, Audio> tAudios = mDiscography;
-	wstring crdir;
-	crdir.resize(MAX_PATH + 1);
-	GetCurrentDirectoryW(MAX_PATH, (LPWSTR)crdir.c_str());
-	PrintMessage(L"Сканирование обложек у дискографии : " + to_wstring(tAudios.size()));
-	size_t ccn = 0;
-	Map::Map<Media, PROCESS_INFORMATION> handles;
-	for (auto& i : tAudios) {
-		if (is_OnlyNews && (PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg").c_str()) || PathFileExistsW((wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".err").c_str()))) {
-			ccn++;
-			continue;
-		}
-		PROCESS_INFORMATION piProcInfo;
-		STARTUPINFOW siStartInfo;
-		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
-		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
-		siStartInfo.cb = sizeof(STARTUPINFOW);
-		wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + (L" -loglevel panic -n -i \"" + i.get_value().get_path() + L"\" " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg"));
-		PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tAudios.size()) + L") " + cmd);
-		if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
-			NULL,
-			NULL,
-			FALSE,                 // handles are inherited 
-			CREATE_NO_WINDOW,                    // creation flags 
-			NULL,                 // use parent's environment 
-			crdir.c_str(),                 // use parent's current directory 
-			&siStartInfo,         // STARTUPINFO pointer 
-			&piProcInfo))
-		{
-			CloseHandle(piProcInfo.hProcess);
-			CloseHandle(piProcInfo.hThread);
-			continue;
-		}
-		handles[i.get_value()] = piProcInfo;
-		if (handles.size() % Startinit.ffmpeg_proc_count == 0) {
-			doAfterFFMpegEnded(handles);
-		}
-	}
-	if(handles.size() > 0)
-		doAfterFFMpegEnded(handles);
 }
-*/
 
 DWORD WINAPI doScanCovers(LPVOID) {
 	dlgS.StartBT.EnableWindow(FALSE);
@@ -2241,6 +2225,7 @@ DWORD WINAPI doScanCovers(LPVOID) {
 	dlgS.ScanCovers.EnableWindow(TRUE);
 	dlgS.MediaFolders.EnableWindow(TRUE);
 	dlgS.PhotosThumb.EnableWindow(TRUE);
+	dlgS.Edk.ClearSpecialPatternOnce();
 	return 0;
 }
 
@@ -2527,6 +2512,9 @@ void stopAudioPlay() {
 
 void InitMediaServer()
 {
+	if (Startinit.ffmpeg_proc_count <= 0) {
+		Startinit.ffmpeg_proc_count = 1;
+	}
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
@@ -2596,7 +2584,7 @@ void InitMediaServer()
 	
 	SSL_CTX* ctx = NULL;
 	if (Startinit.isSsl) {
-		ctx = initialize_ctx(Startinit.isDebug);
+		ctx = initialize_ctx(true);
 		if (ctx == NULL)
 			return;
 	}

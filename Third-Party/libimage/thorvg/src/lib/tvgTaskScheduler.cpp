@@ -122,7 +122,7 @@ public:
 
     void run(unsigned i)
     {
-        Task* task = nullptr;
+        Task* task;
 
         //Thread Loop
         while (true) {

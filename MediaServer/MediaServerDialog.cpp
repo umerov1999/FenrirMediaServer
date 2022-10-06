@@ -89,6 +89,13 @@ void ClearMessages()
 	ReleaseMutex(hMessageMutex);
 }
 
+void ClearLine()
+{
+	WaitForSingleObject(hMessageMutex, INFINITE);
+	dlgS.Edk.RemoveLastLine();
+	ReleaseMutex(hMessageMutex);
+}
+
 static list<string> createUTF8List(const list<wstring> &data) {
 	list<string>ret;
 	for (auto& i : data) {
@@ -106,6 +113,7 @@ static list<wstring> createWcharList(const list<string>& data) {
 }
 
 #define SERIALIZE_CONTROL(settings,object) settings.object = settings.GetComponent(object)
+#define SERIALIZE_CONTROL_INT(settings,object) settings.object = settings.GetComponentInt(object)
 #define DESERIALIZE_CONTROL(settings,object) settings.SetComponent(object, settings.object)
 #define JSON_SERIALIZE(jsont,object) serialize(jsont, #object, object)
 #define JSON_DESERIALIZE(jsont,object) deserialize(jsont, #object, object)
@@ -119,7 +127,7 @@ public:
 		BIsDebug = true;
 		OnlyNews = true;
 		PhotosThumb = false;
-		ffmpeg_proc_count = 8;
+		FFMPEGProcCount = 8;
 	}
 	static bool GetComponent(CButton& checkbox)
 	{
@@ -130,6 +138,12 @@ public:
 		CString ret;
 		edit.GetWindowTextW(ret);
 		return wchar_to_UTF8(ret.GetString());
+	}
+	static int GetComponentInt(CEdit& edit)
+	{
+		CString ret;
+		edit.GetWindowTextW(ret);
+		return stoi(wchar_to_UTF8(ret.GetString()));
 	}
 	static string GetComponent(CComboBox& cmb)
 	{
@@ -144,6 +158,10 @@ public:
 	static void SetComponent(CEdit& edit, string State)
 	{
 		edit.SetWindowTextW(UTF8_to_wchar(State).c_str());
+	}
+	static void SetComponent(CEdit& edit, int State)
+	{
+		edit.SetWindowTextW(to_wstring(State).c_str());
 	}
 	static void SetComponent(CComboBox& cmb, string State)
 	{
@@ -165,7 +183,7 @@ public:
 			JSON_SERIALIZE(settings, ServerPassword);
 			JSON_SERIALIZE(settings, CurrentDir);
 			JSON_SERIALIZE(settings, CertificateContent);
-			JSON_SERIALIZE(settings, ffmpeg_proc_count);
+			JSON_SERIALIZE(settings, FFMPEGProcCount);
 
 			serialize_list(settings, "Discography_Dirs", createUTF8List(Discography_Dirs));
 			serialize_list(settings, "Audio_Dirs", createUTF8List(Audio_Dirs));
@@ -217,7 +235,7 @@ public:
 				JSON_DESERIALIZE(settings, ServerPassword);
 				JSON_DESERIALIZE(settings, CurrentDir);
 				JSON_DESERIALIZE(settings, CertificateContent);
-				JSON_DESERIALIZE(settings, ffmpeg_proc_count);
+				JSON_DESERIALIZE(settings, FFMPEGProcCount);
 
 				list<string> dt;
 				deserialize_list(settings, "Audio_Dirs", dt);
@@ -361,7 +379,7 @@ public:
 	bool BIsDebug;
 	bool OnlyNews;
 	bool PhotosThumb;
-	int ffmpeg_proc_count;
+	int FFMPEGProcCount;
 	USSL_CERT CertificateContent;
 };
 static SettingsClass pSettings;
@@ -478,6 +496,7 @@ void MediaServerDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT4, SSLPathEd);
 	DDX_Control(pDX, IDC_EDIT5, HTTPPort);
 	DDX_Control(pDX, IDC_EDIT6, ServerPassword);
+	DDX_Control(pDX, IDC_EDIT7, FFMPEGProcCount);
 	DDX_Control(pDX, IDC_BUTTON1, StartBT);
 	DDX_Control(pDX, IDC_BUTTON2, ButFolder);
 	DDX_Control(pDX, IDC_BUTTON3, SelectSSL);
@@ -532,6 +551,7 @@ DWORD WINAPI InitMediaServerThread(LPVOID)
 	dlgS.MediaFolders.EnableWindow(FALSE);
 	dlgS.BIsDebug.EnableWindow(FALSE);
 	dlgS.OnlyNews.EnableWindow(FALSE);
+	dlgS.FFMPEGProcCount.EnableWindow(FALSE);
 	dlgS.PhotosThumb.EnableWindow(FALSE);
 	dlgS.CanEdit.EnableWindow(FALSE);
 	dlgS.IsStart = true;
@@ -616,7 +636,6 @@ BOOL MediaServerDialog::OnInitDialog()
 	std::string DataPic = GetDataFromResourceUtil(L"SVG", IDB_SVG1);
 	auto mk = Edk.getRect();
 	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true), false);
-
 #ifdef _WIN64
 	const wchar_t* ARCH = L"x64";
 #elif _WIN32
@@ -634,6 +653,7 @@ BOOL MediaServerDialog::OnInitDialog()
 
 	pSettings.isSsl ? (BUseHttps.SetCheck(TRUE), BUseHttp.SetCheck(FALSE)) : (BUseHttps.SetCheck(FALSE), BUseHttp.SetCheck(TRUE));
 	OnProtocol();
+	DESERIALIZE_CONTROL(pSettings, FFMPEGProcCount);
 	DESERIALIZE_CONTROL(pSettings, BIsDebug);
 	DESERIALIZE_CONTROL(pSettings, OnlyNews);
 	DESERIALIZE_CONTROL(pSettings, PhotosThumb);
@@ -832,7 +852,13 @@ void MediaServerDialog::OnStart()
 	}
 	Startinit.canEdit = CanEdit.GetCheck() == TRUE;
 	Startinit.isSsl = pSettings.isSsl;
-	Startinit.ffmpeg_proc_count = pSettings.ffmpeg_proc_count;
+	SERIALIZE_CONTROL_INT(pSettings, FFMPEGProcCount);
+	Startinit.ffmpeg_proc_count = pSettings.FFMPEGProcCount;
+	if (Startinit.ffmpeg_proc_count <= 0) {
+		Startinit.ffmpeg_proc_count = 1;
+		pSettings.FFMPEGProcCount = 1;
+		DESERIALIZE_CONTROL(pSettings, FFMPEGProcCount);
+	}
 	SERIALIZE_CONTROL(pSettings, ServerPassword);
 	SERIALIZE_CONTROL(pSettings, BIsDebug);
 	SERIALIZE_CONTROL(pSettings, OnlyNews);
@@ -889,6 +915,21 @@ void MediaServerDialog::OnScanCovers() {
 		(win_message(m_hWnd).message_type(MSG_TYPE::TYPE_ERROR) << L"Отсутствует ffmpeg.exe").show();
 		return;
 	}
+	SERIALIZE_CONTROL(pSettings, OnlyNews);
+	SERIALIZE_CONTROL_INT(pSettings, FFMPEGProcCount);
+	SERIALIZE_CONTROL(pSettings, PhotosThumb);
+	Startinit.ffmpeg_proc_count = pSettings.FFMPEGProcCount;
+	if (Startinit.ffmpeg_proc_count <= 0) {
+		Startinit.ffmpeg_proc_count = 1;
+		pSettings.FFMPEGProcCount = 1;
+		DESERIALIZE_CONTROL(pSettings, FFMPEGProcCount);
+	}
+	pSettings.SerializeSettings();
+	PrintMessage(L"ffmpeg proc count : " + to_wstring(Startinit.ffmpeg_proc_count), URGB(255, 255, 255));
+	Edk.RegisterSpecialPatternOnce(L"из", URGB(255, 0, 0));
+	Edk.RegisterSpecialPatternOnce(L"(", URGB(255, 0, 0));
+	Edk.RegisterSpecialPatternOnce(L")", URGB(255, 0, 0));
+	Edk.RegisterSpecialPatternOnce(L"ffmpeg.exe", URGB(255, 0, 0));
 	cleanNonExist();
 	if (Audio_Dirs.empty() && Video_Dirs.empty() && Discography_Dirs.empty() && Photo_Video_Dirs.empty()) {
 		OnMediaFolders();

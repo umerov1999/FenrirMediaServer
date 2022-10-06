@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CAD6D29F-D624-41DB-83AA-6734FF0E677B}</ProjectGuid>
+    <RootNamespace>SectionPeEditor</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IntDir>$(SolutionDir)\OBJ\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(Platform)</TargetName>
+    <OutDir>$(SolutionDir)\Bin\Common\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
+      <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>pe_lib;../../Third-Party/XTPSkinFramework v20.1.0/SkinFramework</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <TreatLinkerWarningAsErrors>false</TreatLinkerWarningAsErrors>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>
+      </LargeAddressAware>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Link>
+    <BuildLog />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Third-Party\Extra\app_style.cpp" />
+    <ClCompile Include="Hex2BinDialog.cpp" />
+    <ClCompile Include="pe_lib\entropy.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\file_version_info.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\message_table.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_base.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_bound_import.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_checksum.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_debug.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_directory.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_dotnet.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_exception.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_exception_directory.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_exports.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_factory.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_imports.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_load_config.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_properties.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_properties_generic.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_rebuilder.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_relocations.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_resources.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_resource_manager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_resource_viewer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_rich_data.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_section.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_tls.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_bitmap_reader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_bitmap_writer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_cursor_icon_reader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_cursor_icon_writer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_data_info.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_message_list_reader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_string_table_reader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_version_info_reader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_version_info_writer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\utils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\version_info_editor.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pe_lib\version_info_viewer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SectionPeEditorSectionSetNameDialog.cpp" />
+    <ClCompile Include="SectionPeEditorSectionsInfoDialog.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SectionPeEditorDialog.cpp" />
+    <ClCompile Include="SectionPeEditorInitMFC.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Hex2BinDialog.h" />
+    <ClInclude Include="pe_lib\entropy.h" />
+    <ClInclude Include="pe_lib\file_version_info.h" />
+    <ClInclude Include="pe_lib\message_table.h" />
+    <ClInclude Include="pe_lib\pe_base.h" />
+    <ClInclude Include="pe_lib\pe_bliss.h" />
+    <ClInclude Include="pe_lib\pe_bliss_resources.h" />
+    <ClInclude Include="pe_lib\pe_bound_import.h" />
+    <ClInclude Include="pe_lib\pe_checksum.h" />
+    <ClInclude Include="pe_lib\pe_debug.h" />
+    <ClInclude Include="pe_lib\pe_directory.h" />
+    <ClInclude Include="pe_lib\pe_dotnet.h" />
+    <ClInclude Include="pe_lib\pe_exception.h" />
+    <ClInclude Include="pe_lib\pe_exception_directory.h" />
+    <ClInclude Include="pe_lib\pe_exports.h" />
+    <ClInclude Include="pe_lib\pe_factory.h" />
+    <ClInclude Include="pe_lib\pe_imports.h" />
+    <ClInclude Include="pe_lib\pe_load_config.h" />
+    <ClInclude Include="pe_lib\pe_properties.h" />
+    <ClInclude Include="pe_lib\pe_properties_generic.h" />
+    <ClInclude Include="pe_lib\pe_rebuilder.h" />
+    <ClInclude Include="pe_lib\pe_relocations.h" />
+    <ClInclude Include="pe_lib\pe_resources.h" />
+    <ClInclude Include="pe_lib\pe_resource_manager.h" />
+    <ClInclude Include="pe_lib\pe_resource_viewer.h" />
+    <ClInclude Include="pe_lib\pe_rich_data.h" />
+    <ClInclude Include="pe_lib\pe_section.h" />
+    <ClInclude Include="pe_lib\pe_structures.h" />
+    <ClInclude Include="pe_lib\pe_tls.h" />
+    <ClInclude Include="pe_lib\resource_bitmap_reader.h" />
+    <ClInclude Include="pe_lib\resource_bitmap_writer.h" />
+    <ClInclude Include="pe_lib\resource_cursor_icon_reader.h" />
+    <ClInclude Include="pe_lib\resource_cursor_icon_writer.h" />
+    <ClInclude Include="pe_lib\resource_data_info.h" />
+    <ClInclude Include="pe_lib\resource_internal.h" />
+    <ClInclude Include="pe_lib\resource_message_list_reader.h" />
+    <ClInclude Include="pe_lib\resource_string_table_reader.h" />
+    <ClInclude Include="pe_lib\resource_version_info_reader.h" />
+    <ClInclude Include="pe_lib\resource_version_info_writer.h" />
+    <ClInclude Include="pe_lib\stdint_defs.h" />
+    <ClInclude Include="pe_lib\utils.h" />
+    <ClInclude Include="pe_lib\version_info_editor.h" />
+    <ClInclude Include="pe_lib\version_info_types.h" />
+    <ClInclude Include="pe_lib\version_info_viewer.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SectionPeEditorSectionSetNameDialog.h" />
+    <ClInclude Include="SectionPeEditorSectionsInfoDialog.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="SectionPeEditorDialog.h" />
+    <ClInclude Include="SectionPeEditorInitMFC.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SectionPeEditor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\Hex.ico" />
+    <Image Include="Res\Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Third-Party\XTPSkinFramework v20.1.0\SkinFrameworkStatic_vc160.vcxproj">
+      <Project>{44399486-2259-2815-3336-338422327369}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

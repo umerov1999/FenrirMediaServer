@@ -988,6 +988,7 @@ int LZ4_compress_HC_destSize(void* state, const char* source, char* dest, int* s
 *  Streaming Functions
 **************************************/
 /* allocation */
+#if !defined(LZ4_STATIC_LINKING_ONLY_DISABLE_MEMORY_ALLOCATION)
 LZ4_streamHC_t* LZ4_createStreamHC(void)
 {
     LZ4_streamHC_t* const state =
@@ -1004,6 +1005,7 @@ int LZ4_freeStreamHC (LZ4_streamHC_t* LZ4_streamHCPtr)
     FREEMEM(LZ4_streamHCPtr);
     return 0;
 }
+#endif
 
 
 LZ4_streamHC_t* LZ4_initStreamHC (void* buffer, size_t size)
@@ -1223,6 +1225,7 @@ int LZ4_resetStreamStateHC(void* state, char* inputBuffer)
     return 0;
 }
 
+#if !defined(LZ4_STATIC_LINKING_ONLY_DISABLE_MEMORY_ALLOCATION)
 void* LZ4_createHC (const char* inputBuffer)
 {
     LZ4_streamHC_t* const hc4 = LZ4_createStreamHC();
@@ -1237,6 +1240,7 @@ int LZ4_freeHC (void* LZ4HC_Data)
     FREEMEM(LZ4HC_Data);
     return 0;
 }
+#endif
 
 int LZ4_compressHC2_continue (void* LZ4HC_Data, const char* src, char* dst, int srcSize, int cLevel)
 {

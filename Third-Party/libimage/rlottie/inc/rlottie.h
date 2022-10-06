@@ -346,7 +346,7 @@ public:
      *
      *  @internal
      */
-    void              renderSync(size_t frameNo, Surface &surface, bool clear);
+    void              renderSync(size_t frameNo, Surface &surface, bool clear, bool* result = nullptr);
 
     /**
      *  @brief Returns root layer of the composition updated with

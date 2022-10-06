@@ -692,13 +692,13 @@ void LottieParserImpl::parseComposition()
                 parsingError = true;
                 return;
             }
-            comp->mStartFrame = GetDouble();
+            comp->mStartFrame = std::lround(GetDouble());
         } else if (0 == strcmp(key, "op")) {
             if (PeekType() != kNumberType) {
                 parsingError = true;
                 return;
             }
-            comp->mEndFrame = GetDouble();
+            comp->mEndFrame = std::lround(GetDouble());
         } else if (0 == strcmp(key, "fr")) {
             if (PeekType() != kNumberType) {
                 parsingError = true;

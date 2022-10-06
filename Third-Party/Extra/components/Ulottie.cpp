@@ -4,6 +4,7 @@
 #include <string>
 #include "afxdialogex.h"
 #include "rlottie.h"
+#include "lz4.h"
 using namespace std;
 using namespace rlottie;
 
@@ -21,11 +22,31 @@ Ulottie::Ulottie()
 	THREAD_ACCESS_REGISTER_POINTERS(Async, &anim);
 }
 
-void Ulottie::load_animation(URGB background, const string& json_data, internal::ColorReplace* colorReplace) {
+void Ulottie::load_animation(URGB background, const void* json_data, size_t size, internal::ColorReplace* colorReplace) {
 	THREAD_ACCESS_LOCK(Async, &anim);
 	KillTimer(TIMER_PLAY_ANIM);
 	setAnimationColor(background.r, background.g, background.b);
-	setAnimation(json_data, colorReplace);
+
+	string data;
+	if (size >= 4 && memcmp(json_data, "\x02\x4C\x5A\x34", 4) == 0) {
+#pragma pack(push, 1)
+		struct HDR {
+			char hdr[4];
+			int size;
+		};
+#pragma pack(pop)
+		HDR hdr = {};
+		memcpy(&hdr, json_data, sizeof(HDR));
+		data.resize(hdr.size);
+		LZ4_decompress_safe(((const char*)json_data + sizeof(HDR)), (char*)data.data(),
+			(int)size - (int)sizeof(HDR), hdr.size);
+	}
+	else {
+		data.resize(size);
+		memcpy(data.data(), json_data, size);
+	}
+
+	setAnimation(data, colorReplace);
 	curFrame = -1;
 	THREAD_ACCESS_UNLOCK(Async, &anim);
 	SetTimer(TIMER_PLAY_ANIM, 10, NULL);

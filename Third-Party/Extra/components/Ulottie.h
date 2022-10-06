@@ -14,7 +14,7 @@ public:
 	Ulottie();
 
 	afx_msg void Clear();
-	afx_msg void load_animation(URGB background, const std::string& json_data, rlottie::internal::ColorReplace* colorReplace = NULL);
+	afx_msg void load_animation(URGB background, const void* json_data, size_t size, rlottie::internal::ColorReplace* colorReplace = NULL);
 	afx_msg void update_color_replacement(rlottie::internal::ColorReplace* colorReplace);
 	static rlottie::internal::ColorReplace* parseReplacement(const std::vector<int>& colors, bool useMoveColor = false);
 protected:

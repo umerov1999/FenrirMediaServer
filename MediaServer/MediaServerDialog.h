@@ -30,6 +30,7 @@ public:
 	CEdit HTTPPort;
 	CEdit SSLPathEd;
 	CEdit ServerPassword;
+	CEdit FFMPEGProcCount;
 	CButton BAutoStart;
 	CButton BAudioStop;
 	CButton BUseHttps;

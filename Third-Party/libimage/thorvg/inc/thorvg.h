@@ -18,7 +18,7 @@
 #include <string>
 
 #ifdef TVG_BUILD
-    #if defined(_MSC_VER) && !defined(__clang__)
+    #if defined(_WIN32) && !defined(__clang__)
         #define TVG_EXPORT __declspec(dllexport)
         #define TVG_DEPRECATED __declspec(deprecated)
     #else
@@ -74,7 +74,7 @@ class Accessor;
 /**
  * @brief Enumeration specifying the result from the APIs.
  */
-enum class TVG_EXPORT Result
+enum class Result
 {
     Success = 0,           ///< The value returned in case of a correct request execution.
     InvalidArguments,      ///< The value returned in the event of a problem with the arguments given to the API - e.g. empty paths or null pointers.
@@ -91,7 +91,7 @@ enum class TVG_EXPORT Result
  * Not to be confused with the path commands from the svg path element (like M, L, Q, H and many others).
  * TVG interprets all of them and translates to the ones from the PathCommand values.
  */
-enum class TVG_EXPORT PathCommand
+enum class PathCommand
 {
     Close = 0, ///< Ends the current sub-path and connects it with its initial point. This command doesn't expect any points.
     MoveTo,    ///< Sets a new initial point of the sub-path and a new current point. This command expects 1 point: the starting position.
@@ -102,7 +102,7 @@ enum class TVG_EXPORT PathCommand
 /**
  * @brief Enumeration determining the ending type of a stroke in the open sub-paths.
  */
-enum class TVG_EXPORT StrokeCap
+enum class StrokeCap
 {
     Square = 0, ///< The stroke is extended in both end-points of a sub-path by a rectangle, with the width equal to the stroke width and the length equal to the half of the stroke width. For zero length sub-paths the square is rendered with the size of the stroke width.
     Round,      ///< The stroke is extended in both end-points of a sub-path by a half circle, with a radius equal to the half of a stroke width. For zero length sub-paths a full circle is rendered.
@@ -112,7 +112,7 @@ enum class TVG_EXPORT StrokeCap
 /**
  * @brief Enumeration determining the style used at the corners of joined stroked path segments.
  */
-enum class TVG_EXPORT StrokeJoin
+enum class StrokeJoin
 {
     Bevel = 0, ///< The outer corner of the joined path segments is bevelled at the join point. The triangular region of the corner is enclosed by a straight line between the outer corners of each stroke.
     Round,     ///< The outer corner of the joined path segments is rounded. The circular region is centered at the join point.
@@ -122,7 +122,7 @@ enum class TVG_EXPORT StrokeJoin
 /**
  * @brief Enumeration specifying how to fill the area outside the gradient bounds.
  */
-enum class TVG_EXPORT FillSpread
+enum class FillSpread
 {
     Pad = 0, ///< The remaining area is filled with the closest stop color.
     Reflect, ///< The gradient pattern is reflected outside the gradient area until the expected region is filled.
@@ -132,7 +132,7 @@ enum class TVG_EXPORT FillSpread
 /**
  * @brief Enumeration specifying the algorithm used to establish which parts of the shape are treated as the inside of the shape.
  */
-enum class TVG_EXPORT FillRule
+enum class FillRule
 {
     Winding = 0, ///< A line from the point to a location outside the shape is drawn. The intersections of the line with the path segment of the shape are counted. Starting from zero, if the path segment of the shape crosses the line clockwise, one is added, otherwise one is subtracted. If the resulting sum is non zero, the point is inside the shape.
     EvenOdd      ///< A line from the point to a location outside the shape is drawn and its intersections with the path segments of the shape are counted. If the number of intersections is an odd number, the point is inside the shape.
@@ -141,7 +141,7 @@ enum class TVG_EXPORT FillRule
 /**
  * @brief Enumeration indicating the method used in the composition of two objects - the target and the source.
  */
-enum class TVG_EXPORT CompositeMethod
+enum class CompositeMethod
 {
     None = 0,     ///< No composition is applied.
     ClipPath,     ///< The intersection of the source and the target is determined and only the resulting pixels from the source are rendered.
@@ -153,7 +153,7 @@ enum class TVG_EXPORT CompositeMethod
 /**
  * @brief Enumeration specifying the engine type used for the graphics backend. For multiple backends bitwise operation is allowed.
  */
-enum class TVG_EXPORT CanvasEngine
+enum class CanvasEngine
 {
     Sw = (1 << 1), ///< CPU rasterizer.
     Gl = (1 << 2)  ///< OpenGL rasterizer.
@@ -181,6 +181,33 @@ struct Matrix
     float e11, e12, e13;
     float e21, e22, e23;
     float e31, e32, e33;
+};
+
+/**
+ * @brief A data structure representing a texture mesh vertex
+ * 
+ * @param pt The vertex coordinate
+ * @param uv The normalized texture coordinate in the range (0.0..1.0, 0.0..1.0)
+ * 
+ * @BETA_API
+ */
+struct Vertex
+{
+   Point pt;
+   Point uv;
+};
+
+
+/**
+ * @brief A data structure representing a triange in a texture mesh
+ * 
+ * @param vertex The three vertices that make up the polygon
+ * 
+ * @BETA_API
+ */
+struct Polygon
+{
+   Vertex vertex[3];
 };
 
 
@@ -341,8 +368,6 @@ public:
      * This method can be called for checking the current concrete instance type.
      *
      * @return The type id of the Paint instance.
-     *
-     * @BETA_API
      */
     uint32_t identifier() const noexcept;
 
@@ -449,8 +474,6 @@ public:
      * This method can be called for checking the current concrete instance type.
      *
      * @return The type id of the Fill instance.
-     *
-     * @BETA_API
      */
     uint32_t identifier() const noexcept;
 
@@ -616,8 +639,6 @@ public:
      * This method can be referred for identifying the LinearGradient class type.
      *
      * @return The type id of the LinearGradient class.
-     *
-     * @BETA_API
      */
     static uint32_t identifier() noexcept;
 
@@ -675,8 +696,6 @@ public:
      * This method can be referred for identifying the RadialGradient class type.
      *
      * @return The type id of the RadialGradient class.
-     *
-     * @BETA_API
      */
     static uint32_t identifier() noexcept;
 
@@ -1060,8 +1079,6 @@ public:
      * This method can be referred for identifying the Shape class type.
      *
      * @return The type id of the Shape class.
-     *
-     * @BETA_API
      */
     static uint32_t identifier() noexcept;
 
@@ -1178,6 +1195,44 @@ public:
     Result load(uint32_t* data, uint32_t w, uint32_t h, bool copy) noexcept;
 
     /**
+     * @brief Sets or removes the triangle mesh to deform the image.
+     * 
+     * If a mesh is provided, the transform property of the Picture will apply to the triangle mesh, and the
+     * image data will be used as the texture.
+     * 
+     * If @p triangles is @c nullptr, or @p triangleCnt is 0, the mesh will be removed.
+     * 
+     * Only raster image types are supported at this time (png, jpg). Vector types like svg and tvg do not support.
+     * mesh deformation. However, if required you should be able to render a vector image to a raster image and then apply a mesh.
+     * 
+     * @param[in] triangles An array of Polygons(triangles) that make up the mesh, or null to remove the mesh.
+     * @param[in] triangleCnt The number of Polygons(triangles) provided, or 0 to remove the mesh.
+     * 
+     * @retval Result::Success When succeed.
+     * @retval Result::Unknown If fails
+     * 
+     * @note The Polygons are copied internally, so modifying them after calling Mesh::mesh has no affect.
+     * @warning Please do not use it, this API is not official one. It could be modified in the next version.
+     * 
+     * @BETA_API
+     */
+    Result mesh(const Polygon* triangles, const uint32_t triangleCnt) noexcept;
+
+    /**
+     * @brief Return the number of triangles in the mesh, and optionally get a pointer to the array of triangles in the mesh.
+     * 
+     * @param[out] triangles Optional. A pointer to the array of Polygons used by this mesh.
+     * 
+     * @return uint32_t The number of polygons in the array.
+     * 
+     * @note Modifying the triangles returned by this method will modify them directly within the mesh.
+     * @warning Please do not use it, this API is not official one. It could be modified in the next version.
+     * 
+     * @BETA_API
+     */
+    uint32_t mesh(const Polygon** triangles) const noexcept;
+
+    /**
      * @brief Gets the position and the size of the loaded SVG picture.
      *
      * @warning Please do not use it, this API is not official one. It could be modified in the next version.
@@ -1199,8 +1254,6 @@ public:
      * This method can be referred for identifying the Picture class type.
      *
      * @return The type id of the Picture class.
-     *
-     * @BETA_API
      */
     static uint32_t identifier() noexcept;
 
@@ -1279,8 +1332,6 @@ public:
      * This method can be referred for identifying the Scene class type.
      *
      * @return The type id of the Scene class.
-     *
-     * @BETA_API
      */
     static uint32_t identifier() noexcept;
 
@@ -1545,8 +1596,6 @@ public:
  * The Accessor helps you search specific nodes to read the property information, figure out the structure of the scene tree and its size.
  *
  * @warning We strongly warn you not to change the paints of a scene unless you really know the design-structure.
- *
- * @BETA_API
  */
 class TVG_EXPORT Accessor final
 {
@@ -1562,8 +1611,6 @@ public:
      * @return Return the given @p picture instance.
      *
      * @note The bitmap based picture might not have the scene-tree.
-     *
-     * @BETA_API
      */
     std::unique_ptr<Picture> access(std::unique_ptr<Picture> picture, bool(*func)(const Paint* paint)) noexcept;
 
@@ -1571,8 +1618,6 @@ public:
      * @brief Creates a new Accessor object.
      *
      * @return A new Accessor object.
-     *
-     * @BETA_API
      */
     static std::unique_ptr<Accessor> gen() noexcept;
 

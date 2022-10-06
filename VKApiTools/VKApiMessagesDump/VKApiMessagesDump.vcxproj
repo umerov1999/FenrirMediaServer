@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{05931454-2735-4C14-B0B8-0256400D9504}</ProjectGuid>
+    <RootNamespace>VKApiRequest</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IntDir>$(SolutionDir)\OBJ\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)\Bin\</OutDir>
+    <TargetName>$(ProjectName)_$(Platform)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\Third-Party\XTPSkinFramework v20.1.0\SkinFramework;..\..\Third-Party\libimage;..\..\Third-Party\libcurl\include;..\..\Third-Party\openssl\include;../../Third-Party/Extra;..\..\Third-Party\Extra\components;..\..\Third-Party\libimage\rlottie\inc</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <StringPooling>true</StringPooling>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName)_vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <TreatLinkerWarningAsErrors>false</TreatLinkerWarningAsErrors>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>
+      </LargeAddressAware>
+      <AdditionalLibraryDirectories>..\..\Third-Party\libcurl\lib\x64;..\..\Third-Party\openssl\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <BuildLog />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Third-Party\Extra\app_font.cpp" />
+    <ClCompile Include="..\..\Third-Party\Extra\app_style.cpp" />
+    <ClCompile Include="CommonLibraries.cpp" />
+    <ClCompile Include="HTML.cpp" />
+    <ClCompile Include="lotties.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="VKApiMessagesDump.cpp" />
+    <ClCompile Include="VKApiToolsDialog.cpp" />
+    <ClCompile Include="VKApiToolsDialogCapcha.cpp" />
+    <ClCompile Include="VKApiToolsInitMFC.cpp" />
+    <ClCompile Include="VKApiToolsInputLogin.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HTML.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="VKApiToolsDialog.h" />
+    <ClInclude Include="VKApiToolsDialogCapcha.h" />
+    <ClInclude Include="VKApiToolsInitMFC.h" />
+    <ClInclude Include="VKApiToolsInputLogin.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="VKApiMessagesDump.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\Icon.ico" />
+    <Image Include="Res\Kate.ico" />
+    <Image Include="Res\VK.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Third-Party\Extra\components\components_mfc.vcxproj">
+      <Project>{433709a8-9119-4051-9593-2c0698abf6bc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-Party\libimage\libimage.vcxproj">
+      <Project>{d6973076-9317-4ef2-a0b8-b7a18ac0713e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-Party\XTPSkinFramework v20.1.0\SkinFrameworkStatic_vc160.vcxproj">
+      <Project>{44399486-2259-2815-3336-338422327369}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\Error_Capcha.svg" />
+    <None Include="Res\Logo.svg" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

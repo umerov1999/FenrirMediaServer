@@ -55,6 +55,8 @@ public:
 	afx_msg void Init(HBITMAP HBackgr = NULL, CallBackSelectTouch OnSelect = NULL, CallBackSelectTouch OnTouch = NULL, bool resize = true);
 	afx_msg void SwitchBackground(HBITMAP HBackgr = NULL, bool resize = true);
 	afx_msg void RegisterSpecialPatternOnce(const std::wstring &Pattern, URGB Color);
+	afx_msg void UnRegisterSpecialPatternOnce(const std::wstring& Pattern);
+	afx_msg void ClearSpecialPatternOnce();
 	afx_msg void Select(int Id);
 	afx_msg void Clear();
 	afx_msg int GetSelected() const { return SelectedId; }
