@@ -1,8 +1,11 @@
 #Patch configure
 del "enabled libmp3lame        && require "libmp3lame >= 3.98.3" lame/lame.h lame_set_VBR_quality -lmp3lame $libm_extralibs"
 #Patch libmp3lame.c
-Add #pragma comment(lib, "lame_mp3.lib")
-Replace #include "lame.h"
+
+Add:
+#pragma comment(lib, "libmp3lame.lib")
+Replace:
+#include "lame.h"
 
 CALL "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 

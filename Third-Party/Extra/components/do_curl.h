@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <iostream>
+#include <cstdio>
+#include <cstring>
 
 int DoCurlCapcha(const std::string& Link, const std::string& UserAgent, std::string& ReciveData, bool IsJSON);
 int DoCurlPost(const std::string& Link, const std::string& PostParams, const std::string& UserAgent, std::string& ReciveData, bool IsJSON);

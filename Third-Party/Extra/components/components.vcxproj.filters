@@ -88,5 +88,8 @@
     <ClInclude Include="crc32.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="config_json_parse.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

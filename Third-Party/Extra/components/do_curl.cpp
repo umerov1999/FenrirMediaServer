@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include "curl/curl.h"
+#include "do_curl.h"
 using namespace std;
 
 class CURL_WR
@@ -238,22 +239,26 @@ int DoCurlPostJsonAuth(const string& Link, const string& PostJson, const string&
 	if (curl_handle)
 	{
 		struct curl_slist* headers = NULL;
-		headers = curl_slist_append(headers, "Accept: application/json");
-		headers = curl_slist_append(headers, "Content-Type:application/json");
-		headers = curl_slist_append(headers, "charsets: utf-8");
+		if (!PostJson.empty()) {
+			headers = curl_slist_append(headers, "Accept: application/json");
+			headers = curl_slist_append(headers, "Content-Type:application/json");
+			headers = curl_slist_append(headers, "charsets: utf-8");
+			curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
+		}
 		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
 
 		curl_easy_setopt(curl_handle, CURLOPT_USERPWD, (login + ":" + password).c_str());
-
+		
 		curl_easy_setopt(curl_handle, CURLOPT_URL, Link.c_str());
 		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UserAgent.c_str());
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriter);
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &wrt);
 		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
-		curl_easy_setopt(curl_handle, CURLOPT_POST, 1);
-		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, PostJson.c_str());
+		if (!PostJson.empty()) {
+			curl_easy_setopt(curl_handle, CURLOPT_POST, 1);
+			curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, PostJson.c_str());
+		}
 		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 20);
 		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 20);
 		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
@@ -268,7 +273,9 @@ int DoCurlPostJsonAuth(const string& Link, const string& PostJson, const string&
 		long long Code = 0;
 		curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &Code);
 		curl_easy_cleanup(curl_handle);
-		curl_slist_free_all(headers);
+		if (headers != NULL) {
+			curl_slist_free_all(headers);
+		}
 		if (res == CURLE_OK)
 			return wrt.WritePos;
 		else

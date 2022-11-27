@@ -125,6 +125,7 @@ void SectionPeEditorDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_DATECL, CLDTEd);
 
 	DDX_Control(pDX, IDC_COMBO1, SectionsLst);
+	DDX_Control(pDX, IDC_BUTTON11, pAddDataAfterPe);
 	DDX_Control(pDX, IDC_BUTTON12, pHex);
 }
 
@@ -1056,7 +1057,7 @@ void SectionPeEditorDialog::OnClose()
 
 BOOL SectionPeEditorDialog::PreTranslateMessage(MSG* pMsg)
 {
-	if (pMsg->hwnd == FCEFl.GetSafeHwnd())
+	if (pMsg->hwnd == FCEFl.GetSafeHwnd() || pMsg->hwnd == FLSeg.GetSafeHwnd() || pMsg->hwnd == pAddDataAfterPe.GetSafeHwnd())
 	{
 		if (pMsg->message == WM_DROPFILES)
 		{
@@ -1064,7 +1065,7 @@ BOOL SectionPeEditorDialog::PreTranslateMessage(MSG* pMsg)
 			if (ResultQueryFile == 1)
 			{
 				ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0, szBuf, sizeof(szBuf));
-				FILE*tmp = _wfopen(szBuf, L"rb");
+				FILE* tmp = _wfopen(szBuf, L"rb");
 				if (!tmp)
 				{
 					MessageBoxW(L"Невозможно открыть файл!", L"Внимание!", MB_ICONINFORMATION);
@@ -1073,31 +1074,45 @@ BOOL SectionPeEditorDialog::PreTranslateMessage(MSG* pMsg)
 				else
 				{
 					fclose(tmp);
-					FCEFl.SetWindowTextW(szBuf);
-					GetPeInfo(szBuf);
-				}
-			}
-		}
-	}
+					if (pMsg->hwnd == FLSeg.GetSafeHwnd()) {
+						FLSeg.SetWindowTextW(szBuf);
+					}
+					else if (pMsg->hwnd == FCEFl.GetSafeHwnd()) {
+						FCEFl.SetWindowTextW(szBuf);
+						GetPeInfo(szBuf);
+					}
+					else if (pMsg->hwnd == pAddDataAfterPe.GetSafeHwnd()) {
+						CString fgf;
+						FCEFl.GetWindowTextW(fgf);
 
-	if (pMsg->hwnd == FLSeg.GetSafeHwnd())
-	{
-		if (pMsg->message == WM_DROPFILES)
-		{
-			long ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0xFFFFFFFF, NULL, 0);
-			if (ResultQueryFile == 1)
-			{
-				ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0, szBuf, sizeof(szBuf));
-				FILE*tmp = _wfopen(szBuf, L"rb");
-				if (!tmp)
-				{
-					MessageBoxW(L"Невозможно открыть файл!", L"Внимание!", MB_ICONINFORMATION);
-					return CDialogEx::PreTranslateMessage(pMsg);
-				}
-				else
-				{
-					fclose(tmp);
-					FLSeg.SetWindowTextW(szBuf);
+						if (fgf.GetLength() <= 0)
+						{
+							MessageBoxW(L"Выберите PE файл!", L"Внимание!", MB_ICONINFORMATION);
+							return CDialogEx::PreTranslateMessage(pMsg);
+						}
+						FILE* tmp = _wfopen(szBuf, L"rb");
+						if (!tmp)
+						{
+							MessageBoxW(L"Невозможно прочесть файл!", L"Внимание!", MB_ICONINFORMATION);
+							return CDialogEx::PreTranslateMessage(pMsg);
+						}
+						fseek(tmp, 0, SEEK_END);
+						long syto = ftell(tmp);
+						fseek(tmp, 0, SEEK_SET);
+						char* flt = new char[syto];
+						fread(flt, 1, syto, tmp);
+						fclose(tmp);
+
+						FILE* tmpy = _wfopen(fgf.GetString(), L"ab");
+						if (!tmpy)
+						{
+							MessageBoxW(L"Невозможно записать в PE Файл!", L"Внимание!", MB_ICONINFORMATION);
+							return CDialogEx::PreTranslateMessage(pMsg);
+						}
+						fwrite(flt, 1, syto, tmpy);
+						fclose(tmpy);
+						MessageBoxW(L"Выполнено!", L"Внимание!", MB_ICONINFORMATION);
+					}
 				}
 			}
 		}

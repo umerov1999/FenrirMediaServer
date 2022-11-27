@@ -265,9 +265,9 @@ static int ZSTD_allocateChainTable(const ZSTD_strategy strategy,
     return forDDSDict || ((strategy != ZSTD_fast) && !ZSTD_rowMatchFinderUsed(strategy, useRowMatchFinder));
 }
 
-/* Returns 1 if compression parameters are such that we should
+/* Returns ZSTD_ps_enable if compression parameters are such that we should
  * enable long distance matching (wlog >= 27, strategy >= btopt).
- * Returns 0 otherwise.
+ * Returns ZSTD_ps_disable otherwise.
  */
 static ZSTD_paramSwitch_e ZSTD_resolveEnableLdm(ZSTD_paramSwitch_e mode,
                                  const ZSTD_compressionParameters* const cParams) {
@@ -482,8 +482,8 @@ ZSTD_bounds ZSTD_cParam_getBounds(ZSTD_cParameter param)
         return bounds;
 
     case ZSTD_c_enableLongDistanceMatching:
-        bounds.lowerBound = 0;
-        bounds.upperBound = 1;
+        bounds.lowerBound = (int)ZSTD_ps_auto;
+        bounds.upperBound = (int)ZSTD_ps_disable;
         return bounds;
 
     case ZSTD_c_ldmHashLog:
@@ -854,6 +854,7 @@ size_t ZSTD_CCtxParams_setParameter(ZSTD_CCtx_params* CCtxParams,
         return (size_t)CCtxParams->enableDedicatedDictSearch;
 
     case ZSTD_c_enableLongDistanceMatching :
+        BOUNDCHECK(ZSTD_c_enableLongDistanceMatching, value);
         CCtxParams->ldmParams.enableLdm = (ZSTD_paramSwitch_e)value;
         return CCtxParams->ldmParams.enableLdm;
 
@@ -1096,7 +1097,7 @@ size_t ZSTD_CCtx_setParametersUsingCCtxParams(
 
 size_t ZSTD_CCtx_setPledgedSrcSize(ZSTD_CCtx* cctx, unsigned long long pledgedSrcSize)
 {
-    DEBUGLOG(4, "ZSTD_CCtx_setPledgedSrcSize to %u bytes", (U32)pledgedSrcSize);
+    DEBUGLOG(4, "ZSTD_CCtx_setPledgedSrcSize to %llu bytes", pledgedSrcSize);
     RETURN_ERROR_IF(cctx->streamStage != zcss_init, stage_wrong,
                     "Can't set pledgedSrcSize when not in init stage.");
     cctx->pledgedSrcSizePlusOne = pledgedSrcSize+1;
@@ -2653,6 +2654,8 @@ ZSTD_entropyCompressSeqStore_internal(seqStore_t* seqStorePtr,
         /* Base suspicion of uncompressibility on ratio of literals to sequences */
         unsigned const suspectUncompressible = (numSequences == 0) || (numLiterals / numSequences >= SUSPECT_UNCOMPRESSIBLE_LITERAL_RATIO);
         size_t const litSize = (size_t)(seqStorePtr->lit - literals);
+
+        HUF_depth_mode depthMode = cctxParams->cParams.strategy >= HUF_OPTIMAL_DEPTH_THRESHOLD ? HUF_depth_optimal : HUF_depth_fast;
         size_t const cSize = ZSTD_compressLiterals(
                                     &prevEntropy->huf, &nextEntropy->huf,
                                     cctxParams->cParams.strategy,
@@ -2660,7 +2663,7 @@ ZSTD_entropyCompressSeqStore_internal(seqStore_t* seqStorePtr,
                                     op, dstCapacity,
                                     literals, litSize,
                                     entropyWorkspace, entropyWkspSize,
-                                    bmi2, suspectUncompressible);
+                                    bmi2, suspectUncompressible, depthMode);
         FORWARD_IF_ERROR(cSize, "ZSTD_compressLiterals failed");
         assert(cSize <= dstCapacity);
         op += cSize;
@@ -3107,7 +3110,7 @@ static size_t ZSTD_buildBlockEntropyStats_literals(void* const src, size_t srcSi
                                                   ZSTD_hufCTables_t* nextHuf,
                                                   ZSTD_hufCTablesMetadata_t* hufMetadata,
                                                   const int literalsCompressionIsDisabled,
-                                                  void* workspace, size_t wkspSize)
+                                                  void* workspace, size_t wkspSize, HUF_depth_mode depthMode)
 {
     BYTE* const wkspStart = (BYTE*)workspace;
     BYTE* const wkspEnd = wkspStart + wkspSize;
@@ -3164,7 +3167,7 @@ static size_t ZSTD_buildBlockEntropyStats_literals(void* const src, size_t srcSi
 
     /* Build Huffman Tree */
     ZSTD_memset(nextHuf->CTable, 0, sizeof(nextHuf->CTable));
-    huffLog = HUF_optimalTableLog(huffLog, srcSize, maxSymbolValue);
+    huffLog = HUF_optimalTableLog(huffLog, srcSize, maxSymbolValue, nodeWksp, nodeWkspSize, nextHuf->CTable, countWksp, depthMode);
     assert(huffLog <= LitHufLog);
     {   size_t const maxBits = HUF_buildCTable_wksp((HUF_CElt*)nextHuf->CTable, countWksp,
                                                     maxSymbolValue, huffLog,
@@ -3268,12 +3271,15 @@ size_t ZSTD_buildBlockEntropyStats(seqStore_t* seqStorePtr,
                                    void* workspace, size_t wkspSize)
 {
     size_t const litSize = seqStorePtr->lit - seqStorePtr->litStart;
+    HUF_depth_mode depthMode = cctxParams->cParams.strategy >= HUF_OPTIMAL_DEPTH_THRESHOLD ? HUF_depth_optimal : HUF_depth_fast;
+
     entropyMetadata->hufMetadata.hufDesSize =
         ZSTD_buildBlockEntropyStats_literals(seqStorePtr->litStart, litSize,
                                             &prevEntropy->huf, &nextEntropy->huf,
                                             &entropyMetadata->hufMetadata,
                                             ZSTD_literalsCompressionIsDisabled(cctxParams),
-                                            workspace, wkspSize);
+                                            workspace, wkspSize, depthMode);
+
     FORWARD_IF_ERROR(entropyMetadata->hufMetadata.hufDesSize, "ZSTD_buildBlockEntropyStats_literals failed");
     entropyMetadata->fseMetadata.fseTablesSize =
         ZSTD_buildBlockEntropyStats_sequences(seqStorePtr,

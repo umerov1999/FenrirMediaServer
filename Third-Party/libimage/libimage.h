@@ -102,8 +102,11 @@ namespace LIB_IMAGE
 			{
 				if (*links == 0) {
 					delete links;
-					if (hPicture)
+					links = NULL;
+					if (hPicture) {
 						DeleteObject(hPicture);
+						hPicture = NULL;
+					}
 				}
 				else {
 					(*links)--;
@@ -119,6 +122,16 @@ namespace LIB_IMAGE
 		{
 			if (is_has_image())
 			{
+				if (*image.links == 0) {
+					if (image.hPicture) {
+						DeleteObject(image.hPicture);
+						image.hPicture = NULL;
+					}
+				}
+				else {
+					(*image.links)--;
+				}
+
 				image.image_size = image_size;
 				image.hPicture = (HBITMAP)CopyImage(hPicture, IMAGE_BITMAP, image_size.size_x, image_size.size_y, LR_COPYRETURNORG);
 			}
@@ -138,12 +151,39 @@ namespace LIB_IMAGE
 		win_image_size image_size;
 	};
 
+	static inline void swap_rgb(unsigned char* rgb_buffer, int len)
+	{
+		unsigned char tmp = 0;
+		int i = 0;
+		for (i = 0; i < len; i += 3)
+		{
+			tmp = *(rgb_buffer + i);
+			*(rgb_buffer + i) = *(rgb_buffer + i + 2);
+			*(rgb_buffer + i + 2) = tmp;
+		}
+	}
+
+	static inline void swap_rgba(unsigned char* rgba_buffer, int len)
+	{
+		unsigned char tmp = 0;
+		int i = 0;
+		for (i = 0; i < len; i += 4)
+		{
+			tmp = *(rgba_buffer + i);
+			*(rgba_buffer + i) = *(rgba_buffer + i + 2);
+			*(rgba_buffer + i + 2) = tmp;
+		}
+	}
+
 	win_image PrepareImageFromBufferByType(HWND hwnd, const void* pDataBuffer, int nBufferSize, win_image_type Type, bool show_error_bitmap = true);
 	win_image PrepareImageFromBufferAutoType(HWND hwnd, const void* pDataBuffer, int nBufferSize, bool show_error_bitmap = true);
 	win_image PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetHeight, const void* pDataBuffer, int nBufferSize, uint32_t bgColor = 0xffffffff);
 	HBITMAP PrepareImageFromSVGResourceToIcon(HWND hwnd, int Res, int padding = 16, uint32_t bgColor = 0xffffffff);
 	win_image PrepareImageFromSVGResource(HWND hwnd, int Res, int padding = 16, uint32_t bgColor = 0xffffffff);
 	std::string GetDataFromResourceUtil(std::wstring ResType, int Res, HMODULE hMod = GetModuleHandleW(NULL));
+
+	bool bmp2jpeg(HBITMAP hBmp, HDC hDC, int quality, BYTE*& buf_jpeg, size_t& buf_jpeg_size);
+	bool bmp2png(HBITMAP hBmp, HDC hDC, BYTE*& buf_png, size_t& buf_png_size);
 	//OnlyTest
 	void CreateBMPFile(LPCTSTR pszFile, HBITMAP hBMP);
 }

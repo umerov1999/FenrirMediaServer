@@ -50,6 +50,8 @@ static Map::Map<std::string, Audio> mAudios;
 static Map::Map<std::string, Video> mVideos;
 static Map::Map<std::string, Photo> mPhotos;
 
+static int PasswordWrongCount = 0;
+
 list<wstring> Discography_Dirs;
 list<wstring> Audio_Dirs;
 list<wstring> Video_Dirs;
@@ -1772,19 +1774,45 @@ void ServerMethods::Execute(const string& UTF8Path, RequestParserStruct& Req, vo
 	}
 	if (info.NeedAuth && exist_get_post(Req, "password")) {
 		string password = get_postUTF8(Req, "password");
-		if (client->server_config.password != password) {
-			if (client->server_config.isDebug) {
-				PrintMessage(L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" неверный пароль", URGB(255, 0, 0));
+		if (PasswordWrongCount >= 2 || client->server_config.password != password) {
+			wstring error = L"Метод " + UTF8_to_wchar(UTF8Path) + L" неверный пароль, IP " + WSTRUtils::UTF8_to_wchar(Req.connection);
+			if (PasswordWrongCount >= 2) {
+				FILE* fll = nullptr;
+				if (_wfopen_s(&fll, (ExtractAppPath() + L"\\password-errors").c_str(), L"wb") == 0) {
+					string herror = WSTRUtils::wchar_to_UTF8(error);
+					fwrite(UTF8START, 1, strlen(UTF8START), fll);
+					fwrite(herror.c_str(), 1, herror.size(), fll);
+					fclose(fll);
+				}
+				XTPSkinMgr()->ExitProgramm();
+				return;
 			}
-			SendErrorJSON(client, Req, L"Неверный пароль");
+			else {
+				PasswordWrongCount++;
+			}
+			PrintMessage(error, URGB(255, 0, 0));
+			SendErrorJSON(client, Req, L"Доступ запрещён!");
 			return;
 		}
 	}
 	else if (info.NeedAuth) {
-		if (client->server_config.isDebug) {
-			PrintMessage(L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" требует авторизацию", URGB(255, 0, 0));
+		wstring error = L"Метод " + UTF8_to_wchar(UTF8Path) + L" требует авторизацию, IP " + WSTRUtils::UTF8_to_wchar(Req.connection);
+		if (PasswordWrongCount >= 2) {
+			FILE* fll = nullptr;
+			if (_wfopen_s(&fll, (ExtractAppPath() + L"\\password-errors").c_str(), L"wb") == 0) {
+				string herror = WSTRUtils::wchar_to_UTF8(error);
+				fwrite(UTF8START, 1, strlen(UTF8START), fll);
+				fwrite(herror.c_str(), 1, herror.size(), fll);
+				fclose(fll);
+			}
+			XTPSkinMgr()->ExitProgramm();
+			return;
 		}
-		SendErrorJSON(client, Req, L"DEBUG: метод " + UTF8_to_wchar(UTF8Path) + L" требует авторизацию");
+		else {
+			PasswordWrongCount++;
+		}
+		PrintMessage(error, URGB(255, 0, 0));
+		SendErrorJSON(client, Req, L"Доступ запрещён!");
 		return;
 	}
 	((method_t)Methods.at(UTF8Path).Func)(Req, (CLIENT_CONNECTION*)ssl);

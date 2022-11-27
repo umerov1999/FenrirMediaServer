@@ -14,6 +14,7 @@
 #ifndef _THORVG_H_
 #define _THORVG_H_
 
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -1596,6 +1597,8 @@ public:
  * The Accessor helps you search specific nodes to read the property information, figure out the structure of the scene tree and its size.
  *
  * @warning We strongly warn you not to change the paints of a scene unless you really know the design-structure.
+ *
+ * @BETA_API
  */
 class TVG_EXPORT Accessor final
 {
@@ -1603,7 +1606,7 @@ public:
     ~Accessor();
 
     /**
-     * @brief Access the Picture scene stree nodes.
+     * @brief Set the access function for traversing the Picture scene tree nodes.
      *
      * @param[in] picture The picture node to traverse the internal scene-tree.
      * @param[in] func The callback function calling for every paint nodes of the Picture.
@@ -1611,13 +1614,17 @@ public:
      * @return Return the given @p picture instance.
      *
      * @note The bitmap based picture might not have the scene-tree.
+     *
+     * @BETA_API
      */
-    std::unique_ptr<Picture> access(std::unique_ptr<Picture> picture, bool(*func)(const Paint* paint)) noexcept;
+    std::unique_ptr<Picture> set(std::unique_ptr<Picture> picture, std::function<bool(const Paint* paint)> func) noexcept;
 
     /**
      * @brief Creates a new Accessor object.
      *
      * @return A new Accessor object.
+     *
+     * @BETA_API
      */
     static std::unique_ptr<Accessor> gen() noexcept;
 

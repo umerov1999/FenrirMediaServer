@@ -32,6 +32,7 @@ public:
 	CString tmpoy;
 
 	CButton pHex;
+	CButton pAddDataAfterPe;
 
 	wchar_t szBuf[512];
 

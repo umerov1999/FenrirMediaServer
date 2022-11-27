@@ -10,7 +10,7 @@
 #include "thorvg.h"
 #include "zlib.h"
 using namespace std;
-#define BitmapWidth(cx, bpp)  (((((cx) * (bpp)) + 31) & ~31) >> 3)
+#define BitmapWidth(cx, bpp)  (((cx * bpp + 31) & ~31) >> 3)
 #define JPGHeader "\xff\xd8\xff"
 const int c_JPEGInputBufferSize = 4096;
 using namespace LIB_IMAGE;
@@ -327,30 +327,6 @@ void JPEGStdioSrc(j_decompress_ptr cinfo, jpeg_membuffer_t* file)
 	src->pub.next_input_byte = 0;
 }
 
-inline void swap_rgb(unsigned char* rgb_buffer, int len)
-{
-	int i = 0;
-	for (i = 0; i < len; i += 3)
-	{
-		unsigned char tmp;
-		tmp = rgb_buffer[i];
-		rgb_buffer[i] = rgb_buffer[i + 2];
-		rgb_buffer[i + 2] = tmp;
-	}
-}
-
-inline void swap_rgba(unsigned char* rgba_buffer, int len)
-{
-	int i = 0;
-	for (i = 0; i < len; i += 4)
-	{
-		unsigned char tmp;
-		tmp = rgba_buffer[i];
-		rgba_buffer[i] = rgba_buffer[i + 2];
-		rgba_buffer[i + 2] = tmp;
-	}
-}
-
 static HBITMAP PrepareFromBufferJPG(HWND hwnd, const void* pDataBuffer, int nBufferSize, int &widthd, int &heightd)
 {
 	try
@@ -526,7 +502,7 @@ static HBITMAP PrepareFromBufferPNG(HWND hwnd, const void* pDataBuffer, int nBuf
 
 	const int nBitsCount = (PNG_COLOR_TYPE_RGBA == color_type) ? (32) : (24);
 
-	png_uint_32		nBytesInRow = (png_uint_32)png_get_rowbytes(png_ptr, info_ptr);
+	png_uint_32		nChannelRow = (png_uint_32)png_get_channels(png_ptr, info_ptr);
 	png_byte** row_pointers = new png_byte * [height];
 
 	HBITMAP hOutputImage = (HBITMAP)CreateDIB(hwnd, width, height, nBitsCount);
@@ -543,7 +519,7 @@ static HBITMAP PrepareFromBufferPNG(HWND hwnd, const void* pDataBuffer, int nBuf
 	unsigned char* pImageBuffer = (unsigned char*)btmOutputImage.bmBits;
 
 	for (unsigned int nRowNum = 0; nRowNum < height; nRowNum++)
-		row_pointers[nRowNum] = pImageBuffer + nRowNum * nBytesInRow;
+		row_pointers[nRowNum] = pImageBuffer + nRowNum * BitmapWidth(width, nChannelRow * 8);
 
 	png_read_image(png_ptr, row_pointers);
 	for (int nY = 0; nY < btmOutputImage.bmHeight; ++nY)
@@ -648,7 +624,7 @@ win_image LIB_IMAGE::PrepareImageFromBufferAutoType(HWND hwnd, const void* pData
 		unsigned char* pBuffer = (unsigned char*)pDataBuffer;
 		png_byte  sig[number] = { 0 };
 		if (!png_check_sig(const_cast<png_bytep>(pBuffer), number))
-			return win_image();
+			return makeErrorBitmap(hwnd, size, show_error_bitmap);
 		HBITMAP bp = PrepareFromBufferPNG(hwnd, pDataBuffer, nBufferSize, size.size_x, size.size_y);
 		if (bp == NULL) {
 			return makeErrorBitmap(hwnd, size, show_error_bitmap);
@@ -783,14 +759,14 @@ HBITMAP LIB_IMAGE::PrepareImageFromSVGResourceToIcon(HWND hwnd, int Res, int pad
 	std::string DataPic = GetDataFromResourceUtil(L"SVG", Res);
 	RECT jj;
 	GetClientRect(hwnd, &jj);
-	return PrepareImageFromSVG(hwnd, jj.right - jj.left - padding, jj.bottom - jj.top - padding, DataPic.data(), (int)DataPic.size()).get_hBitmap(true);
+	return PrepareImageFromSVG(hwnd, jj.right - jj.left - padding, jj.bottom - jj.top - padding, DataPic.data(), (int)DataPic.size(), bgColor).get_hBitmap(true);
 }
 
 win_image LIB_IMAGE::PrepareImageFromSVGResource(HWND hwnd, int Res, int padding, uint32_t bgColor) {
 	std::string DataPic = GetDataFromResourceUtil(L"SVG", Res);
 	RECT jj;
 	GetClientRect(hwnd, &jj);
-	return PrepareImageFromSVG(hwnd, jj.right - jj.left - padding, jj.bottom - jj.top - padding, DataPic.data(), (int)DataPic.size());
+	return PrepareImageFromSVG(hwnd, jj.right - jj.left - padding, jj.bottom - jj.top - padding, DataPic.data(), (int)DataPic.size(), bgColor);
 }
 
 static PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)

@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base.hpp" />
+    <ClInclude Include="config_json_parse.h" />
     <ClInclude Include="crc32.h" />
     <ClInclude Include="CriticalDebug.h" />
     <ClInclude Include="CTar.h" />

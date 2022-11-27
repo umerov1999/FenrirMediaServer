@@ -489,11 +489,14 @@
     <ClCompile Include="thorvg\src\lib\tvgTaskScheduler.cpp">
       <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
+    <ClCompile Include="bmp2jpeg.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="bmp2png.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="./jpeg/bmp2jpeg.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
     <ClInclude Include="./jpeg/cderror.h">
       <Filter>Файлы исходного кода\jpeg</Filter>
     </ClInclude>

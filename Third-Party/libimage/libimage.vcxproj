@@ -42,6 +42,8 @@
     <ClCompile Include="./jpeg/jdpostct.c" />
     <ClCompile Include="./jpeg/jdsample.c" />
     <ClCompile Include="./jpeg/jdtrans.c" />
+    <ClCompile Include="bmp2jpeg.cpp" />
+    <ClCompile Include="bmp2png.cpp" />
     <ClCompile Include="jpeg\jerror.cpp" />
     <ClCompile Include="./jpeg/jfdctflt.c" />
     <ClCompile Include="./jpeg/jfdctfst.c" />
@@ -152,7 +154,6 @@
     <ClCompile Include="zlib\zutil.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="./jpeg/bmp2jpeg.h" />
     <ClInclude Include="./jpeg/cderror.h" />
     <ClInclude Include="./jpeg/cdjpeg.h" />
     <ClInclude Include="./jpeg/jconfig.h" />

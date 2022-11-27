@@ -9,6 +9,7 @@
 #include <openssl/ssl.h>
 #include <list>
 #include "base.hpp"
+#include "config_json_parse.h"
 #include "Map.h"
 using namespace std;
 using namespace WSTRUtils;
@@ -193,13 +194,7 @@ public:
 			json fin(json::value_t::object);
 			fin.emplace("app_settings", settings);
 
-			FILE* save = NULL;
-			if (_wfopen_s(&save, (ExtractAppPath() + L"\\" + SETTINGS).c_str(), L"wb") != 0)
-				return;
-			fwrite(UTF8START, 1, strlen(UTF8START), save);
-			string sett = fin.dump(4);
-			fwrite(sett.c_str(), 1, sett.length(), save);
-			fclose(save);
+			writeJsonConfig(ExtractAppPath() + L"\\" + SETTINGS, fin);
 		}
 		catch (json::exception e) {
 			(win_message().message_type(MSG_TYPE::TYPE_ERROR).timeout(10) << e.what()).show();
@@ -211,19 +206,10 @@ public:
 	{
 		if (PathFileExistsW((ExtractAppPath() + L"\\" + SETTINGS).c_str()) == FALSE)
 			return;
-		FILE* fl = NULL;
-		if (_wfopen_s(&fl, (ExtractAppPath() + L"\\" + SETTINGS).c_str(), L"rb") == 0)
-		{
-			fseek(fl, 0, SEEK_END);
-			int fsz = ftell(fl) - (int)strlen(UTF8START);
-			fseek(fl, (int)strlen(UTF8START), SEEK_SET);
-			string jsonna;
-			jsonna.resize(fsz + 1);
-			fread((char*)jsonna.data(), 1, fsz, fl);
-			fclose(fl);
+
+		try {
 			json settings;
-			try {
-				settings = json::parse(jsonna);
+			if (parseJsonConfig(ExtractAppPath() + L"\\" + SETTINGS, settings)) {
 				settings = settings.at("app_settings").get<json>();
 
 				JSON_DESERIALIZE(settings, isSsl);
@@ -253,10 +239,10 @@ public:
 				deserialize_list(settings, "Photo_Video_Dirs", dtp);
 				Photo_Video_Dirs = createWcharList(dtp);
 			}
-			catch (json::exception e) {
-				(win_message().message_type(MSG_TYPE::TYPE_ERROR).timeout(10) << e.what()).show();
-				return;
-			}
+		}
+		catch (json::exception e) {
+			(win_message().message_type(MSG_TYPE::TYPE_ERROR).timeout(10) << e.what()).show();
+			return;
 		}
 	}
 private:

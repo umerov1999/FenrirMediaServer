@@ -315,13 +315,13 @@ void VKAPI_TOOLS_Request(const string &Token, const string &APIMethod, const str
 		bool isFirst = true;
 		for (auto& i : params) {
 			if (i.size() <= 0) {
-				PRINT(TypeColor::TYPE_WARRNING) << u8"Нет параметров" << FLUSH;
+				PRINT(TypeColor::TYPE_WARRNING) << (const char*)u8"Нет параметров" << FLUSH;
 				Tparams = "";
 				break;
 			}
 			vector<string> res = split(i, "=>");
 			if (res.size() < 2) {
-				PRINT(TypeColor::TYPE_ERROR) << u8"Требуется вводить ключ=значение с новой строки" << FLUSH;
+				PRINT(TypeColor::TYPE_ERROR) << (const char*)u8"Требуется вводить ключ=значение с новой строки" << FLUSH;
 				Tparams = "";
 				return;
 			}
@@ -330,7 +330,7 @@ void VKAPI_TOOLS_Request(const string &Token, const string &APIMethod, const str
 			string value = res[1];
 
 			if (name.size() <= 0 || value.size() <= 0) {
-				PRINT(TypeColor::TYPE_ERROR) << u8"Требуется вводить ключ=значение с новой строки" << FLUSH;
+				PRINT(TypeColor::TYPE_ERROR) << (const char*)u8"Требуется вводить ключ=значение с новой строки" << FLUSH;
 				Tparams = "";
 				return;
 			}
@@ -351,7 +351,7 @@ void VKAPI_TOOLS_Request(const string &Token, const string &APIMethod, const str
 		}
 	}
 	catch (std::exception e) {
-		PRINT(TypeColor::TYPE_ERROR) << u8"Исключение при парсинге параметров: " << e.what() << FLUSH;
+		PRINT(TypeColor::TYPE_ERROR) << (const char*)u8"Исключение при парсинге параметров: " << e.what() << FLUSH;
 	}
 
 

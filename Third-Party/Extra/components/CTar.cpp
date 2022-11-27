@@ -1,6 +1,7 @@
 ﻿#include <Windows.h>
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <ctime>
 #include <vector>
 #include "CTar.h"

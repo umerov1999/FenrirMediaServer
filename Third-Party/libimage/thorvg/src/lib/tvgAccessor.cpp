@@ -23,7 +23,7 @@
 /* Internal Class Implementation                                        */
 /************************************************************************/
 
-static bool accessChildren(Iterator* it, bool(*func)(const Paint* paint), IteratorAccessor& itrAccessor)
+static bool accessChildren(Iterator* it, IteratorAccessor& itrAccessor, function<bool(const Paint* paint)> func)
 {
     while (auto child = it->next()) {
         //Access the child
@@ -31,7 +31,7 @@ static bool accessChildren(Iterator* it, bool(*func)(const Paint* paint), Iterat
 
         //Access the children of the child
         if (auto it2 = itrAccessor.iterator(child)) {
-            if (!accessChildren(it2, func, itrAccessor)) {
+            if (!accessChildren(it2, itrAccessor, func)) {
                 delete(it2);
                 return false;
             }
@@ -41,12 +41,11 @@ static bool accessChildren(Iterator* it, bool(*func)(const Paint* paint), Iterat
     return true;
 }
 
-
 /************************************************************************/
 /* External Class Implementation                                        */
 /************************************************************************/
 
-unique_ptr<Picture> Accessor::access(unique_ptr<Picture> picture, bool(*func)(const Paint* paint)) noexcept
+unique_ptr<Picture> Accessor::set(unique_ptr<Picture> picture, function<bool(const Paint* paint)> func) noexcept
 {
     auto p = picture.get();
     if (!p || !func) return picture;
@@ -59,7 +58,7 @@ unique_ptr<Picture> Accessor::access(unique_ptr<Picture> picture, bool(*func)(co
     //Children
     IteratorAccessor itrAccessor;
     if (auto it = itrAccessor.iterator(p)) {
-        accessChildren(it, func, itrAccessor);
+        accessChildren(it, itrAccessor, func);
         delete(it);
     }
     return picture;

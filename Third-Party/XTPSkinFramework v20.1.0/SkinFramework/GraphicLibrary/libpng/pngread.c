@@ -2102,15 +2102,15 @@ png_image_read_colormap(png_voidp argument)
    int output_encoding = (output_format & PNG_FORMAT_FLAG_LINEAR) != 0 ?
       P_LINEAR : P_sRGB;
 
-   unsigned int cmap_entries = 0;
-   unsigned int output_processing = 0;        /* Output processing option */
+   unsigned int cmap_entries;
+   unsigned int output_processing;        /* Output processing option */
    unsigned int data_encoding = P_NOTSET; /* Encoding libpng must produce */
 
    /* Background information; the background color and the index of this color
     * in the color-map if it exists (else 256).
     */
    unsigned int background_index = 256;
-   png_uint_32 back_r = 0, back_g = 0, back_b = 0;
+   png_uint_32 back_r, back_g, back_b;
 
    /* Flags to accumulate things that need to be done to the input. */
    int expand_tRNS = 0;
@@ -2951,7 +2951,7 @@ png_image_read_and_map(png_voidp argument)
        argument);
    png_imagep image = display->image;
    png_structrp png_ptr = image->opaque->png_ptr;
-   int passes = 0;
+   int passes;
 
    /* Called when the libpng data must be transformed into the color-mapped
     * form.  There is a local row buffer in display->local and this routine must
@@ -3272,7 +3272,7 @@ png_image_read_composite(png_voidp argument)
        argument);
    png_imagep image = display->image;
    png_structrp png_ptr = image->opaque->png_ptr;
-   int passes = 0;
+   int passes;
 
    switch (png_ptr->interlaced)
    {
@@ -3294,7 +3294,7 @@ png_image_read_composite(png_voidp argument)
       ptrdiff_t    step_row = display->row_bytes;
       unsigned int channels =
           (image->format & PNG_FORMAT_FLAG_COLOR) != 0 ? 3 : 1;
-      int pass = 0;
+      int pass;
 
       for (pass = 0; pass < passes; ++pass)
       {
@@ -3402,7 +3402,7 @@ png_image_read_background(png_voidp argument)
    png_inforp info_ptr = image->opaque->info_ptr;
    png_uint_32 height = image->height;
    png_uint_32 width = image->width;
-   int pass = 0, passes = 0;
+   int pass, passes;
 
    /* Double check the convoluted logic below.  We expect to get here with
     * libpng doing rgb to gray and gamma correction but background processing
@@ -3456,7 +3456,6 @@ png_image_read_background(png_voidp argument)
 
             for (pass = 0; pass < passes; ++pass)
             {
-               png_bytep row = png_voidcast(png_bytep, display->first_row);
                unsigned int     startx, stepx, stepy;
                png_uint_32      y;
 
@@ -3561,8 +3560,6 @@ png_image_read_background(png_voidp argument)
 
                         inrow += 2; /* gray and alpha channel */
                      }
-
-                     row += display->row_bytes;
                   }
                }
             }
@@ -3769,13 +3766,13 @@ png_image_read_direct(png_voidp argument)
          mode = PNG_ALPHA_PNG;
          output_gamma = PNG_DEFAULT_sRGB;
       }
-      
+
       if ((change & PNG_FORMAT_FLAG_ASSOCIATED_ALPHA) != 0)
       {
          mode = PNG_ALPHA_OPTIMIZED;
          change &= ~PNG_FORMAT_FLAG_ASSOCIATED_ALPHA;
       }
-      
+
       /* If 'do_local_background' is set check for the presence of gamma
        * correction; this is part of the work-round for the libpng bug
        * described above.
