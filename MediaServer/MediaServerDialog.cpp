@@ -194,7 +194,7 @@ public:
 			json fin(json::value_t::object);
 			fin.emplace("app_settings", settings);
 
-			writeJsonConfig(ExtractAppPath() + L"\\" + SETTINGS, fin);
+			writeJsonConfig(ExtractAppPath() + L"\\" + PREFS_NAME, fin);
 		}
 		catch (json::exception e) {
 			(win_message().message_type(MSG_TYPE::TYPE_ERROR).timeout(10) << e.what()).show();
@@ -204,12 +204,12 @@ public:
 
 	void DeSerializeSettings()
 	{
-		if (PathFileExistsW((ExtractAppPath() + L"\\" + SETTINGS).c_str()) == FALSE)
+		if (PathFileExistsW((ExtractAppPath() + L"\\" + PREFS_NAME).c_str()) == FALSE)
 			return;
 
 		try {
 			json settings;
-			if (parseJsonConfig(ExtractAppPath() + L"\\" + SETTINGS, settings)) {
+			if (parseJsonConfig(ExtractAppPath() + L"\\" + PREFS_NAME, settings)) {
 				settings = settings.at("app_settings").get<json>();
 
 				JSON_DESERIALIZE(settings, isSsl);
@@ -467,6 +467,12 @@ void RegDelKeyValue(const wstring& NameReg, const wstring& PatchReg)
 MediaServerDialog::MediaServerDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(MediaServerDialog::IDD, pParent)
 {
+	IsStart = false;
+	IsAutostart = false;
+	NeedAutoStart = false;
+	memset(szBuf, 0, sizeof(szBuf));
+	m_hIcon = nullptr;
+	m_hCursor = nullptr;
 }
 
 MediaServerDialog::~MediaServerDialog()
@@ -517,29 +523,37 @@ BEGIN_MESSAGE_MAP(MediaServerDialog, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO2, OnProtocol)
 END_MESSAGE_MAP()
 
-DWORD WINAPI InitMediaServerThread(LPVOID)
+DWORD WINAPI InitMediaServerThread(LPVOID pClass)
 {
+	START_SERVER_OPTION option = extractThreadParamAndDelete<START_SERVER_OPTION>(pClass);
+
 	win_message msg(dlgS.m_hWnd);
 	msg.message_type(MSG_TYPE::TYPE_ERROR);
 
-	dlgS.StartBT.EnableWindow(FALSE);
-	dlgS.CurrentDir.SetReadOnly(TRUE);
-	dlgS.HTTPSPort.SetReadOnly(TRUE);
-	dlgS.HTTPPort.SetReadOnly(TRUE);
-	dlgS.ButFolder.EnableWindow(FALSE);
-	dlgS.StartBT.ShowWindow(FALSE);
-	dlgS.SelectSSL.ShowWindow(FALSE);
-	dlgS.BUseHttp.EnableWindow(FALSE);
-	dlgS.BUseHttps.EnableWindow(FALSE);
-	dlgS.ServerPassword.SetWindowTextW(L"******************");
-	dlgS.ServerPassword.EnableWindow(FALSE);
-	dlgS.ScanCovers.EnableWindow(FALSE);
-	dlgS.MediaFolders.EnableWindow(FALSE);
-	dlgS.BIsDebug.EnableWindow(FALSE);
-	dlgS.OnlyNews.EnableWindow(FALSE);
-	dlgS.FFMPEGProcCount.EnableWindow(FALSE);
-	dlgS.PhotosThumb.EnableWindow(FALSE);
-	dlgS.CanEdit.EnableWindow(FALSE);
+	if (option.needLockEditable) {
+		dlgS.CurrentDir.SetReadOnly(TRUE);
+		dlgS.HTTPSPort.SetReadOnly(TRUE);
+		dlgS.HTTPPort.SetReadOnly(TRUE);
+		dlgS.ButFolder.EnableWindow(FALSE);
+		dlgS.StartBT.ShowWindow(FALSE);
+		dlgS.StartBT.EnableWindow(FALSE);
+		dlgS.SelectSSL.ShowWindow(FALSE);
+		dlgS.BUseHttp.EnableWindow(FALSE);
+		dlgS.BUseHttps.EnableWindow(FALSE);
+		dlgS.ServerPassword.SetWindowTextW(L"******************");
+		dlgS.ServerPassword.EnableWindow(FALSE);
+		dlgS.ScanCovers.EnableWindow(FALSE);
+		dlgS.MediaFolders.EnableWindow(FALSE);
+		dlgS.BIsDebug.EnableWindow(FALSE);
+		dlgS.OnlyNews.EnableWindow(FALSE);
+		dlgS.FFMPEGProcCount.EnableWindow(FALSE);
+		dlgS.PhotosThumb.EnableWindow(FALSE);
+		dlgS.CanEdit.EnableWindow(FALSE);
+	}
+	else {
+		dlgS.StartBT.ShowWindow(FALSE);
+		dlgS.StartBT.EnableWindow(FALSE);
+	}
 	dlgS.IsStart = true;
 
 	ClearMessages();
@@ -579,14 +593,12 @@ void MediaServerDialog::OnAutostart()
 
 DWORD WINAPI AutoStartServer(LPVOID)
 {
-	dlgS.StartBT.EnableWindow(FALSE);
 	for (int i = 6; i >= 0; i--)
 	{
 		dlgS.StartBT.SetWindowTextW((L"(" + to_wstring(i) + L")").c_str());
 		Sleep(1000);
 	}
-	dlgS.OnStart();
-	dlgS.StartBT.EnableWindow(TRUE);
+	CreateThreadSimple(&InitMediaServerThread, new START_SERVER_OPTION(false));
 	return 0;
 }
 
@@ -602,8 +614,9 @@ BOOL MediaServerDialog::OnInitDialog()
 	if (argcou > 1)
 	{
 		wchar_t* argvar = CommandLns[1];
-		if (wcscmp(argvar, L"--autostart") == 0)
+		if (wcscmp(argvar, L"--autostart") == 0) {
 			NeedAutoStart = true;
+		}
 	}
 
 	ScanCovers.EnableWindow(PathFileExistsW((ExtractAppPath() + L"\\" + L"ffmpeg.exe").c_str()));
@@ -659,11 +672,30 @@ BOOL MediaServerDialog::OnInitDialog()
 		BAutoStart.SetWindowTextW(L"Отключить");
 		IsAutostart = true;
 	}
-	else
+	else {
 		IsAutostart = false;
+	}
 
-	if (NeedAutoStart == true)
-		CreateThread(NULL, NULL, &AutoStartServer, NULL, NULL, NULL);
+	if (NeedAutoStart && doStart(true)) {
+		CurrentDir.SetReadOnly(TRUE);
+		HTTPSPort.SetReadOnly(TRUE);
+		HTTPPort.SetReadOnly(TRUE);
+		ButFolder.EnableWindow(FALSE);
+		StartBT.EnableWindow(FALSE);
+		SelectSSL.ShowWindow(FALSE);
+		BUseHttp.EnableWindow(FALSE);
+		BUseHttps.EnableWindow(FALSE);
+		ServerPassword.SetWindowTextW(L"******************");
+		ServerPassword.EnableWindow(FALSE);
+		ScanCovers.EnableWindow(FALSE);
+		MediaFolders.EnableWindow(FALSE);
+		BIsDebug.EnableWindow(FALSE);
+		OnlyNews.EnableWindow(FALSE);
+		FFMPEGProcCount.EnableWindow(FALSE);
+		PhotosThumb.EnableWindow(FALSE);
+		CanEdit.EnableWindow(FALSE);
+		CreateThreadSimple(&AutoStartServer);
+	}
 
 	return TRUE;
 }
@@ -819,12 +851,11 @@ static void cleanNonExist() {
 	}
 }
 
-void MediaServerDialog::OnStart()
-{
+bool MediaServerDialog::doStart(bool onlySerialize) {
 	cleanNonExist();
 	if (Audio_Dirs.empty() && Video_Dirs.empty() && Discography_Dirs.empty() && Photo_Video_Dirs.empty()) {
 		OnMediaFolders();
-		return;
+		return false;
 	}
 	win_message msg(m_hWnd);
 	msg.message_type(MSG_TYPE::TYPE_ERROR);
@@ -854,14 +885,14 @@ void MediaServerDialog::OnStart()
 	if (pSettings.ServerPassword.length() <= 0)
 	{
 		(msg << L"Ошибка: Придумайте пароль для сервера").show();
-		return;
+		return false;
 	}
 	Startinit.password = pSettings.ServerPassword;
 	if (pSettings.isSsl) {
 		if (pSettings.CertificateContent.Inited == false)
 		{
 			(msg << L"Ошибка: Добавьте SSL сертификат").show();
-			return;
+			return false;
 		}
 		SERIALIZE_CONTROL(pSettings, HTTPSPort);
 		if (pSettings.HTTPSPort.length() <= 0)
@@ -871,7 +902,7 @@ void MediaServerDialog::OnStart()
 		if (Startinit.HttpsPort <= 0 || Startinit.HttpsPort > 65535)
 		{
 			(msg << L"Ошибка: Порт имеет значение (1:65535)").show();
-			return;
+			return false;
 		}
 	}
 	else {
@@ -883,11 +914,19 @@ void MediaServerDialog::OnStart()
 		if (Startinit.HttpPort <= 0 || Startinit.HttpPort > 65535)
 		{
 			(msg << L"Ошибка: Порт имеет значение (1:65535)").show();
-			return;
+			return false;
 		}
 	}
 	pSettings.SerializeSettings();
-	CreateThread(NULL, NULL, &InitMediaServerThread, NULL, NULL, NULL);
+	if (!onlySerialize) {
+		CreateThreadSimple(&InitMediaServerThread, new START_SERVER_OPTION(true));
+	}
+	return true;
+}
+
+void MediaServerDialog::OnStart()
+{
+	doStart(false);
 }
 
 void MediaServerDialog::OnMediaFolders() {
@@ -921,7 +960,7 @@ void MediaServerDialog::OnScanCovers() {
 		OnMediaFolders();
 		return;
 	}
-	CreateThread(NULL, NULL, &doScanCovers, NULL, NULL, NULL);
+	CreateThreadSimple(&doScanCovers);
 }
 
 void MediaServerDialog::OnSelectSSL()

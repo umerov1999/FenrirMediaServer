@@ -50,6 +50,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -59,8 +60,7 @@
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>
-      </LargeAddressAware>
+      <LargeAddressAware>true</LargeAddressAware>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>

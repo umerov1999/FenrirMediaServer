@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,6 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 #ifndef _TVG_PICTURE_IMPL_H_
 #define _TVG_PICTURE_IMPL_H_
 
@@ -68,6 +69,7 @@ struct Picture::Impl
     void* rdata = nullptr;            //engine data
     float w = 0, h = 0;
     bool resizing = false;
+    uint32_t rendererColorSpace = 0;
 
     ~Impl()
     {
@@ -103,7 +105,7 @@ struct Picture::Impl
                 }
             }
             free(surface);
-            if ((surface = loader->bitmap().release())) {
+            if ((surface = loader->bitmap(rendererColorSpace).release())) {
                 loader->close();
                 return RenderUpdateFlag::Image;
             }
@@ -125,8 +127,9 @@ struct Picture::Impl
         else return RenderTransform(pTransform, &tmp);
     }
 
-    void* update(RenderMethod &renderer, const RenderTransform* pTransform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag pFlag)
+    void* update(RenderMethod &renderer, const RenderTransform* pTransform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag pFlag, bool clipper)
     {
+        rendererColorSpace = renderer.colorSpace();
         auto flag = reload();
 
         if (surface) {
@@ -137,7 +140,7 @@ struct Picture::Impl
                 loader->resize(paint, w, h);
                 resizing = false;
             }
-            rdata = paint->pImpl->update(renderer, pTransform, opacity, clips, static_cast<RenderUpdateFlag>(pFlag | flag));
+            rdata = paint->pImpl->update(renderer, pTransform, opacity, clips, static_cast<RenderUpdateFlag>(pFlag | flag), clipper);
         }
         return rdata;
     }
@@ -173,7 +176,6 @@ struct Picture::Impl
     bool bounds(float* x, float* y, float* w, float* h)
     {
         if (triangleCnt > 0) {
-            
             Point min = { triangles[0].vertex[0].pt.x, triangles[0].vertex[0].pt.y };
             Point max = { triangles[0].vertex[0].pt.x, triangles[0].vertex[0].pt.y };
 
@@ -252,7 +254,7 @@ struct Picture::Impl
         return Result::Success;
     }
 
-    bool mesh(const Polygon* triangles, const uint32_t triangleCnt)
+    void mesh(const Polygon* triangles, const uint32_t triangleCnt)
     {
         if (triangles && triangleCnt > 0) {
             this->triangleCnt = triangleCnt;
@@ -263,7 +265,6 @@ struct Picture::Impl
             this->triangles = nullptr;
             this->triangleCnt = 0;
         }
-        return true;
     }
 
     Paint* duplicate()

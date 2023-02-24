@@ -63,6 +63,7 @@
       </ProgramDatabaseFile>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

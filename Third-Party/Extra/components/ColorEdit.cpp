@@ -4,6 +4,7 @@
 #include <string>
 #include "afxdialogex.h"
 #include "WSTRUtils.h"
+#include "win_api_utils.h"
 #include "base.hpp"
 using namespace std;
 using namespace WSTRUtils;
@@ -673,7 +674,7 @@ BOOL ColorEdit::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 	if (pMsg->wParam == IDC_POPUP_SELECT_TEXT)
-		CreateThread(NULL, NULL, &ShowText, this, NULL, NULL);
+		CreateThreadSimple(&ShowText, this);
 	if (pMsg->wParam == IDC_POPUP_STYLE)
 	{
 		if (TextAlign == Align::CENTER_ALIGN)

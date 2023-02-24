@@ -3,6 +3,7 @@
 #include "VK_ReverserServer.h"
 #include "ThreadAccessGuard.h"
 #include "WSTRUtils.h"
+#include "config_json_parse.h"
 #include "libimage.h"
 #include "json.hpp"
 #include <openssl/ssl.h>
@@ -128,14 +129,7 @@ public:
 
 			json fin(json::value_t::object);
 			fin.emplace("app_settings", settings);
-
-			FILE* save = NULL;
-			if (_wfopen_s(&save, (ExtractAppPath() + L"\\" + SETTINGS).c_str(), L"wb") != 0)
-				return;
-			fwrite(UTF8START, 1, strlen(UTF8START), save);
-			string sett = fin.dump(4);
-			fwrite(sett.c_str(), 1, sett.length(), save);
-			fclose(save);
+			writeJsonConfig(ExtractAppPath() + L"\\" + PREFS_NAME, fin);
 		}
 		catch (json::exception e) {
 			(win_message().message_type(MSG_TYPE::TYPE_ERROR).timeout(10) << e.what()).show();
@@ -145,31 +139,21 @@ public:
 
 	void DeSerializeSettings()
 	{
-		if (PathFileExistsW((ExtractAppPath() + L"\\" + SETTINGS).c_str()) == FALSE)
+		if (PathFileExistsW((ExtractAppPath() + L"\\" + PREFS_NAME).c_str()) == FALSE)
 			return;
-		FILE* fl = NULL;
-		if (_wfopen_s(&fl, (ExtractAppPath() + L"\\" + SETTINGS).c_str(), L"rb") == 0)
-		{
-			fseek(fl, 0, SEEK_END);
-			int fsz = ftell(fl) - (int)strlen(UTF8START);
-			fseek(fl, (int)strlen(UTF8START), SEEK_SET);
-			string jsonna;
-			jsonna.resize(fsz + 1);
-			fread((char*)jsonna.data(), 1, fsz, fl);
-			fclose(fl);
+		try {
 			json settings;
-			try {
-				settings = json::parse(jsonna);
+			if (parseJsonConfig(ExtractAppPath() + L"\\" + PREFS_NAME, settings)) {
 				settings = settings.at("app_settings").get<json>();
 
 				JSON_DESERIALIZE(settings, HTTPSPort);
 				JSON_DESERIALIZE(settings, CurrentDir);
 				JSON_DESERIALIZE(settings, CertificateContent);
 			}
-			catch (json::exception e) {
-				(win_message().message_type(MSG_TYPE::TYPE_ERROR).timeout(10) << e.what()).show();
-				return;
-			}
+		}
+		catch (json::exception e) {
+			(win_message().message_type(MSG_TYPE::TYPE_ERROR).timeout(10) << e.what()).show();
+			return;
 		}
 	}
 private:
@@ -543,7 +527,7 @@ void VK_ReverserDialog::OnStart()
 		return;
 	}
 	pSettings.SerializeSettings();
-	CreateThread(NULL, NULL, &InitVK_ReverserThread, NULL, NULL, NULL);
+	CreateThreadSimple(&InitVK_ReverserThread);
 }
 
 void VK_ReverserDialog::OnSelectSSL()

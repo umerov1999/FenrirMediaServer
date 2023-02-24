@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <iostream>
-
+#include <cstdint>
 class UserInfo
 {
 public:
@@ -9,7 +9,7 @@ public:
 		user_id = 0;
 		pSuccess = false;
 	}
-	UserInfo(int id, const std::wstring &UserName, const std::string &AvatarLink, const std::string &PhoneNumber, const std::string &Instagram, const std::string &Site, bool Success)
+	UserInfo(int64_t id, const std::wstring &UserName, const std::string &AvatarLink, const std::string &PhoneNumber, const std::string &Instagram, const std::string &Site, bool Success)
 	{
 		user_id = id;
 		pUserName = UserName;
@@ -19,7 +19,7 @@ public:
 		pInstagram = Instagram;
 		pSite = Site;
 	}
-	int user_id;
+	int64_t user_id;
 	std::wstring pUserName;
 	std::string pAvatarLink;
 	std::string pPhoneNumber;

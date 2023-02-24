@@ -8,5 +8,6 @@
 */
 #include <XTSkinFrameworkPro.h>
 #include "WinMessageBox.h"
+#include "win_api_utils.h"
 
 #endif

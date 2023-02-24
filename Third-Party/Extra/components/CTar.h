@@ -283,6 +283,7 @@ namespace CTar
 		TarCreaterWriter& operator<<(const std::string &Data);
 		TarCreaterWriter& operator<<(const std::wstring &Data);
 		TarCreaterWriter& operator<<(int value);
+		TarCreaterWriter& operator<<(int64_t value);
 		TarCreaterWriter& AddUTF8Header();
 
 		const std::wstring &GetFileName() const

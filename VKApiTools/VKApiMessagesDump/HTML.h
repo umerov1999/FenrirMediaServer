@@ -62,10 +62,10 @@ public:
 	HTML_PAGE(const std::string &UserAgent);
 
 	std::string build_html();
-	void add_user_avatar(int avatar_id, UserInfo& user_info, bool DownloadAvatar);
+	void add_user_avatar(int64_t avatar_id, UserInfo& user_info, bool DownloadAvatar);
 	void add_page_info(UserInfo& user_info, bool DownloadAvatar, const std::string &dialog_name, const std::string &page_link, const std::string &phone_number, const std::string &instagram, const std::string &site, int PartNum);
 	void add_message(const std::string &message);
-	bool exist_avatar(int avatar_id)
+	bool exist_avatar(int64_t avatar_id)
 	{
 		for (auto& i : Avatars)
 		{
@@ -80,7 +80,7 @@ private:
 	std::string User_Agent;
 	STRReplacer user_avatars;
 	std::list<std::string> main_messages;
-	std::vector<int>Avatars;
+	std::vector<int64_t>Avatars;
 };
 
 #define HTML_ATTACHMENT_FLAG_PHOTO 0x01U
@@ -99,7 +99,7 @@ public:
 	void add_attachment_header();
 	void add_attacment_image(const std::string &original, const std::string &little);
 	void add_attacment_video(const std::string &preview, const std::string &title, const Map::Map<std::string, std::string> &video_links);
-	void set_message(bool IsYouMessage, const std::string &utf8_message, const std::string &page_link, int avatar_id, const std::string &user_name, const std::string &date_time);
+	void set_message(bool IsYouMessage, const std::string &utf8_message, const std::string &page_link, int64_t avatar_id, const std::string &user_name, const std::string &date_time);
 	std::string build_message();
 	void SetHasAttachment(int Flag)
 	{

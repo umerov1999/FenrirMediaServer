@@ -59,7 +59,8 @@
     <Lib>
       <AdditionalOptions>
       </AdditionalOptions>
-      <TreatLibWarningAsErrors>false</TreatLibWarningAsErrors>
+      <TreatLibWarningAsErrors>
+      </TreatLibWarningAsErrors>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

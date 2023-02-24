@@ -10,7 +10,7 @@ using namespace Lz4Pack;
 
 template<typename T>
 static inline bool decompressLz4(const void* compressed_buf, int compressed_size, vector<T>& uncompressed) {
-    return LZ4_decompress_safe((const char*)compressed_buf, (char*)uncompressed.data(), compressed_size, (int)uncompressed.size() * sizeof(T)) == uncompressed.size() * sizeof(T);
+    return LZ4_decompress_safe((const char*)compressed_buf, (char*)uncompressed.data(), compressed_size, (int)uncompressed.size() * sizeof(T)) == (int)(uncompressed.size() * sizeof(T));
 }
 
 static inline bool decompressLz4(const void* compressed_buf, const void* decompressed_buf, const DecomressorEntry& entry) {

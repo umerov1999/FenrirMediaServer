@@ -274,7 +274,7 @@ namespace Lz4Pack
 		}
 		virtual size_t fread(const void* buf, size_t ElemSize, size_t Count)
 		{
-			size_t End = FileSize - Offset;
+			size_t End = (size_t)(FileSize - Offset);
 			size_t Size = ElemSize * Count;
 			if (Size > End)
 				Size = End - (End % ElemSize);

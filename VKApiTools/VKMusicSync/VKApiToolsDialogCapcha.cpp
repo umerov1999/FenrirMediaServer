@@ -90,7 +90,7 @@ BOOL VKApiToolsDialogCapcha::OnInitDialog()
 	else
 	{
 		NeedCapcha = true;
-		CreateThread(NULL, NULL, &RunThr, this, NULL, NULL);
+		CreateThreadSimple(&RunThr, this);
 	}
 	return TRUE;
 }

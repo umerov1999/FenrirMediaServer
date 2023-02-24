@@ -170,6 +170,14 @@ TarCreaterWriter& TarCreaterWriter::operator<<(int value)
 	return *this;
 }
 
+TarCreaterWriter& TarCreaterWriter::operator<<(int64_t value)
+{
+	std::string ETemp = to_string(value);
+	((TarCreater*)CTar)->WriteRawData(ETemp.data(), (int)ETemp.size());
+	WritedBytes += ETemp.size();
+	return *this;
+}
+
 TarCreaterWriter& TarCreaterWriter::AddUTF8Header()
 {
 	((TarCreater*)CTar)->WriteRawData("\xef\xbb\xbf", 3);

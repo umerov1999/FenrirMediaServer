@@ -9,8 +9,7 @@
 #define IDC_MFCEDITBROWSE1              1003
 #define IDC_MFCEDITBROWSE2              1004
 #define IDC_MFCEDITBROWSE3              1005
-#define IDC_STATUS                      1006
-#define IDC_EDIT2                       1007
+#define IDC_EDIT2                       1006
 
 // Next default values for new objects
 // 

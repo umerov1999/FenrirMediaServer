@@ -693,14 +693,14 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	//Create a Canvas
 	canvas = tvg::SwCanvas::gen();
 	if (!canvas) {
-		tvg::Initializer::term(tvg::CanvasEngine::Sw);
+		tvg::Initializer::term(tvgEngine);
 		return makeErrorBitmap(hwnd, size, true);
 	}
 
 	auto picture = tvg::Picture::gen();
 	tvg::Result result = picture->load((const char*)pDataBuffer, nBufferSize, "svg", false);
 	if (result != tvg::Result::Success) {
-		tvg::Initializer::term(tvg::CanvasEngine::Sw);
+		tvg::Initializer::term(tvgEngine);
 		return makeErrorBitmap(hwnd, size, true);
 	}
 	if (targetWidth == 0 || targetHeight == 0) {
@@ -716,7 +716,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	size.size_y = targetHeight;
 	HBITMAP hOutputImage = (HBITMAP)CreateDIB(hwnd, targetWidth, targetHeight, 32);
 	if (hOutputImage == NULL) {
-		tvg::Initializer::term(tvg::CanvasEngine::Sw);
+		tvg::Initializer::term(tvgEngine);
 		return makeErrorBitmap(hwnd, size, true);
 	}
 
@@ -725,7 +725,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 
 	unsigned char* pImageBuffer = (unsigned char*)btmOutputImage.bmBits;
 	if (canvas->target((uint32_t*)pImageBuffer, targetWidth, targetWidth, targetHeight, tvg::SwCanvas::ARGB8888) != tvg::Result::Success) {
-		tvg::Initializer::term(tvg::CanvasEngine::Sw);
+		tvg::Initializer::term(tvgEngine);
 		DeleteObject(hOutputImage);
 		return makeErrorBitmap(hwnd, size, true);
 	}
@@ -740,7 +740,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 		shape->fill(r, g, b, 255);
 
 		if (canvas->push(move(shape)) != tvg::Result::Success) {
-			tvg::Initializer::term(tvg::CanvasEngine::Sw);
+			tvg::Initializer::term(tvgEngine);
 			DeleteObject(hOutputImage);
 			return makeErrorBitmap(hwnd, size, true);
 		}
@@ -751,7 +751,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	canvas->draw();
 	canvas->sync();
 	canvas->clear(true);
-	tvg::Initializer::term(tvg::CanvasEngine::Sw);
+	tvg::Initializer::term(tvgEngine);
 	return win_image(hOutputImage, size);
 }
 

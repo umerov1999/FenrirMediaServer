@@ -9,5 +9,6 @@
 #include <XTSkinFrameworkPro.h>
 #include "WinMessageBox.h"
 #include "api_vk_constants.h"
+#include "win_api_utils.h"
 
 #endif

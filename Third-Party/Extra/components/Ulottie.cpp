@@ -67,7 +67,7 @@ internal::ColorReplace* Ulottie::parseReplacement(const vector<int>& colors, boo
 		return NULL;
 	}
 	auto ret = new internal::ColorReplace(useMoveColor);
-	for (int32_t a = 0; a < colors.size() / 2; a++) {
+	for (int32_t a = 0; a < (int32_t)(colors.size() / 2); a++) {
 		ret->colorMap[colors[a * 2]] = colors[a * 2 + 1];
 	}
 	return ret;
@@ -105,8 +105,8 @@ void Ulottie::renderRLottieAnimation(uint32_t frameNum)
 {
 	Surface surface = Surface(buffer.data(), animWidth, animHeight, bytesPerLine);
 	anim->renderSync(frameNum, surface, true);
-	for (int i = 0; i < animHeight; i++) {
-		for (int j = 0; j < animWidth; ++j)
+	for (size_t i = 0; i < animHeight; i++) {
+		for (size_t j = 0; j < animWidth; ++j)
 		{
 			uint32_t* v = buffer.data() + i * animWidth + j;
 			if (*v == 0) *v = curColor;

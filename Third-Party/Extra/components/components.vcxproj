@@ -87,6 +87,7 @@
     <ClInclude Include="UsrInf.h" />
     <ClInclude Include="vk_api_interface.h" />
     <ClInclude Include="WinMessageBox.h" />
+    <ClInclude Include="win_api_utils.h" />
     <ClInclude Include="WSTRUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

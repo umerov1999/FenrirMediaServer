@@ -190,6 +190,52 @@ int DoCurlGet(const string& Link, const string& UserAgent, string& ReciveData, b
 	return DoCurlGet(Link, UserAgent, ReciveData, IsJSON, 20);
 }
 
+int DoCurlGetWithContentType(const string& Link, const string& UserAgent, string& ReciveData, string& Content_Type, bool IsJSON, int wait)
+{
+	ReciveData.clear();
+	CURL_WR wrt;
+	wrt.Data = &ReciveData;
+	CURL* curl_handle = curl_easy_init();
+	wrt.curl_handle = curl_handle;
+	if (curl_handle)
+	{
+		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_easy_setopt(curl_handle, CURLOPT_URL, Link.c_str());
+		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UserAgent.c_str());
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriter);
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &wrt);
+		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
+		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
+		CURLcode res = curl_easy_perform(curl_handle);
+		int retry = 0;
+		while (res != CURLE_OK && retry < 3) {
+			wrt.reset();
+			Sleep(2000);
+			res = curl_easy_perform(curl_handle);
+			retry++;
+		}
+		long long Code = 0;
+		const char* ContentType = 0;
+		curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &Code);
+		curl_easy_getinfo(curl_handle, CURLINFO_CONTENT_TYPE, &ContentType);
+		if (ContentType != NULL)
+			Content_Type = ContentType;
+		curl_easy_cleanup(curl_handle);
+		if (res == CURLE_OK && (IsJSON == true || Code == 200))
+			return wrt.WritePos;
+		else
+			ReciveData.clear();
+	}
+	return -1;
+}
+
+int DoCurlGetWithContentType(const string& Link, const string& UserAgent, string& ReciveData, string& Content_Type, bool IsJSON)
+{
+	return DoCurlGetWithContentType(Link, UserAgent, ReciveData, Content_Type, IsJSON, 20);
+}
+
 int DoCurlPost(const string& Link, const string& PostParams, const string& UserAgent, string& ReciveData, bool IsJSON)
 {
 	ReciveData.clear();

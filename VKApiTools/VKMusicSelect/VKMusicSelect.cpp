@@ -219,7 +219,7 @@ private:
 	bool Disabled;
 };
 
-UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int UserId)
+UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int64_t UserId)
 {
 	VK_APIMETHOD_SECURE& point = (UserId >= 0 ? Method["users.get"] : Method["groups.getById"]);
 	if (UserId != 0)
@@ -256,7 +256,7 @@ UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int UserId)
 			string phone_number;
 			string instagram;
 			string site;
-			int user_id = 0;
+			int64_t user_id = 0;
 			if (info.find("mobile_phone") != info.end() && info.at("mobile_phone").is_string())
 				phone_number = FixFileName(info.at("mobile_phone").get<string>());
 			if (info.find("instagram") != info.end() && info.at("instagram").is_string())
@@ -264,7 +264,7 @@ UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int UserId)
 			if (info.find("site") != info.end() && info.at("site").is_string())
 				site = FixFileName(info.at("site").get<string>());
 			if (info.find("id") != info.end())
-				user_id = info.at("id").get<int>();
+				user_id = info.at("id").get<int64_t>();
 
 			return UserInfo(user_id, FixFileName(UTF8_to_wchar(info.at("last_name").get<string>()) + L" " + UTF8_to_wchar(info.at("first_name").get<string>())), AvatarLink, phone_number, instagram, site, true);
 		}
@@ -277,7 +277,7 @@ UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int UserId)
 	return UserInfo(UserId, wstring(L"id") + to_wstring(UserId), AVATAR_USER_DEFAULT, "", "", "", false);
 }
 
-UserInfo CallToGetUserNameById(const string &Token, const string& UserAgent, int UserId)
+UserInfo CallToGetUserNameById(const string &Token, const string& UserAgent, int64_t UserId)
 {
 	auto v = VK_APIMETHOD_SECURE(Token, UserAgent);
 	return GetUserNameById(v, UserId);
@@ -334,7 +334,7 @@ void PrepareWallAudio(Map::Map<int, AudioInfo>& URL, VK_APIMETHOD_SECURE& Akkoun
 						}
 					}
 					if (att.find("url") != att.end() && att.at("url").is_string() && att.at("url").get<string>().length() > 0)
-						URL[att.at("id").get<int>()] = AudioInfo(att.at("artist").get<string>(), att.at("title").get<string>(), att.at("url").get<string>(), "Wall", att.at("date").get<int>(), false, att.at("owner_id").get<int>(), (const char*)u8"нету", album_title, cover_url);
+						URL[att.at("id").get<int>()] = AudioInfo(att.at("artist").get<string>(), att.at("title").get<string>(), att.at("url").get<string>(), "Wall", att.at("date").get<int64_t>(), false, att.at("owner_id").get<int64_t>(), (const char*)u8"нету", album_title, cover_url);
 				}
 			}
 		}
@@ -440,7 +440,7 @@ void VKAPI_TOOLS_DownloadMusicAll(const string& Token, const string& OldToken, c
 					}
 				}
 
-				URL[att.at("id").get<int>()] = AudioInfo(att.at("artist").get<string>(), att.at("title").get<string>(), getMp3FromM3u8(att.at("url").get<string>()), "Audio", att.at("date").get<int>(), false, att.at("owner_id").get<int>(), (const char*)u8"нету", album_title, cover_url);
+				URL[att.at("id").get<int>()] = AudioInfo(att.at("artist").get<string>(), att.at("title").get<string>(), getMp3FromM3u8(att.at("url").get<string>()), "Audio", att.at("date").get<int64_t>(), false, att.at("owner_id").get<int64_t>(), (const char*)u8"нету", album_title, cover_url);
 			}
 		}
 		index += (int)items.size();

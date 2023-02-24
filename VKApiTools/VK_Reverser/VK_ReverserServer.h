@@ -19,20 +19,6 @@
 #define ENDL "\r\n"
 #define WENDL L"\r\n"
 
-static std::wstring GetAppName()
-{
-	const wchar_t* FnS = L"\\/";
-	TCHAR szFileName[MAX_PATH];
-	GetModuleFileNameW(0, szFileName, MAX_PATH);
-
-	std::wstring fname = szFileName;
-	size_t pos = fname.find_last_of(FnS);
-	return (std::wstring::npos == pos)
-		? fname
-		: fname.substr(pos + 1);
-}
-#define SETTINGS (GetAppName() + L".settings.json")
-
 struct InitServer
 {
 	int HttpsPort;

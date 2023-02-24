@@ -61,8 +61,7 @@
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
-      <LargeAddressAware>
-      </LargeAddressAware>
+      <LargeAddressAware>true</LargeAddressAware>
       <AdditionalLibraryDirectories>..\..\Third-Party\libcurl\lib\x64;..\..\Third-Party\openssl\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>

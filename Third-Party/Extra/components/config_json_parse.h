@@ -2,6 +2,25 @@
 #include <iostream>
 #include "json.hpp"
 
+static inline std::wstring getAppWithoutExtName() {
+    TCHAR szFileName[MAX_PATH];
+    GetModuleFileNameW(0, szFileName, MAX_PATH);
+
+    std::wstring fname = szFileName;
+    if (fname.empty()) {
+        fname = L"AppNotDef";
+    }
+    size_t pos = fname.find_last_of(L"\\/");
+    fname = (std::wstring::npos == pos)
+        ? fname
+        : fname.substr(pos + 1);
+    pos = fname.find_last_of(L'.');
+    return (std::wstring::npos == pos)
+        ? fname
+        : fname.substr(0, pos);
+}
+#define PREFS_NAME (getAppWithoutExtName() + L".prefs.json")
+
 static inline bool writeJsonConfig(const std::wstring file_name, const nlohmann::json& cfg) {
     const char* UTF8START_PREF = "\xef\xbb\xbf";
     FILE* save = NULL;

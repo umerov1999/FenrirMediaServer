@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include <iostream>
-#include "curl/curl.h"
+#include "do_curl.h"
 #include "base.hpp"
 #include "Map.h"
 #include "HTML.h"
@@ -7364,93 +7364,6 @@ const char* HTML_ATTACHMENT_IMAGE = "<a href=\"<#ORIGINAL_IMAGE_LINK#>\"><div da
 const char* HTML_ATTACHMENT_VIDEO = "<div class=\"attachment_video\"><div data-href=\"<#PREVIEW_LINK#>\" class=\"progressive replace\" <#TITLE#>><img class=\"preview\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAVSURBVBhXY/z//z8DAwMTEDMwMAAAJAYDAbrboo8AAAAASUVORK5CYII=\"/></div><#VIDEO_LINKS#></div>";
 const char* HTML_ATTACHMENT_VIDEO_LINK = "<a class=\"link\" href=\"<#VIDEO_LINK#>\"><#VIDEO_LINK_NAME#></a>";
 
-class CURL_WR
-{
-public:
-	CURL_WR()
-	{
-		Data = NULL;
-		WritePos = 0;
-		Size = -1;
-		curl_handle = NULL;
-		ContentHasSize = false;
-	}
-	void reset()
-	{
-		Data->clear();
-		ContentHasSize = false;
-		Size = -1;
-		WritePos = 0;
-	}
-	std::string* Data;
-	int WritePos;
-	int Size;
-	bool ContentHasSize;
-	void* curl_handle;
-};
-
-static int CurlWriter(char* Buf, size_t size, size_t nmemb, CURL_WR* ReciveData)
-{
-	if (ReciveData == NULL)
-		return -1;
-	if (!ReciveData->ContentHasSize)
-	{
-		curl_off_t sized = -1;
-		curl_easy_getinfo((CURL*)ReciveData->curl_handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &sized);
-		if (sized > 0)
-		{
-			ReciveData->Data->resize((int)sized);
-			ReciveData->Size = (int)sized;
-		}
-		ReciveData->ContentHasSize = true;
-	}
-	if (ReciveData->Size < (ReciveData->WritePos + (int)(size * nmemb)))
-		ReciveData->Data->resize(ReciveData->WritePos + (int)(size * nmemb));
-	memcpy(((char*)ReciveData->Data->data()) + ReciveData->WritePos, Buf, (int)size * nmemb);
-	ReciveData->WritePos += (int)(size * nmemb);
-	return (int)(size * nmemb);
-}
-
-static int DoCurl(string Link, string UserAgent, string& ReciveData, string &Content_Type, bool IsJSON)
-{
-	ReciveData.clear();
-	CURL_WR wrt;
-	wrt.Data = &ReciveData;
-	CURL* curl_handle = curl_easy_init();
-	wrt.curl_handle = curl_handle;
-	if (curl_handle)
-	{
-		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_easy_setopt(curl_handle, CURLOPT_URL, Link.c_str());
-		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UserAgent.c_str());
-		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriter);
-		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &wrt);
-		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
-		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 20);
-		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 20);
-		CURLcode res = curl_easy_perform(curl_handle);
-		int retry = 0;
-		while (res != CURLE_OK && retry < 3) {
-			wrt.reset();
-			Sleep(2000);
-			res = curl_easy_perform(curl_handle);
-			retry++;
-		}
-		long long Code = 0;
-		const char* ContentType = 0;
-		curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &Code);
-		curl_easy_getinfo(curl_handle, CURLINFO_CONTENT_TYPE, &ContentType);
-		if (ContentType != NULL)
-			Content_Type = ContentType;
-		curl_easy_cleanup(curl_handle);
-		if (res == CURLE_OK && (IsJSON == true || Code == 200))
-			return wrt.WritePos;
-		else
-			ReciveData.clear();
-	}
-	return -1;
-}
-
 HTML_MESSAGE::HTML_MESSAGE()
 {
 	main_message = STRReplacer(HTML_DIALOG_MESSAGE);
@@ -7512,7 +7425,7 @@ void HTML_MESSAGE::add_attacment_video(const std::string &preview, const std::st
 	sub_content() += ("\r\n" + str());
 }
 
-void HTML_MESSAGE::set_message(bool IsYouMessage, const std::string &utf8_message, const std::string &page_link, int avatar_id, const std::string &user_name, const std::string &date_time)
+void HTML_MESSAGE::set_message(bool IsYouMessage, const std::string &utf8_message, const std::string &page_link, int64_t avatar_id, const std::string &user_name, const std::string &date_time)
 {
 	main_message.Param("<#MESSAGE_CONTENT#>", utf8_message);
 	if(IsYouMessage)
@@ -7638,7 +7551,7 @@ std::string HTML_PAGE::build_html()
 	return main_html();
 }
 
-void HTML_PAGE::add_user_avatar(int avatar_id, UserInfo& user_info, bool DownloadAvatar)
+void HTML_PAGE::add_user_avatar(int64_t avatar_id, UserInfo& user_info, bool DownloadAvatar)
 {
 	STRReplacer work = STRReplacer(HTML_DIALOG_AVATAR);
 	if (DownloadAvatar)
@@ -7647,7 +7560,7 @@ void HTML_PAGE::add_user_avatar(int avatar_id, UserInfo& user_info, bool Downloa
 		string ContentType;
 		if (user_info.pAvatarBase64Data.length() <= 0)
 		{
-			DoCurl(user_info.pAvatarLink, User_Agent, Data, ContentType, false);
+			DoCurlGetWithContentType(user_info.pAvatarLink, User_Agent, Data, ContentType, false);
 			user_info.pAvatarBase64Data = Data;
 			user_info.pAvatarBase64Type = ContentType;
 		}
@@ -7680,7 +7593,7 @@ void HTML_PAGE::add_page_info(UserInfo& user_info, bool DownloadAvatar, const st
 
 		if (user_info.pAvatarBase64Data.length() <= 0)
 		{
-			DoCurl(user_info.pAvatarLink, User_Agent, Data, ContentType, false);
+			DoCurlGetWithContentType(user_info.pAvatarLink, User_Agent, Data, ContentType, false);
 			user_info.pAvatarBase64Data = Data;
 			user_info.pAvatarBase64Type = ContentType;
 		}

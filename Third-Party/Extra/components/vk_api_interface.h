@@ -2,10 +2,10 @@
 #include <iostream>
 #include <list>
 #include <cstring>
+#include <cstdint>
 #include "WSTRUtils.h"
 #include "do_curl.h"
 #include "json.hpp"
-
 struct VKAPI_ANSWER
 {
 	std::string Request;
@@ -46,7 +46,12 @@ public:
 		Name = WSTRUtils::url_encode(TName);
 		Param = WSTRUtils::url_encode(TParam);
 	}
-	HP(const std::string &TName, int TParam)
+	HP(const std::string &TName, int32_t TParam)
+	{
+		Name = WSTRUtils::url_encode(TName);
+		Param = WSTRUtils::url_encode(std::to_string(TParam));
+	}
+	HP(const std::string& TName, int64_t TParam)
 	{
 		Name = WSTRUtils::url_encode(TName);
 		Param = WSTRUtils::url_encode(std::to_string(TParam));

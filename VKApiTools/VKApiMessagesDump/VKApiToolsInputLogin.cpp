@@ -15,7 +15,7 @@ using namespace nlohmann;
 using namespace WSTRUtils;
 using namespace LIB_IMAGE;
 
-extern UserInfo CallToGetUserNameById(const string &Token, const string &UserAgent, int UserId);
+extern UserInfo CallToGetUserNameById(const string &Token, const string &UserAgent, int64_t UserId);
 extern VKApiToolsDialog dlgS;
 static Map::Map<string, string>KateUsers;
 
@@ -254,7 +254,7 @@ BOOL VKApiToolsInputLogin::PreTranslateMessage(MSG* pMsg)
 						for (json::iterator it = jres.begin(); it != jres.end(); ++it)
 						{
 							json acc = it.value();
-							KateUsers[acc.at("user_name").get<string>() + " [" + to_string(acc.at("user_id").get<int>()) + "]"] = acc.at("access_token").get<string>();
+							KateUsers[acc.at("user_name").get<string>() + " [" + to_string(acc.at("user_id").get<int64_t>()) + "]"] = acc.at("access_token").get<string>();
 						}
 						KateMobilePref.ResetContent();
 						for (auto& i : KateUsers)

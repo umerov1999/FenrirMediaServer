@@ -8,6 +8,7 @@
 #include "json.hpp"
 #include "Map.h"
 #include "curl/curl.h"
+#include "do_curl.h"
 #include "pugixml/pugixml.hpp"
 #include "libimage.h"
 using namespace std;
@@ -17,7 +18,7 @@ using namespace LIB_IMAGE;
 
 string DEFAULT_USER_AGENT = ANDROID_USERAGENT;
 
-extern UserInfo CallToGetUserNameById(const string &Token, const string &UserAgent, int UserId);
+extern UserInfo CallToGetUserNameById(const string &Token, const string &UserAgent, int64_t UserId);
 extern VKApiToolsDialog dlgS;
 static Map::Map<string, string>KateUsers;
 
@@ -42,6 +43,11 @@ public:
 		Param = url_encode(TParam);
 	}
 	HParam(const string& TName, int TParam)
+	{
+		Name = url_encode(TName);
+		Param = url_encode(to_string(TParam));
+	}
+	HParam(const string& TName, int64_t TParam)
 	{
 		Name = url_encode(TName);
 		Param = url_encode(to_string(TParam));
@@ -142,10 +148,10 @@ public:
 	void* curl_handle;
 };
 
-static int CurlWriter(char* Buf, size_t size, size_t nmemb, CURL_WR* ReciveData)
+static size_t CurlWriter(char* Buf, size_t ElementSize, size_t ElementCount, CURL_WR* ReciveData)
 {
 	if (ReciveData == NULL)
-		return -1;
+		return 0;
 	if (!ReciveData->ContentHasSize)
 	{
 		curl_off_t sized = -1;
@@ -157,47 +163,11 @@ static int CurlWriter(char* Buf, size_t size, size_t nmemb, CURL_WR* ReciveData)
 		}
 		ReciveData->ContentHasSize = true;
 	}
-	if (ReciveData->Size < (ReciveData->WritePos + (int)(size * nmemb)))
-		ReciveData->Data->resize(ReciveData->WritePos + (int)(size * nmemb));
-	memcpy(((char*)ReciveData->Data->data()) + ReciveData->WritePos, Buf, (int)size * nmemb);
-	ReciveData->WritePos += (int)(size * nmemb);
-	return (int)(size * nmemb);
-}
-
-static int DoCurl(const string &Link, const string& UserAgent, string& ReciveData, bool IsJSON)
-{
-	ReciveData.clear();
-	CURL_WR wrt;
-	wrt.Data = &ReciveData;
-	CURL* curl_handle = curl_easy_init();
-	wrt.curl_handle = curl_handle;
-	if (curl_handle)
-	{
-		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_easy_setopt(curl_handle, CURLOPT_URL, Link.c_str());
-		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UserAgent.c_str());
-		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriter);
-		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &wrt);
-		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
-		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 20);
-		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 20);
-		CURLcode res = curl_easy_perform(curl_handle);
-		int retry = 0;
-		while (res != CURLE_OK && retry < 3) {
-			wrt.reset();
-			Sleep(2000);
-			res = curl_easy_perform(curl_handle);
-			retry++;
-		}
-		long long Code = 0;
-		curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &Code);
-		curl_easy_cleanup(curl_handle);
-		if (res == CURLE_OK && (IsJSON == true || Code == 200))
-			return wrt.WritePos;
-		else
-			ReciveData.clear();
-	}
-	return -1;
+	if (ReciveData->Size < (ReciveData->WritePos + (int)(ElementSize * ElementCount)))
+		ReciveData->Data->resize(ReciveData->WritePos + (int)(ElementSize * ElementCount));
+	memcpy(((char*)ReciveData->Data->data()) + ReciveData->WritePos, Buf, (int)ElementSize * ElementCount);
+	ReciveData->WritePos += (int)(ElementSize * ElementCount);
+	return ElementSize * ElementCount;
 }
 
 static string generateRandomString(size_t length = 10) {
@@ -220,7 +190,7 @@ static string generateRandomIntString(size_t length = 10) {
 	return randomString;
 }
 
-static bool getReceipt(const string &device_id, int id, const string &token) {
+static bool getReceipt(const string &device_id, int64_t id, const string &token) {
 	CURL_WR wrt;
 	string ReciveData;
 	wrt.Data = &ReciveData;
@@ -284,7 +254,7 @@ static bool getReceipt(const string &device_id, int id, const string &token) {
 	return false;
 }
 
-void UpgradeToken(int id, const string &token)
+void UpgradeToken(int64_t id, const string &token)
 {
 	string device_id = generateRandomIntString(16);
 	getReceipt(device_id, id, token);
@@ -353,7 +323,7 @@ void VKApiToolsInputLogin::CheckAccess_TOKEN(const std::string &Token)
 		CRect rt;
 		VK_Icon.GetClientRect(rt);
 		string Data;
-		DoCurl(inf.pAvatarLink, KATE_USERAGENT, Data, false);
+		DoCurlGet(inf.pAvatarLink, KATE_USERAGENT, Data, false);
 		VK_IconBitmap = PrepareImageFromBufferAutoType(VK_Icon.m_hWnd, Data.data(), (int)Data.size()).resize(rt.Width(), rt.Height());
 		VK_Icon.SetBitmap(VK_IconBitmap.get_hBitmap());
 		UserName.SetWindowTextW((inf.pUserName + L" (id" + to_wstring(inf.user_id) + L")").c_str());
@@ -398,7 +368,7 @@ void VKApiToolsInputLogin::OnLogin()
 		Link << "&code=" << url_encode(wchar_to_UTF8(SMSCOde.GetString()));
 		SMS.SetWindowTextW(L"");
 	}
-	DoCurl(Link.str(), ANDROID_USERAGENT, AnswerVK, true);
+	DoCurlGet(Link.str(), ANDROID_USERAGENT, AnswerVK, true);
 	json jres;
 	try {
 		jres = json::parse(AnswerVK);
@@ -424,7 +394,7 @@ void VKApiToolsInputLogin::OnLogin()
 				else
 					PhoneMask = (const char*)u8"Введите код, отправленный на" + jres.at("phone_mask").get<string>();
 				if (jres.find("validation_sid") != jres.end())
-					DoCurl(string("https://api.vk.com/method/auth.validatePhone?client_id=") + "2274003" + "&api_id=" + "2274003" + "&client_secret=" + "hHbZxrka2uZ6jB1inYsH" + "&sid=" + jres.at("validation_sid").get<string>() + "&v=" + VKAPI_VERSION_AUTH, ANDROID_USERAGENT, AnswerVK, true);
+					DoCurlGet(string("https://api.vk.com/method/auth.validatePhone?client_id=") + "2274003" + "&api_id=" + "2274003" + "&client_secret=" + "hHbZxrka2uZ6jB1inYsH" + "&sid=" + jres.at("validation_sid").get<string>() + "&v=" + VKAPI_VERSION_AUTH, ANDROID_USERAGENT, AnswerVK, true);
 				SMS.EnableWindow(TRUE);
 				(win_message().message_type(MSG_TYPE::TYPE_WARNING) << L"Валидация: " << PhoneMask).show();
 			}
@@ -489,7 +459,7 @@ BOOL VKApiToolsInputLogin::PreTranslateMessage(MSG* pMsg)
 						for (json::iterator it = jres.begin(); it != jres.end(); ++it)
 						{
 							json acc = it.value();
-							KateUsers[acc.at("user_name").get<string>() + " [" + to_string(acc.at("user_id").get<int>()) + "]"] = acc.at("access_token").get<string>();
+							KateUsers[acc.at("user_name").get<string>() + " [" + to_string(acc.at("user_id").get<int64_t>()) + "]"] = acc.at("access_token").get<string>();
 						}
 						KateMobilePref.ResetContent();
 						for (auto& i : KateUsers)

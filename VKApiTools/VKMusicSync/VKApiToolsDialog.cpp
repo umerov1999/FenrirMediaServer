@@ -6,6 +6,7 @@
 #include "VKApiToolsDialogCapcha.h"
 #include "VKApiToolsInputLogin.h"
 #include "WinMessageBox.h"
+#include "config_json_parse.h"
 #include "Map.h"
 #include "WSTRUtils.h"
 #include "libimage.h"
@@ -15,20 +16,6 @@ using namespace WSTRUtils;
 using namespace LIB_IMAGE;
 
 extern string DEFAULT_USER_AGENT;
-
-static std::wstring GetAppName()
-{
-	const wchar_t* FnS = L"\\/";
-	TCHAR szFileName[MAX_PATH];
-	GetModuleFileNameW(0, szFileName, MAX_PATH);
-
-	std::wstring fname = szFileName;
-	size_t pos = fname.find_last_of(FnS);
-	return (std::wstring::npos == pos)
-		? fname
-		: fname.substr(pos + 1);
-}
-#define SETTINGS_FILE (GetAppName() + L".settings.json")
 #define UTF8START "\xef\xbb\xbf"
 
 #ifdef _DEBUG
@@ -253,7 +240,7 @@ DWORD WINAPI RunMeth(LPVOID param)
 	dlgS.FFunc.EnableWindow(FALSE);
 
 	FILE* fl = NULL;
-	if (_wfopen_s(&fl, SETTINGS_FILE.c_str(), L"wb") == 0)
+	if (_wfopen_s(&fl, PREFS_NAME.c_str(), L"wb") == 0)
 	{
 		string jsonS = "{ \"current_token\":\"" + par.Token + "\", \"old_token\":\"" + par.OldToken + "\", \"user_agent\":\"" + DEFAULT_USER_AGENT + "\" }";
 		fwrite(UTF8START, 1, strlen(UTF8START), fl);
@@ -296,26 +283,17 @@ BOOL VKApiToolsDialog::OnInitDialog()
 
 	hMessageMutex = CreateMutexW(NULL, FALSE, NULL);
 
-	FILE* fl = NULL;
-	if (_wfopen_s(&fl, SETTINGS_FILE.c_str(), L"rb") == 0)
-	{
-		string jsonS;
-		fseek(fl, 0, SEEK_END);
-		jsonS.resize(ftell(fl) - strlen(UTF8START) + 1);
-		fseek(fl, (int)strlen(UTF8START), SEEK_SET);
-		fread((char*)jsonS.data(), 1, jsonS.size() - 1, fl);
-		fclose(fl);
-		try {
-			json info = json::parse(jsonS);
-			NewToken.SetWindowTextW(UTF8_to_wchar(info.at("current_token").get<string>()).c_str());
-			OldToken.SetWindowTextW(UTF8_to_wchar(info.at("old_token").get<string>()).c_str());
-			DEFAULT_USER_AGENT = info.at("user_agent").get<string>();
-		}
-		catch (json::exception e) {
-			e.what();
+	try {
+		json settings;
+		if (parseJsonConfig(PREFS_NAME, settings)) {
+			NewToken.SetWindowTextW(UTF8_to_wchar(settings.at("current_token").get<string>()).c_str());
+			OldToken.SetWindowTextW(UTF8_to_wchar(settings.at("old_token").get<string>()).c_str());
+			DEFAULT_USER_AGENT = settings.at("user_agent").get<string>();
 		}
 	}
-
+	catch (json::exception e) {
+		(win_message().message_type(MSG_TYPE::TYPE_ERROR).timeout(10) << e.what()).show();
+	}
 	return TRUE;
 }
 
@@ -371,7 +349,7 @@ void VKApiToolsDialog::OnExecute()
 	Options.Option2 = Check2.GetCheck() == TRUE;
 	Options.Option3 = Check3.GetCheck() == TRUE;
 	Options.Option4 = Check4.GetCheck() == TRUE;
-	CreateThread(NULL, NULL, &RunMeth, new ThParam(wchar_to_UTF8(Tkn.GetString()), wchar_to_UTF8(OldTkn.GetString()), Mt.Func, Options), NULL, NULL);
+	CreateThreadSimple(&RunMeth, new ThParam(wchar_to_UTF8(Tkn.GetString()), wchar_to_UTF8(OldTkn.GetString()), Mt.Func, Options));
 }
 
 void VKApiToolsDialog::OnSelect()

@@ -122,7 +122,7 @@ struct Analyzer
 static Links ResultLinksT;
 static list<int>UsersScannedT;
 
-UserInfo GetUserNameById(VK_APIMETHOD& Method, int UserId)
+UserInfo GetUserNameById(VK_APIMETHOD& Method, int64_t UserId)
 {
 	VK_APIMETHOD& point = (UserId >= 0 ? Method["users.get"] : Method["groups.getById"]);
 	if (UserId != 0)
@@ -159,7 +159,7 @@ UserInfo GetUserNameById(VK_APIMETHOD& Method, int UserId)
 			string phone_number;
 			string instagram;
 			string site;
-			int user_id = 0;
+			int64_t user_id = 0;
 			if (info.find("mobile_phone") != info.end() && info.at("mobile_phone").is_string())
 				phone_number = FixFileName(info.at("mobile_phone").get<string>());
 			if (info.find("instagram") != info.end() && info.at("instagram").is_string())
@@ -167,7 +167,7 @@ UserInfo GetUserNameById(VK_APIMETHOD& Method, int UserId)
 			if (info.find("site") != info.end() && info.at("site").is_string())
 				site = FixFileName(info.at("site").get<string>());
 			if (info.find("id") != info.end())
-				user_id = info.at("id").get<int>();
+				user_id = info.at("id").get<int64_t>();
 
 			return UserInfo(user_id, FixFileName(UTF8_to_wchar(info.at("last_name").get<string>()) + L" " + UTF8_to_wchar(info.at("first_name").get<string>())), AvatarLink, phone_number, instagram, site, true);
 		}
@@ -180,7 +180,7 @@ UserInfo GetUserNameById(VK_APIMETHOD& Method, int UserId)
 	return UserInfo(UserId, wstring(L"id") + to_wstring(UserId), AVATAR_USER_DEFAULT, "", "", "", false);
 }
 
-UserInfo CallToGetUserNameById(const string &Token, const string &UserAgent, int UserId)
+UserInfo CallToGetUserNameById(const string &Token, const string &UserAgent, int64_t UserId)
 {
 	auto v = VK_APIMETHOD(Token, UserAgent);
 	return GetUserNameById(v, UserId);
@@ -232,7 +232,12 @@ public:
 	{
 		Token = Access_Token;
 		UserAgent = IUserAgent;
-		Request = "https://api.vk.com/method/" + IRequest;
+		if (!IRequest.empty() && IRequest[0] == '#') {
+			Request = "https://oauth.vk.com/" + IRequest.substr(1);
+		}
+		else {
+			Request = "https://api.vk.com/method/" + IRequest;
+		}
 	}
 
 	VKAPI_ANSWER operator()()

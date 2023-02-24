@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -255,7 +255,6 @@ static void _applyComposition(Paint* paint, const SvgNode* node, const Box& vBox
             node->style->clipPath.applying = true;
 
             auto comp = Shape::gen();
-            comp->fill(255, 255, 255, 255);
             if (node->transform) comp->transform(*node->transform);
 
             auto child = compNode->child.data;

@@ -205,7 +205,7 @@ SOCKET tcp_listen(int Port)
 	SOCKET sock;
 	struct sockaddr_in sin;
 	const int qlen = 1;
-	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 		return SOCKET_ERROR;
 
 	sin.sin_addr.s_addr = INADDR_ANY;
@@ -213,7 +213,7 @@ SOCKET tcp_listen(int Port)
 	sin.sin_port = htons(Port);
 	if (::bind(sock, (struct sockaddr*) & sin, sizeof(sin)) < 0)
 		return SOCKET_ERROR;
-	if (listen(sock, qlen) == SOCKET_ERROR)
+	if (::listen(sock, qlen) == SOCKET_ERROR)
 		return SOCKET_ERROR;
 	return sock;
 }
@@ -509,6 +509,34 @@ static int from_get_post_int(RequestParserStruct& Req, const string& str, int de
 	}
 }
 
+static int64_t from_get_post_int64(RequestParserStruct& Req, const string& str, int64_t default_param = 0) {
+	if (!exist_get_post(Req, str)) {
+		return default_param;
+	}
+	try {
+		return stoll(get_post(Req, str));
+	}
+	catch (...) {
+		return default_param;
+	}
+}
+
+static size_t from_get_post_size_t(RequestParserStruct& Req, const string& str, size_t default_param = 0) {
+	if (!exist_get_post(Req, str)) {
+		return default_param;
+	}
+	try {
+		long long v = stoll(get_post(Req, str));
+		if (v < 0) {
+			return default_param;
+		}
+		return (size_t)v;
+	}
+	catch (...) {
+		return default_param;
+	}
+}
+
 static bool from_get_post_bool(RequestParserStruct& Req, const string& str, bool default_param = false) {
 	if (!exist_get_post(Req, str)) {
 		return default_param;
@@ -662,8 +690,8 @@ static json makePhoto(const Photo& p, const RequestParserStruct& Req, bool isSSL
 static void AudioGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
-	int count = from_get_post_int(Req, "count", 0);
-	int offset = from_get_post_int(Req, "offset", 0);
+	size_t count = from_get_post_size_t(Req, "count", 0);
+	size_t offset = from_get_post_size_t(Req, "offset", 0);
 	bool reverse = from_get_post_bool(Req, "reverse", false);
 	if (count < 0 || count > mAudios.size()) {
 		count = 0;
@@ -731,8 +759,8 @@ static void AudioRemotePlay(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mDiscography);
-	int count = from_get_post_int(Req, "count", 0);
-	int offset = from_get_post_int(Req, "offset", 0);
+	size_t count = from_get_post_size_t(Req, "count", 0);
+	size_t offset = from_get_post_size_t(Req, "offset", 0);
 	bool reverse = from_get_post_bool(Req, "reverse", false);
 	if (count < 0 || count > mDiscography.size()) {
 		count = 0;
@@ -770,8 +798,8 @@ static void DiscographyGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 static void PhotosGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mPhotos);
-	int count = from_get_post_int(Req, "count", 0);
-	int offset = from_get_post_int(Req, "offset", 0);
+	size_t count = from_get_post_size_t(Req, "count", 0);
+	size_t offset = from_get_post_size_t(Req, "offset", 0);
 	bool reverse = from_get_post_bool(Req, "reverse", false);
 	if (count < 0 || count > mPhotos.size()) {
 		count = 0;
@@ -832,8 +860,8 @@ static void AudioSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mAudios);
 
-	int count = from_get_post_int(Req, "count", 0);
-	int offset = from_get_post_int(Req, "offset", 0);
+	size_t count = from_get_post_size_t(Req, "count", 0);
+	size_t offset = from_get_post_size_t(Req, "offset", 0);
 	if (count < 0 || count > result.size()) {
 		count = 0;
 	}
@@ -880,8 +908,8 @@ static void DiscographySearch(RequestParserStruct& Req, CLIENT_CONNECTION* clien
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mDiscography);
 
-	int count = from_get_post_int(Req, "count", 0);
-	int offset = from_get_post_int(Req, "offset", 0);
+	size_t count = from_get_post_size_t(Req, "count", 0);
+	size_t offset = from_get_post_size_t(Req, "offset", 0);
 	if (count < 0 || count > result.size()) {
 		count = 0;
 	}
@@ -928,8 +956,8 @@ static void PhotosSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mPhotos);
 
-	int count = from_get_post_int(Req, "count", 0);
-	int offset = from_get_post_int(Req, "offset", 0);
+	size_t count = from_get_post_size_t(Req, "count", 0);
+	size_t offset = from_get_post_size_t(Req, "offset", 0);
 	if (count < 0 || count > result.size()) {
 		count = 0;
 	}
@@ -953,8 +981,8 @@ static void PhotosSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 static void VideoGet(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 {
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mVideos);
-	int count = from_get_post_int(Req, "count", 0);
-	int offset = from_get_post_int(Req, "offset", 0);
+	size_t count = from_get_post_size_t(Req, "count", 0);
+	size_t offset = from_get_post_size_t(Req, "offset", 0);
 	bool reverse = from_get_post_bool(Req, "reverse", false);
 	if (count < 0 || count > mVideos.size()) {
 		count = 0;
@@ -1070,8 +1098,8 @@ static void VideoSearch(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 		}
 	}
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &mVideos);
-	int count = from_get_post_int(Req, "count", 0);
-	int offset = from_get_post_int(Req, "offset", 0);
+	size_t count = from_get_post_size_t(Req, "count", 0);
+	size_t offset = from_get_post_size_t(Req, "offset", 0);
 	if (count < 0 || count > result.size()) {
 		count = 0;
 	}
@@ -1172,20 +1200,17 @@ bool do_convert_mp3(const wstring& in, const wstring& out) {
 	ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 	ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 	siStartInfo.cb = sizeof(STARTUPINFOW);
-	wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + L" -loglevel panic -n -i \"" + in + L"\" -ab 320k -acodec libmp3lame -q 1 -map a -id3v2_version 4 \"" + out + L"\"");
+	wstring crdir;
+	crdir.resize(MAX_PATH + 1);
+	GetCurrentDirectoryW(MAX_PATH, (LPWSTR)crdir.c_str());
+	wstring cmd = L"-loglevel panic -n -i \"" + in + L"\" -ab 320k -acodec libmp3lame -q 1 -map a -id3v2_version 4 \"" + out + L"\"";
 	PrintMessage(cmd);
-	if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
-		NULL,
-		NULL,
-		FALSE,                 // handles are inherited 
-		CREATE_NO_WINDOW,                    // creation flags 
-		NULL,                 // use parent's environment 
-		ExtractAppPath().c_str(),                 // use parent's current directory 
-		&siStartInfo,         // STARTUPINFO pointer 
-		&piProcInfo))
+	if (!CreateProcessSimple(ExtractAppPath() + L"\\ffmpeg.exe", cmd,
+		&siStartInfo,
+		&piProcInfo,
+		crdir,
+		CREATE_NO_WINDOW))
 	{
-		CloseHandle(piProcInfo.hProcess);
-		CloseHandle(piProcInfo.hThread);
 		return false;
 	}
 	WaitForSingleObject(piProcInfo.hProcess, INFINITE);
@@ -1268,7 +1293,7 @@ static void AudioUpload(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 	THREAD_ACCESS_UNLOCK(DEFAULT_GUARD_NAME, &template_ff);
 	try {
 		auto v = json::parse(rt);
-		VKAPI_ANSWER P = (Akkount["audio.save"] << VK("audio", v.at("audio").get<string>()) << VK("hash", v.at("hash").get<string>()) << VKI("server", v.at("server").get<int>()) << VK("artist", l.get_artist()) << VK("title", l.get_title()))();
+		VKAPI_ANSWER P = (Akkount["audio.save"] << VK("audio", v.at("audio").get<string>()) << VK("hash", v.at("hash").get<string>()) << VKI("server", v.at("server").get<int64_t>()) << VK("artist", l.get_artist()) << VK("title", l.get_title()))();
 		if (P.IsError) {
 			PrintMessage(L"ERROR: " + UTF8_to_wchar(Answer.Object), URGB(255, 255, 150));
 			return;
@@ -1347,8 +1372,8 @@ static void GetMedia(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 			}
 		}
 		if (ost > 0) {
-			data.resize(ost);
-			fread(data.data(), 1, ost, fl);
+			data.resize((size_t)ost);
+			fread(data.data(), 1, (size_t)ost, fl);
 			SSL_SendData(*client, data);
 		}
 		fclose(fl);
@@ -1686,9 +1711,8 @@ bool ReciveHTTPRequest(const CLIENT_CONNECTION& client, string& RequestHTTP, mul
 
 DWORD WINAPI HTTPS_ServerThread(LPVOID arg)
 {
-	ACCEPT_STRUCT satr = *(ACCEPT_STRUCT*)arg;
+	ACCEPT_STRUCT satr = extractThreadParamAndDelete<ACCEPT_STRUCT>(arg);
 	SSL_CTX* ctx = (SSL_CTX*)satr.ssl_ctx;
-	delete (ACCEPT_STRUCT*)arg;
 
 	CLIENT_CONNECTION client;
 	client.client_sock = satr.client_sock;
@@ -1858,7 +1882,7 @@ static void DeleteThumbs() {
 			if (~data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				DeleteFileW(((wstring)CACHE_DIR + L"\\" + data.cFileName).c_str());
 			}
-		} while (FindNextFile(hFind, &data));
+		} while (FindNextFileW(hFind, &data));
 		FindClose(hFind);
 	}
 }
@@ -1979,7 +2003,7 @@ static void scanFiles(const wstring &root, const wstring& offset, const wstring&
 					break;
 				}
 			}
-		} while (FindNextFile(hFind, &data));
+		} while (FindNextFileW(hFind, &data));
 		FindClose(hFind);
 	}
 	if (is_main) {
@@ -2063,25 +2087,19 @@ void genVideoThumbs(bool is_OnlyNews) {
 		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 		siStartInfo.cb = sizeof(STARTUPINFOW);
-		wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + (L" -loglevel panic -n -i \"" + i.get_value().get_path() + L"\" -ss 00:00:04 -frames 1 -q:v 1 -vf scale=960:-2 -q:v 3 " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg"));
+		wstring cmd = L"-loglevel panic -n -i \"" + i.get_value().get_path() + L"\" -ss 00:00:04 -frames 1 -q:v 1 -vf scale=960:-2 -q:v 3 " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg";
 		if (Startinit.isDebug) {
 			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tVideos.size()) + L") " + cmd);
 		}
 		else {
 			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tVideos.size()) + L") " + i.get_value().get_path());
 		}
-		if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
-			NULL,
-			NULL,
-			FALSE,                 // handles are inherited 
-			CREATE_NO_WINDOW,                    // creation flags 
-			NULL,                 // use parent's environment 
-			crdir.c_str(),                 // use parent's current directory 
-			&siStartInfo,         // STARTUPINFO pointer 
-			&piProcInfo))
+		if (!CreateProcessSimple(ExtractAppPath() + L"\\ffmpeg.exe", cmd,
+			&siStartInfo,
+			&piProcInfo,
+			crdir,
+			CREATE_NO_WINDOW))
 		{
-			CloseHandle(piProcInfo.hProcess);
-			CloseHandle(piProcInfo.hThread);
 			continue;
 		}
 		handles[i.get_value()] = piProcInfo;
@@ -2095,7 +2113,7 @@ void genVideoThumbs(bool is_OnlyNews) {
 	auto enr = handles.size();
 	if (handles.size() > 0)
 		doAfterFFMpegEnded(handles);
-	for (int i = 0; i < enr; i++) {
+	for (size_t i = 0; i < enr; i++) {
 		ClearLine();
 	}
 }
@@ -2131,25 +2149,19 @@ void genPhotoThumbs(bool is_OnlyNews) {
 		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 		siStartInfo.cb = sizeof(STARTUPINFOW);
-		wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + (L" -loglevel panic -n -i \"" + i.get_value().get_path() + L"\" -vf scale=\"\'if(gt(a,1/1),512,-1)\':\'if(gt(a,1/1),-1,512)\'\" " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg"));
+		wstring cmd = L"-loglevel panic -n -i \"" + i.get_value().get_path() + L"\" -vf scale=\"\'if(gt(a,1/1),512,-1)\':\'if(gt(a,1/1),-1,512)\'\" " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg";
 		if (Startinit.isDebug) {
 			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tPhotos.size()) + L") " + cmd);
 		}
 		else {
 			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tPhotos.size()) + L") " + i.get_value().get_path());
 		}
-		if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
-			NULL,
-			NULL,
-			FALSE,                 // handles are inherited 
-			CREATE_NO_WINDOW,                    // creation flags 
-			NULL,                 // use parent's environment 
-			crdir.c_str(),                 // use parent's current directory 
-			&siStartInfo,         // STARTUPINFO pointer 
-			&piProcInfo))
+		if (!CreateProcessSimple(ExtractAppPath() + L"\\ffmpeg.exe", cmd,
+			&siStartInfo,
+			&piProcInfo,
+			crdir,
+			CREATE_NO_WINDOW))
 		{
-			CloseHandle(piProcInfo.hProcess);
-			CloseHandle(piProcInfo.hThread);
 			continue;
 		}
 		handles[i.get_value()] = piProcInfo;
@@ -2163,7 +2175,7 @@ void genPhotoThumbs(bool is_OnlyNews) {
 	auto enr = handles.size();
 	if (handles.size() > 0)
 		doAfterFFMpegEnded(handles);
-	for (int i = 0; i < enr; i++) {
+	for (size_t i = 0; i < enr; i++) {
 		ClearLine();
 	}
 }
@@ -2196,25 +2208,19 @@ void genAudioThumbs(bool is_OnlyNews) {
 		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 		siStartInfo.cb = sizeof(STARTUPINFOW);
-		wstring cmd = (L"\"" + ExtractAppPath() + L"\\ffmpeg.exe\"" + (L" -loglevel panic -n -i \"" + i.get_value().get_path() + L"\" " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg"));
+		wstring cmd = L"-loglevel panic -n -i \"" + i.get_value().get_path() + L"\" " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg";
 		if (Startinit.isDebug) {
 			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tAudios.size()) + L") " + cmd);
 		}
 		else {
 			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tAudios.size()) + L") " + i.get_value().get_path());
 		}
-		if (!CreateProcessW((ExtractAppPath() + L"\\ffmpeg.exe").c_str(), (LPWSTR)cmd.c_str(),
-			NULL,
-			NULL,
-			FALSE,                 // handles are inherited 
-			CREATE_NO_WINDOW,                    // creation flags 
-			NULL,                 // use parent's environment 
-			crdir.c_str(),                 // use parent's current directory 
-			&siStartInfo,         // STARTUPINFO pointer 
-			&piProcInfo))
+		if (!CreateProcessSimple(ExtractAppPath() + L"\\ffmpeg.exe", cmd,
+			&siStartInfo,
+			&piProcInfo,
+			crdir,
+			CREATE_NO_WINDOW))
 		{
-			CloseHandle(piProcInfo.hProcess);
-			CloseHandle(piProcInfo.hThread);
 			continue;
 		}
 		handles[i.get_value()] = piProcInfo;
@@ -2229,7 +2235,7 @@ void genAudioThumbs(bool is_OnlyNews) {
 	if (handles.size() > 0)
 		doAfterFFMpegEnded(handles);
 
-	for (int i = 0; i < enr; i++) {
+	for (size_t i = 0; i < enr; i++) {
 		ClearLine();
 	}
 }
@@ -2546,7 +2552,7 @@ void InitMediaServer()
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
-		(win_message(dlgS.m_hWnd).timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Ошибка инициализации сокетов").show();
+		(win_message().timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Ошибка инициализации сокетов").show();
 		return;
 	}
 
@@ -2644,7 +2650,7 @@ void InitMediaServer()
 		satr->ssl_ctx = ctx;
 		satr->isSSL = Startinit.isSsl;
 		satr->server_config = Startinit;
-		CreateThread(NULL, NULL, &HTTPS_ServerThread, satr, NULL, NULL);
+		CreateThreadSimple(&HTTPS_ServerThread, satr);
 	}
 	closesocket(HTTPSserver_sock);
 	if (ctx != NULL) {

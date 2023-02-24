@@ -118,5 +118,8 @@
     <ClInclude Include="config_json_parse.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="win_api_utils.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -55,6 +55,7 @@ public:
 
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnStart();
+	afx_msg bool doStart(bool onlySerialize);
 	afx_msg void ListPatch();
 	afx_msg void OnSelectSSL();
 
@@ -73,3 +74,13 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
+class START_SERVER_OPTION {
+public:
+	START_SERVER_OPTION() {
+		needLockEditable = false;
+	}
+	START_SERVER_OPTION(bool needLockEditable) {
+		this->needLockEditable = needLockEditable;
+	}
+	bool needLockEditable;
+};

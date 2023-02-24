@@ -117,7 +117,7 @@ public:
 			if (sz > 0) {
 				read_bin(temp_buf1, sz, flold);
 				read_bin(temp_buf2, sz, flnew);
-				if (memcmp(temp_buf1.data(), temp_buf2.data(), sz) != 0) {
+				if (memcmp(temp_buf1.data(), temp_buf2.data(), (size_t)sz) != 0) {
 					do_copy_file(build_first(i), build_out(i), COPY_STATUS::NOT_COMAPRE);
 					copied++;
 				}

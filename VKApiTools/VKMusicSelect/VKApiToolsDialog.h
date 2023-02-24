@@ -54,7 +54,7 @@ public:
 
 struct AudioInfo
 {
-	AudioInfo(const std::string& tartist, const std::string& ttitle, const std::string& turl, const std::string& tdir, int tdate, bool tDuplicated, int towner_id, const std::string& tsha512, const std::string& talbum, const std::string& tcover_url)
+	AudioInfo(const std::string& tartist, const std::string& ttitle, const std::string& turl, const std::string& tdir, int64_t tdate, bool tDuplicated, int64_t towner_id, const std::string& tsha512, const std::string& talbum, const std::string& tcover_url)
 	{
 		artist = WSTRUtils::FixFileNameAudio(tartist);
 		title = WSTRUtils::FixFileNameAudio(ttitle);
@@ -82,8 +82,8 @@ struct AudioInfo
 	std::string url;
 	std::string dir;
 	std::string sha512;
-	int owner_id;
-	int date;
+	int64_t owner_id;
+	int64_t date;
 	bool IsError;
 	bool Duplicated;
 };

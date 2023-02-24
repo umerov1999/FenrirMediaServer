@@ -292,7 +292,7 @@ private:
 	bool Disabled;
 };
 
-UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int UserId)
+UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int64_t UserId)
 {
 	VK_APIMETHOD_SECURE& point = (UserId >= 0 ? Method["users.get"] : Method["groups.getById"]);
 	if (UserId != 0)
@@ -329,7 +329,7 @@ UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int UserId)
 			string phone_number;
 			string instagram;
 			string site;
-			int user_id = 0;
+			int64_t user_id = 0;
 			if (info.find("mobile_phone") != info.end() && info.at("mobile_phone").is_string())
 				phone_number = FixFileName(info.at("mobile_phone").get<string>());
 			if (info.find("instagram") != info.end() && info.at("instagram").is_string())
@@ -337,7 +337,7 @@ UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int UserId)
 			if (info.find("site") != info.end() && info.at("site").is_string())
 				site = FixFileName(info.at("site").get<string>());
 			if (info.find("id") != info.end())
-				user_id = info.at("id").get<int>();
+				user_id = info.at("id").get<int64_t>();
 
 			return UserInfo(user_id, FixFileName(UTF8_to_wchar(info.at("last_name").get<string>()) + L" " + UTF8_to_wchar(info.at("first_name").get<string>())), AvatarLink, phone_number, instagram, site, true);
 		}
@@ -350,7 +350,7 @@ UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int UserId)
 	return UserInfo(UserId, wstring(L"id") + to_wstring(UserId), AVATAR_USER_DEFAULT, "", "", "", false);
 }
 
-UserInfo CallToGetUserNameById(const string &Token, const string& UserAgent, int UserId)
+UserInfo CallToGetUserNameById(const string &Token, const string& UserAgent, int64_t UserId)
 {
 	auto v = VK_APIMETHOD_SECURE(Token, UserAgent);
 	return GetUserNameById(v, UserId);
@@ -358,7 +358,7 @@ UserInfo CallToGetUserNameById(const string &Token, const string& UserAgent, int
 
 struct AudioInfo
 {
-	AudioInfo(const string& tartist, const string& ttitle, const string& turl, const string& tdir, int tdate, bool tDuplicated, int towner_id, const string& tsha512, const string& talbum, const string& tcover_url)
+	AudioInfo(const string& tartist, const string& ttitle, const string& turl, const string& tdir, int64_t tdate, bool tDuplicated, int64_t towner_id, const string& tsha512, const string& talbum, const string& tcover_url)
 	{
 		artist = FixFileNameAudio(tartist);
 		title = FixFileNameAudio(ttitle);
@@ -386,8 +386,8 @@ struct AudioInfo
 	string url;
 	string dir;
 	string sha512;
-	int owner_id;
-	int date;
+	int64_t owner_id;
+	int64_t date;
 	bool IsError;
 	bool Duplicated;
 };
@@ -440,7 +440,7 @@ void PrepareWallAudio(Map::Map<int, AudioInfo>& URL, VK_APIMETHOD_SECURE& Akkoun
 						}
 					}
 					if (att.find("url") != att.end() && att.at("url").is_string() && att.at("url").get<string>().length() > 0)
-						URL[att.at("id").get<int>()] = AudioInfo(att.at("artist").get<string>(), att.at("title").get<string>(), att.at("url").get<string>(), "Wall", att.at("date").get<int>(), false, att.at("owner_id").get<int>(), (const char*)u8"нету", album_title, cover_url);
+						URL[att.at("id").get<int>()] = AudioInfo(att.at("artist").get<string>(), att.at("title").get<string>(), att.at("url").get<string>(), "Wall", att.at("date").get<int64_t>(), false, att.at("owner_id").get<int64_t>(), (const char*)u8"нету", album_title, cover_url);
 					else
 						PRINT(TypeColor::TYPE_ERROR) << L"Аудио без ссылки " << att.at("artist").get<string>() << " - " << att.at("title").get<string>() << FLUSH;
 				}
@@ -525,7 +525,7 @@ void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, c
 			for (json::iterator itatt = deprecatedaudios.begin(); itatt != deprecatedaudios.end(); ++itatt)
 			{
 				json audioj = itatt.value();
-				DeprecatedURL[audioj.at("id").get<int>()] = AudioInfo(audioj.at("artist").get<string>(), audioj.at("title").get<string>(), audioj.at("url").get<string>(), audioj.at("dir").get<string>(), audioj.at("date").get<int>(), audioj.at("duplicated").get<int>() == 1, audioj.at("owner_id").get<int>(), audioj.at("sha512").get<string>(), audioj.at("album").get<string>(), audioj.at("cover_url").get<string>());
+				DeprecatedURL[audioj.at("id").get<int>()] = AudioInfo(audioj.at("artist").get<string>(), audioj.at("title").get<string>(), audioj.at("url").get<string>(), audioj.at("dir").get<string>(), audioj.at("date").get<int64_t>(), audioj.at("duplicated").get<int>() == 1, audioj.at("owner_id").get<int64_t>(), audioj.at("sha512").get<string>(), audioj.at("album").get<string>(), audioj.at("cover_url").get<string>());
 				Hashs.push_back(audioj.at("sha512").get<string>());
 			}
 		}
@@ -579,7 +579,7 @@ void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, c
 					}
 				}
 
-				URL[att.at("id").get<int>()] = AudioInfo(att.at("artist").get<string>(), att.at("title").get<string>(), getMp3FromM3u8(att.at("url").get<string>()), "Audio", att.at("date").get<int>(), false, att.at("owner_id").get<int>(), (const char*)u8"нету", album_title, cover_url);
+				URL[att.at("id").get<int>()] = AudioInfo(att.at("artist").get<string>(), att.at("title").get<string>(), getMp3FromM3u8(att.at("url").get<string>()), "Audio", att.at("date").get<int64_t>(), false, att.at("owner_id").get<int64_t>(), (const char*)u8"нету", album_title, cover_url);
 			}
 			else
 				PRINT(TypeColor::TYPE_ERROR) << L"Аудио без ссылки " << att.at("artist").get<string>() << " - " << att.at("title").get<string>() << FLUSH;

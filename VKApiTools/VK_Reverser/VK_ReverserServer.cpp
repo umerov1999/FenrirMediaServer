@@ -314,15 +314,15 @@ SOCKET tcp_listen(int Port)
 	SOCKET sock;
 	struct sockaddr_in sin;
 	const int qlen = 1;
-	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 		return SOCKET_ERROR;
 
 	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(Port);
-	if (::bind(sock, (struct sockaddr*) & sin, sizeof(sin)) < 0)
+	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0)
 		return SOCKET_ERROR;
-	if (listen(sock, qlen) == SOCKET_ERROR)
+	if (::listen(sock, qlen) == SOCKET_ERROR)
 		return SOCKET_ERROR;
 	return sock;
 }
@@ -921,11 +921,10 @@ void InitVK_Reverser()
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
-		(win_message(dlgS.m_hWnd).timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Ошибка инициализации сокетов").show();
+		(win_message().timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Ошибка инициализации сокетов").show();
 		return;
 	}
 
-	
 	SSL_CTX* ctx = initialize_ctx();
 	if (ctx == NULL)
 		return;
@@ -950,7 +949,7 @@ void InitVK_Reverser()
 		satr->connection = GetConnectionIP(FromAddr) + string(":") + to_string(ntohs(FromAddr.sin_port));
 		satr->client_sock = client_sock;
 		satr->ssl_ctx = ctx;
-		CreateThread(NULL, NULL, &HTTPS_ServerThread, satr, NULL, NULL);
+		CreateThreadSimple(&HTTPS_ServerThread, satr);
 	}
 	closesocket(HTTPSserver_sock);
 	SSL_CTX_free(ctx);

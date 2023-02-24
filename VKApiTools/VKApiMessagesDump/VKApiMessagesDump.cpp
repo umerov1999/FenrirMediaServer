@@ -31,8 +31,8 @@ using namespace WSTRUtils;
 #define ENDL "\r\n"
 #define WENDL L"\r\n"
 
-static Map::Map<int, int> CachedLastMessages;
-static Map::Map<int, int> CurrentLastMessages;
+static Map::Map<int64_t, int> CachedLastMessages;
+static Map::Map<int64_t, int> CurrentLastMessages;
 static bool needCheckLastMessages = false;
 
 ////VKAPITOOLSDIALOGINTERFACE
@@ -128,7 +128,7 @@ Out PRINT(TypeColor Type)
 }
 //\\VKAPITOOLSDIALOGINTERFACE
 
-UserInfo GetUserNameById(VK_APIMETHOD& Method, int UserId)
+UserInfo GetUserNameById(VK_APIMETHOD& Method, int64_t UserId)
 {
 	VK_APIMETHOD& point = (UserId >= 0 ? Method["users.get"] : Method["groups.getById"]);
 	if (UserId != 0)
@@ -165,7 +165,7 @@ UserInfo GetUserNameById(VK_APIMETHOD& Method, int UserId)
 			string phone_number;
 			string instagram;
 			string site;
-			int user_id = 0;
+			int64_t user_id = 0;
 			if (info.find("mobile_phone") != info.end() && info.at("mobile_phone").is_string())
 				phone_number = FixFileName(info.at("mobile_phone").get<string>());
 			if (info.find("instagram") != info.end() && info.at("instagram").is_string())
@@ -173,7 +173,7 @@ UserInfo GetUserNameById(VK_APIMETHOD& Method, int UserId)
 			if (info.find("site") != info.end() && info.at("site").is_string())
 				site = FixFileName(info.at("site").get<string>());
 			if (info.find("id") != info.end())
-				user_id = info.at("id").get<int>();
+				user_id = info.at("id").get<int64_t>();
 
 			return UserInfo(user_id, FixFileName(UTF8_to_wchar(info.at("last_name").get<string>()) + L" " + UTF8_to_wchar(info.at("first_name").get<string>())), AvatarLink, phone_number, instagram, site, true);
 		}
@@ -186,7 +186,7 @@ UserInfo GetUserNameById(VK_APIMETHOD& Method, int UserId)
 	return UserInfo(UserId, wstring(L"id") + to_wstring(UserId), AVATAR_USER_DEFAULT, "", "", "", false);
 }
 
-UserInfo CallToGetUserNameById(const string &Token, const string &UserAgent, int UserId)
+UserInfo CallToGetUserNameById(const string &Token, const string &UserAgent, int64_t UserId)
 {
 	auto v = VK_APIMETHOD(Token, UserAgent);
 	return GetUserNameById(v, UserId);
@@ -300,10 +300,10 @@ private:
 
 struct DocDownloader
 {
-	int CreatedTime;
-	int DialogTime;
-	int DialogID;
-	int ConversationID;
+	int64_t CreatedTime;
+	int64_t DialogTime;
+	int64_t DialogID;
+	int64_t ConversationID;
 	std::string Type;
 	std::string SingleLink;
 	Map::Map<std::string, std::string>MultiLink;
@@ -333,7 +333,7 @@ struct VKDialog
 	int last_conversation_message_id;
 };
 
-UserInfo GetChatNameById(VK_APIMETHOD& Method, int ChatId)
+UserInfo GetChatNameById(VK_APIMETHOD& Method, int64_t ChatId)
 {
 	VK_APIMETHOD& point = Method["messages.getChat"];
 	point << VKI("chat_id", ChatId - 2000000000);
@@ -373,7 +373,7 @@ static string FixFileExt(const string& filename, const string& ext)
 	return filename;
 }
 
-Map::Map<string, string> GetVideoLinks(VK_APIMETHOD& Method, int id, int ownerid, const string& access_key)
+Map::Map<string, string> GetVideoLinks(VK_APIMETHOD& Method, int id, int64_t ownerid, const string& access_key)
 {
 	Map::Map<string, string> Ret;
 	Method["video.get"] << VK("videos", to_string(ownerid) + "_" + to_string(id) + "_" + access_key);
@@ -423,6 +423,7 @@ public:
 	UTF8Stream& operator<<(const std::string& String);
 	UTF8Stream& operator<<(size_t value);
 	UTF8Stream& operator<<(int value);
+	UTF8Stream& operator<<(int64_t value);
 	const std::string& GetString() const;
 	int GetSize();
 	void Clear();
@@ -455,6 +456,11 @@ UTF8Stream& UTF8Stream::operator<<(int value)
 	Data += to_string(value);
 	return *this;
 }
+UTF8Stream& UTF8Stream::operator<<(int64_t value)
+{
+	Data += to_string(value);
+	return *this;
+}
 const string& UTF8Stream::GetString() const
 {
 	return Data;
@@ -468,7 +474,7 @@ void UTF8Stream::Clear()
 	Data.clear();
 }
 
-static void ReadExtendedInfoProfiles(Map::Map<int, UserInfo>& UsersDataContent, const json& info)
+static void ReadExtendedInfoProfiles(Map::Map<int64_t, UserInfo>& UsersDataContent, const json& info)
 {
 	if (info.find("profiles") == info.end())
 		return;
@@ -498,8 +504,8 @@ static void ReadExtendedInfoProfiles(Map::Map<int, UserInfo>& UsersDataContent, 
 			temp.pInstagram = FixFileName(ite.at("instagram").get<string>());
 		if (ite.find("site") != ite.end() && ite.at("site").is_string())
 			temp.pSite = FixFileName(ite.at("site").get<string>());
-		temp.user_id = ite.at("id").get<int>();
-		UsersDataContent[ite.at("id").get<int>()] = temp;
+		temp.user_id = ite.at("id").get<int64_t>();
+		UsersDataContent[ite.at("id").get<int64_t>()] = temp;
 	}
 	if (info.find("groups") == info.end())
 		return;
@@ -522,7 +528,7 @@ static void ReadExtendedInfoProfiles(Map::Map<int, UserInfo>& UsersDataContent, 
 		else
 			avatar = AVATAR_USER_DEFAULT;
 		temp.pAvatarLink = avatar;
-		int idd = ite.at("id").get<int>();
+		int64_t idd = ite.at("id").get<int64_t>();
 		if (idd >= 0)
 			idd *= -1;
 		temp.user_id = idd;
@@ -531,7 +537,7 @@ static void ReadExtendedInfoProfiles(Map::Map<int, UserInfo>& UsersDataContent, 
 	}
 }
 
-void PrebuildParseAttachment(VK_APIMETHOD& VkReq, const json& message, list<DocDownloader>& DocDownloads, int DialogId, const VKDialog& Dialog, int Message_Id)
+void PrebuildParseAttachment(VK_APIMETHOD& VkReq, const json& message, list<DocDownloader>& DocDownloads, int64_t DialogId, const VKDialog& Dialog, int Message_Id)
 {
 	bool HasMessagePhoto = false;
 	bool HasMessageVideo = false;
@@ -552,7 +558,7 @@ void PrebuildParseAttachment(VK_APIMETHOD& VkReq, const json& message, list<DocD
 				{
 					atta = atta.at(DocType).get<json>();
 					HasWall = true;
-					extern void PrebuildAttachments_MESSAGE(VK_APIMETHOD & VkReq, const json & message, list<DocDownloader> &DocDownloads, int DialogId, const VKDialog & Dialog, int Message_Id);
+					extern void PrebuildAttachments_MESSAGE(VK_APIMETHOD & VkReq, const json & message, list<DocDownloader> &DocDownloads, int64_t DialogId, const VKDialog & Dialog, int Message_Id);
 					if (atta.find("copy_history") != atta.end() && atta.at("copy_history").is_array() && atta.at("copy_history").size() > 0)
 					{
 						json copy_histor = atta.at("copy_history").get<json>();
@@ -568,7 +574,7 @@ void PrebuildParseAttachment(VK_APIMETHOD& VkReq, const json& message, list<DocD
 						HasMessageVideo = true;
 					Map::Map<int, string> vpreviews;
 					int vid = 0;
-					int vownerid = 0;
+					int64_t vownerid = 0;
 					string access_key = "";
 					string vpreview = "";
 					json vprevj = atta.at(DocType).get<json>().at("image").get<json>();
@@ -592,13 +598,13 @@ void PrebuildParseAttachment(VK_APIMETHOD& VkReq, const json& message, list<DocD
 					if (atta.find("id") != atta.end())
 						vid = atta.at("id").get<int>();
 					if (atta.find("owner_id") != atta.end())
-						vownerid = atta.at("owner_id").get<int>();
+						vownerid = atta.at("owner_id").get<int64_t>();
 
 					DocDownloader dwnldr;
 					dwnldr.Type = "video";
 					dwnldr.Preview = vpreview;
-					dwnldr.CreatedTime = atta.at("date").get<int>();
-					dwnldr.DialogTime = message.at("date").get<int>();
+					dwnldr.CreatedTime = atta.at("date").get<int64_t>();
+					dwnldr.DialogTime = message.at("date").get<int64_t>();
 					dwnldr.Video_Title = FixFileName(atta.at("title").get<string>());
 					dwnldr.UID = to_string(vownerid) + "_" + to_string(vid);
 					dwnldr.Dir = wchar_to_UTF8(FixFileName(Dialog.Title + (Dialog.IsChat == false ? L" (Диалог)" : L" (Беседа)")));
@@ -622,7 +628,7 @@ void PrebuildParseAttachment(VK_APIMETHOD& VkReq, const json& message, list<DocD
 	}
 }
 
-void PrebuildAttachments_MESSAGE(VK_APIMETHOD& VkReq, const json& message, list<DocDownloader>& DocDownloads, int DialogId, const VKDialog& Dialog, int Message_Id)
+void PrebuildAttachments_MESSAGE(VK_APIMETHOD& VkReq, const json& message, list<DocDownloader>& DocDownloads, int64_t DialogId, const VKDialog& Dialog, int Message_Id)
 {
 	int message_id = Message_Id;
 	if (message.find("conversation_message_id") != message.end())
@@ -648,7 +654,7 @@ void PrebuildAttachments_MESSAGE(VK_APIMETHOD& VkReq, const json& message, list<
 	}
 }
 
-void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int, UserInfo>& UsersDataContent, HTML_MESSAGE_WITH_SUB& html_MESSAGE, const json& message, HTML_PAGE* page, bool is_sub, bool _isOut, HTML_MESSAGE* Work_Message, list<DocDownloader>& DocDownloads, int DialogId, const VKDialog& Dialog, UserInfo& user_info_at_message, int Message_Id, bool DownloadAvatar)
+void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int64_t, UserInfo>& UsersDataContent, HTML_MESSAGE_WITH_SUB& html_MESSAGE, const json& message, HTML_PAGE* page, bool is_sub, bool _isOut, HTML_MESSAGE* Work_Message, list<DocDownloader>& DocDownloads, int64_t DialogId, const VKDialog& Dialog, UserInfo& user_info_at_message, int Message_Id, bool DownloadAvatar)
 {
 	if (message.find("attachments") != message.end() && message.at("attachments").is_null() == false)
 	{
@@ -666,7 +672,7 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int,
 				{
 					Work_Message->SetHasAttachment(HTML_ATTACHMENT_FLAG_WALL);
 					atta = atta.at(DocType).get<json>();
-					extern void BuildHTML_MESSAGE(VK_APIMETHOD & VkReq, const string & UserAgent, Map::Map<int, UserInfo> &UsersDataContent, HTML_MESSAGE_WITH_SUB & html_MESSAGE, const json & message, HTML_PAGE * page, bool is_sub, bool _isOut, list<DocDownloader> &DocDownloads, int DialogId, const VKDialog & Dialog, int Message_Id, bool DownloadAvatar);
+					extern void BuildHTML_MESSAGE(VK_APIMETHOD & VkReq, const string & UserAgent, Map::Map<int64_t, UserInfo> &UsersDataContent, HTML_MESSAGE_WITH_SUB & html_MESSAGE, const json & message, HTML_PAGE * page, bool is_sub, bool _isOut, list<DocDownloader> &DocDownloads, int64_t DialogId, const VKDialog & Dialog, int Message_Id, bool DownloadAvatar);
 					BuildHTML_MESSAGE(VkReq, UserAgent, UsersDataContent, html_MESSAGE, atta, page, true, _isOut, DocDownloads, DialogId, Dialog, Message_Id, DownloadAvatar);
 					if (atta.find("copy_history") != atta.end() && atta.at("copy_history").is_array() && atta.at("copy_history").size() > 0)
 					{
@@ -691,7 +697,7 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int,
 					string original_photo = "https://vk.com/album";
 					atta = atta.at(DocType).get<json>();
 					string vid = "";
-					int vownerid = 0;
+					int64_t vownerid = 0;
 					if (atta.find("id") != atta.end()) {
 						if (atta.at("id").is_string()) {
 							vid = atta.at("id").get<string>();
@@ -701,7 +707,7 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int,
 						}
 					}
 					if (atta.find("owner_id") != atta.end())
-						vownerid = atta.at("owner_id").get<int>();
+						vownerid = atta.at("owner_id").get<int64_t>();
 
 					Work_Message->add_attacment_image(original_photo + to_string(vownerid) + "_" + vid, "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAMAAACahl6sAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURQAAAAEBAQICAgMDAwQEBAUFBQYGBgcHBwgICAkJCQoKCgsLCwwMDA0NDQ4ODg8PDxAQEBERERISEhMTExQUFBUVFRYWFhcXFxgYGBkZGRoaGhsbGxwcHB0dHR4eHh8fHyAgICEhISIiIiMjIyQkJCUlJSYmJicnJygoKCkpKSoqKisrKywsLC0tLS4uLi8vLzAwMDExMTIyMjMzMzQ0NDU1NTY2Njc3Nzg4ODo6Ojw8PD09PT4+Pj8/P0BAQEFBQUJCQkNDQ0REREVFRUZGRkdHR0hISElJSUpKSktLS0xMTE1NTU5OTk9PT1BQUFFRUVJSUlNTU1VVVVZWVldXV1hYWFlZWVpaWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALcULVgAAAEAdFJOU////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wBT9wclAAAACXBIWXMAAAsTAAALEwEAmpwYAAAHaElEQVR4Xu2dCXfUNhRGH0sIO4SwBChMIKEQthYSMpSELbRAgVCgLf3/v2T6bH+eGVuLn+RN5uiew8nzaCy/6/EiyZqBJj8IUSQ0okhoRJHQiCKhEUVCI4qERhQJjSgSGlEkNKJIaESR0IgioRFFQiOKhEYUCQ25yGHqg3vYeiVSkbOouAceIQU7QpFjXOHK+6+d8uX91plM5VdkYUMmcpfoOMKu2UlMDmDBgkxEVFVbfE9UXmHBiEjkH6LvCHvhjuDwEolskPBUag02eYLQgCjDq72LJCbfEOoZikhigkjPYET2iE4h1DIYkeSWjEjLcET44DqESMeARG5YsxiQCH8kK4g0DEnkkC2NIYk8/1FE+Nj6jEhlYCJ3EakMTOQsIpWBiZjvJAMTMecRRfogiuREkYaJIjlRpGGiSM75QYukg64FjqKkNzgHRCrmksUs+3lQ0hu2FCzJbazlHCa6ura2bh/q6wBPkRnxqtUwUSQnijRMFMmJIg1TW+TKsEUO8HoFfkZBb3AOiFTMJYey7OdBSW/YUrAklyU/xzUU9AbngEhFtJdX+v8wUmqLxMtvw0SRnMZEbnMqRMf3sehKKCJznefHeMkNXhGRSnciW6nB+Y2b6eTIw3jVCV4PkUpnIrc4iyuI/0pUELsQgshuMQluvXnMyfMUGW/mLBDd3tzcwutelHMY+TQU/ESSiaUlUOLBMtHfCAHvHERybCmYS55kyc+xgBIPNLNUidYQieEcEKmIdsu5Oh9Gwr6mAu4lIBJTW6T2yX5JU8HmEEW0GUQRLVHEiQuaCraHKPJBU8HBIYpwCsqkXaIRIjEBiCwpNXCbHpGc2iInqyamV1POYX3WFpbjJ7LCq5VAiQ9Pi6tzm9GjNttK5pLLSepFUOLFKq+/ijgdxETogm0tUX0NHFqTyYNkV9C1rfvHk78H8aoTvB4iFZFI/ZM9ZW4Q1jxb1AaviEilS5HJ5FpqsfAGi66EI1KTKJITRRomiuR4ipzE38aoLeI3+GDbrB9+Io94tSK272qpJEO8bmtUwjUiUjGXpC2JIigRsZyusYSlZrClYEnu2TjnCLcpxuOneF0Et6yOJW00v7aIAU+RGe4n+5dsm9zK9X2oo6MHkXyTtk27070IfxLv0+BzxeOD0sh2BZ2LnCK6jfA+0QmEGi66Vdy1yE2iMwjTe9C0Y1jmHWfmMsTfschesf/H3amXCMtwYvPOlXQsUt6ccfNHiXb5Ci0f3upWhLdW+qULw/YfEl1OPzDxM73aIi6TahbVh+jbREcQzoMLGmcnvdd4ivBqRXj/VXKF6CLCGZd1X+CePrHimrOgEts7zSVeE8+e6i9D/DGVjx+W+yWLvopqTrC90VKFYiL4ZSV+F6Iiyuv7SVsMjKXDXKbaEywiM8Qnu3lL5ZLCMt94LHfNGZ2JcBdkF2GZ18XOCfcR3iFMWLL+CsKUrkT4Jn4doQrv9dl3uDfLlwTuKNxHaKEjEW5W2X67im99Gwg1GfErewjNdCOSTPlBqIevtx+ySPfUrWrthG5EqjPJ3/GTtuMoMOlEZLa/jeAz+6a/0b+qnvnUhQifAXcQmsnOIlM6G0SLCA10IFK4Jpnh69pVVn6NxRKXiJYR6vEUWRvl8D1+ZTRa/YQCFb5LyO7NaWvhHBYU+O6yjlCLnwhf2sugRMVWVsRaTXI5+w2hDmsK+KvyItlmgWnjqAyX/YewCr4mjBHq4Jos4xFcikhFtCcrvnTMbdtNhFWsEp1HqMeWa30R+8nODfJLCCupHGz4YE22VRFD/0+LdX9nPLZMbm5XRJBczhmiHYRmrhOdRlimVREHjx3Z2M9p45TgNkX4xvAcYSVSZ+7W6H8at0URvlWLh6U4P0RVcMJ/IizQnsg9h5/PXSe6gbASQ8atiXy21VzG5UHcv/qKWxNx85C/dzJ5pm28tSXCzY2PCCvhk8np0d0tXYuoJZETDk8Iuddk/UlVFW4WKUOW7fx02w2XZ7ZuB1YKt+CmgxXAtkVvEd7H8pOXuwRuD9kS+MgtPVixDXZ6i7jsY+7E+nzPV9kE0RdEKr4iTseK5xTG8ka4iYNIg6cIHyvyr1x5nCAZvxfX5OYQIg1+IiuysdqMC77fn0znT8x1Eaxznr1Enjh0QSZvHZoxCtxpm16oRtYP1kvE8QRxeLPCyVkLzf51Uh8Rp9SO1pyOwidGNlrBvbL0rwEPEa7a9OBchY9yyaNHC7zbvvKfFxW9MneRJctUBpUG/nuJ7ACoOgycRe4KH5Nl8N0ZkT/JlKnX/M/+/1SItsPJI5p8ctrFfJl+gLAG22xR2XgWiXyfNZW4RkQC2LqRH+Bb4K1WDQHK0pqmz4eKeShbwcnaSPIcnv7AghHZlvjak+5aly6I8ujWj3GiIWiqCXcZG9DyC85sYW9fyEe+8C++xYIPH988xEzXbWRhQ/rZZ7Nfe0GiIRdJe2zdc1A6zO8gEjhRJDSiSGhEkdCIIqERRUIjioRGFAmNKBIaUSQ0okhoRJHQiCKhEUVCI4qERhQJi8nkfwK9uMixRO8lAAAAAElFTkSuQmCC");
 					continue;
@@ -711,11 +717,11 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int,
 					Work_Message->SetHasAttachment(HTML_ATTACHMENT_FLAG_VIDEO);
 					atta = atta.at(DocType).get<json>();
 					int vid = 0;
-					int vownerid = 0;
+					int64_t vownerid = 0;
 					if (atta.find("id") != atta.end())
 						vid = atta.at("id").get<int>();
 					if (atta.find("owner_id") != atta.end())
-						vownerid = atta.at("owner_id").get<int>();
+						vownerid = atta.at("owner_id").get<int64_t>();
 					for (auto& attcm : DocDownloads)
 					{
 						if (attcm.UID == (to_string(vownerid) + "_" + to_string(vid)))
@@ -730,7 +736,7 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int,
 				string DocumentUrl;
 				Map::Map<string, string>PhotosUrls;
 				wstring ResDt;
-				ResDt = GetTimeAT(atta.at("date").get<int>());
+				ResDt = GetTimeAT(atta.at("date").get<int64_t>());
 				if (DocType == "photo")
 				{
 					ResDt += L".jpg";
@@ -782,11 +788,11 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int,
 						Work_Message->SetHasAttachment(HTML_ATTACHMENT_FLAG_DOC);
 						Work_Message->SetHasAttachment(HTML_ATTACHMENT_FLAG_VIDEO);
 						int vid = 0;
-						int vownerid = 0;
+						int64_t vownerid = 0;
 						if (atta.find("id") != atta.end())
 							vid = atta.at("id").get<int>();
 						if (atta.find("owner_id") != atta.end())
-							vownerid = atta.at("owner_id").get<int>();
+							vownerid = atta.at("owner_id").get<int64_t>();
 						Map::Map<string, string> VideoLinks;
 						VideoLinks["url"] = atta.at("url").get<string>();
 						Work_Message->add_attacment_video("", FixFileName(atta.at("title").get<string>()), VideoLinks);
@@ -795,8 +801,8 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int,
 						dwnldr.Type = "video";
 						dwnldr.MultiLink = VideoLinks;
 						dwnldr.Preview = "";
-						dwnldr.CreatedTime = atta.at("date").get<int>();
-						dwnldr.DialogTime = message.at("date").get<int>();
+						dwnldr.CreatedTime = atta.at("date").get<int64_t>();
+						dwnldr.DialogTime = message.at("date").get<int64_t>();
 						dwnldr.Video_Title = FixFileName(atta.at("title").get<string>());
 						dwnldr.UID = to_string(vownerid) + "_" + to_string(vid);
 						dwnldr.Dir = wchar_to_UTF8(FixFileName(Dialog.Title + (Dialog.IsChat == false ? L" (Диалог)" : L" (Беседа)")));
@@ -824,10 +830,10 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int,
 						Work_Message->SetHasAttachment(HTML_ATTACHMENT_FLAG_PHOTO);
 						dwnldr.MultiLink = PhotosUrls;
 					}
-					dwnldr.UID = to_string(atta.at("owner_id").get<int>()) + "_" + to_string(atta.at("id").get<int>());
+					dwnldr.UID = to_string(atta.at("owner_id").get<int64_t>()) + "_" + to_string(atta.at("id").get<int>());
 					dwnldr.Dir = "html\\" + wchar_to_UTF8(FixFileName(Dialog.Title + (Dialog.IsChat == false ? L" (Диалог)" : L" (Беседа)")) + L"\\id" + to_wstring(DialogId) + L"\\Материалы");
-					dwnldr.CreatedTime = atta.at("date").get<int>();
-					dwnldr.DialogTime = message.at("date").get<int>();
+					dwnldr.CreatedTime = atta.at("date").get<int64_t>();
+					dwnldr.DialogTime = message.at("date").get<int64_t>();
 					dwnldr.DialogID = DialogId;
 					dwnldr.ConversationID = message_id;
 
@@ -842,7 +848,7 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int,
 	}
 }
 
-void BuildHTML_MESSAGE(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int, UserInfo>& UsersDataContent, HTML_MESSAGE_WITH_SUB& html_MESSAGE, const json& message, HTML_PAGE* page, bool is_sub, bool _isOut, list<DocDownloader>& DocDownloads, int DialogId, const VKDialog& Dialog, int Message_Id, bool DownloadAvatar)
+void BuildHTML_MESSAGE(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int64_t, UserInfo>& UsersDataContent, HTML_MESSAGE_WITH_SUB& html_MESSAGE, const json& message, HTML_PAGE* page, bool is_sub, bool _isOut, list<DocDownloader>& DocDownloads, int64_t DialogId, const VKDialog& Dialog, int Message_Id, bool DownloadAvatar)
 {
 	HTML_MESSAGE* Work_Message = NULL;
 	if (is_sub == true)
@@ -859,8 +865,8 @@ void BuildHTML_MESSAGE(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<in
 	else if (message_id == -1)
 		message_id = message.at("id").get<int>();
 
-	int from_id = message.at("from_id").get<int>();
-	int message_time = message.at("date").get<int>();
+	int64_t from_id = message.at("from_id").get<int64_t>();
+	int64_t message_time = message.at("date").get<int64_t>();
 	if (!is_sub)
 		_isOut = message.at("out").get<int>() > 0;
 	string message_text;
@@ -933,7 +939,7 @@ inline int patch_video(list<DocDownloader>& DocDownloads, const string& UID, con
 	return ret;
 }
 
-void BuildHTMLDialog(const wstring& HTMLParh, time_t Sync, const wstring& RootDir, VK_APIMETHOD& VkReq, const string& JSON, const string& UserAgent, Map::Map<int, UserInfo>& UsersDataContent, const VKDialog& Dialog, int DialogId, list<DocDownloader>& DocDownloads, bool DownloadAvatar)
+void BuildHTMLDialog(const wstring& HTMLParh, time_t Sync, const wstring& RootDir, VK_APIMETHOD& VkReq, const string& JSON, const string& UserAgent, Map::Map<int64_t, UserInfo>& UsersDataContent, const VKDialog& Dialog, int64_t DialogId, list<DocDownloader>& DocDownloads, bool DownloadAvatar)
 {
 	int PartNum = 0;
 	time_t SnapTime = 0;
@@ -1045,11 +1051,11 @@ void BuildHTMLDialog(const wstring& HTMLParh, time_t Sync, const wstring& RootDi
 					json info = array_it.value();
 
 					int vid = 0;
-					int vownerid = 0;
+					int64_t vownerid = 0;
 					if (info.find("id") != info.end())
 						vid = info.at("id").get<int>();
 					if (info.find("owner_id") != info.end())
-						vownerid = info.at("owner_id").get<int>();
+						vownerid = info.at("owner_id").get<int64_t>();
 					if (info.find("files") == info.end())
 					{
 						if (info.find("player") != info.end())
@@ -1094,7 +1100,7 @@ void BuildHTMLDialog(const wstring& HTMLParh, time_t Sync, const wstring& RootDi
 		try {
 			json message = messages_it.value();
 			if (SnapTime == 0) {
-				SnapTime = message.at("date").get<int>();
+				SnapTime = message.at("date").get<int64_t>();
 			}
 			HTML_MESSAGE_WITH_SUB html_MESSAGE;
 			BuildHTML_MESSAGE(VkReq, UserAgent, UsersDataContent, html_MESSAGE, message, page, false, false, DocDownloads, DialogId, Dialog, -1, DownloadAvatar);
@@ -1108,7 +1114,7 @@ void BuildHTMLDialog(const wstring& HTMLParh, time_t Sync, const wstring& RootDi
 	delete page;
 }
 
-static void ParseHistorySingle(VK_APIMETHOD& VkReq, int& ParsingOffset, int& ParsingCount, bool& HasError, size_t& DialogsIterators, Map::Map<int, UserInfo>& UsersDataContent, json& DialogData, Map::Pair<int, VKDialog>& i, time_t& dialog_time)
+static void ParseHistorySingle(VK_APIMETHOD& VkReq, int& ParsingOffset, int& ParsingCount, bool& HasError, size_t& DialogsIterators, Map::Map<int64_t, UserInfo>& UsersDataContent, json& DialogData, Map::Pair<int64_t, VKDialog>& i, time_t& dialog_time)
 {
 	dialog_time = time(0);
 	do
@@ -1138,7 +1144,7 @@ static void ParseHistorySingle(VK_APIMETHOD& VkReq, int& ParsingOffset, int& Par
 		if (items.size() <= 0)
 			break;
 		if (ParsingOffset == 0) {
-			dialog_time = items.begin().value().at("date").get<int>();
+			dialog_time = items.begin().value().at("date").get<int64_t>();
 			if (needCheckLastMessages) {
 				CurrentLastMessages[i.get_key()] = items.begin().value().at("id").get<int>();
 			}
@@ -1169,18 +1175,18 @@ static void ParseHistorySingle(VK_APIMETHOD& VkReq, int& ParsingOffset, int& Par
 	} while (ParsingOffset < ParsingCount);
 }
 
-static bool MessageDataSort(const Map::Pair<int, VKDialog>& lhs, const Map::Pair<int, VKDialog>& rhs)
+static bool MessageDataSort(const Map::Pair<int64_t, VKDialog>& lhs, const Map::Pair<int64_t, VKDialog>& rhs)
 {
 	return lhs.get_value().last_conversation_message_id > rhs.get_value().last_conversation_message_id;
 }
 
 void DownloadDialog(const string& access_token, bool avatarsBase64, bool needAlbumsAndDocs)
 {
-	Map::Map<int, UserInfo> UsersDataContent;
+	Map::Map<int64_t, UserInfo> UsersDataContent;
 	VK_APIMETHOD VkReq(access_token, ANDROID_USERAGENT);
 	UserInfo UsnmMain = GetUserNameById(VkReq, 0);
 	wstring UserName = UsnmMain.pUserName;
-	int user_id = UsnmMain.user_id;
+	int64_t user_id = UsnmMain.user_id;
 
 	wstring Path = FixFileName(UserName);
 	wstring last_messages = Path + L"\\" + L"last_messages.json";
@@ -1201,7 +1207,7 @@ void DownloadDialog(const string& access_token, bool avatarsBase64, bool needAlb
 				analiz = json::parse(jsonna);
 				for (json::iterator itatt = analiz.begin(); itatt != analiz.end(); ++itatt) {
 					json dt = itatt.value();
-					CachedLastMessages[dt.at("peer_id").get<int>()] = dt.at("last_message_id").get<int>();
+					CachedLastMessages[dt.at("peer_id").get<int64_t>()] = dt.at("last_message_id").get<int>();
 				}
 			}
 			catch (...) {
@@ -1218,8 +1224,8 @@ void DownloadDialog(const string& access_token, bool avatarsBase64, bool needAlb
 
 	UTF8Stream EntryInfo;
 
-	Map::Map<int, VKDialog> DlgsChats;
-	Map::Map<int, VKDialog> Dlgs;
+	Map::Map<int64_t, VKDialog> DlgsChats;
+	Map::Map<int64_t, VKDialog> Dlgs;
 	int ParsingCount = 0;
 	int ParsingOffset = 0;
 	list<DocDownloader> DocDownloads;
@@ -1242,7 +1248,7 @@ void DownloadDialog(const string& access_token, bool avatarsBase64, bool needAlb
 			json item = itemtuo.at("peer").get<json>();
 			VKDialog gdlg;
 			gdlg.last_conversation_message_id = it.value().at("last_message").get<json>().at("conversation_message_id").get<int>();
-			int DialogID = item.at("id").get<int>();
+			int64_t DialogID = item.at("id").get<int64_t>();
 			gdlg.Title = wstring(L"id") + to_wstring(DialogID);
 			if (item.at("type").get<string>() == "chat")
 			{
@@ -1306,18 +1312,18 @@ void DownloadDialog(const string& access_token, bool avatarsBase64, bool needAlb
 					{
 						json ite = it.value();
 						wstring ResDt;
-						ResDt = GetTimeAT(ite.at("date").get<int>());
+						ResDt = GetTimeAT(ite.at("date").get<int64_t>());
 						DocDownloader dwnldr;
 						dwnldr.Type = "photo";
 						dwnldr.MultiLink = GetPhotoURL(ite);
 						if (dwnldr.MultiLink.size() <= 0)
 							continue;
 						dwnldr.FileName = (const char*)u8"Альбомы/" + wchar_to_UTF8(FixFileName(UTF8_to_wchar(albval.at("title").get<string>()))) + "/" + wchar_to_UTF8(FixFileName(ResDt + L".jpg"));
-						dwnldr.CreatedTime = ite.at("date").get<int>();
+						dwnldr.CreatedTime = ite.at("date").get<int64_t>();
 						dwnldr.DialogTime = -1;
 						dwnldr.DialogID = -1;
 						dwnldr.ConversationID = -1;
-						dwnldr.UID = to_string(ite.at("owner_id").get<int>()) + "_" + to_string(ite.at("id").get<int>());
+						dwnldr.UID = to_string(ite.at("owner_id").get<int64_t>()) + "_" + to_string(ite.at("id").get<int>());
 						ImagesPage.push_back(dwnldr);
 					}
 					ParsingOffset += (int)items.size();
@@ -1338,18 +1344,18 @@ void DownloadDialog(const string& access_token, bool avatarsBase64, bool needAlb
 			{
 				json ite = it.value();
 				wstring ResDt;
-				ResDt = GetTimeAT(ite.at("date").get<int>());
+				ResDt = GetTimeAT(ite.at("date").get<int64_t>());
 				DocDownloader dwnldr;
 				dwnldr.Type = "photo";
 				dwnldr.MultiLink = GetPhotoURL(ite);
 				if (dwnldr.MultiLink.size() <= 0)
 					continue;
 				dwnldr.FileName = (const char*)u8"Фото с пользователем/" + wchar_to_UTF8(FixFileName(ResDt + L".jpg"));
-				dwnldr.CreatedTime = ite.at("date").get<int>();
+				dwnldr.CreatedTime = ite.at("date").get<int64_t>();
 				dwnldr.DialogTime = -1;
 				dwnldr.DialogID = -1;
 				dwnldr.ConversationID = -1;
-				dwnldr.UID = to_string(ite.at("owner_id").get<int>()) + "_" + to_string(ite.at("id").get<int>());
+				dwnldr.UID = to_string(ite.at("owner_id").get<int64_t>()) + "_" + to_string(ite.at("id").get<int>());
 				ImagesPage.push_back(dwnldr);
 			}
 			ParsingOffset += (int)items.size();
@@ -1375,11 +1381,11 @@ void DownloadDialog(const string& access_token, bool avatarsBase64, bool needAlb
 				dwnldr.Type = "doc";
 				dwnldr.SingleLink = DocumentUrl;
 				dwnldr.FileName = (const char*)u8"Документы/" + wchar_to_UTF8(FixFileName(UTF8_to_wchar(FixFileExt(ite.at("title").get<string>(), ite.at("ext").get<string>()))));
-				dwnldr.CreatedTime = ite.at("date").get<int>();
+				dwnldr.CreatedTime = ite.at("date").get<int64_t>();
 				dwnldr.DialogTime = -1;
 				dwnldr.DialogID = -1;
 				dwnldr.ConversationID = -1;
-				dwnldr.UID = to_string(ite.at("owner_id").get<int>()) + "_" + to_string(ite.at("id").get<int>());
+				dwnldr.UID = to_string(ite.at("owner_id").get<int64_t>()) + "_" + to_string(ite.at("id").get<int>());
 				ImagesPage.push_back(dwnldr);
 			}
 		} while (0);
@@ -1390,7 +1396,7 @@ void DownloadDialog(const string& access_token, bool avatarsBase64, bool needAlb
 
 	string JsonResultDialog = "";
 	size_t DialogsIterators = 0;
-	for (Map::Pair<int, VKDialog>& i : Dlgs)
+	for (Map::Pair<int64_t, VKDialog>& i : Dlgs)
 	{
 		if (i.get_key() == 100)
 		{

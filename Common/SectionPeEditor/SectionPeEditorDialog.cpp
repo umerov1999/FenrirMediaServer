@@ -176,8 +176,16 @@ DWORD WINAPI HexDialogThread(LPVOID Out)
 	return FALSE;
 }
 
+static inline HANDLE CreateThreadSimpleT(
+	LPTHREAD_START_ROUTINE  lpStartAddress,
+	const void* lpParameter = NULL, DWORD dwCreationFlags = 0
+) {
+	DWORD thid = 0;
+	return ::CreateThread(NULL, 0, lpStartAddress, (LPVOID)lpParameter, dwCreationFlags, &thid);
+}
+
 void SectionPeEditorDialog::Hex_Section() {
-	CreateThread(NULL, NULL, &HexDialogThread, NULL, NULL, NULL);
+	CreateThreadSimpleT(&HexDialogThread);
 }
 
 void SectionPeEditorDialog::OnSysCommand(UINT nID, LPARAM lParam)

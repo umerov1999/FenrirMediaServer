@@ -57,6 +57,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Diff_folders", "Common\Diff
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lame_mp3", "Third-Party\lame_mp3\lame_mp3.vcxproj", "{47CA2F82-664F-4DCF-95E2-51F90E0CCA14}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VKLoveSpamService", "VKApiTools\VKLoveSpamService\VKLoveSpamService.vcxproj", "{93A7368F-0C45-4D65-8046-32F2A55FDE25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|x64 = Release|x64
@@ -108,6 +110,8 @@ Global
 		{6301AE54-19F8-4293-A84C-8FAA9F1F4ED5}.Release|x64.Build.0 = Release|x64
 		{47CA2F82-664F-4DCF-95E2-51F90E0CCA14}.Release|x64.ActiveCfg = Release|x64
 		{47CA2F82-664F-4DCF-95E2-51F90E0CCA14}.Release|x64.Build.0 = Release|x64
+		{93A7368F-0C45-4D65-8046-32F2A55FDE25}.Release|x64.ActiveCfg = Release|x64
+		{93A7368F-0C45-4D65-8046-32F2A55FDE25}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +141,7 @@ Global
 		{EE5416F9-F299-4C01-BFCC-99C098F160B0} = {6325BA07-393F-49FA-956A-6F481BF4D33B}
 		{6301AE54-19F8-4293-A84C-8FAA9F1F4ED5} = {904B4F87-0655-41A9-8E8C-C8970ADD3EAB}
 		{47CA2F82-664F-4DCF-95E2-51F90E0CCA14} = {E4C3DF87-C5FD-4A1D-9C6F-383D9745621D}
+		{93A7368F-0C45-4D65-8046-32F2A55FDE25} = {8BB3257B-EC6D-48A8-AC78-C4A4D2F8EC3C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF495E62-7883-4E5D-95A3-71DA35677C85}

@@ -13,7 +13,6 @@
 using namespace std;
 using namespace WSTRUtils;
 #pragma comment(lib, "ws2_32.lib")
-#pragma comment(lib, "Crypt32.lib")
 #pragma comment(lib, "Shlwapi.lib")
 
 #ifdef _DEBUG
@@ -31,7 +30,6 @@ static char THIS_FILE[] = __FILE__;
 
 static vector<wstring> Files;
 static int Port = 0;
-static CStatic EdStatus;
 
 class wstringparam
 {
@@ -147,20 +145,20 @@ SOCKET tcp_listen(int Port)
 	SOCKET sock;
 	struct sockaddr_in sin;
 	const int qlen = 1;
-	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 		return SOCKET_ERROR;
 
 	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(Port);
-	if (::bind(sock, (struct sockaddr *)&sin, sizeof(sin)) < 0)
+	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0)
 		return SOCKET_ERROR;
-	if (listen(sock, qlen) == SOCKET_ERROR)
+	if (::listen(sock, qlen) == SOCKET_ERROR)
 		return SOCKET_ERROR;
 	return sock;
 }
 
-void HTTPParse(string HttpHeader, RequestParserStruct &hdr, string Connection)
+void HTTPParse(string HttpHeader, RequestParserStruct& hdr, string Connection)
 {
 	hdr.connection = Connection;
 	size_t Pos = HttpHeader.find(" ");
@@ -229,16 +227,16 @@ bool ReciveHTTPRequest(SOCKET sock, string& RequestHTTP)
 		if (err > 0)
 		{
 			nCurrentPos += err;
-			const string strInputString((const char *)&HttpRequest[0]);
+			const string strInputString((const char*)&HttpRequest[0]);
 			if (strInputString.find("\r\n\r\n") != string::npos)
 				break;
 			continue;
 		}
 	}
-	if (IsSuccess == false || (string((const char *)&HttpRequest[0]).find("GET") == string::npos && string((const char *)&HttpRequest[0]).find("POST") == string::npos))
+	if (IsSuccess == false || (string((const char*)&HttpRequest[0]).find("GET") == string::npos && string((const char*)&HttpRequest[0]).find("POST") == string::npos))
 		return false;
 
-	RequestHTTP = string((const char *)&HttpRequest[0]);
+	RequestHTTP = string((const char*)&HttpRequest[0]);
 	return true;
 }
 
@@ -269,7 +267,7 @@ std::string filename(const std::string& fname)
 
 string GetFileData(wstring File)
 {
-	FILE*fl = NULL;
+	FILE* fl = NULL;
 	if (_wfopen_s(&fl, File.c_str(), L"rb") != 0)
 		return "";
 	fseek(fl, 0, SEEK_END);
@@ -306,7 +304,6 @@ void SSLRequestDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT1, EPort);
 	DDX_Control(pDX, IDC_EDIT2, EURL);
 	DDX_Control(pDX, IDC_BUTTON1, BStart);
-	DDX_Control(pDX, IDC_STATUS, EdStatus);
 }
 
 BEGIN_MESSAGE_MAP(SSLRequestDialog, CDialogEx)
@@ -369,48 +366,55 @@ void SetTimeOutsSocket(SOCKET Socket)
 	setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 }
 
+DWORD WINAPI ClientConnected(LPVOID arg)
+{
+	SOCKET client_sock = extractThreadParamAndDelete<SOCKET>(arg);
+	SetTimeOutsSocket(client_sock);
+	string HttpRequest;
+	ReciveHTTPRequest(client_sock, HttpRequest);
+	RequestParserStruct Req;
+	HTTPParse(HttpRequest, Req, "");
+	wstring ResultFile;
+	for (auto& i : Files)
+	{
+		if (Req.http_request.get_utf8("Path").find(filename(wchar_to_UTF8(i))) == string::npos)
+			continue;
+		ResultFile = i;
+	}
+	if (ResultFile.length() <= 0)
+	{
+		SendHTTTPAnswerWithData(client_sock, "Error");
+		shutdown(client_sock, 1);
+		closesocket(client_sock);
+		return -1;
+	}
+	string ResultA = GetFileData(ResultFile);
+	SendHTTTPAnswerWithData(client_sock, ResultA);
+	shutdown(client_sock, 1);
+	closesocket(client_sock);
+	return 0;
+}
+
 DWORD WINAPI Server(LPVOID)
 {
-	WSADATA wsaData;
-	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-		return -1;
 	SOCKET server_sock = 0, client_sock = 0;
 	server_sock = tcp_listen(Port);
-	if (server_sock == INVALID_SOCKET)
+	if (server_sock == INVALID_SOCKET) {
+		(win_message().timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Сбой в инициализации сервера(socket bind)").show();
 		return -1;
+	}
 	SOCKADDR_IN FromAddr;
 	int len = sizeof(SOCKADDR_IN);
 	while (true)
 	{
-		EdStatus.SetWindowTextW(L"Готов");
-		client_sock = accept(server_sock, (SOCKADDR *)&FromAddr, &len);
+		client_sock = accept(server_sock, (SOCKADDR*)&FromAddr, &len);
 		if (client_sock == INVALID_SOCKET)
 			continue;
-		SetTimeOutsSocket(client_sock);
-		EdStatus.SetWindowTextW(L"Соединение");
-		string HttpRequest;
-		ReciveHTTPRequest(client_sock, HttpRequest);
-		RequestParserStruct Req;
-		HTTPParse(HttpRequest, Req, "");
-		wstring ResultFile;
-		for (auto &i : Files)
-		{
-			if (Req.http_request.get_utf8("Path").find(filename(wchar_to_UTF8(i))) == string::npos)
-				continue;
-			ResultFile = i;
-		}
-		if (ResultFile.length() <= 0)
-		{
-			SendHTTTPAnswerWithData(client_sock, "Error");
-			shutdown(client_sock, 1);
-			closesocket(client_sock);
-			continue;
-		}
-		string ResultA = GetFileData(ResultFile);
-		SendHTTTPAnswerWithData(client_sock, ResultA);
-		shutdown(client_sock, 1);
-		closesocket(client_sock);
+		SOCKET* tmp = new SOCKET();
+		*tmp = client_sock;
+		CreateThreadSimple(&ClientConnected, tmp);
 	}
+	closesocket(server_sock);
 	(win_message().message_type(MSG_TYPE::TYPE_ERROR) << L"Сбой!").show();
 	return 0;
 }
@@ -449,8 +453,15 @@ void SSLRequestDialog::OnStart()
 	BStart.EnableWindow(FALSE);
 	File1.EnableWindow(FALSE);
 	File2.EnableWindow(FALSE);
+	File3.EnableWindow(FALSE);
 	EPort.EnableWindow(FALSE);
-	CreateThread(NULL, NULL, &Server, NULL, NULL, NULL);
+
+	WSADATA wsaData;
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+		(win_message(m_hWnd).timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Ошибка инициализации сокетов").show();
+		return;
+	}
+	CreateThreadSimple(&Server);
 }
 
 HCURSOR SSLRequestDialog::OnQueryDragIcon()
@@ -475,7 +486,7 @@ BOOL SSLRequestDialog::PreTranslateMessage(MSG* pMsg)
 				ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0, szBuf, sizeof(szBuf) / sizeof(wchar_t));
 				if (pMsg->hwnd == File1.GetSafeHwnd())
 					File1.SetWindowTextW(szBuf);
-				else if(pMsg->hwnd == File2.GetSafeHwnd())
+				else if (pMsg->hwnd == File2.GetSafeHwnd())
 					File2.SetWindowTextW(szBuf);
 				else
 					File3.SetWindowTextW(szBuf);
