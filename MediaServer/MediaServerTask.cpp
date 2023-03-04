@@ -736,7 +736,7 @@ static void AudioList(RequestParserStruct& Req, CLIENT_CONNECTION* client)
 		arr.push_back(i.get_value().get_artist() + " - " + i.get_value().get_title() + "." + wchar_to_UTF8(Media::get_ext(i.get_value().get_orig_name())));
 	}
 	THREAD_ACCESS_LOCK(DEFAULT_GUARD_NAME, &mAudios);
-	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", arr.dump(4));
+	SendHTTTPAnswerWithData(*client, "200 OK", "application/json; charset=utf-8", arr.dump());
 }
 
 static void AudioRemotePlay(RequestParserStruct& Req, CLIENT_CONNECTION* client)
@@ -2087,7 +2087,30 @@ void genVideoThumbs(bool is_OnlyNews) {
 		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 		siStartInfo.cb = sizeof(STARTUPINFOW);
-		wstring cmd = L"-loglevel panic -n -i \"" + i.get_value().get_path() + L"\" -ss 00:00:04 -frames 1 -q:v 1 -vf scale=960:-2 -q:v 3 " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg";
+		unsigned long long flsz = i.get_value().get_file_size();
+		wstring timestamp = L"00:00:00";
+		if (flsz >= 20 * 1024 * 1024 && flsz < 50 * 1024 * 1024) {
+			timestamp = L"00:00:04";
+		}
+		else if (flsz >= 50 * 1024 * 1024 && flsz < 70 * 1024 * 1024) {
+			timestamp = L"00:00:15";
+		}
+		else if (flsz >= 70 * 1024 * 1024 && flsz < 100 * 1024 * 1024) {
+			timestamp = L"00:00:25";
+		}
+		else if (flsz >= 100 * 1024 * 1024 && flsz < 150 * 1024 * 1024) {
+			timestamp = L"00:00:45";
+		}
+		else if (flsz >= 150 * 1024 * 1024 && flsz < 200 * 1024 * 1024) {
+			timestamp = L"00:01:00";
+		}
+		else if (flsz >= 200 * 1024 * 1024 && flsz < 250 * 1024 * 1024) {
+			timestamp = L"00:01:30";
+		}
+		else if (flsz >= 250 * 1024 * 1024) {
+			timestamp = L"00:01:45";
+		}
+		wstring cmd = L"-loglevel panic -n -ss " + timestamp + L" -i \"" + i.get_value().get_path() + L"\" -vf scale=\"\'if(gt(a,1/1),960,-1)\':\'if(gt(a,1/1),-1,960)\'\" -frames 1 " + CACHE_DIR + L"\\" + UTF8_to_wchar(i.get_value().get_hash()) + L".jpg";
 		if (Startinit.isDebug) {
 			PrintMessage(L"(" + to_wstring(++ccn) + L" из " + to_wstring(tVideos.size()) + L") " + cmd);
 		}
@@ -2260,6 +2283,9 @@ DWORD WINAPI doScanCovers(LPVOID) {
 	dlgS.MediaFolders.EnableWindow(TRUE);
 	dlgS.PhotosThumb.EnableWindow(TRUE);
 	dlgS.Edk.ClearSpecialPatternOnce();
+	if (dlgS.StartAfterScan.GetCheck()) {
+		dlgS.OnStart();
+	}
 	return 0;
 }
 

@@ -127,6 +127,7 @@ public:
 		isSsl = false;
 		BIsDebug = true;
 		OnlyNews = true;
+		StartAfterScan = true;
 		PhotosThumb = false;
 		FFMPEGProcCount = 8;
 	}
@@ -178,6 +179,7 @@ public:
 			JSON_SERIALIZE(settings, isSsl);
 			JSON_SERIALIZE(settings, BIsDebug);
 			JSON_SERIALIZE(settings, OnlyNews);
+			JSON_SERIALIZE(settings, StartAfterScan);
 			JSON_SERIALIZE(settings, PhotosThumb);
 			JSON_SERIALIZE(settings, HTTPSPort);
 			JSON_SERIALIZE(settings, HTTPPort);
@@ -215,6 +217,7 @@ public:
 				JSON_DESERIALIZE(settings, isSsl);
 				JSON_DESERIALIZE(settings, BIsDebug);
 				JSON_DESERIALIZE(settings, OnlyNews);
+				JSON_DESERIALIZE(settings, StartAfterScan);
 				JSON_DESERIALIZE(settings, PhotosThumb);
 				JSON_DESERIALIZE(settings, HTTPSPort);
 				JSON_DESERIALIZE(settings, HTTPPort);
@@ -364,6 +367,7 @@ public:
 	bool isSsl;
 	bool BIsDebug;
 	bool OnlyNews;
+	bool StartAfterScan;
 	bool PhotosThumb;
 	int FFMPEGProcCount;
 	USSL_CERT CertificateContent;
@@ -502,6 +506,7 @@ void MediaServerDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK2, OnlyNews);
 	DDX_Control(pDX, IDC_CHECK3, CanEdit);
 	DDX_Control(pDX, IDC_CHECK4, PhotosThumb);
+	DDX_Control(pDX, IDC_CHECK5, StartAfterScan);
 }
 
 BEGIN_MESSAGE_MAP(MediaServerDialog, CDialogEx)
@@ -546,6 +551,7 @@ DWORD WINAPI InitMediaServerThread(LPVOID pClass)
 		dlgS.MediaFolders.EnableWindow(FALSE);
 		dlgS.BIsDebug.EnableWindow(FALSE);
 		dlgS.OnlyNews.EnableWindow(FALSE);
+		dlgS.StartAfterScan.EnableWindow(FALSE);
 		dlgS.FFMPEGProcCount.EnableWindow(FALSE);
 		dlgS.PhotosThumb.EnableWindow(FALSE);
 		dlgS.CanEdit.EnableWindow(FALSE);
@@ -655,6 +661,7 @@ BOOL MediaServerDialog::OnInitDialog()
 	DESERIALIZE_CONTROL(pSettings, FFMPEGProcCount);
 	DESERIALIZE_CONTROL(pSettings, BIsDebug);
 	DESERIALIZE_CONTROL(pSettings, OnlyNews);
+	DESERIALIZE_CONTROL(pSettings, StartAfterScan);
 	DESERIALIZE_CONTROL(pSettings, PhotosThumb);
 	DESERIALIZE_CONTROL(pSettings, HTTPSPort);
 	DESERIALIZE_CONTROL(pSettings, HTTPPort);
@@ -691,6 +698,7 @@ BOOL MediaServerDialog::OnInitDialog()
 		MediaFolders.EnableWindow(FALSE);
 		BIsDebug.EnableWindow(FALSE);
 		OnlyNews.EnableWindow(FALSE);
+		StartAfterScan.EnableWindow(FALSE);
 		FFMPEGProcCount.EnableWindow(FALSE);
 		PhotosThumb.EnableWindow(FALSE);
 		CanEdit.EnableWindow(FALSE);
@@ -879,6 +887,7 @@ bool MediaServerDialog::doStart(bool onlySerialize) {
 	SERIALIZE_CONTROL(pSettings, ServerPassword);
 	SERIALIZE_CONTROL(pSettings, BIsDebug);
 	SERIALIZE_CONTROL(pSettings, OnlyNews);
+	SERIALIZE_CONTROL(pSettings, StartAfterScan);
 	SERIALIZE_CONTROL(pSettings, PhotosThumb);
 	Startinit.isDebug = pSettings.BIsDebug;
 	pSettings.ServerPassword = trim(pSettings.ServerPassword);
@@ -941,6 +950,7 @@ void MediaServerDialog::OnScanCovers() {
 		return;
 	}
 	SERIALIZE_CONTROL(pSettings, OnlyNews);
+	SERIALIZE_CONTROL(pSettings, StartAfterScan);
 	SERIALIZE_CONTROL_INT(pSettings, FFMPEGProcCount);
 	SERIALIZE_CONTROL(pSettings, PhotosThumb);
 	Startinit.ffmpeg_proc_count = pSettings.FFMPEGProcCount;

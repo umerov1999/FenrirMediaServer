@@ -39,6 +39,7 @@ public:
 	CButton SelectSSL;
 	CButton ScanCovers;
 	CButton OnlyNews;
+	CButton StartAfterScan;
 	CButton CanEdit;
 	CButton PhotosThumb;
 	CButton MediaFolders;

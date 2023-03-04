@@ -194,7 +194,7 @@ void MediaServerMediaFoldersDialog::OnAddAudio()
 				}
 			}
 			if (!exist) {
-				Audio_Dirs.push_back(res.GetString());
+				Audio_Dirs.push_front(res.GetString());
 			}
 		}
 	}
@@ -216,7 +216,7 @@ void MediaServerMediaFoldersDialog::OnAddDiscography()
 				}
 			}
 			if (!exist) {
-				Discography_Dirs.push_back(res.GetString());
+				Discography_Dirs.push_front(res.GetString());
 			}
 		}
 	}
@@ -238,7 +238,7 @@ void MediaServerMediaFoldersDialog::OnAddVideo()
 				}
 			}
 			if (!exist) {
-				Video_Dirs.push_back(res.GetString());
+				Video_Dirs.push_front(res.GetString());
 			}
 		}
 	}
@@ -260,7 +260,7 @@ void MediaServerMediaFoldersDialog::OnAddPhotoVideo()
 				}
 			}
 			if (!exist) {
-				Photo_Video_Dirs.push_back(res.GetString());
+				Photo_Video_Dirs.push_front(res.GetString());
 			}
 		}
 	}
@@ -356,7 +356,7 @@ BOOL MediaServerMediaFoldersDialog::PreTranslateMessage(MSG* pMsg)
 								}
 							}
 							if (!exist) {
-								Audio_Dirs.push_back(szBuf);
+								Audio_Dirs.push_front(szBuf);
 							}
 						}
 					}
@@ -371,7 +371,7 @@ BOOL MediaServerMediaFoldersDialog::PreTranslateMessage(MSG* pMsg)
 								}
 							}
 							if (!exist) {
-								Video_Dirs.push_back(szBuf);
+								Video_Dirs.push_front(szBuf);
 							}
 						}
 					}
@@ -386,7 +386,7 @@ BOOL MediaServerMediaFoldersDialog::PreTranslateMessage(MSG* pMsg)
 								}
 							}
 							if (!exist) {
-								Discography_Dirs.push_back(szBuf);
+								Discography_Dirs.push_front(szBuf);
 							}
 						}
 					}
@@ -401,7 +401,7 @@ BOOL MediaServerMediaFoldersDialog::PreTranslateMessage(MSG* pMsg)
 								}
 							}
 							if (!exist) {
-								Photo_Video_Dirs.push_back(szBuf);
+								Photo_Video_Dirs.push_front(szBuf);
 							}
 						}
 					}

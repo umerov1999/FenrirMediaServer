@@ -559,7 +559,13 @@ class Inode {
 public:
 	static bool greator(const Inode& lhs, const Inode& rhs)
 	{
-		return lhs.modification_time > rhs.modification_time || lhs.type == InodeType::INODE_FOLDER && rhs.type != InodeType::INODE_FOLDER;
+		if (lhs.type == InodeType::INODE_FOLDER && rhs.type != InodeType::INODE_FOLDER) {
+			return true;
+		}
+		else if (lhs.type != InodeType::INODE_FOLDER && rhs.type == InodeType::INODE_FOLDER) {
+			return false;
+		}
+		return lhs.modification_time > rhs.modification_time;
 	}
 	enum class InodeType {
 		INODE_ERROR = -1,
