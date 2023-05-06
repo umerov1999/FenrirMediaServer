@@ -315,7 +315,7 @@ BOOL VKApiToolsDialog::OnInitDialog()
 
 	std::string DataPic = GetDataFromResourceUtil(L"SVG", IDB_SVG1);
 	auto mk = Edk.getRect();
-	Edk.Init(PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true), CallBackSelectTouch(VKApiToolsDialog::OnSelectAudio, this), NULL, false);
+	Edk.Init(PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true), URGB(), CallBackSelectTouch(VKApiToolsDialog::OnSelectAudio, this), NULL);
 
 	Check1.EnableWindow(FALSE);
 	Check2.EnableWindow(FALSE);

@@ -18,8 +18,16 @@ public:
 	Files(const wstring& second_dir, const wstring& out_dir) {
 		temp_buf1 = vector<unsigned char>(BUF_SIZE);
 		temp_buf2 = vector<unsigned char>(BUF_SIZE);
-		new_dir = second_dir + L"\\";
-		this->out_dir = out_dir + L"\\";
+		new_dir = FixSlashs(second_dir);
+        this->out_dir = FixSlashs(out_dir);
+        while (new_dir.back() == L'\\') {
+            new_dir.pop_back();
+        }
+        while (this->out_dir.back() == L'\\') {
+            this->out_dir.pop_back();
+        }
+        new_dir += L"\\";
+        this->out_dir += L"\\";
 	}
 
 	void add_ignore_dir(const wstring& dir) {
@@ -27,8 +35,12 @@ public:
 	}
 
 	void load_files(const wstring& first_dir) {
-		root_dir = first_dir + L"\\";
-		listdir(first_dir);
+        root_dir = FixSlashs(first_dir);
+        while (root_dir.back() == L'\\') {
+            root_dir.pop_back();
+        }
+        root_dir = root_dir + L"\\";
+        listdir(first_dir);
 	}
 
 	void check_empty_files(const wstring& type) {
@@ -143,6 +155,16 @@ private:
 		NOT_COMAPRE
 	};
 
+    std::wstring FixSlashs(const std::wstring& Path)
+    {
+        std::wstring ret = Path;
+        for (auto& i : ret)
+        {
+            if (i == L'/')
+                i = L'\\';
+        }
+        return ret;
+    }
 	wstring build_first(const wstring& file) const {
 		return root_dir + file;
 	}
@@ -170,20 +192,22 @@ private:
 			break;
 		}
 		lg += first;
+        out_log.push_back(lg + L"\r\n");
 		cout << "       ->|Copy| " << wchar_to_UTF8(lg) << endl;
 		try {
 			if (!fs::copy_file(first, second)) {
 				cout << endl << "Error copy " << wchar_to_UTF8(first) << endl;
 				out_log.push_back(L"Error!: " + lg + L"\r\n");
-				return;
+                cout << "Abort" << endl;
+                exit(1);
 			}
 		}
 		catch (fs::filesystem_error e) {
 			cout << endl << "Error copy " << wchar_to_UTF8(first) << " " << e.what() << endl;
 			out_log.push_back(L"Error!: " + lg + L"\r\n");
-			return;
+            cout << "Abort" << endl;
+            exit(1);
 		}
-		out_log.push_back(lg + L"\r\n");
 	}
 
 	static struct _stat64 get_file_stat(const wstring& file) {
@@ -289,6 +313,8 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	//comp.add_ignore_dir("media/0/Telegram");
 	comp.add_ignore_dir(L"System Volume Information");
 	comp.add_ignore_dir(L"$Recycle.Bin");
+	comp.add_ignore_dir(L"FOUND.000");
+	comp.add_ignore_dir(L"found.000");
 
 	comp.load_files(argv[1]);
 	comp.check_lost_files();
@@ -300,6 +326,8 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	//second.add_ignore_dir("media/0/Telegram");
 	second.add_ignore_dir(L"System Volume Information");
 	second.add_ignore_dir(L"$Recycle.Bin");
+	second.add_ignore_dir(L"FOUND.000");
+	second.add_ignore_dir(L"found.000");
 
 	second.load_files(argv[2]);
 	second.check_empty_files(L"new");

@@ -10,7 +10,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{6301AE54-19F8-4293-A84C-8FAA9F1F4ED5}</ProjectGuid>
-    <RootNamespace>ColorMove</RootNamespace>
+    <RootNamespace>Diff_folders</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

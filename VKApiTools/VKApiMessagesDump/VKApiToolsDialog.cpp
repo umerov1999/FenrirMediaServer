@@ -295,7 +295,7 @@ BOOL VKApiToolsDialog::OnInitDialog()
 
 	std::string DataPic = GetDataFromResourceUtil(L"SVG", IDB_SVG1);
 	auto mk = Edk.getRect();
-	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true), false);
+	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true));
 	EDownload.RegisterSpecialPatternOnce(L"[w]", URGB(255, 0, 0));
 	EDownload.RegisterSpecialPatternOnce(L"[z]", URGB(255, 200, 0));
 

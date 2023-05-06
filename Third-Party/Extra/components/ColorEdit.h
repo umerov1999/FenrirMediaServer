@@ -59,8 +59,8 @@ public:
 	afx_msg std::vector<ColoredMessage> GetRenderedLines();
 	afx_msg std::wstring GetRenderedText();
 	afx_msg std::wstring GetFullText();
-	afx_msg void Init(Align TextAlign, HBITMAP HBackgr = NULL, bool resize = true, bool isFullTextMode = false);
-	afx_msg void SwitchBackground(HBITMAP HBackgr = NULL, bool resize = true);
+	afx_msg void Init(Align TextAlign, HBITMAP pBackgroundPicture = NULL, URGB pBackgroundColor = URGB(), bool isFullTextMode = false);
+	afx_msg void SwitchBackground(HBITMAP pBackgroundPicture = NULL, URGB pBackgroundColor = URGB());
 	afx_msg void RegisterSpecialPatternOnce(const std::wstring &Pattern, URGB Color);
 	afx_msg void UnRegisterSpecialPatternOnce(const std::wstring& Pattern);
 	afx_msg void ClearSpecialPatternOnce();
@@ -88,7 +88,8 @@ private:
 	bool ScrollChenged;
 	bool AutoScroll;
 	bool FullText;
-	CBitmap Background;
+	CBitmap BackgroundPicture;
+	URGB BackgroundColor;
 	bool Inited;
 	Align TextAlign;
 	THREAD_ACCESS_GUARD Async;

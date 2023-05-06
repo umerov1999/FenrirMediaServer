@@ -203,9 +203,6 @@
     <ClCompile Include="..\Third-Party\Extra\app_font.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\Third-Party\Extra\app_style_blue.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="zstd\common\debug.c">
       <Filter>Исходные файлы\zstd\common</Filter>
     </ClCompile>
@@ -304,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="zstd\legacy\zstd_v07.c">
       <Filter>Исходные файлы\zstd\legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Third-Party\Extra\app_style_blue.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

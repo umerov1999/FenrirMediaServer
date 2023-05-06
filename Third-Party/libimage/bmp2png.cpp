@@ -2,7 +2,7 @@
 #include "libimage.h"
 #include "png.h"
 using namespace std;
-#define BitmapWidth(cx, bpp)  (((cx * bpp + 31) & ~31) >> 3)
+#define BitmapWidth(width, bitsPerPixel) (((width * bitsPerPixel + 31) & ~31) >> 3)
 class libpng_inmem_write_struct {
 public:
     libpng_inmem_write_struct() {

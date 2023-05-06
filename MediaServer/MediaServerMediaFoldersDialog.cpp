@@ -68,10 +68,12 @@ BOOL MediaServerMediaFoldersDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	XTPSkinMgr()->AlphaEnableWindow(m_hWnd, 220);
-	ListAudios.Init();
-	ListVideos.Init();
-	ListDiscography.Init();
-	ListPhotoVideos.Init();
+
+	ListAudios.Init(NULL, URGB(), CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectEraseAudios, this));
+	ListVideos.Init(NULL, URGB(), CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectEraseVideos, this));
+	ListDiscography.Init(NULL, URGB(), CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectEraseDiscography, this));
+	ListPhotoVideos.Init(NULL, URGB(), CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectErasePhotoVideos, this));
+
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON1);
 	m_hCursor = AfxGetApp()->LoadCursor(MAKEINTRESOURCEW(IDC_CURSOR1));
 
@@ -83,6 +85,11 @@ BOOL MediaServerMediaFoldersDialog::OnInitDialog()
 	EraseDiscography.SetBitmap(Pdelete.get_hBitmap());
 	ErasePhotoVideos.SetBitmap(Pdelete.get_hBitmap());
 
+	EraseAudios.EnableWindow(FALSE);
+	EraseVideos.EnableWindow(FALSE);
+	EraseDiscography.EnableWindow(FALSE);
+	ErasePhotoVideos.EnableWindow(FALSE);
+
 	AddAudios.SetBitmap(PAdd.get_hBitmap());
 	AddVideos.SetBitmap(PAdd.get_hBitmap());
 	AddDiscography.SetBitmap(PAdd.get_hBitmap());
@@ -93,6 +100,26 @@ BOOL MediaServerMediaFoldersDialog::OnInitDialog()
 	ReloadContent();
 
 	return TRUE;
+}
+
+void MediaServerMediaFoldersDialog::OnSelectEraseAudios(MediaServerMediaFoldersDialog* pClass, int Idx)
+{
+	pClass->EraseAudios.EnableWindow(TRUE);
+}
+
+void MediaServerMediaFoldersDialog::OnSelectEraseVideos(MediaServerMediaFoldersDialog* pClass, int Idx)
+{
+	pClass->EraseVideos.EnableWindow(TRUE);
+}
+
+void MediaServerMediaFoldersDialog::OnSelectEraseDiscography(MediaServerMediaFoldersDialog* pClass, int Idx)
+{
+	pClass->EraseDiscography.EnableWindow(TRUE);
+}
+
+void MediaServerMediaFoldersDialog::OnSelectErasePhotoVideos(MediaServerMediaFoldersDialog* pClass, int Idx)
+{
+	pClass->ErasePhotoVideos.EnableWindow(TRUE);
 }
 
 void MediaServerMediaFoldersDialog::OnSysCommand(UINT nID, LPARAM lParam)
@@ -135,6 +162,12 @@ void MediaServerMediaFoldersDialog::ReloadContent()
 	ListVideos.Clear();
 	ListDiscography.Clear();
 	ListPhotoVideos.Clear();
+
+	EraseAudios.EnableWindow(FALSE);
+	EraseVideos.EnableWindow(FALSE);
+	EraseDiscography.EnableWindow(FALSE);
+	ErasePhotoVideos.EnableWindow(FALSE);
+
 	for (auto &i : Audio_Dirs)
 		ListAudios.AddLine(i.c_str());
 	for (auto& i : Video_Dirs)

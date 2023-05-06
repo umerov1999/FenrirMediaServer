@@ -481,7 +481,7 @@ HBITMAP AFX_CDECL XTPSkinFrameworkLoadBitmap(HMODULE hModule, LPCTSTR lpszResour
 		return CXTPImageManagerIcon::LoadBitmapFromResource(hModule, lpszResourceName, &bAlpha);
 	}
 
-#define BitmapWidth(cx, bpp) (((((cx) * (bpp)) + 31) & ~31) >> 3)
+#define BitmapWidth(width, bitsPerPixel) (((width * bitsPerPixel + 31) & ~31) >> 3)
 
 	HRSRC hResource = FindResource(hModule, lpszResourceName, RT_BITMAP);
 	if (hResource == NULL)
@@ -557,7 +557,7 @@ HBITMAP AFX_CDECL XTPSkinFrameworkLoadBitmap(const void* Buf, int Size, BOOL& bA
 		return CXTPImageManagerIcon::LoadPNGFromMemory(Buf, Size, &bAlpha);
 	}
 
-#define BitmapWidth(cx, bpp)  (((((cx) * (bpp)) + 31) & ~31) >> 3)
+#define BitmapWidth(width, bitsPerPixel) (((width * bitsPerPixel + 31) & ~31) >> 3)
 
 	LPBITMAPINFO pResourceInfo = (LPBITMAPINFO) & ((char*)Buf)[sizeof(BITMAPFILEHEADER)];
 	if (!pResourceInfo)

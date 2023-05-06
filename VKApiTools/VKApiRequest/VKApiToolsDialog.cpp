@@ -289,7 +289,7 @@ BOOL VKApiToolsDialog::OnInitDialog()
 
 	std::string DataPic = GetDataFromResourceUtil(L"SVG", IDR_SVG1);
 	auto mk = Edk.getRect();
-	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true), false, true);
+	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true), URGB(), true);
 
 	Check1.EnableWindow(FALSE);
 	Check2.EnableWindow(FALSE);

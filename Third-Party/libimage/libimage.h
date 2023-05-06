@@ -64,6 +64,16 @@ namespace LIB_IMAGE
 				*links = 0;
 			}
 		}
+		void release() {
+			if (*links == 0 && is_has_image())
+			{
+				DeleteObject(hPicture);
+				hPicture = NULL;
+			}
+			if (*links > 0) {
+				(*links)--;
+			}
+		}
 		~win_image()
 		{
 			if (*links == 0 && is_has_image())
@@ -90,7 +100,7 @@ namespace LIB_IMAGE
 		{
 			if (is_has_image())
 			{
-				hPicture = (HBITMAP)CopyImage(hPicture, IMAGE_BITMAP, X, Y, LR_COPYDELETEORG);
+				hPicture = StretchBitmap(hPicture, X, Y, true);
 				image_size.size_x = X;
 				image_size.size_y = Y;
 			}
@@ -133,7 +143,7 @@ namespace LIB_IMAGE
 				}
 
 				image.image_size = image_size;
-				image.hPicture = (HBITMAP)CopyImage(hPicture, IMAGE_BITMAP, image_size.size_x, image_size.size_y, LR_COPYRETURNORG);
+				image.hPicture = StretchBitmap(hPicture, image_size.size_x, image_size.size_y, false);
 			}
 		}
 		win_image& make_RGB(HWND hwnd, DWORD Color);
@@ -144,8 +154,8 @@ namespace LIB_IMAGE
 				*links = LONG_MAX;
 			return hPicture;
 		}
-
 	private:
+		static HBITMAP StretchBitmap(HBITMAP hSRCBitmap, int cxNew, int cyNew, bool clearOrig);
 		size_t* links;
 		HBITMAP hPicture;
 		win_image_size image_size;

@@ -45,13 +45,13 @@ struct Task
 private:
     mutex                   mtx;
     condition_variable      cv;
-    bool                    ready{true};
-    bool                    pending{false};
+    bool                    ready = true;
+    bool                    pending = false;
 
 public:
     virtual ~Task() = default;
 
-    void done()
+    void done(unsigned tid = 0)
     {
         if (!pending) return;
 
@@ -79,11 +79,10 @@ private:
         pending = true;
     }
 
-    friend class TaskSchedulerImpl;
+    friend struct TaskSchedulerImpl;
 };
-
-
 
 }
 
 #endif //_TVG_TASK_SCHEDULER_H_
+ 

@@ -373,7 +373,7 @@ BOOL VK_ReverserDialog::OnInitDialog()
 
 	std::string DataPic = GetDataFromResourceUtil(L"SVG", IDB_SVG1);
 	auto mk = Edk.getRect();
-	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true), false);
+	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true));
 
 #ifdef _WIN64
 	const wchar_t* ARCH = L"x64";
@@ -548,8 +548,10 @@ void VK_ReverserDialog::OnClose()
 {
 	PrintMessage(L"[Выход: (" + GetTimeLocal() + L")]", URGB(255, 0, 0));
 	WaitForSingleObject(hMessageMutex, INFINITE);
-	if(HTTPSserver_sock != 0)
+	if (HTTPSserver_sock != 0) {
+		shutdown(HTTPSserver_sock, SD_BOTH);
 		closesocket(HTTPSserver_sock);
+	}
 	XTPSkinMgr()->ExitProgramm();
 }
 

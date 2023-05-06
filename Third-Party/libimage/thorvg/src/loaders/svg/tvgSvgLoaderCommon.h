@@ -80,6 +80,16 @@ enum class SvgFillFlags
     ClipPath = 0x16
 };
 
+constexpr bool operator &(SvgFillFlags a, SvgFillFlags b)
+{
+    return int(a) & int(b);
+}
+
+constexpr SvgFillFlags operator |(SvgFillFlags a, SvgFillFlags b)
+{
+    return SvgFillFlags(int(a) | int(b));
+}
+
 enum class SvgStrokeFlags
 {
     Paint = 0x1,
@@ -91,6 +101,17 @@ enum class SvgStrokeFlags
     Join = 0x40,
     Dash = 0x80,
 };
+
+constexpr bool operator &(SvgStrokeFlags a, SvgStrokeFlags b)
+{
+    return int(a) & int(b);
+}
+
+constexpr SvgStrokeFlags operator |(SvgStrokeFlags a, SvgStrokeFlags b)
+{
+    return SvgStrokeFlags(int(a) | int(b));
+}
+
 
 enum class SvgGradientType
 {
@@ -115,8 +136,19 @@ enum class SvgStyleFlags
     ClipPath = 0x1000,
     Mask = 0x2000,
     MaskType = 0x4000,
-    Display = 0x8000
+    Display = 0x8000,
+    PaintOrder = 0x10000
 };
+
+constexpr bool operator &(SvgStyleFlags a, SvgStyleFlags b)
+{
+    return int(a) & int(b);
+}
+
+constexpr SvgStyleFlags operator |(SvgStyleFlags a, SvgStyleFlags b)
+{
+    return SvgStyleFlags(int(a) | int(b));
+}
 
 enum class SvgStopStyleFlags
 {
@@ -124,6 +156,42 @@ enum class SvgStopStyleFlags
     StopOpacity = 0x01,
     StopColor = 0x02
 };
+
+constexpr bool operator &(SvgStopStyleFlags a, SvgStopStyleFlags b)
+{
+    return int(a) & int(b);
+}
+
+constexpr SvgStopStyleFlags operator |(SvgStopStyleFlags a, SvgStopStyleFlags b)
+{
+    return SvgStopStyleFlags(int(a) | int(b));
+}
+
+enum class SvgGradientFlags
+{
+    None = 0x0,
+    GradientUnits = 0x1,
+    SpreadMethod = 0x2,
+    X1 = 0x4,
+    X2 = 0x8,
+    Y1 = 0x10,
+    Y2 = 0x20,
+    Cx = 0x40,
+    Cy = 0x80,
+    R = 0x100,
+    Fx = 0x200,
+    Fy = 0x400
+};
+
+constexpr bool operator &(SvgGradientFlags a, SvgGradientFlags b)
+{
+    return int(a) & int(b);
+}
+
+constexpr SvgGradientFlags operator |(SvgGradientFlags a, SvgGradientFlags b)
+{
+    return SvgGradientFlags(int(a) | int(b));
+}
 
 enum class SvgFillRule
 {
@@ -145,6 +213,31 @@ enum class SvgParserLengthType
     //In case of, for example, radius of radial gradient
     Other
 };
+
+enum class SvgViewFlag
+{
+    None = 0x0,
+    Width = 0x01,   //viewPort width
+    Height = 0x02,  //viewPort height
+    Viewbox = 0x04,  //viewBox x,y,w,h - used only if all 4 are correctly set
+    WidthInPercent = 0x08,
+    HeightInPercent = 0x10
+};
+
+constexpr bool operator &(SvgViewFlag a, SvgViewFlag b)
+{
+    return static_cast<int>(a) & static_cast<int>(b);
+}
+
+constexpr SvgViewFlag operator |(SvgViewFlag a, SvgViewFlag b)
+{
+    return SvgViewFlag(int(a) | int(b));
+}
+
+constexpr SvgViewFlag operator ^(SvgViewFlag a, SvgViewFlag b)
+{
+    return SvgViewFlag(int(a) ^ int(b));
+}
 
 enum class AspectRatioAlign
 {
@@ -168,12 +261,13 @@ enum class AspectRatioMeetOrSlice
 
 struct SvgDocNode
 {
-    float w;
-    float h;
+    float w;       //unit: point or in percentage see: SvgViewFlag
+    float h;       //unit: point or in percentage see: SvgViewFlag
     float vx;
     float vy;
     float vw;
     float vh;
+    SvgViewFlag viewFlag;
     SvgNode* defs;
     SvgNode* style;
     AspectRatioAlign align;
@@ -340,6 +434,7 @@ struct SvgStyleGradient
     SvgLinearGradient* linear;
     Matrix* transform;
     Array<Fill::ColorStop> stops;
+    SvgGradientFlags flags;
     bool userSpace;
 
     void clear()
@@ -385,6 +480,7 @@ struct SvgStyleProperty
     SvgColor color;
     bool curColorSet;
     char* cssClass;
+    bool paintOrder; //true if default (fill, stroke), false otherwise
     SvgStyleFlags flags;
 };
 
@@ -455,6 +551,11 @@ struct SvgLoaderData
     int level = 0;
     bool result = false;
     bool style = false;
+};
+
+struct Box
+{
+    float x, y, w, h;
 };
 
 /*

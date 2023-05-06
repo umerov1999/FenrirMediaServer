@@ -314,16 +314,22 @@ SOCKET tcp_listen(int Port)
 	SOCKET sock;
 	struct sockaddr_in sin;
 	const int qlen = 1;
-	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
 		return SOCKET_ERROR;
+	}
+
+	DWORD tr = 1;
+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&tr, sizeof(tr));
 
 	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(Port);
-	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0)
+	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0) {
 		return SOCKET_ERROR;
-	if (::listen(sock, qlen) == SOCKET_ERROR)
+	}
+	if (::listen(sock, qlen) == SOCKET_ERROR) {
 		return SOCKET_ERROR;
+	}
 	return sock;
 }
 
@@ -880,7 +886,7 @@ DWORD WINAPI HTTPS_ServerThread(LPVOID arg)
 out:
 	SSL_shutdown(ssl);
 	SSL_free(ssl);
-	shutdown(client_sock, 1);
+	shutdown(client_sock, SD_BOTH);
 	closesocket(client_sock);
 	Sleep(1000);
 	return 0;
@@ -902,7 +908,7 @@ bool SendNetBinary(SOCKET Socket, const void* Buffer, int Len, int Timeout)
 	DWORD timeout = Timeout * 1000;
 	setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout));
 	int rsz = send(Socket, (char*)Buffer, Len, 0);
-	if (rsz != Len)
+	if (rsz != (int)Len)
 		return false;
 	return true;
 }
@@ -951,6 +957,7 @@ void InitVK_Reverser()
 		satr->ssl_ctx = ctx;
 		CreateThreadSimple(&HTTPS_ServerThread, satr);
 	}
+	shutdown(HTTPSserver_sock, SD_BOTH);
 	closesocket(HTTPSserver_sock);
 	SSL_CTX_free(ctx);
 }

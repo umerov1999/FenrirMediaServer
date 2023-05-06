@@ -10,7 +10,7 @@
 #include "thorvg.h"
 #include "zlib.h"
 using namespace std;
-#define BitmapWidth(cx, bpp)  (((cx * bpp + 31) & ~31) >> 3)
+#define BitmapWidth(width, bitsPerPixel) (((width * bitsPerPixel + 31) & ~31) >> 3)
 #define JPGHeader "\xff\xd8\xff"
 const int c_JPEGInputBufferSize = 4096;
 using namespace LIB_IMAGE;
@@ -230,23 +230,84 @@ void png_read_memory_data_fn(png_structp png_ptr, png_bytep data, png_size_t len
 	membuff->pos += nbytes;
 }
 
-HBITMAP CreateDIB(HWND hwnd, int aWidth, int aHeight, int aPixelBit)
+HBITMAP CreateDIB(HDC hdc, int aWidth, int aHeight, int aPixelBit)
 {
 	HBITMAP hBitmap = NULL;
 
 	BITMAPINFO      pBitmapInfo = { 0 };
 	
 	pBitmapInfo.bmiHeader.biSize = sizeof(pBitmapInfo.bmiHeader);
-	pBitmapInfo.bmiHeader.biBitCount = aPixelBit;
+	pBitmapInfo.bmiHeader.biBitCount = (WORD)aPixelBit;
 	pBitmapInfo.bmiHeader.biCompression = BI_RGB;
 	pBitmapInfo.bmiHeader.biWidth = aWidth;
 	pBitmapInfo.bmiHeader.biHeight = -aHeight;
 	pBitmapInfo.bmiHeader.biPlanes = 1;
 	pBitmapInfo.bmiHeader.biSizeImage = BitmapWidth(pBitmapInfo.bmiHeader.biWidth, pBitmapInfo.bmiHeader.biBitCount) * pBitmapInfo.bmiHeader.biHeight;
 	void* BBits = NULL;
-	hBitmap = CreateDIBSection(GetDC(hwnd), &pBitmapInfo, DIB_RGB_COLORS, &BBits, 0, 0);
+	hBitmap = CreateDIBSection(hdc, &pBitmapInfo, DIB_RGB_COLORS, &BBits, 0, 0);
 
 	return hBitmap;
+}
+
+HBITMAP CreateDIB(HWND hwnd, int aWidth, int aHeight, int aPixelBit)
+{
+	return CreateDIB(GetDC(hwnd), aWidth, aHeight, aPixelBit);
+}
+
+HBITMAP win_image::StretchBitmap(HBITMAP hSRCBitmap, int cxNew, int cyNew, bool clearOrig)
+{
+	if (!hSRCBitmap) {
+		return hSRCBitmap;
+	}
+
+	BITMAP bmpInfo;
+	if (!GetObjectW(hSRCBitmap, sizeof(BITMAP), &bmpInfo)) {
+		return hSRCBitmap;
+	}
+
+	HDC srcDC, destDC;
+	srcDC = CreateCompatibleDC(NULL);
+	destDC = CreateCompatibleDC(NULL);
+	if (!srcDC || !destDC) {
+		if (srcDC) {
+			DeleteDC(srcDC);
+		}
+		if (destDC) {
+			DeleteDC(destDC);
+		}
+		return hSRCBitmap;
+	}
+	SetStretchBltMode(destDC, COLORONCOLOR);
+	SelectObject(srcDC, hSRCBitmap);
+	HBITMAP dst = CreateDIB(srcDC, cxNew, cyNew, bmpInfo.bmBitsPixel);
+	if (!dst) {
+		DeleteDC(srcDC);
+		DeleteDC(destDC);
+		return hSRCBitmap;
+	}
+	SelectObject(destDC, dst);
+	if (bmpInfo.bmWidth == cxNew && bmpInfo.bmHeight == cyNew) {
+		if (!BitBlt(destDC, 0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, srcDC, 0, 0, SRCCOPY)) {
+			DeleteDC(srcDC);
+			DeleteDC(destDC);
+			DeleteObject(dst);
+			return hSRCBitmap;
+		}
+	}
+	else {
+		if (!StretchBlt(destDC, 0, 0, cxNew, cyNew, srcDC, 0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, SRCCOPY)) {
+			DeleteDC(srcDC);
+			DeleteDC(destDC);
+			DeleteObject(dst);
+			return hSRCBitmap;
+		}
+	}
+	DeleteDC(srcDC);
+	DeleteDC(destDC);
+	if (clearOrig) {
+		DeleteObject(hSRCBitmap);
+	}
+	return dst;
 }
 
 void JPEGInitSource(j_decompress_ptr cinfo)

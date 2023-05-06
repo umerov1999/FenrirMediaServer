@@ -1,5 +1,5 @@
 #include "sha512.h"
- 
+#define BUF_SIZE 524288
 const unsigned long long SHA512::sha512_k[80] = //ULL = uint64
             {0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL,
              0xb5c0fbcfec4d3b2fULL, 0xe9b5dba58189dbbcULL,
@@ -158,11 +158,12 @@ std::string sha512file(FILE* file){
     SHA512 ctx = SHA512();
     ctx.init();
 
-	char buff[BUFSIZ];
+	char *buff = new char[BUF_SIZE];
 	size_t len = 0;
-	while( ( len = std::fread(buff ,sizeof(char), BUFSIZ, file) ) > 0) {
+	while( ( len = std::fread(buff ,sizeof(char), BUF_SIZE, file) ) > 0) {
 		ctx.update((const unsigned char*)buff, (unsigned int)len);
 	}   
+    delete[] buff;
     ctx.final(digest);
  
     char buf[2*SHA512::DIGEST_SIZE+1];
@@ -174,7 +175,12 @@ std::string sha512file(FILE* file){
 
 std::string sha512file(const std::wstring &filename){
     FILE* file = NULL;
-    _wfopen_s(&file, filename.c_str(), L"rb");
+    if (_wfopen_s(&file, filename.c_str(), L"rb") != 0) {
+        return "error";
+    }
+    if (!file) {
+        return "error";
+    }
 	std::string res = sha512file(file);
 	std::fclose(file);
 	return res;

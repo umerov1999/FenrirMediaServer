@@ -55,6 +55,69 @@ CXTPResourceImageList::~CXTPResourceImageList()
 	RemoveAll();
 }
 
+static HBITMAP CreateDIB(HDC hdc, int aWidth, int aHeight, int aPixelBit)
+{
+#define BitmapWidth(width, bitsPerPixel) (((width * bitsPerPixel + 31) & ~31) >> 3)
+	HBITMAP hBitmap = NULL;
+
+	BITMAPINFO      pBitmapInfo = { 0 };
+
+	pBitmapInfo.bmiHeader.biSize = sizeof(pBitmapInfo.bmiHeader);
+	pBitmapInfo.bmiHeader.biBitCount = (WORD)aPixelBit;
+	pBitmapInfo.bmiHeader.biCompression = BI_RGB;
+	pBitmapInfo.bmiHeader.biWidth = aWidth;
+	pBitmapInfo.bmiHeader.biHeight = -aHeight;
+	pBitmapInfo.bmiHeader.biPlanes = 1;
+	pBitmapInfo.bmiHeader.biSizeImage = BitmapWidth(pBitmapInfo.bmiHeader.biWidth, pBitmapInfo.bmiHeader.biBitCount) * pBitmapInfo.bmiHeader.biHeight;
+	void* BBits = NULL;
+	hBitmap = CreateDIBSection(hdc, &pBitmapInfo, DIB_RGB_COLORS, &BBits, 0, 0);
+
+	return hBitmap;
+}
+
+static HBITMAP CopyBitmap(HBITMAP hSRCBitmap)
+{
+	if (!hSRCBitmap) {
+		return hSRCBitmap;
+	}
+
+	BITMAP bmpInfo;
+	if (!GetObjectW(hSRCBitmap, sizeof(BITMAP), &bmpInfo)) {
+		return hSRCBitmap;
+	}
+
+	HDC srcDC, destDC;
+	srcDC = CreateCompatibleDC(NULL);
+	destDC = CreateCompatibleDC(NULL);
+	if (!srcDC || !destDC) {
+		if (srcDC) {
+			DeleteDC(srcDC);
+		}
+		if (destDC) {
+			DeleteDC(destDC);
+		}
+		return hSRCBitmap;
+	}
+	SetStretchBltMode(destDC, COLORONCOLOR);
+	SelectObject(srcDC, hSRCBitmap);
+	HBITMAP dst = CreateDIB(srcDC, bmpInfo.bmWidth, bmpInfo.bmHeight, bmpInfo.bmBitsPixel);
+	if (!dst) {
+		DeleteDC(srcDC);
+		DeleteDC(destDC);
+		return hSRCBitmap;
+	}
+	SelectObject(destDC, dst);
+	if (!BitBlt(destDC, 0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, srcDC, 0, 0, SRCCOPY)) {
+		DeleteDC(srcDC);
+		DeleteDC(destDC);
+		DeleteObject(dst);
+		return hSRCBitmap;
+	}
+	DeleteDC(srcDC);
+	DeleteDC(destDC);
+	return dst;
+}
+
 CXTPResourceImage* CXTPResourceImageList::SetBitmap(HBITMAP hBitmap, UINT nID, BOOL bAlptha,
 													BOOL bCopyBitmap)
 {
@@ -65,8 +128,9 @@ CXTPResourceImage* CXTPResourceImageList::SetBitmap(HBITMAP hBitmap, UINT nID, B
 	HBITMAP hBmp2 = hBitmap;
 	if (bCopyBitmap)
 	{
-		// HBITMAP CXTPImageManagerIcon::CopyAlphaBitmap(HBITMAP hBitmap)
-		hBmp2 = (HBITMAP)::CopyImage(hBitmap, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
+		//hBmp2 = CXTPImageManagerIcon::CopyAlphaBitmap(hBitmap);
+		hBmp2 = CopyBitmap(hBitmap);
+		//hBmp2 = (HBITMAP)::CopyImage(hBitmap, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
 		ASSERT(hBmp2);
 		if (!hBmp2)
 			return NULL;

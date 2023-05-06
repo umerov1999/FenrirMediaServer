@@ -460,6 +460,82 @@ void CXTPSkinObjectButton::CalcRect(CDC* pDC, LPRECT lprc, int code)
 	}
 }
 
+#define BitmapWidth(width, bitsPerPixel) (((width * bitsPerPixel + 31) & ~31) >> 3)
+
+static HBITMAP CreateDIB(HDC hdc, int aWidth, int aHeight, int aPixelBit, unsigned char*& BBits)
+{
+	HBITMAP hBitmap = NULL;
+
+	BITMAPINFO      pBitmapInfo = { 0 };
+
+	pBitmapInfo.bmiHeader.biSize = sizeof(pBitmapInfo.bmiHeader);
+	pBitmapInfo.bmiHeader.biBitCount = (WORD)aPixelBit;
+	pBitmapInfo.bmiHeader.biCompression = BI_RGB;
+	pBitmapInfo.bmiHeader.biWidth = aWidth;
+	pBitmapInfo.bmiHeader.biHeight = -aHeight;
+	pBitmapInfo.bmiHeader.biPlanes = 1;
+	pBitmapInfo.bmiHeader.biSizeImage = BitmapWidth(pBitmapInfo.bmiHeader.biWidth, pBitmapInfo.bmiHeader.biBitCount) * pBitmapInfo.bmiHeader.biHeight;
+	hBitmap = CreateDIBSection(hdc, &pBitmapInfo, DIB_RGB_COLORS, (void**)&BBits, 0, 0);
+
+	return hBitmap;
+}
+
+static HBITMAP GrayBitmap(HBITMAP hSRCBitmap)
+{
+	if (!hSRCBitmap) {
+		return hSRCBitmap;
+	}
+
+	BITMAP bmpInfo;
+	if (!GetObjectW(hSRCBitmap, sizeof(BITMAP), &bmpInfo)) {
+		return hSRCBitmap;
+	}
+
+	HDC srcDC, destDC;
+	srcDC = CreateCompatibleDC(NULL);
+	destDC = CreateCompatibleDC(NULL);
+	if (!srcDC || !destDC) {
+		if (srcDC) {
+			DeleteDC(srcDC);
+		}
+		if (destDC) {
+			DeleteDC(destDC);
+		}
+		return hSRCBitmap;
+	}
+	SetStretchBltMode(destDC, COLORONCOLOR);
+	SelectObject(srcDC, hSRCBitmap);
+	unsigned char* BBits = NULL;
+	HBITMAP dst = CreateDIB(srcDC, bmpInfo.bmWidth, bmpInfo.bmHeight, bmpInfo.bmBitsPixel, BBits);
+	if (!dst) {
+		DeleteDC(srcDC);
+		DeleteDC(destDC);
+		return hSRCBitmap;
+	}
+	SelectObject(destDC, dst);
+	if (!BitBlt(destDC, 0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, srcDC, 0, 0, SRCCOPY)) {
+		DeleteDC(srcDC);
+		DeleteDC(destDC);
+		DeleteObject(dst);
+		return hSRCBitmap;
+	}
+	DeleteDC(srcDC);
+	DeleteDC(destDC);
+	for (int i = 0; i < bmpInfo.bmHeight; i++) {
+		for (int s = 0; s < bmpInfo.bmWidth; s++) {
+			int pos = i * BitmapWidth(bmpInfo.bmWidth, bmpInfo.bmBitsPixel) + s * bmpInfo.bmBitsPixel / 8;
+			if (bmpInfo.bmBitsPixel == 24 && BBits[pos] == 255 && BBits[pos + 1] == 0 && BBits[pos + 2] == 255) {
+				continue;
+			}
+			int result = (BBits[pos] + BBits[pos + 1] + BBits[pos + 2]) / 3;
+			BBits[pos] = (unsigned char)result;
+			BBits[pos + 1] = (unsigned char)result;
+			BBits[pos + 2] = (unsigned char)result;
+		}
+	}
+	return dst;
+}
+
 void CXTPSkinObjectButton::DrawButtonText(CDC* pDC, int nPart, int nState)
 {
 	ASSERT_VALID(pDC);
@@ -500,6 +576,9 @@ void CXTPSkinObjectButton::DrawButtonText(CDC* pDC, int nPart, int nState)
 
 	HGDIOBJ hImage = 0;
 
+	bool is32BitBitmap = false;
+	bool is24BitBitmap = false;
+
 	if (GetStyle() & BS_BITMAP)
 	{
 		hImage = (HGDIOBJ)SendMessage(BM_GETIMAGE, IMAGE_BITMAP);
@@ -510,6 +589,8 @@ void CXTPSkinObjectButton::DrawButtonText(CDC* pDC, int nPart, int nState)
 		GetObject(hImage, sizeof(BITMAP), &bmp);
 		cx = bmp.bmWidth;
 		cy = bmp.bmHeight;
+		is32BitBitmap = bmp.bmBitsPixel == 32;
+		is24BitBitmap = bmp.bmBitsPixel == 24;
 	}
 	else if (GetStyle() & BS_ICON)
 	{
@@ -576,9 +657,55 @@ void CXTPSkinObjectButton::DrawButtonText(CDC* pDC, int nPart, int nState)
 			break;
 	}
 
-	if (GetStyle() & BS_BITMAP)
+	if (GetStyle() & BS_BITMAP && (nState != PBS_DISABLED || !is32BitBitmap && !is24BitBitmap))
 	{
-		pDC->DrawState(CPoint(x, y), CSize(cx, cy), (HBITMAP)hImage, DSS_NORMAL, 0);
+		if (is32BitBitmap) {
+			BLENDFUNCTION bf = { 0 };
+			bf.BlendOp = AC_SRC_OVER;
+			bf.BlendFlags = 0;
+			bf.SourceConstantAlpha = 0xff;
+			bf.AlphaFormat = AC_SRC_ALPHA;
+
+			CDC dcMem;
+			dcMem.CreateCompatibleDC(pDC);
+			dcMem.SelectObject(hImage);
+			pDC->AlphaBlend(x, y, cx, cy, &dcMem, 0, 0, cx, cy, bf);
+			DeleteDC(dcMem);
+		}
+		else {
+			CDC dcMem;
+			dcMem.CreateCompatibleDC(pDC);
+			dcMem.SelectObject(hImage);
+			pDC->BitBlt(x, y, cx, cy, &dcMem, 0, 0, SRCCOPY);
+			DeleteDC(dcMem);
+		}
+	}
+	else if (GetStyle() & BS_BITMAP && nState == PBS_DISABLED)
+	{
+		HBITMAP gray = GrayBitmap((HBITMAP)hImage);
+		if (is32BitBitmap) {
+			BLENDFUNCTION bf = { 0 };
+			bf.BlendOp = AC_SRC_OVER;
+			bf.BlendFlags = 0;
+			bf.SourceConstantAlpha = 0xff;
+			bf.AlphaFormat = AC_SRC_ALPHA;
+
+			CDC dcMem;
+			dcMem.CreateCompatibleDC(pDC);
+			dcMem.SelectObject(gray);
+			pDC->AlphaBlend(x, y, cx, cy, &dcMem, 0, 0, cx, cy, bf);
+			DeleteDC(dcMem);
+		}
+		else {
+			CDC dcMem;
+			dcMem.CreateCompatibleDC(pDC);
+			dcMem.SelectObject(gray);
+			pDC->BitBlt(x, y, cx, cy, &dcMem, 0, 0, SRCCOPY);
+			DeleteDC(dcMem);
+		}
+		if (gray != (HBITMAP)hImage) {
+			DeleteObject(gray);
+		}
 	}
 	else if (GetStyle() & BS_ICON)
 	{

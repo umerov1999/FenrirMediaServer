@@ -64,5 +64,10 @@ public:
 	afx_msg void ReloadContent();
 	afx_msg BOOL PreTranslateMessage(MSG* pMsg);
 
+	static void OnSelectEraseAudios(MediaServerMediaFoldersDialog* pClass, int Idx);
+	static void OnSelectEraseVideos(MediaServerMediaFoldersDialog* pClass, int Idx);
+	static void OnSelectEraseDiscography(MediaServerMediaFoldersDialog* pClass, int Idx);
+	static void OnSelectErasePhotoVideos(MediaServerMediaFoldersDialog* pClass, int Idx);
+
 	DECLARE_MESSAGE_MAP()
 };

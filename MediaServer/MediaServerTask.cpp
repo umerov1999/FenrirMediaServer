@@ -205,16 +205,22 @@ SOCKET tcp_listen(int Port)
 	SOCKET sock;
 	struct sockaddr_in sin;
 	const int qlen = 1;
-	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
 		return SOCKET_ERROR;
+	}
+
+	DWORD tr = 1;
+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&tr, sizeof(tr));
 
 	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(Port);
-	if (::bind(sock, (struct sockaddr*) & sin, sizeof(sin)) < 0)
+	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0) {
 		return SOCKET_ERROR;
-	if (::listen(sock, qlen) == SOCKET_ERROR)
+	}
+	if (::listen(sock, qlen) == SOCKET_ERROR) {
 		return SOCKET_ERROR;
+	}
 	return sock;
 }
 
@@ -357,7 +363,7 @@ bool SendNetBinary(SOCKET Socket, const string& BinData, int Timeout)
 	DWORD timeout = Timeout * 1000;
 	setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout));
 	int rsz = send(Socket, (char*)BinData.data(), (int)BinData.size(), 0);
-	if (rsz != BinData.size())
+	if (rsz != (int)BinData.size())
 		return false;
 	return true;
 }
@@ -1759,7 +1765,7 @@ out:
 		SSL_shutdown(client.ssl);
 		SSL_free(client.ssl);
 	}
-	shutdown(satr.client_sock, 1);
+	shutdown(satr.client_sock, SD_BOTH);
 	closesocket(satr.client_sock);
 	Sleep(1000);
 	return 0;
@@ -2268,6 +2274,7 @@ DWORD WINAPI doScanCovers(LPVOID) {
 	dlgS.ScanCovers.EnableWindow(FALSE);
 	dlgS.MediaFolders.EnableWindow(FALSE);
 	dlgS.PhotosThumb.EnableWindow(FALSE);
+	dlgS.ServerPassword.ShowWindow(SW_HIDE);
 	bool is_OnlyNews = dlgS.OnlyNews.GetCheck();
 	if (!is_OnlyNews) {
 		DeleteThumbs();
@@ -2286,6 +2293,7 @@ DWORD WINAPI doScanCovers(LPVOID) {
 	if (dlgS.StartAfterScan.GetCheck()) {
 		dlgS.OnStart();
 	}
+	dlgS.ServerPassword.ShowWindow(SW_SHOW);
 	return 0;
 }
 
@@ -2678,6 +2686,7 @@ void InitMediaServer()
 		satr->server_config = Startinit;
 		CreateThreadSimple(&HTTPS_ServerThread, satr);
 	}
+	shutdown(HTTPSserver_sock, SD_BOTH);
 	closesocket(HTTPSserver_sock);
 	if (ctx != NULL) {
 		SSL_CTX_free(ctx);

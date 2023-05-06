@@ -8,7 +8,7 @@
 #include "base.hpp"
 using namespace std;
 using namespace WSTRUtils;
-
+#define SCROLL_SIZE 12
 IMPLEMENT_DYNAMIC(ColorEdit, CStatic)
 
 #define IDC_POPUP_STOP_AUTOSCROLL       15880
@@ -85,7 +85,7 @@ ColorEdit::ColorEdit()
 	AutoScroll = true;
 	FullText = false;
 	TextAlign = Align::CENTER_ALIGN;
-	THREAD_ACCESS_REGISTER_POINTERS(Async, &Lines, &RenderedLines, &Background);
+	THREAD_ACCESS_REGISTER_POINTERS(Async, &Lines, &RenderedLines, &BackgroundPicture);
 }
 
 static void SetRange(CScrollBar* pScrollBar, int Min, int Max, int RenderedCount)
@@ -105,10 +105,12 @@ static void SetRange(CScrollBar* pScrollBar, int Min, int Max, int RenderedCount
 CRect ColorEdit::getRect() {
 	CRect backgr;
 	GetClientRect(&backgr);
+	backgr.bottom -= SCROLL_SIZE;
+	backgr.right -= SCROLL_SIZE;
 	return backgr;
 }
 
-void ColorEdit::Init(Align TextAlign, HBITMAP HBackgr, bool resize, bool isFullTextMode)
+void ColorEdit::Init(Align TextAlign, HBITMAP pBackgroundPicture, URGB pBackgroundColor, bool isFullTextMode)
 {
 	if (Inited == true)
 		return;
@@ -118,43 +120,35 @@ void ColorEdit::Init(Align TextAlign, HBITMAP HBackgr, bool resize, bool isFullT
 
 	RECT scrollpos;
 	GetClientRect(&scrollpos);
-	scrollpos.left = scrollpos.right - 10;
+	scrollpos.left = scrollpos.right - SCROLL_SIZE;
 	Scroll.Create(SBS_VERT | WS_VISIBLE | WS_CHILD, scrollpos, this, AFX_IDW_VSCROLL_FIRST);
 	GetClientRect(&scrollpos);
-	scrollpos.top = scrollpos.bottom - 10;
-	scrollpos.right -= 10;
+	scrollpos.top = scrollpos.bottom - SCROLL_SIZE;
+	scrollpos.right -= SCROLL_SIZE;
 	HorizScroll.Create(SBS_HORZ | WS_VISIBLE | WS_CHILD, scrollpos, this, AFX_IDW_HSCROLL_FIRST);
 
 	CRect backgr;
 	GetClientRect(&backgr);
-	if (HBackgr != NULL) {
-		if (resize) {
-			Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
-		}
-		else {
-			Background.Attach(HBackgr);
-		}
+	if (pBackgroundPicture != NULL) {
+		BackgroundPicture.Attach(pBackgroundPicture);
 	}
+	BackgroundColor = pBackgroundColor;
 	SetRange(&Scroll, 0, 0, 0);
 	SetRange(&HorizScroll, 0, 0, 0);
 	Inited = true;
 	LinesChenged = true;
 }
 
-void ColorEdit::SwitchBackground(HBITMAP HBackgr, bool resize) {
-	THREAD_ACCESS_LOCK(Async, &Background);
-	Background.DeleteObject();
+void ColorEdit::SwitchBackground(HBITMAP pBackgroundPicture, URGB pBackgroundColor) {
+	THREAD_ACCESS_LOCK(Async, &BackgroundPicture);
+	BackgroundPicture.DeleteObject();
 	CRect backgr;
 	GetClientRect(&backgr);
-	if (HBackgr != NULL) {
-		if (resize) {
-			Background.Attach((HBITMAP)CopyImage(HBackgr, IMAGE_BITMAP, backgr.Width(), backgr.Height(), LR_COPYDELETEORG));
-		}
-		else {
-			Background.Attach(HBackgr);
-		}
+	if (pBackgroundPicture != NULL) {
+		BackgroundPicture.Attach(pBackgroundPicture);
 	}
-	THREAD_ACCESS_UNLOCK(Async, &Background);
+	BackgroundColor = pBackgroundColor;
+	THREAD_ACCESS_UNLOCK(Async, &BackgroundPicture);
 }
 
 void ColorEdit::RegisterSpecialPatternOnce(const wstring &Pattern, URGB Color)
@@ -163,7 +157,7 @@ void ColorEdit::RegisterSpecialPatternOnce(const wstring &Pattern, URGB Color)
 	OnceSpecials[Pattern] = Color;
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 	LinesChenged = true;
-	InvalidateRect(NULL);
+	InvalidateRect(getRect());
 }
 
 void ColorEdit::UnRegisterSpecialPatternOnce(const wstring& Pattern)
@@ -172,7 +166,7 @@ void ColorEdit::UnRegisterSpecialPatternOnce(const wstring& Pattern)
 	OnceSpecials.erase(Pattern);
 	LinesChenged = true;
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
-	InvalidateRect(NULL);
+	InvalidateRect(getRect());
 }
 
 void ColorEdit::ClearSpecialPatternOnce()
@@ -181,7 +175,7 @@ void ColorEdit::ClearSpecialPatternOnce()
 	OnceSpecials.clear();
 	LinesChenged = true;
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
-	InvalidateRect(NULL);
+	InvalidateRect(getRect());
 }
 
 ColorEdit::~ColorEdit()
@@ -243,7 +237,7 @@ void ColorEdit::AddLines(std::string Text)
 		THREAD_ACCESS_UNLOCK(Async, &Lines);
 	}
 	LinesChenged = true;
-	InvalidateRect(NULL);
+	InvalidateRect(getRect());
 }
 
 void ColorEdit::RemoveLastLine()
@@ -255,7 +249,7 @@ void ColorEdit::RemoveLastLine()
 		Lines.pop_back();
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 	LinesChenged = true;
-	InvalidateRect(NULL);
+	InvalidateRect(getRect());
 }
 
 void ColorEdit::RemoveAllLines()
@@ -266,7 +260,7 @@ void ColorEdit::RemoveAllLines()
 	Lines.clear();
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 	LinesChenged = true;
-	InvalidateRect(NULL);
+	InvalidateRect(getRect());
 }
 
 void ColorEdit::OnRButtonDown(UINT nFlags, CPoint point)
@@ -301,7 +295,7 @@ BOOL ColorEdit::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		return CStatic::OnMouseWheel(nFlags, zDelta, pt);
 	Scroll.SetScrollPos(Scroll.GetScrollPos() - yy);
 	ScrollChenged = true;
-	InvalidateRect(NULL);
+	InvalidateRect(getRect());
 	return CStatic::OnMouseWheel(nFlags, zDelta, pt);
 }
 
@@ -335,7 +329,7 @@ void ColorEdit::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	else if (nSBCode == SB_LINEDOWN)
 		pScrollBar->SetScrollPos(pScrollBar->GetScrollPos() + 1, FALSE);
 	ScrollChenged = true;
-	InvalidateRect(NULL);
+	InvalidateRect(getRect());
 }
 
 void ColorEdit::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -369,7 +363,7 @@ void ColorEdit::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	else if (nSBCode == SB_LINERIGHT)
 		pScrollBar->SetScrollPos(pScrollBar->GetScrollPos() + 1, FALSE);
 	ScrollChenged = true;
-	InvalidateRect(NULL);
+	InvalidateRect(getRect());
 }
 
 std::vector<ColoredMessage> ColorEdit::GetRenderedLines()
@@ -433,6 +427,9 @@ void ColorEdit::OnPaint()
 	CRect rect;
 	GetClientRect(&rect);
 	CPaintDC pDC(this);
+	rect.bottom -= SCROLL_SIZE;
+	rect.right -= SCROLL_SIZE;
+	pDC.SetStretchBltMode(COLORONCOLOR);
 
 	if (Inited == false)
 	{
@@ -447,20 +444,20 @@ void ColorEdit::OnPaint()
 	dcMem.SetMapMode(GetMapMode(pDC));
 	dcMem.SetBkMode(TRANSPARENT);
 
-	THREAD_ACCESS_LOCK(Async, &Background);
-	if (Background.m_hObject == NULL)
+	THREAD_ACCESS_LOCK(Async, &BackgroundPicture);
+	if (BackgroundPicture.m_hObject == NULL)
 	{
 		bitmap.CreateCompatibleBitmap(&pDC, rect.Width(), rect.Height());
 		dcMem.SelectObject(&bitmap);
-		CBrush brush(RGB(0, 0, 0));
+		CBrush brush(RGB(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b));
 		dcMem.FillRect(&rect, &brush);
 	}
 	else
 	{
-		bitmap.Attach((HBITMAP)CopyImage(Background, IMAGE_BITMAP, rect.Width(), rect.Height(), 0));
+		bitmap.Attach((HBITMAP)CopyImage(BackgroundPicture, IMAGE_BITMAP, rect.Width(), rect.Height(), 0));
 		dcMem.SelectObject(&bitmap);
 	}
-	THREAD_ACCESS_UNLOCK(Async, &Background);
+	THREAD_ACCESS_UNLOCK(Async, &BackgroundPicture);
 	dcMem.SelectObject(m_pFont);
 	TEXTMETRICW tm;
 	dcMem.GetTextMetricsW(&tm);
@@ -670,7 +667,7 @@ BOOL ColorEdit::PreTranslateMessage(MSG* pMsg)
 			INT MIN, MAX;
 			Scroll.GetScrollRange(&MIN, &MAX);
 			Scroll.SetScrollPos(MAX);
-			InvalidateRect(NULL);
+			InvalidateRect(getRect());
 		}
 	}
 	if (pMsg->wParam == IDC_POPUP_SELECT_TEXT)
@@ -681,7 +678,7 @@ BOOL ColorEdit::PreTranslateMessage(MSG* pMsg)
 			TextAlign = Align::LEFT_ALIGN;
 		else
 			TextAlign = Align::CENTER_ALIGN;
-		InvalidateRect(NULL);
+		InvalidateRect(getRect());
 	}
 	if (pMsg->wParam == IDC_POPUP_FULL_TEXT)
 		FullText = !FullText;

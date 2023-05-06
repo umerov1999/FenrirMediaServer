@@ -164,6 +164,7 @@ void Ulottie::Clear()
 void Ulottie::OnPaint()
 {
 	CPaintDC pDC(this);
+	pDC.SetStretchBltMode(COLORONCOLOR);
 
 	CDC dcMem;
 	dcMem.CreateCompatibleDC(&pDC);
