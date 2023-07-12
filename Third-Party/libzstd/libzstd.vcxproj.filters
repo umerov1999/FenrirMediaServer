@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{ab425bae-6ffe-4b3f-b87c-b6b959353c56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы включений">
+      <UniqueIdentifier>{34052ca4-8756-471c-8449-91dfe4066b48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы включений\common">
+      <UniqueIdentifier>{383eb838-742e-4c19-878d-ad7a94be99d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\common">
+      <UniqueIdentifier>{71c0c04d-e9b5-40f1-9bf6-a24486e98c4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы включений\compress">
+      <UniqueIdentifier>{2d3bcb86-0b5c-445d-89b4-77c0beca0faf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\compress">
+      <UniqueIdentifier>{5611dab1-dfc9-49a8-be02-995f8963805b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\decompress">
+      <UniqueIdentifier>{308dfdea-80fc-4755-ae8d-92ad3bc3747d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы включений\decompress">
+      <UniqueIdentifier>{bb131072-cda9-45a6-892c-8878cec4ad8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы включений\dictBuilder">
+      <UniqueIdentifier>{5ef35dda-499c-4044-b49a-0c6d8a74f023}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\dictBuilder">
+      <UniqueIdentifier>{f3664df7-f6ba-4d68-91f2-4c57ee972c50}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="zdict.h">
+      <Filter>Файлы включений</Filter>
+    </ClInclude>
+    <ClInclude Include="zstd.h">
+      <Filter>Файлы включений</Filter>
+    </ClInclude>
+    <ClInclude Include="zstd_errors.h">
+      <Filter>Файлы включений</Filter>
+    </ClInclude>
+    <ClInclude Include="common\allocations.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\bits.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\bitstream.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\compiler.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\cpu.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\debug.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\error_private.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\fse.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\huf.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\mem.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\pool.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\portability_macros.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\threading.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\xxhash.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\zstd_deps.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\zstd_internal.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\zstd_trace.h">
+      <Filter>Файлы включений\common</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\clevels.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\hist.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_compress_internal.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_compress_literals.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_compress_sequences.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_compress_superblock.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_cwksp.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_double_fast.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_fast.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_lazy.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_ldm.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_ldm_geartab.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstd_opt.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="compress\zstdmt_compress.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
+    <ClInclude Include="decompress\zstd_ddict.h">
+      <Filter>Файлы включений\decompress</Filter>
+    </ClInclude>
+    <ClInclude Include="decompress\zstd_decompress_block.h">
+      <Filter>Файлы включений\decompress</Filter>
+    </ClInclude>
+    <ClInclude Include="decompress\zstd_decompress_internal.h">
+      <Filter>Файлы включений\decompress</Filter>
+    </ClInclude>
+    <ClInclude Include="dictBuilder\cover.h">
+      <Filter>Файлы включений\dictBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="dictBuilder\divsufsort.h">
+      <Filter>Файлы включений\dictBuilder</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common\debug.c">
+      <Filter>Файлы исходного кода\common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\entropy_common.c">
+      <Filter>Файлы исходного кода\common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\error_private.c">
+      <Filter>Файлы исходного кода\common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\fse_decompress.c">
+      <Filter>Файлы исходного кода\common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\pool.c">
+      <Filter>Файлы исходного кода\common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\threading.c">
+      <Filter>Файлы исходного кода\common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\xxhash.c">
+      <Filter>Файлы исходного кода\common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\zstd_common.c">
+      <Filter>Файлы исходного кода\common</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_opt.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstdmt_compress.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\fse_compress.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\hist.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\huf_compress.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_compress.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_compress_literals.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_compress_sequences.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_compress_superblock.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_double_fast.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_fast.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_lazy.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_ldm.c">
+      <Filter>Файлы исходного кода\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="decompress\huf_decompress.c">
+      <Filter>Файлы исходного кода\decompress</Filter>
+    </ClCompile>
+    <ClCompile Include="decompress\zstd_ddict.c">
+      <Filter>Файлы исходного кода\decompress</Filter>
+    </ClCompile>
+    <ClCompile Include="decompress\zstd_decompress.c">
+      <Filter>Файлы исходного кода\decompress</Filter>
+    </ClCompile>
+    <ClCompile Include="decompress\zstd_decompress_block.c">
+      <Filter>Файлы исходного кода\decompress</Filter>
+    </ClCompile>
+    <ClCompile Include="dictBuilder\cover.c">
+      <Filter>Файлы исходного кода\dictBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="dictBuilder\divsufsort.c">
+      <Filter>Файлы исходного кода\dictBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="dictBuilder\fastcover.c">
+      <Filter>Файлы исходного кода\dictBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="dictBuilder\zdict.c">
+      <Filter>Файлы исходного кода\dictBuilder</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

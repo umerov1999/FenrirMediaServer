@@ -9,8 +9,8 @@
 #include "CTar.h"
 #include "Map.h"
 #include "urgb.h"
-#include "md5.h"
-#include "sha512.h"
+#include "md5.hpp"
+#include "sha3.hpp"
 #include "json.hpp"
 #include "pugixml/pugixml.hpp"
 #include "WSTRUtils.h"
@@ -239,7 +239,7 @@ public:
 		if (SecurePos != string::npos)
 		{
 			//TmpUserAgent = VKAndroid_USERAGENT;
-			PostParam += ("&sig=" + (md5("/method/" + Method + "?" + PostParam + secure)));
+			PostParam += ("&sig=" + (MD5::md5("/method/" + Method + "?" + PostParam + secure)));
 		}
 		ret.Request = ResultLink;
 		ret.PostParams = PostParam;
@@ -358,7 +358,7 @@ UserInfo CallToGetUserNameById(const string &Token, const string& UserAgent, int
 
 struct AudioInfo
 {
-	AudioInfo(const string& tartist, const string& ttitle, const string& turl, const string& tdir, int64_t tdate, bool tDuplicated, int64_t towner_id, const string& tsha512, const string& talbum, const string& tcover_url)
+	AudioInfo(const string& tartist, const string& ttitle, const string& turl, const string& tdir, int64_t tdate, bool tDuplicated, int64_t towner_id, const string& tsha3_512, const string& talbum, const string& tcover_url)
 	{
 		artist = FixFileNameAudio(tartist);
 		title = FixFileNameAudio(ttitle);
@@ -368,7 +368,7 @@ struct AudioInfo
 		date = tdate;
 		IsError = false;
 		Duplicated = tDuplicated;
-		sha512 = tsha512;
+		sha3_512 = tsha3_512;
 		album = FixFileNameAudio(talbum);
 		cover_url = tcover_url;
 	}
@@ -385,7 +385,7 @@ struct AudioInfo
 	string cover_url;
 	string url;
 	string dir;
-	string sha512;
+	string sha3_512;
 	int64_t owner_id;
 	int64_t date;
 	bool IsError;
@@ -504,6 +504,10 @@ string getMp3FromM3u8(const string &url) {
 
 void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, const UsesOptionInMethodResult &Options)
 {
+	int64_t owner_id = 0;
+	if (OldToken.length() > 0) {
+		owner_id = stoll(OldToken);
+	}
 	Map::Map<int, AudioInfo> DeprecatedURL;
 	list<string>Hashs;
 	FILE* fl = NULL;
@@ -525,8 +529,8 @@ void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, c
 			for (json::iterator itatt = deprecatedaudios.begin(); itatt != deprecatedaudios.end(); ++itatt)
 			{
 				json audioj = itatt.value();
-				DeprecatedURL[audioj.at("id").get<int>()] = AudioInfo(audioj.at("artist").get<string>(), audioj.at("title").get<string>(), audioj.at("url").get<string>(), audioj.at("dir").get<string>(), audioj.at("date").get<int64_t>(), audioj.at("duplicated").get<int>() == 1, audioj.at("owner_id").get<int64_t>(), audioj.at("sha512").get<string>(), audioj.at("album").get<string>(), audioj.at("cover_url").get<string>());
-				Hashs.push_back(audioj.at("sha512").get<string>());
+				DeprecatedURL[audioj.at("id").get<int>()] = AudioInfo(audioj.at("artist").get<string>(), audioj.at("title").get<string>(), audioj.at("url").get<string>(), audioj.at("dir").get<string>(), audioj.at("date").get<int64_t>(), audioj.at("duplicated").get<int>() == 1, audioj.at("owner_id").get<int64_t>(), audioj.at("sha3_512").get<string>(), audioj.at("album").get<string>(), audioj.at("cover_url").get<string>());
+				Hashs.push_back(audioj.at("sha3_512").get<string>());
 			}
 		}
 		catch (...) {
@@ -535,7 +539,7 @@ void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, c
 	}
 	Map::Map<int, AudioInfo> URL;
 	VK_APIMETHOD_SECURE Akkount(Token, DEFAULT_USER_AGENT);
-	wstring UserName = GetUserNameById(Akkount, 0).pUserName;
+	wstring UserName = GetUserNameById(Akkount, owner_id).pUserName;
 	PRINT(TypeColor::TYPE_INFO) << L"[Подготовка Аудио] пользователя " << UserName << FLUSH;
 	if (Options.Option1)
 		PrepareWallAudio(URL, Akkount);
@@ -546,8 +550,12 @@ void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, c
 
 	do
 	{
-		Akkount["audio.get"] << VKI("count", 1000) << VKI("offset", index);
-		const VKAPI_ANSWER& answ = Akkount();
+		auto& sd = Akkount["audio.get"];
+		sd << VKI("count", 1000) << VKI("offset", index);
+		if (owner_id != 0) {
+			sd << VKI("owner_id", owner_id);
+		}
+		const VKAPI_ANSWER& answ = sd();
 		if (answ.IsError)
 			return;
 		int offset = 0;
@@ -598,7 +606,7 @@ void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, c
 	if (URL.size() <= 0)
 		return;
 	time_t SyncDataTime = time(0);
-	TarCreater ETar(L"Аудио " + UserName + L" " + GetTimeAT(SyncDataTime) + L".tar", SyncDataTime, L"Аудио " + GetUserNameById(Akkount, 0).pUserName + L", Синхронизировано " + GetTimeAT(SyncDataTime), false);
+	TarCreater ETar(L"Аудио " + UserName + L" " + GetTimeAT(SyncDataTime) + L".tar", SyncDataTime, L"Аудио " + GetUserNameById(Akkount, owner_id).pUserName + L", Синхронизировано " + GetTimeAT(SyncDataTime), false);
 	int dwnd = 0;
 	for (auto& i : URL)
 	{
@@ -607,8 +615,8 @@ void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, c
 		if (DoCurlGet(i.get_value().url, DEFAULT_USER_AGENT, MP3M, false) > 0 && MP3M.length() > 0)
 		{
 			string flnm = i.get_value().dir + "/" + i.get_value().artist + "/" + i.get_value().artist + " - " + i.get_value().title;
-			string HSH = sha512(MP3M.data(), MP3M.size());
-			i.get_value().sha512 = HSH;
+			string HSH = SHA3_512::sha3(MP3M.data(), MP3M.size());
+			i.get_value().sha3_512 = HSH;
 			bool Findd = false;
 			for (auto& ss : Hashs)
 			{
@@ -668,7 +676,7 @@ void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, c
 			isFirst = false;
 		else
 			AudioData << ",";
-		AudioData << "{ \"id\":" << i.get_key() << ", \"owner_id\":" << i.get_value().owner_id << ", \"duplicated\":" << i.get_value().Duplicated << ", \"date\":" << i.get_value().date << ", \"artist\":\"" << i.get_value().artist << "\", \"title\":\"" << i.get_value().title << "\", \"album\":\"" << i.get_value().album << "\", \"dir\":\"" << i.get_value().dir << "\", \"sha512\":\"" << i.get_value().sha512 << "\", \"cover_url\":\"" << i.get_value().cover_url << "\", \"url\":\"" << i.get_value().url << "\" }\r\n";
+		AudioData << "{ \"id\":" << i.get_key() << ", \"owner_id\":" << i.get_value().owner_id << ", \"duplicated\":" << i.get_value().Duplicated << ", \"date\":" << i.get_value().date << ", \"artist\":\"" << i.get_value().artist << "\", \"title\":\"" << i.get_value().title << "\", \"album\":\"" << i.get_value().album << "\", \"dir\":\"" << i.get_value().dir << "\", \"sha3_512\":\"" << i.get_value().sha3_512 << "\", \"cover_url\":\"" << i.get_value().cover_url << "\", \"url\":\"" << i.get_value().url << "\" }\r\n";
 	}
 	AudioData << "] }";
 	AudioData.Finalize();
@@ -689,7 +697,7 @@ void VKAPI_TOOLS_DownloadMusicAll(const string &Token, const string &OldToken, c
 				isFirst = false;
 			else
 				jsonout << ",";
-			jsonout << "{ \"id\":" << i.get_key() << ", \"owner_id\":" << i.get_value().owner_id << ", \"duplicated\":" << i.get_value().Duplicated << ", \"date\":" << i.get_value().date << ", \"artist\":\"" << i.get_value().artist << "\", \"title\":\"" << i.get_value().title << "\", \"album\":\"" << i.get_value().album << "\", \"dir\":\"" << i.get_value().dir << "\", \"sha512\":\"" << i.get_value().sha512 << "\", \"cover_url\":\"" << i.get_value().cover_url << "\", \"url\":\"" << i.get_value().url << "\" }\r\n";
+			jsonout << "{ \"id\":" << i.get_key() << ", \"owner_id\":" << i.get_value().owner_id << ", \"duplicated\":" << i.get_value().Duplicated << ", \"date\":" << i.get_value().date << ", \"artist\":\"" << i.get_value().artist << "\", \"title\":\"" << i.get_value().title << "\", \"album\":\"" << i.get_value().album << "\", \"dir\":\"" << i.get_value().dir << "\", \"sha3_512\":\"" << i.get_value().sha3_512 << "\", \"cover_url\":\"" << i.get_value().cover_url << "\", \"url\":\"" << i.get_value().url << "\" }\r\n";
 		}
 		jsonout << "] }";
 		fwrite(jsonout.str().c_str(), 1, jsonout.str().length(), fl);

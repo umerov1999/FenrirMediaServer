@@ -202,11 +202,18 @@ static bool Validate(HWND m_hwnd, const string &Token, const string& OldToken, b
 		dlgS.OnAccount();
 		return false;
 	}
-	if (NeedOldToken && OldToken.length() <= 0)
+	if (NeedOldToken && OldToken.length() > 0)
 	{
-		(win_message(m_hwnd).timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"2) Требуется ввести токен от старой страницы!").show();
-		dlgS.OnAccount();
-		return false;
+		bool hasErr = false;
+		for (size_t i = 0; i < OldToken.length(); i++) {
+			if (i == 0 && string("-0123456789").find(OldToken[i]) == string::npos || string("0123456789").find(OldToken[i]) == string::npos) {
+				hasErr = true;
+			}
+		}
+		if (hasErr) {
+			(win_message(m_hwnd).timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"2) Требуется ввести числовой id страницы!").show();
+			return false;
+		}
 	}
 	return true;
 }
@@ -242,7 +249,7 @@ DWORD WINAPI RunMeth(LPVOID param)
 	FILE* fl = NULL;
 	if (_wfopen_s(&fl, PREFS_NAME.c_str(), L"wb") == 0)
 	{
-		string jsonS = "{ \"current_token\":\"" + par.Token + "\", \"old_token\":\"" + par.OldToken + "\", \"user_agent\":\"" + DEFAULT_USER_AGENT + "\" }";
+		string jsonS = "{ \"current_token\":\"" + par.Token + "\", \"owner_id\":\"" + par.OldToken + "\", \"user_agent\":\"" + DEFAULT_USER_AGENT + "\" }";
 		fwrite(UTF8START, 1, strlen(UTF8START), fl);
 		fwrite(jsonS.c_str(), 1, jsonS.length(), fl);
 		fclose(fl);
@@ -279,7 +286,7 @@ BOOL VKApiToolsDialog::OnInitDialog()
 	Check3.EnableWindow(FALSE);
 	Check4.EnableWindow(FALSE);
 
-	RegisteredMethods.REGISTER(L"Скачать музыку из ВК", VKAPI_TOOLS_DownloadMusicAll, false, UsesOptionInMethod(CheckesUses(L"Скачивать со стены?", false), CheckesUses(L"Скачивать обложки аудио?", false)));
+	RegisteredMethods.REGISTER(L"Скачать музыку из ВК", VKAPI_TOOLS_DownloadMusicAll, true, UsesOptionInMethod(CheckesUses(L"Скачивать со стены?", false), CheckesUses(L"Скачивать обложки аудио?", false)));
 
 	hMessageMutex = CreateMutexW(NULL, FALSE, NULL);
 
@@ -287,7 +294,7 @@ BOOL VKApiToolsDialog::OnInitDialog()
 		json settings;
 		if (parseJsonConfig(PREFS_NAME, settings)) {
 			NewToken.SetWindowTextW(UTF8_to_wchar(settings.at("current_token").get<string>()).c_str());
-			OldToken.SetWindowTextW(UTF8_to_wchar(settings.at("old_token").get<string>()).c_str());
+			OldToken.SetWindowTextW(UTF8_to_wchar(settings.at("owner_id").get<string>()).c_str());
 			DEFAULT_USER_AGENT = settings.at("user_agent").get<string>();
 		}
 	}

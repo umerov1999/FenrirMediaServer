@@ -478,7 +478,7 @@ bool SendHTTTPAnswerWithTree(const CLIENT_CONNECTION& client, RequestParserStruc
 		dst.resize(cBuffSize);
 		auto dstp = const_cast<void*>(static_cast<const void*>(dst.c_str()));
 		auto srcp = static_cast<const void*>(src.c_str());
-		size_t const cSize = ZSTD_compress(dstp, cBuffSize, srcp, src.size(), ZSTD_fast);
+		size_t const cSize = ZSTD_compress(dstp, cBuffSize, srcp, src.size(), ZSTD_btultra2);
 		auto code = ZSTD_isError(cSize);
 		if (!code) {
 			dst.resize(cSize);
@@ -594,29 +594,6 @@ wstring Media::get_cover() const {
 
 static wstring get_cover(const std::string &hash) {
 	return wstring(CACHE_DIR) + L"\\" + UTF8_to_wchar(hash) + L".jpg";
-}
-
-static string BytesToSize(long long Bytes) {
-	long long tb = 1099511627776;
-	long long gb = 1073741824;
-	long long mb = 1048576;
-	long long kb = 1024;
-
-	char returnSize[512];
-
-	if (Bytes >= tb)
-		sprintf_s(returnSize, "%.2lf TB", (double)Bytes / tb);
-	else if (Bytes >= gb && Bytes < tb)
-		sprintf_s(returnSize, "%.2lf GB", (double)Bytes / gb);
-	else if (Bytes >= mb && Bytes < gb)
-		sprintf_s(returnSize, "%.2lf MB", (double)Bytes / mb);
-	else if (Bytes >= kb && Bytes < mb)
-		sprintf_s(returnSize, "%.2lf KB", (double)Bytes / kb);
-	else if (Bytes < kb)
-		sprintf_s(returnSize, "%.2llu Bytes", Bytes);
-	else
-		sprintf_s(returnSize, "%.2llu Bytes", Bytes);
-	return returnSize;
 }
 
 static json makeAudio(const Audio &a, const RequestParserStruct& Req, bool isSSL) {
@@ -1393,7 +1370,7 @@ static void GetMedia(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 #ifdef CRITICAL_DEBUG
 		if (client->server_config.isDebug) {
 			PrintMessage(L"DEBUG: FULL Content " + media.get_path(), URGB(0, 255, 150));
-			PrintMessage(L"         " + UTF8_to_wchar(BytesToSize(media.get_file_size())) + L", Connection: " + UTF8_to_wchar(Req.connection), URGB(0, 255, 150));
+			PrintMessage(L"         " + wprintBytesCount(media.get_file_size()) + L", Connection: " + UTF8_to_wchar(Req.connection), URGB(0, 255, 150));
 		}
 #endif
 
@@ -1558,7 +1535,7 @@ size_t multipart::parse(const string& body, size_t offset, const std::string& bo
 	}
 
 	if (status == 2) {
-		//name = sha512(dt.data);
+		//name = SHA3_512::sha3(dt.data);
 		name = matches2[1];
 		dt.filename = matches2[2];
 	}

@@ -9,7 +9,7 @@
 using namespace std;
 using namespace Lz4Pack;
 
-void SkinAddDirectory(Compressor& Pack, wstring FileDirectory)
+void SkinAddDirectory(Compressor& Pack, const wstring &FileDirectory)
 {
 	WIN32_FIND_DATA FindFileData;
 	HANDLE hf;
@@ -76,7 +76,7 @@ void SkinAddDirectory(Compressor& Pack, wstring FileDirectory)
 	}
 }
 
-std::wstring RemovePath(std::wstring fname)
+std::wstring RemovePath(const std::wstring &fname)
 {
 	const wchar_t* FnS = L"\\/";
 	size_t pos = fname.find_last_of(FnS);
@@ -85,7 +85,7 @@ std::wstring RemovePath(std::wstring fname)
 		: fname.substr(pos + 1);
 }
 
-std::wstring RemoveFileInPath(std::wstring fname)
+std::wstring RemoveFileInPath(const std::wstring &fname)
 {
 	const wchar_t* FnS = L"\\/";
 	size_t pos = fname.find_last_of(FnS);
@@ -94,7 +94,7 @@ std::wstring RemoveFileInPath(std::wstring fname)
 		: fname.substr(0, pos);
 }
 
-std::wstring RemoveExtInPath(std::wstring fname)
+std::wstring RemoveExtInPath(const std::wstring &fname)
 {
 	const wchar_t* FnS = L".";
 	size_t pos = fname.find_last_of(FnS);
@@ -103,7 +103,7 @@ std::wstring RemoveExtInPath(std::wstring fname)
 		: fname.substr(0, pos);
 }
 
-void GenerateStyle(wstring Directory)
+void GenerateStyle(const wstring &Directory)
 {
 	wstring CurDir = RemoveFileInPath(Directory);
 	SetCurrentDirectoryW(CurDir.c_str());
@@ -120,7 +120,7 @@ void GenerateStyle(wstring Directory)
 	}
 }
 
-void UngenerateStyle(wstring File)
+void UngenerateStyle(const wstring &File)
 {
 	wstring CurDir = RemoveFileInPath(File);
 	SetCurrentDirectoryW(CurDir.c_str());
@@ -158,8 +158,7 @@ void UngenerateStyle(wstring File)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	system("chcp 1251");
-	setlocale(0, "Rus");
+	locale::global(locale("ru_RU.UTF-8"));
 	if (argc < 2)
 		return -1;
 	for (int i = 1; i < argc; i++)

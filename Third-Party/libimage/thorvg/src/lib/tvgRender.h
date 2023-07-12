@@ -30,8 +30,9 @@ namespace tvg
 {
 
 using RenderData = void*;
+using pixel_t = uint32_t;
 
-enum RenderUpdateFlag {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, All = 255};
+enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, All = 255};
 
 struct Surface;
 
@@ -41,15 +42,21 @@ enum ColorSpace
     ARGB8888,          //The channels are joined in the order: alpha, red, green, blue. Colors are alpha-premultiplied.
     ABGR8888S,         //The channels are joined in the order: alpha, blue, green, red. Colors are un-alpha-premultiplied.
     ARGB8888S,         //The channels are joined in the order: alpha, red, green, blue. Colors are un-alpha-premultiplied.
+    Grayscale8,        //One single channel data.
     Unsupported        //TODO: Change to the default, At the moment, we put it in the last to align with SwCanvas::Colorspace.
 };
 
 struct Surface
 {
-    uint32_t* buffer;
+    union {
+        pixel_t* data;       //system based data pointer
+        uint32_t* buf32;     //for explicit 32bits channels
+        uint8_t*  buf8;      //for explicit 8bits grayscale
+    };
     uint32_t stride;
     uint32_t w, h;
     ColorSpace  cs;
+    uint8_t channelSize;
 
     bool premultiplied;      //Alpha-premultiplied
     bool owner;              //Only owner could modify the buffer
@@ -58,7 +65,7 @@ struct Surface
 struct Compositor
 {
     CompositeMethod method;
-    uint32_t        opacity;
+    uint8_t        opacity;
 };
 
 struct RenderMesh
@@ -91,6 +98,20 @@ struct RenderRegion
         if (w < 0) w = 0;
         if (h < 0) h = 0;
     }
+
+    void add(const RenderRegion& rhs)
+    {
+        if (rhs.x < x) {
+            w += (x - rhs.x);
+            x = rhs.x;
+        }
+        if (rhs.y < y) {
+            h += (y - rhs.y);
+            y = rhs.y;
+        }
+        if (rhs.x + rhs.w > x + w) w = (rhs.x + rhs.w) - x;
+        if (rhs.y + rhs.h > y + h) h = (rhs.y + rhs.h) - y;
+    }
 };
 
 struct RenderTransform
@@ -118,12 +139,13 @@ struct RenderStroke
     uint32_t dashCnt = 0;
     StrokeCap cap = StrokeCap::Square;
     StrokeJoin join = StrokeJoin::Bevel;
+    float miterlimit = 4.0f;
     bool strokeFirst = false;
 
     ~RenderStroke()
     {
         free(dashPattern);
-        if (fill) delete(fill);
+        delete(fill);
     }
 };
 
@@ -131,13 +153,8 @@ struct RenderShape
 {
     struct
     {
-        PathCommand* cmds = nullptr;
-        uint32_t cmdCnt = 0;
-        uint32_t reservedCmdCnt = 0;
-
-        Point *pts = nullptr;
-        uint32_t ptsCnt = 0;
-        uint32_t reservedPtsCnt = 0;
+        Array<PathCommand> cmds;
+        Array<Point> pts;
     } path;
 
     Fill *fill = nullptr;
@@ -147,11 +164,8 @@ struct RenderShape
 
     ~RenderShape()
     {
-        free(path.cmds);
-        free(path.pts);
-
-        if (fill) delete(fill);
-        if (stroke) delete(stroke);
+        delete(fill);
+        delete(stroke);
     }
 
     void fillColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
@@ -204,15 +218,22 @@ struct RenderShape
         if (!stroke) return StrokeJoin::Bevel;
         return stroke->join;
     }
+
+    float strokeMiterlimit() const
+    {
+        if (!stroke) return 4.0f;
+
+        return stroke->miterlimit;;
+    }
 };
 
 class RenderMethod
 {
 public:
     virtual ~RenderMethod() {}
-    virtual RenderData prepare(const RenderShape& rshape, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags, bool clipper) = 0;
-    virtual RenderData prepare(const Array<RenderData>& scene, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags) = 0;
-    virtual RenderData prepare(Surface* surface, const RenderMesh* mesh, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags) = 0;
+    virtual RenderData prepare(const RenderShape& rshape, RenderData data, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags, bool clipper) = 0;
+    virtual RenderData prepare(const Array<RenderData>& scene, RenderData data, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags) = 0;
+    virtual RenderData prepare(Surface* surface, const RenderMesh* mesh, RenderData data, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags) = 0;
     virtual bool preRender() = 0;
     virtual bool renderShape(RenderData data) = 0;
     virtual bool renderImage(RenderData data) = 0;
@@ -221,14 +242,77 @@ public:
     virtual RenderRegion region(RenderData data) = 0;
     virtual RenderRegion viewport() = 0;
     virtual bool viewport(const RenderRegion& vp) = 0;
+    virtual bool blend(BlendMethod method) = 0;
+    virtual ColorSpace colorSpace() = 0;
 
     virtual bool clear() = 0;
     virtual bool sync() = 0;
 
-    virtual Compositor* target(const RenderRegion& region) = 0;
-    virtual bool beginComposite(Compositor* cmp, CompositeMethod method, uint32_t opacity) = 0;
+    virtual Compositor* target(const RenderRegion& region, ColorSpace cs) = 0;
+    virtual bool beginComposite(Compositor* cmp, CompositeMethod method, uint8_t opacity) = 0;
     virtual bool endComposite(Compositor* cmp) = 0;
 };
+
+static inline bool MASK_OPERATION(CompositeMethod method)
+{
+    switch(method) {
+        case CompositeMethod::AlphaMask:
+        case CompositeMethod::InvAlphaMask:
+        case CompositeMethod::LumaMask:
+        case CompositeMethod::InvLumaMask:
+            return false;
+        case CompositeMethod::AddMask:
+        case CompositeMethod::SubtractMask:
+        case CompositeMethod::IntersectMask:
+        case CompositeMethod::DifferenceMask:
+            return true;
+        default:
+            TVGERR("COMMON", "Unsupported Composite Size! = %d", (int)method);
+            return false;
+    }
+}
+
+static inline uint8_t CHANNEL_SIZE(ColorSpace cs)
+{
+    switch(cs) {
+        case ColorSpace::ABGR8888:
+        case ColorSpace::ABGR8888S:
+        case ColorSpace::ARGB8888:
+        case ColorSpace::ARGB8888S:
+            return sizeof(uint32_t);
+        case ColorSpace::Grayscale8:
+            return sizeof(uint8_t);
+        case ColorSpace::Unsupported:
+        default:
+            TVGERR("SW_ENGINE", "Unsupported Channel Size! = %d", (int)cs);
+            return 0;
+    }
+}
+
+static inline ColorSpace COMPOSITE_TO_COLORSPACE(RenderMethod& renderer, CompositeMethod method)
+{
+    switch(method) {
+        case CompositeMethod::AlphaMask:
+        case CompositeMethod::InvAlphaMask:
+            return ColorSpace::Grayscale8;
+        case CompositeMethod::LumaMask:
+        case CompositeMethod::InvLumaMask:
+        case CompositeMethod::AddMask:
+        case CompositeMethod::SubtractMask:
+        case CompositeMethod::IntersectMask:
+        case CompositeMethod::DifferenceMask:
+            return renderer.colorSpace();
+        default:
+            TVGERR("COMMON", "Unsupported Composite Size! = %d", (int)method);
+            return ColorSpace::Unsupported;
+    }
+}
+
+static inline uint8_t MULTIPLY(uint8_t c, uint8_t a)
+{
+    return (((c) * (a) + 0xff) >> 8);
+}
+
 
 }
 

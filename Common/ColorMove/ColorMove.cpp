@@ -246,6 +246,7 @@ void material() {
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	locale::global(locale("ru_RU.UTF-8"));
 	cout << "ColorMove:" << endl;
 	cout << "Copyright (c) Umerov, 2022" << endl << endl;
 

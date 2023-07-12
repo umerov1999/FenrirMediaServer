@@ -41,7 +41,6 @@ public:
 	afx_msg void CheckAccess();
 	afx_msg void OnLogin();
 	afx_msg void OnSelectKateUser();
-	afx_msg void OnOldToken();
 	afx_msg void OnToken();
 	afx_msg void OnClose();
 

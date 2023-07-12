@@ -1,0 +1,1 @@
+find . -name '*.*' -exec wine Utf8Check_x64.exe {} \; > out.txt

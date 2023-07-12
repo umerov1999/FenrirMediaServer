@@ -26,7 +26,7 @@
 /* External Class Implementation                                        */
 /************************************************************************/
 
-Picture::Picture() : pImpl(new Impl)
+Picture::Picture() : pImpl(new Impl(this))
 {
     Paint::pImpl->id = TVG_CLASS_ID_PICTURE;
     Paint::pImpl->method(new PaintMethod<Picture::Impl>(pImpl));
@@ -81,13 +81,6 @@ Result Picture::load(uint32_t* data, uint32_t w, uint32_t h, bool copy) noexcept
 }
 
 
-Result Picture::viewbox(float* x, float* y, float* w, float* h) const noexcept
-{
-    if (pImpl->viewbox(x, y, w, h)) return Result::Success;
-    return Result::InsufficientCondition;
-}
-
-
 Result Picture::size(float w, float h) noexcept
 {
     if (pImpl->size(w, h)) return Result::Success;
@@ -116,7 +109,7 @@ const uint32_t* Picture::data(uint32_t* w, uint32_t* h) const noexcept
         if (w) *w = 0;
         if (h) *h = 0;
     }
-    if (pImpl->surface) return pImpl->surface->buffer;
+    if (pImpl->surface) return pImpl->surface->buf32;
     else return nullptr;
 }
 

@@ -1,4 +1,4 @@
-#include "pch.h"
+п»ї#include "pch.h"
 #include "Hex2BinDialog.h"
 #include "Shlobj.h"
 #pragma comment (lib, "psapi.lib")
@@ -114,7 +114,7 @@ void Hex2BinDialog::HextToBin(const wchar_t*fl)
 	FILE* flt = _wfopen(fl, L"wb");
 	if (!flt)
 	{
-		MessageBoxW(L"Запись файла в этой папке невозможна!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"Р—Р°РїРёСЃСЊ С„Р°Р№Р»Р° РІ СЌС‚РѕР№ РїР°РїРєРµ РЅРµРІРѕР·РјРѕР¶РЅР°!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 
@@ -143,7 +143,7 @@ void Hex2BinDialog::HextToBin(const wchar_t*fl)
 	}
 	free(strbf);
 	fclose(flt);
-	MessageBoxW(L"Успешно!", L"Внимание!", MB_ICONINFORMATION);
+	MessageBoxW(L"РЈСЃРїРµС€РЅРѕ!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 }
 
 void Hex2BinDialog::BinToHex(const wchar_t*fl)
@@ -151,7 +151,7 @@ void Hex2BinDialog::BinToHex(const wchar_t*fl)
 	FILE* flt = _wfopen(fl, L"rb");
 	if (!flt)
 	{
-		MessageBoxW(L"Не возможно открыть файл!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"РќРµ РІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 	fseek(flt, 0, SEEK_END);
@@ -195,7 +195,7 @@ void Hex2BinDialog::OnOpen()
 #else
 	DWORD dwFlags = OFN_OVERWRITEPROMPT;
 #endif
-	CFileDialog fileDialog(TRUE, L"", NULL, dwFlags, L"Все файлы|*.*|");
+	CFileDialog fileDialog(TRUE, L"", NULL, dwFlags, L"Р’СЃРµ С„Р°Р№Р»С‹|*.*|");
 	int result = (int)fileDialog.DoModal();
 	if (result != 1)
 		return;
@@ -224,7 +224,7 @@ void Hex2BinDialog::OnSave()
 #else
 	DWORD dwFlags = OFN_OVERWRITEPROMPT;
 #endif
-	CFileDialog fileDialog(FALSE, L"bin", NULL, dwFlags, L"Бинарный файл|*.bin|");
+	CFileDialog fileDialog(FALSE, L"bin", NULL, dwFlags, L"Р‘РёРЅР°СЂРЅС‹Р№ С„Р°Р№Р»|*.bin|");
 	int result = (int)fileDialog.DoModal();
 	if (result != 1)
 		return;
@@ -250,7 +250,7 @@ BOOL Hex2BinDialog::PreTranslateMessage(MSG* pMsg)
 				FILE*tmp = _wfopen(szBuf, L"rb");
 				if (!tmp)
 				{
-					MessageBoxW(L"Невозможно открыть файл!", L"Внимание!", MB_ICONINFORMATION);
+					MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 					return CDialogEx::PreTranslateMessage(pMsg);
 				}
 				else

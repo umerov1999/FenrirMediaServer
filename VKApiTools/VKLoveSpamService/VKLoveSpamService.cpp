@@ -539,6 +539,8 @@ void ServiceMain() {
 }
 /*
 int main() {
+	locale::global(locale("ru_RU.UTF-8"));
+	
 	ProcMain(false);
 	return 0;
 }

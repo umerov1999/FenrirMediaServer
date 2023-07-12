@@ -119,7 +119,6 @@ BEGIN_MESSAGE_MAP(VKApiToolsInputLogin, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, OnLogin)
 	ON_BN_CLICKED(IDC_BUTTON2, CheckAccess)
 	ON_BN_CLICKED(IDC_BUTTON3, OnToken)
-	ON_BN_CLICKED(IDC_BUTTON4, OnOldToken)
 	ON_CBN_SELCHANGE(IDC_COMBO1, OnSelectKateUser)
 END_MESSAGE_MAP()
 
@@ -511,13 +510,6 @@ BOOL VKApiToolsInputLogin::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
-}
-
-void VKApiToolsInputLogin::OnOldToken()
-{
-	CString Token;
-	EdToken.GetWindowTextW(Token);
-	dlgS.OldToken.SetWindowTextW(Token);
 }
 
 void VKApiToolsInputLogin::OnToken()

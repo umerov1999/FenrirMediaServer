@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "SectionPeEditorSectionSetNameDialog.h"
 
 #ifdef _DEBUG
@@ -91,7 +91,7 @@ void SectionPeEditorSectionSetNameDialog::OnOkT()
 {
 	if (NameEd.GetWindowTextLengthW() <= 0)
 	{
-		MessageBoxW(L"Ââåäèòå íàçâàíèå ñåêöèè. Ìàêñèìàëüíî 7 ñèìâîëîâ", L"Âíèìàíèå!", MB_ICONINFORMATION);
+		MessageBoxW(L"Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÐµÐºÑ†Ð¸Ð¸. ÐœÐ°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð¾ 7 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð²", L"Ð’Ð½Ð¸Ð¼Ð°Ð½Ð¸Ðµ!", MB_ICONINFORMATION);
 		return;
 	}
 	NameEd.GetWindowTextW(NmStr);

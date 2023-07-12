@@ -1,4 +1,4 @@
-#include "pch.h"
+п»ї#include "pch.h"
 #include "SectionPeEditorDialog.h"
 #include "SectionPeEditorSectionsInfoDialog.h"
 #include "SectionPeEditorSectionSetNameDialog.h"
@@ -43,8 +43,8 @@ CButton Check11;
 
 wchar_t* GetStringDate(time_t time, bool Endl)
 {
-	wchar_t Week[7][4] = { L"Вс", L"Пн", L"Вт", L"Ср", L"Чт", L"Пт", L"Сб" };
-	wchar_t Month[12][4] = { L"Янв", L"Фев", L"Мар", L"Апр", L"Май", L"Июн", L"Июл", L"Авг", L"Сен", L"Окт", L"Ноя", L"Дек" };
+	wchar_t Week[7][4] = { L"Р’СЃ", L"РџРЅ", L"Р’С‚", L"РЎСЂ", L"Р§С‚", L"РџС‚", L"РЎР±" };
+	wchar_t Month[12][4] = { L"РЇРЅРІ", L"Р¤РµРІ", L"РњР°СЂ", L"РђРїСЂ", L"РњР°Р№", L"РСЋРЅ", L"РСЋР»", L"РђРІРі", L"РЎРµРЅ", L"РћРєС‚", L"РќРѕСЏ", L"Р”РµРє" };
 	wchar_t* Strbuf = new wchar_t[26];
 
 	time_t timet = time;
@@ -160,10 +160,10 @@ BOOL SectionPeEditorDialog::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
 
-	CLDTEd.SetWindowTextW(L"Нет данных");
-	Platfrm.SetWindowTextW(L"Нет данных");
-	SizeEd.SetWindowTextW(L"Нет данных");
-	SectionsLst.SetWindowTextW(L"Нет данных");
+	CLDTEd.SetWindowTextW(L"РќРµС‚ РґР°РЅРЅС‹С…");
+	Platfrm.SetWindowTextW(L"РќРµС‚ РґР°РЅРЅС‹С…");
+	SizeEd.SetWindowTextW(L"РќРµС‚ РґР°РЅРЅС‹С…");
+	SectionsLst.SetWindowTextW(L"РќРµС‚ РґР°РЅРЅС‹С…");
 
 	pHex.SetIcon(AfxGetApp()->LoadIcon(IDI_ICON2));
 	return TRUE;
@@ -240,7 +240,7 @@ void SectionPeEditorDialog::GetPeInfo(const wchar_t* patch)
 	std::ifstream pe_file(patch, std::ios::in | std::ios::binary);
 	if (!pe_file)
 	{
-		MessageBoxW(L"Невозможно открыть PE файл!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ PE С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 	try
@@ -255,10 +255,10 @@ void SectionPeEditorDialog::GetPeInfo(const wchar_t* patch)
 		CLDTEd.SetWindowTextW(GetStringDate(image.get_time_date_stamp(), false));
 		image.get_pe_type() == pe_type_32 ? Platfrm.SetWindowTextW(L"32-bit") : Platfrm.SetWindowTextW(L"64-bit");
 
-		TRes = L"Информация о ";
+		TRes = L"РРЅС„РѕСЂРјР°С†РёСЏ Рѕ ";
 		TRes += fgf.GetString();
 		TRes += L":\r\n";
-		TRes += L"\r\n[Базовая информация:]\r\n";
+		TRes += L"\r\n[Р‘Р°Р·РѕРІР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ:]\r\n";
 		TRes.AppendFormat(L"Entry Point: %u\r\n", image.get_ep());
 		TRes.AppendFormat(L"OS Version: %u.%u\r\n", image.get_major_os_version(), image.get_minor_os_version());
 		TRes.AppendFormat(L"Subsystem Version: %u.%u\r\n", image.get_major_subsystem_version(), image.get_minor_subsystem_version());
@@ -268,39 +268,39 @@ void SectionPeEditorDialog::GetPeInfo(const wchar_t* patch)
 		TRes.AppendFormat(L"Subsystem: %u\r\n", Subsystem);
 		TRes.AppendFormat(L"Image Version: %u.%u\r\n", MajorImageVersion, MinorImageVersion);
 		TRes.AppendFormat(L"Win32VersionValue: %u\r\n", Win32VersionValue);
-		TRes.AppendFormat(L"Хешсумма: %u\r\n", image.get_checksum());
+		TRes.AppendFormat(L"РҐРµС€СЃСѓРјРјР°: %u\r\n", image.get_checksum());
 		if (image.is_console() || image.is_gui() || image.is_dotnet())
 		{
-			TRes += L"[Свойства:]\r\n";
+			TRes += L"[РЎРІРѕР№СЃС‚РІР°:]\r\n";
 			if (image.is_console())
-				TRes += (L"Консольное ");
+				TRes += (L"РљРѕРЅСЃРѕР»СЊРЅРѕРµ ");
 			if (image.is_gui())
-				TRes += (L"Диалоговое ");
+				TRes += (L"Р”РёР°Р»РѕРіРѕРІРѕРµ ");
 			if (image.is_dotnet())
 				TRes += (L"Net Framework ");
 			TRes += L"\r\n";
 		}
 		
-		TRes += L"\r\n[Список секций:]\r\n";
+		TRes += L"\r\n[РЎРїРёСЃРѕРє СЃРµРєС†РёР№:]\r\n";
 		pe_bliss::section_list &sections = image.get_image_sections();
 		SectionsLst.ResetContent();
 		Characters.clear();
 		for (section_list::const_iterator i = sections.begin(); i < sections.end(); i++)
 		{
-			TRes += L"Секция: \"";
+			TRes += L"РЎРµРєС†РёСЏ: \"";
 			TRes += i->get_name().c_str();
 			Characters.push_back(i->get_characteristics());
 			SectionsLst.AddString(GetUTF16FromANSI(i->get_name().c_str()));
 			TRes += L"\"\r\n";
 
-			TRes.AppendFormat(L"Позиция в PE: %u\r\n", i->ImagePosition);
-			TRes.AppendFormat(L"Виртуальный адрес: %u\r\n", i->get_virtual_address());
-			TRes.AppendFormat(L"Размер: %u\r\n", i->get_size_of_raw_data());
-			TRes.AppendFormat(L"Виртуальный размер: %u\r\n", i->get_virtual_size());
+			TRes.AppendFormat(L"РџРѕР·РёС†РёСЏ РІ PE: %u\r\n", i->ImagePosition);
+			TRes.AppendFormat(L"Р’РёСЂС‚СѓР°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ: %u\r\n", i->get_virtual_address());
+			TRes.AppendFormat(L"Р Р°Р·РјРµСЂ: %u\r\n", i->get_size_of_raw_data());
+			TRes.AppendFormat(L"Р’РёСЂС‚СѓР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ: %u\r\n", i->get_virtual_size());
 			if (!i->empty())
-				TRes.AppendFormat(L"Энтропия: %.5lf\r\n", entropy_calculator::calculate_entropy(*i));
+				TRes.AppendFormat(L"Р­РЅС‚СЂРѕРїРёСЏ: %.5lf\r\n", entropy_calculator::calculate_entropy(*i));
 
-			TRes += L"Характеристики:";
+			TRes += L"РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё:";
 
 			if (i->code() == true)
 			{
@@ -353,18 +353,18 @@ void SectionPeEditorDialog::GetPeInfo(const wchar_t* patch)
 
 		if (image.has_imports())
 		{
-			TRes += L"\r\n[Импортируемые библиотеки]\r\n";
+			TRes += L"\r\n[РРјРїРѕСЂС‚РёСЂСѓРµРјС‹Рµ Р±РёР±Р»РёРѕС‚РµРєРё]\r\n";
 			const imported_functions_list imports = get_imported_functions(image);
 			for (imported_functions_list::const_iterator it = imports.begin(); it != imports.end(); ++it)
 			{
 				const import_library& lib = *it;
 				TRes.AppendFormat(L"%s\r\n", GetUTF16FromANSI(lib.get_name().c_str()));
 			}
-			TRes += L"\r\n[Таблица импорта:]";
+			TRes += L"\r\n[РўР°Р±Р»РёС†Р° РёРјРїРѕСЂС‚Р°:]";
 			for (imported_functions_list::const_iterator it = imports.begin(); it != imports.end(); ++it)
 			{
 				const import_library& lib = *it;
-				TRes.AppendFormat(L"\r\nБиблиотека (%s):\r\n", GetUTF16FromANSI(lib.get_name().c_str()));
+				TRes.AppendFormat(L"\r\nР‘РёР±Р»РёРѕС‚РµРєР° (%s):\r\n", GetUTF16FromANSI(lib.get_name().c_str()));
 
 				const import_library::imported_list& functions = lib.get_imported_functions();
 				for (import_library::imported_list::const_iterator func_it = functions.begin(); func_it != functions.end(); ++func_it)
@@ -381,7 +381,7 @@ void SectionPeEditorDialog::GetPeInfo(const wchar_t* patch)
 
 		if (image.has_exports())
 		{
-			TRes += L"\r\n[Таблица экспорта:]";
+			TRes += L"\r\n[РўР°Р±Р»РёС†Р° СЌРєСЃРїРѕСЂС‚Р°:]";
 			export_info info;
 			const exported_functions_list exports = get_exported_functions(image, info);
 			TRes.AppendFormat(L"\r\n(%s):\r\n", GetUTF16FromANSI(info.get_name().c_str()));
@@ -427,7 +427,7 @@ void SectionPeEditorDialog::GetPeInfo(const wchar_t* patch)
 
 void SectionPeEditorDialog::Execute(int ID)
 {
-	if(MessageBoxW(L"Продолжить?", L"Предупреждение!", MB_ICONINFORMATION | MB_YESNO) == IDNO)
+	if(MessageBoxW(L"РџСЂРѕРґРѕР»Р¶РёС‚СЊ?", L"РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ!", MB_ICONINFORMATION | MB_YESNO) == IDNO)
 	{
 		return;
 	}
@@ -441,13 +441,13 @@ void SectionPeEditorDialog::Execute(int ID)
 
 	if (fgf.GetLength() <= 0)
 	{
-		MessageBoxW(L"Выберите PE файл!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"Р’С‹Р±РµСЂРёС‚Рµ PE С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 
 	if (FLSTRSegment.GetLength() <= 0 && ID != 2 && ID != -1 && ID != -2)
 	{
-		MessageBoxW(L"Выберите файл секции!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р№Р» СЃРµРєС†РёРё!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 
@@ -467,7 +467,7 @@ void SectionPeEditorDialog::Execute(int ID)
 
 	if (sgmed.GetLength() <= 0 && ID != -1 && ID != -2)
 	{
-		MessageBoxW(L"Введите имя секции!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"Р’РІРµРґРёС‚Рµ РёРјСЏ СЃРµРєС†РёРё!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 
@@ -477,7 +477,7 @@ void SectionPeEditorDialog::Execute(int ID)
 		sgt = _wfopen(FLSTRSegment.GetString(), L"rb");
 		if (!sgt && ID != 2)
 		{
-			MessageBoxW(L"Невозможно открыть файл секции!", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» СЃРµРєС†РёРё!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			return;
 		}
 	}
@@ -485,7 +485,7 @@ void SectionPeEditorDialog::Execute(int ID)
 	std::ifstream pe_file(fgf.GetString(), std::ios::in | std::ios::binary);
 	if (!pe_file)
 	{
-		MessageBoxW(L"Невозможно открыть PE файл!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ PE С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 	try
@@ -497,13 +497,13 @@ void SectionPeEditorDialog::Execute(int ID)
 		bool Finded = image.SectionExist(segmnm);
 		if (Finded == false && (ID == 0 || ID == 2 || ID == -2) && ID != -1)
 		{
-			MessageBoxW(L"Секция не найдена", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РЎРµРєС†РёСЏ РЅРµ РЅР°Р№РґРµРЅР°", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			image.get_image_sections().clear();
 			return;
 		}
 		if (Finded == true && ID == 1 && ID != -1 && ID != -2)
 		{
-			MessageBoxW(L"Секция уже существует", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РЎРµРєС†РёСЏ СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			image.get_image_sections().clear();
 			return;
 		}
@@ -630,7 +630,7 @@ void SectionPeEditorDialog::Execute(int ID)
 			std::string &raw_data = sect.get_raw_data();
 			if (szz > (int)raw_data.length())
 			{
-				MessageBoxW(L"Файл секции больше, чем секция в PE файле, усечение размера!", L"Предупреждение!", MB_ICONINFORMATION);
+				MessageBoxW(L"Р¤Р°Р№Р» СЃРµРєС†РёРё Р±РѕР»СЊС€Рµ, С‡РµРј СЃРµРєС†РёСЏ РІ PE С„Р°Р№Р»Рµ, СѓСЃРµС‡РµРЅРёРµ СЂР°Р·РјРµСЂР°!", L"РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ!", MB_ICONINFORMATION);
 				szz = (int)raw_data.length();
 			}
 			memset((void*)raw_data.data(), 0, raw_data.length());
@@ -658,10 +658,10 @@ void SectionPeEditorDialog::Execute(int ID)
 		if (!new_pe_file0)
 		{
 			image.get_image_sections().clear();
-			MessageBoxW(L"Невозможно создать файл в этой папке!", L"Ошибка!", MB_ICONERROR);
+			MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕР·РґР°С‚СЊ С„Р°Р№Р» РІ СЌС‚РѕР№ РїР°РїРєРµ!", L"РћС€РёР±РєР°!", MB_ICONERROR);
 			return;
 		}
-		//Пересобираем PE-файл
+		//РџРµСЂРµСЃРѕР±РёСЂР°РµРј PE-С„Р°Р№Р»
 		rebuild_pe(image, new_pe_file0);
 		new_pe_file0.close();
 		image.get_image_sections().clear();
@@ -677,7 +677,7 @@ void SectionPeEditorDialog::Execute(int ID)
 		return;
 	}
 	GetPeInfo((wchar_t*)tmpoy.GetString());
-	MessageBoxW(L"Выполнено!", L"Внимание!", MB_ICONINFORMATION);
+	MessageBoxW(L"Р’С‹РїРѕР»РЅРµРЅРѕ!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 }
 
 void SectionPeEditorDialog::OnSelect()
@@ -699,7 +699,7 @@ void SectionPeEditorDialog::OnSelect()
 
 		if (!tmp)
 		{
-			MessageBoxW(L"Невозможно открыть файл!", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			return;
 		}
 		fclose(tmp);
@@ -726,7 +726,7 @@ void SectionPeEditorDialog::OnSecmSelect()
 		FILE*tmp = _wfopen(fileDialog.GetPathName().GetString(), L"rb");
 		if (!tmp)
 		{
-			MessageBoxW(L"Невозможно открыть файл!", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			return;
 		}
 		fclose(tmp);
@@ -744,18 +744,18 @@ void SectionPeEditorDialog::OnExtractSections()
 
 	if (fgf.GetLength() <= 0)
 	{
-		MessageBoxW(L"Выберите PE файл!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"Р’С‹Р±РµСЂРёС‚Рµ PE С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 	if (sect.GetLength() <= 0)
 	{
-		MessageBoxW(L"Выберите секцию!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"Р’С‹Р±РµСЂРёС‚Рµ СЃРµРєС†РёСЋ!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 	std::ifstream pe_file(fgf.GetString(), std::ios::in | std::ios::binary);
 	if (!pe_file)
 	{
-		MessageBoxW(L"Невозможно открыть PE файл!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ PE С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 	std::string DataSect = "";
@@ -768,7 +768,7 @@ void SectionPeEditorDialog::OnExtractSections()
 		bool Finded = image.SectionExist(segmnm);
 		if (Finded == false)
 		{
-			MessageBoxW(L"Секция не найдена", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РЎРµРєС†РёСЏ РЅРµ РЅР°Р№РґРµРЅР°", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			image.get_image_sections().clear();
 			return;
 		}
@@ -798,14 +798,14 @@ void SectionPeEditorDialog::OnExtractSections()
 		FILE*tmp = _wfopen(fileDialog.GetPathName().GetString(), L"wb");
 		if (!tmp)
 		{
-			MessageBoxW(L"Невозможно записать в файл!", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ РІ С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			return;
 		}
 
 		fwrite(DataSect.data(), sizeof(char), DataSect.size(), tmp);
 		fclose(tmp);
 	}
-	MessageBoxW(L"Выполнено!", L"Внимание!", MB_ICONINFORMATION);
+	MessageBoxW(L"Р’С‹РїРѕР»РЅРµРЅРѕ!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 }
 
 void SectionPeEditorDialog::OnExtractOverImage()
@@ -815,14 +815,14 @@ void SectionPeEditorDialog::OnExtractOverImage()
 
 	if (fgf.GetLength() <= 0)
 	{
-		MessageBoxW(L"Выберите PE файл!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"Р’С‹Р±РµСЂРёС‚Рµ PE С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 	long zsz = 0;
 	std::ifstream pe_file(fgf.GetString(), std::ios::in | std::ios::binary);
 	if (!pe_file)
 	{
-		MessageBoxW(L"Невозможно открыть PE файл!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ PE С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 	try
@@ -846,7 +846,7 @@ void SectionPeEditorDialog::OnExtractOverImage()
 	if (jz <= zsz)
 	{
 		fclose(flt);
-		MessageBoxW(L"Данных, после образа не найдено!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"Р”Р°РЅРЅС‹С…, РїРѕСЃР»Рµ РѕР±СЂР°Р·Р° РЅРµ РЅР°Р№РґРµРЅРѕ!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 	fseek(flt, zsz, SEEK_SET);
@@ -872,7 +872,7 @@ void SectionPeEditorDialog::OnExtractOverImage()
 		if (!tmp)
 		{
 			free(mbuf);
-			MessageBoxW(L"Невозможно записать в файл!", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ РІ С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			return;
 		}
 
@@ -880,7 +880,7 @@ void SectionPeEditorDialog::OnExtractOverImage()
 		free(mbuf);
 		fclose(tmp);
 	}
-	MessageBoxW(L"Выполнено!", L"Внимание!", MB_ICONINFORMATION);
+	MessageBoxW(L"Р’С‹РїРѕР»РЅРµРЅРѕ!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 }
 
 void SectionPeEditorDialog::OnAddOverImage()
@@ -890,7 +890,7 @@ void SectionPeEditorDialog::OnAddOverImage()
 
 	if (fgf.GetLength() <= 0)
 	{
-		MessageBoxW(L"Выберите PE файл!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(L"Р’С‹Р±РµСЂРёС‚Рµ PE С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 #if (WINVER >= 0x0400)
@@ -909,7 +909,7 @@ void SectionPeEditorDialog::OnAddOverImage()
 		FILE*tmp = _wfopen(fileDialog.GetPathName().GetString(), L"rb");
 		if (!tmp)
 		{
-			MessageBoxW(L"Невозможно прочесть файл!", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РїСЂРѕС‡РµСЃС‚СЊ С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			return;
 		}
 		fseek(tmp, 0, SEEK_END);
@@ -922,13 +922,13 @@ void SectionPeEditorDialog::OnAddOverImage()
 		FILE*tmpy = _wfopen(fgf.GetString(), L"ab");
 		if (!tmpy)
 		{
-			MessageBoxW(L"Невозможно записать в PE Файл!", L"Внимание!", MB_ICONINFORMATION);
+			MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ РІ PE Р¤Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 			return;
 		}
 		fwrite(flt, 1, syto, tmpy);
 		fclose(tmpy);
 	}
-	MessageBoxW(L"Выполнено!", L"Внимание!", MB_ICONINFORMATION);
+	MessageBoxW(L"Р’С‹РїРѕР»РЅРµРЅРѕ!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 }
 
 void SectionPeEditorDialog::OnReplace()
@@ -1076,7 +1076,7 @@ BOOL SectionPeEditorDialog::PreTranslateMessage(MSG* pMsg)
 				FILE* tmp = _wfopen(szBuf, L"rb");
 				if (!tmp)
 				{
-					MessageBoxW(L"Невозможно открыть файл!", L"Внимание!", MB_ICONINFORMATION);
+					MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 					return CDialogEx::PreTranslateMessage(pMsg);
 				}
 				else
@@ -1095,13 +1095,13 @@ BOOL SectionPeEditorDialog::PreTranslateMessage(MSG* pMsg)
 
 						if (fgf.GetLength() <= 0)
 						{
-							MessageBoxW(L"Выберите PE файл!", L"Внимание!", MB_ICONINFORMATION);
+							MessageBoxW(L"Р’С‹Р±РµСЂРёС‚Рµ PE С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 							return CDialogEx::PreTranslateMessage(pMsg);
 						}
 						FILE* tmp = _wfopen(szBuf, L"rb");
 						if (!tmp)
 						{
-							MessageBoxW(L"Невозможно прочесть файл!", L"Внимание!", MB_ICONINFORMATION);
+							MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ РїСЂРѕС‡РµСЃС‚СЊ С„Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 							return CDialogEx::PreTranslateMessage(pMsg);
 						}
 						fseek(tmp, 0, SEEK_END);
@@ -1114,12 +1114,12 @@ BOOL SectionPeEditorDialog::PreTranslateMessage(MSG* pMsg)
 						FILE* tmpy = _wfopen(fgf.GetString(), L"ab");
 						if (!tmpy)
 						{
-							MessageBoxW(L"Невозможно записать в PE Файл!", L"Внимание!", MB_ICONINFORMATION);
+							MessageBoxW(L"РќРµРІРѕР·РјРѕР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ РІ PE Р¤Р°Р№Р»!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 							return CDialogEx::PreTranslateMessage(pMsg);
 						}
 						fwrite(flt, 1, syto, tmpy);
 						fclose(tmpy);
-						MessageBoxW(L"Выполнено!", L"Внимание!", MB_ICONINFORMATION);
+						MessageBoxW(L"Р’С‹РїРѕР»РЅРµРЅРѕ!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 					}
 				}
 			}

@@ -1,4 +1,4 @@
-#ifndef PCH_H
+﻿#ifndef PCH_H
 #define PCH_H
 
 #include "WinMessageBox.h"

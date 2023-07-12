@@ -1,4 +1,4 @@
-#include <vector>
+﻿#include <vector>
 #include "MP3DataProvider.h"
 #include "id3v2lib.h"
 

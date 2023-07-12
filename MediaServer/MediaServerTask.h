@@ -6,7 +6,7 @@
 #include "json.hpp"
 #include "Map.h"
 #include "sha1.hpp"
-#include "crc32.h"
+#include "crc32.hpp"
 #include "WSTRUtils.h"
 #define SERVER_NAME "Fenrir"
 #define CACHE_DIR L"Thumbs"
@@ -217,8 +217,8 @@ public:
 		orig_name = file_name;
 		fileName = WSTRUtils::wchar_to_UTF8(file_name);
 		path = WSTRUtils::combine_path(path_name, file_name);
-		id = crc32(WSTRUtils::wchar_to_UTF8(file_name));
-		owner_id = crc32(WSTRUtils::wchar_to_UTF8(path_name));
+		id = CRC32::crc32(WSTRUtils::wchar_to_UTF8(file_name));
+		owner_id = CRC32::crc32(WSTRUtils::wchar_to_UTF8(path_name));
 		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + "." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
 	}
 	void operator=(const Media& media) {
@@ -260,8 +260,8 @@ public:
 		orig_name = file_name;
 		fileName = WSTRUtils::wchar_to_UTF8(file_name);
 		path = WSTRUtils::combine_path(path_name, file_name);
-		id = crc32(WSTRUtils::wchar_to_UTF8(file_name));
-		owner_id = crc32(WSTRUtils::wchar_to_UTF8(path_name));
+		id = CRC32::crc32(WSTRUtils::wchar_to_UTF8(file_name));
+		owner_id = CRC32::crc32(WSTRUtils::wchar_to_UTF8(path_name));
 		hash = std::to_string(mod_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(path)) + "." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(file_name)));
 		return hash;
 	}
@@ -685,8 +685,8 @@ public:
 	}
 	Inode* attachTo(Inode& parentNode, const std::wstring&root) {
 		parent = &parentNode;
-		id = crc32(WSTRUtils::wchar_to_UTF8(name));
-		owner_id = crc32(WSTRUtils::wchar_to_UTF8(WSTRUtils::combine_root_path(root, getFullPath(), parentNode.name)));
+		id = CRC32::crc32(WSTRUtils::wchar_to_UTF8(name));
+		owner_id = CRC32::crc32(WSTRUtils::wchar_to_UTF8(WSTRUtils::combine_root_path(root, getFullPath(), parentNode.name)));
 		if (type != InodeType::INODE_FOLDER) {
 			hash = std::to_string(modification_time) + SHA1::from_string(WSTRUtils::wchar_to_UTF8(WSTRUtils::combine_root_path(root, getFullPath(), name))) + "." + WSTRUtils::wchar_to_UTF8(WSTRUtils::toLowerW(get_ext(name)));
 			preview_hash = hash;

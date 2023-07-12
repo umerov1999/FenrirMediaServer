@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <sstream>
 #include <ctime>
+#include <cstdint>
 #define DO_SECOND_OF(first,do_second) if(first) {first = false;} else { do_second; }
 namespace WSTRUtils
 {
@@ -84,7 +85,7 @@ namespace WSTRUtils
 	}
 
 	static inline char from_hex(char ch) {
-		return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
+		return (char)(isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10);
 	}
 	static std::string url_decode(const std::string &text) {
 		std::ostringstream escaped;
@@ -508,6 +509,7 @@ namespace WSTRUtils
 	{
 		return url_encode(wchar_to_UTF8(link));
 	}
+
 	static std::string wchar_to_Cp1251(const std::wstring &In)
 	{
 		std::string ret;
@@ -550,6 +552,51 @@ namespace WSTRUtils
 	static std::wstring combine_root_path(const std::wstring& root, const std::wstring& folder, const std::wstring& child) {
 		return combine_path(combine_path(root, folder), child);
 	}
+
+	static std::string printBytesCount(int64_t Bytes) {
+		int64_t tb = 1099511627776;
+		int64_t gb = 1073741824;
+		int64_t mb = 1048576;
+		int64_t kb = 1024;
+		char returnSize[512];
+
+		if (Bytes >= tb)
+			sprintf_s(returnSize, (const char*)u8"%.2lf TB", (double)Bytes / tb);
+		else if (Bytes >= gb && Bytes < tb)
+			sprintf_s(returnSize, (const char*)u8"%.2lf GB", (double)Bytes / gb);
+		else if (Bytes >= mb && Bytes < gb)
+			sprintf_s(returnSize, (const char*)u8"%.2lf MB", (double)Bytes / mb);
+		else if (Bytes >= kb && Bytes < mb)
+			sprintf_s(returnSize, (const char*)u8"%.2lf KB", (double)Bytes / kb);
+		else if (Bytes < kb)
+			sprintf_s(returnSize, (const char*)u8"%.2llu Bytes", Bytes);
+		else
+			sprintf_s(returnSize, (const char*)u8"%.2llu Bytes", Bytes);
+		return returnSize;
+	}
+
+	static std::wstring wprintBytesCount(int64_t Bytes) {
+		int64_t tb = 1099511627776;
+		int64_t gb = 1073741824;
+		int64_t mb = 1048576;
+		int64_t kb = 1024;
+		wchar_t returnSize[512];
+
+		if (Bytes >= tb)
+			swprintf_s(returnSize, L"%.2lf TB", (double)Bytes / tb);
+		else if (Bytes >= gb && Bytes < tb)
+			swprintf_s(returnSize, L"%.2lf GB", (double)Bytes / gb);
+		else if (Bytes >= mb && Bytes < gb)
+			swprintf_s(returnSize, L"%.2lf MB", (double)Bytes / mb);
+		else if (Bytes >= kb && Bytes < mb)
+			swprintf_s(returnSize, L"%.2lf KB", (double)Bytes / kb);
+		else if (Bytes < kb)
+			swprintf_s(returnSize, L"%.2llu Bytes", Bytes);
+		else
+			swprintf_s(returnSize, L"%.2llu Bytes", Bytes);
+		return returnSize;
+	}
+
 #ifdef BIND_CONSOLE
 	static void BindStdHandlesToConsole()
 	{

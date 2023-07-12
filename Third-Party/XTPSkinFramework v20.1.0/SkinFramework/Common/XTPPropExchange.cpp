@@ -589,7 +589,7 @@ BOOL CXTPPropExchange::IsSamePropValue(VARTYPE vtProp, const void* pv1, const vo
 		case VT_EX_RECT:
 		case VT_EX_SIZE: bSame = memcmp(pv1, pv2, GetSizeOfVarType(vtProp)) == 0; break;
 
-		case VT_VARIANT: bSame = *((COleVariant*)pv1) == *((COleVariant*)pv2); break;
+		case VT_VARIANT: bSame = *((COleVariant*)pv1) == *((LPCVARIANT*)pv2); break;
 
 		case VT_DATE: bSame = *((COleDateTime*)pv1) == *((COleDateTime*)pv2); break;
 	}

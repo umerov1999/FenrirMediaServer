@@ -1,4 +1,4 @@
-#include "pch.h"
+п»ї#include "pch.h"
 #include "SectionPeEditorInitMFC.h"
 #include "SectionPeEditorDialog.h"
 
@@ -35,7 +35,7 @@ void SectionPeEditor::LoadStyle()
 	XTPSkinMgr()->SetApplyOptions(XTPSkinManager()->GetApplyOptions() | xtpSkinApplyMetrics);
 	if (XTPSkinMgr()->SkinLoadMemory(APP_STYLE_DATA, APP_STYLE_SIZE) == FALSE)
 	{
-		MessageBoxW(0, L"Стиль повреждён!", L"Внимание!", MB_ICONINFORMATION);
+		MessageBoxW(0, L"РЎС‚РёР»СЊ РїРѕРІСЂРµР¶РґС‘РЅ!", L"Р’РЅРёРјР°РЅРёРµ!", MB_ICONINFORMATION);
 		return;
 	}
 }

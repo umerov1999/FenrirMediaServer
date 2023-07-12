@@ -22,7 +22,7 @@
 #include "VK_ReverserDialog.h"
 #include <io.h>
 #include <fcntl.h>
-#include "sha512.h"
+#include "sha3.hpp"
 #include "json.hpp"
 #include "libimage.h"
 #include "WSTRUtils.h"
@@ -682,7 +682,7 @@ size_t multipart::parse(const string& body, size_t offset, const std::string& bo
 	}
 
 	if (status == 2) {
-		name = sha512(dt.data);
+		name = SHA3_512::sha3(dt.data);
 		dt.filename = matches2[2];
 	}
 	paramsdata[name] = dt;

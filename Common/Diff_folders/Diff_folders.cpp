@@ -11,7 +11,7 @@
 using namespace std;
 using namespace WSTRUtils;
 namespace fs = std::filesystem;
-#define BUF_SIZE 524288
+#define BUF_SIZE 10485760
 
 class Files {
 public:

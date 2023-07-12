@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <Windows.h>
-#include "sha512.h"
+#include "sha3.hpp"
 #include "WSTRUtils.h"
 #include "json.hpp"
 #include "config_json_parse.h"
@@ -132,7 +132,7 @@ private:
 				}
 				else {
 					cout << "Checking: " << ++count << ") " << wchar_to_UTF8(lpFolder + L"\\" + FindFileData.cFileName) << endl;
-					string hash = sha512file(lpFolder + L"\\" + FindFileData.cFileName);
+					string hash = SHA3_512::sha3_file(lpFolder + L"\\" + FindFileData.cFileName);
 					if (hash == "error") {
 						cout << endl << "Error open: " << wchar_to_UTF8(lpFolder + L"\\" + FindFileData.cFileName) << endl;
 						cout << "Abort (Y : N)?" << endl;

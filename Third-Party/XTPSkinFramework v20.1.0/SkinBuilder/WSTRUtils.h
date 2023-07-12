@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <sstream>
 #include <ctime>
+#include <cstdint>
 #define DO_SECOND_OF(first,do_second) if(first) {first = false;} else { do_second; }
 namespace WSTRUtils
 {
@@ -84,7 +85,7 @@ namespace WSTRUtils
 	}
 
 	static inline char from_hex(char ch) {
-		return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
+		return (char)(isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10);
 	}
 	static std::string url_decode(const std::string &text) {
 		std::ostringstream escaped;
@@ -188,21 +189,21 @@ namespace WSTRUtils
 		for (auto& i : ret)
 		{
 			if (i >= 0x01U && i < 0x1FU)
-				i = ' ';
+				i = u8' ';
 			else
 			{
 				switch (i)
 				{
-				case '\\':
-				case '/':
-				case ':':
-				case '*':
-				case '?':
-				case '\"':
-				case '<':
-				case '>':
-				case '|':
-					i = ' ';
+				case u8'\\':
+				case u8'/':
+				case u8':':
+				case u8'*':
+				case u8'?':
+				case u8'\"':
+				case u8'<':
+				case u8'>':
+				case u8'|':
+					i = u8' ';
 					break;
 				}
 			}
@@ -244,19 +245,19 @@ namespace WSTRUtils
 		for (auto& i : ret)
 		{
 			if (i >= 0x01U && i < 0x1FU)
-				i = ' ';
+				i = u8' ';
 			else
 			{
 				switch (i)
 				{
-				case ':':
-				case '*':
-				case '?':
-				case '\"':
-				case '<':
-				case '>':
-				case '|':
-					i = ' ';
+				case u8':':
+				case u8'*':
+				case u8'?':
+				case u8'\"':
+				case u8'<':
+				case u8'>':
+				case u8'|':
+					i = u8' ';
 					break;
 				}
 			}
@@ -285,19 +286,71 @@ namespace WSTRUtils
 
 	static std::string FixFileNameAudio(const std::string &Path)
 	{
-		std::string bad = { '#', '%', '&', '{', '}', '\\', '<', '>', '*', '?', '/', '$', '\'', '\"', ':', '@', '`', '|', '=' };
+		std::string bad = { u8'#', u8'%', u8'&', u8'{', u8'}', u8'\\', u8'<', u8'>', u8'*', u8'?', u8'/', u8'$', u8'\'', u8'\"', u8':', u8'@', u8'`', u8'|', u8'=' };
 		std::string ret = Path;
 		for (auto& i : ret)
 		{
 			if (i >= 0x01U && i < 0x1FU)
-				i = '_';
+				i = u8'_';
 			else
 			{
 				if (bad.find(i) != std::string::npos)
-					i = L'_';
+					i = u8'_';
 			}
 		}
 
+		return ret;
+	}
+
+	static std::string FixJSonSlashs(const std::string& Path)
+	{
+		std::string ret = Path;
+		for (auto& i : ret)
+		{
+			if (i == u8'\\')
+				i = u8'/';
+		}
+
+		return ret;
+	}
+
+	static std::wstring FixJSonSlashs(const std::wstring& Path)
+	{
+		std::wstring ret = Path;
+		for (auto& i : ret)
+		{
+			if (i == L'\\')
+				i = L'/';
+		}
+
+		return ret;
+	}
+
+	static int ParseInteger(std::string str) {
+		int ret = 0;
+		try {
+			ret = std::stoi(str);
+		}
+		catch (std::invalid_argument e) {
+			
+		}
+		catch (std::out_of_range e) {
+			
+		}
+		return ret;
+	}
+
+	static int ParseInteger(std::wstring str) {
+		int ret = 0;
+		try {
+			ret = std::stoi(str);
+		}
+		catch (std::invalid_argument e) {
+
+		}
+		catch (std::out_of_range e) {
+
+		}
 		return ret;
 	}
 
@@ -310,11 +363,27 @@ namespace WSTRUtils
 		return c;
 	}
 
+	static std::wstring toLowerW(const std::wstring& str) {
+		std::wstring v = str;
+		for (auto& i : v) {
+			i = ToWLower(i);
+		}
+		return v;
+	}
+
 	static char ToLower(char c)
 	{
-		if (c >= 'A' && c <= 'Z')
-			return c + ('z' > 'Z' ? 'z' - 'Z' : 'Z' - 'z');
+		if (c >= u8'A' && c <= u8'Z')
+			return c + (u8'z' > u8'Z' ? u8'z' - u8'Z' : u8'Z' - u8'z');
 		return c;
+	}
+
+	static std::string toLower(const std::string& str) {
+		std::string v = str;
+		for (auto& i : v) {
+			i = ToLower(i);
+		}
+		return v;
 	}
 
 	static bool compare(const std::string &Pattern, const std::string &Cmp)
@@ -440,6 +509,7 @@ namespace WSTRUtils
 	{
 		return url_encode(wchar_to_UTF8(link));
 	}
+
 	static std::string wchar_to_Cp1251(const std::wstring &In)
 	{
 		std::string ret;
@@ -468,4 +538,93 @@ namespace WSTRUtils
 	{
 		return wchar_to_Cp1251(UTF8_to_wchar(In));
 	}
+
+	static std::wstring combine_path(const std::wstring& folder, const std::wstring& child) {
+		if (folder.empty()) {
+			return child;
+		}
+		else if (child.empty()) {
+			return folder;
+		}
+		return folder + L"\\" + child;
+	}
+
+	static std::wstring combine_root_path(const std::wstring& root, const std::wstring& folder, const std::wstring& child) {
+		return combine_path(combine_path(root, folder), child);
+	}
+
+	static std::string printBytesCount(int64_t Bytes) {
+		int64_t tb = 1099511627776;
+		int64_t gb = 1073741824;
+		int64_t mb = 1048576;
+		int64_t kb = 1024;
+		char returnSize[512];
+
+		if (Bytes >= tb)
+			sprintf_s(returnSize, (const char*)u8"%.2lf TB", (double)Bytes / tb);
+		else if (Bytes >= gb && Bytes < tb)
+			sprintf_s(returnSize, (const char*)u8"%.2lf GB", (double)Bytes / gb);
+		else if (Bytes >= mb && Bytes < gb)
+			sprintf_s(returnSize, (const char*)u8"%.2lf MB", (double)Bytes / mb);
+		else if (Bytes >= kb && Bytes < mb)
+			sprintf_s(returnSize, (const char*)u8"%.2lf KB", (double)Bytes / kb);
+		else if (Bytes < kb)
+			sprintf_s(returnSize, (const char*)u8"%.2llu Bytes", Bytes);
+		else
+			sprintf_s(returnSize, (const char*)u8"%.2llu Bytes", Bytes);
+		return returnSize;
+	}
+
+	static std::wstring wprintBytesCount(int64_t Bytes) {
+		int64_t tb = 1099511627776;
+		int64_t gb = 1073741824;
+		int64_t mb = 1048576;
+		int64_t kb = 1024;
+		wchar_t returnSize[512];
+
+		if (Bytes >= tb)
+			swprintf_s(returnSize, L"%.2lf TB", (double)Bytes / tb);
+		else if (Bytes >= gb && Bytes < tb)
+			swprintf_s(returnSize, L"%.2lf GB", (double)Bytes / gb);
+		else if (Bytes >= mb && Bytes < gb)
+			swprintf_s(returnSize, L"%.2lf MB", (double)Bytes / mb);
+		else if (Bytes >= kb && Bytes < mb)
+			swprintf_s(returnSize, L"%.2lf KB", (double)Bytes / kb);
+		else if (Bytes < kb)
+			swprintf_s(returnSize, L"%.2llu Bytes", Bytes);
+		else
+			swprintf_s(returnSize, L"%.2llu Bytes", Bytes);
+		return returnSize;
+	}
+
+#ifdef BIND_CONSOLE
+	static void BindStdHandlesToConsole()
+	{
+		AllocConsole();
+
+		FILE* fl1, *fl2, *fl3;
+		_wfreopen_s(&fl1, L"CONIN$", L"r", stdin);
+		_wfreopen_s(&fl2, L"CONOUT$", L"w", stderr);
+		_wfreopen_s(&fl3, L"CONOUT$", L"w", stdout);
+
+		HANDLE hStdout = CreateFileW(L"CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
+			NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		HANDLE hStdin = CreateFileW(L"CONIN$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
+			NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+		SetStdHandle(STD_OUTPUT_HANDLE, hStdout);
+		SetStdHandle(STD_ERROR_HANDLE, hStdout);
+		SetStdHandle(STD_INPUT_HANDLE, hStdin);
+
+		std::wclog.clear();
+		std::clog.clear();
+		std::wcout.clear();
+		std::cout.clear();
+		std::wcerr.clear();
+		std::cerr.clear();
+		std::wcin.clear();
+		std::cin.clear();
+		std::cout << "         Terminal...            " << std::endl << std::endl;
+	}
+#endif
 }

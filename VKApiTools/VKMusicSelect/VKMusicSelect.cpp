@@ -8,8 +8,7 @@
 #include "vk_api_interface.h"
 #include "VKApiToolsDialog.h"
 #include "Map.h"
-#include "md5.h"
-#include "sha512.h"
+#include "md5.hpp"
 #include "json.hpp"
 #include "pugixml/pugixml.hpp"
 #include "WSTRUtils.h"
@@ -166,7 +165,7 @@ public:
 		if (SecurePos != string::npos)
 		{
 			//TmpUserAgent = VKAndroid_USERAGENT;
-			PostParam += ("&sig=" + (md5("/method/" + Method + "?" + PostParam + secure)));
+			PostParam += ("&sig=" + (MD5::md5("/method/" + Method + "?" + PostParam + secure)));
 		}
 		ret.Request = ResultLink;
 		ret.PostParams = PostParam;
