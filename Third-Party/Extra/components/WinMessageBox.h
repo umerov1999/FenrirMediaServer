@@ -2831,7 +2831,7 @@ public:
 		msg.str(std::wstring());
 		msg.clear();
 		msg.copyfmt(initial);
-		CreateThreadSimpleT(&thMSG, templ);
+		privCreateThreadDetachedSimpleT(&thMSG, templ);
 	}
 
 	template<typename T1>
@@ -2886,12 +2886,17 @@ private:
 		delete msg;
 		return 0;
 	}
-	static inline HANDLE CreateThreadSimpleT(
+	static inline bool privCreateThreadDetachedSimpleT(
 		LPTHREAD_START_ROUTINE  lpStartAddress,
 		const void* lpParameter = NULL, DWORD dwCreationFlags = 0
 	) {
 		DWORD thid = 0;
-		return ::CreateThread(NULL, 0, lpStartAddress, (LPVOID)lpParameter, dwCreationFlags, &thid);
+		HANDLE th = ::CreateThread(NULL, 0, lpStartAddress, (LPVOID)lpParameter, dwCreationFlags, &thid);
+		if (!th) {
+			return false;
+		}
+		CloseHandle(th);
+		return true;
 	}
 	win_message_thread_callback* callback;
 	MSG_TYPE TYPE_MESSAGE;

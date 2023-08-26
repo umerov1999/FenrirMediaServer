@@ -24,7 +24,7 @@
 #include "json.hpp"
 #include "WSTRUtils.h"
 #include "zstd.h"
-#include "ThreadAccessGuard.h"
+#include "win_api_utils.h"
 #include "do_curl.h"
 #include "../../Third-Party/USound/src/USound.h"
 #define VKAPI_VERSION "5.131"
@@ -205,11 +205,11 @@ SOCKET tcp_listen(int Port)
 	SOCKET sock;
 	struct sockaddr_in sin;
 	const int qlen = 1;
-	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) <= 0) {
 		return SOCKET_ERROR;
 	}
 
-	DWORD tr = 1;
+	int tr = 1;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&tr, sizeof(tr));
 
 	sin.sin_addr.s_addr = INADDR_ANY;
@@ -218,7 +218,7 @@ SOCKET tcp_listen(int Port)
 	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0) {
 		return SOCKET_ERROR;
 	}
-	if (::listen(sock, qlen) == SOCKET_ERROR) {
+	if (::listen(sock, qlen) < 0) {
 		return SOCKET_ERROR;
 	}
 	return sock;
@@ -2652,7 +2652,7 @@ void InitMediaServer()
 	while (true)
 	{
 		client_sock = accept(HTTPSserver_sock, (SOCKADDR*)&FromAddr, &len);
-		if (client_sock == SOCKET_ERROR)
+		if (client_sock <= 0)
 			continue;
 		SetTimeOutsSocket(client_sock);
 		ACCEPT_STRUCT* satr = new ACCEPT_STRUCT;
@@ -2661,7 +2661,7 @@ void InitMediaServer()
 		satr->ssl_ctx = ctx;
 		satr->isSSL = Startinit.isSsl;
 		satr->server_config = Startinit;
-		CreateThreadSimple(&HTTPS_ServerThread, satr);
+		CreateThreadDetachedSimple(&HTTPS_ServerThread, satr);
 	}
 	shutdown(HTTPSserver_sock, SD_BOTH);
 	closesocket(HTTPSserver_sock);

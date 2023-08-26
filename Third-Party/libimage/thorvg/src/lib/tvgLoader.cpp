@@ -42,6 +42,10 @@
     #include "tvgWebpLoader.h"
 #endif
 
+#ifdef THORVG_LOTTIE_LOADER_SUPPORT
+    #include "tvgLottieLoader.h"
+#endif
+
 #include "tvgRawLoader.h"
 
 /************************************************************************/
@@ -60,6 +64,12 @@ static LoadModule* _find(FileType type)
         case FileType::Svg: {
 #ifdef THORVG_SVG_LOADER_SUPPORT
             return new SvgLoader;
+#endif
+            break;
+        }
+        case FileType::Lottie: {
+#ifdef THORVG_LOTTIE_LOADER_SUPPORT
+            return new LottieLoader;
 #endif
             break;
         }
@@ -101,6 +111,10 @@ static LoadModule* _find(FileType type)
             format = "SVG";
             break;
         }
+        case FileType::Lottie: {
+            format = "lottie(json)";
+            break;
+        }
         case FileType::Raw: {
             format = "RAW";
             break;
@@ -133,6 +147,8 @@ static LoadModule* _findByPath(const string& path)
     auto ext = path.substr(path.find_last_of(".") + 1);
     if (!ext.compare("tvg")) return _find(FileType::Tvg);
     if (!ext.compare("svg")) return _find(FileType::Svg);
+    if (!ext.compare("json")) return _find(FileType::Lottie);
+    if (!ext.compare("lottie")) return _find(FileType::Lottie);
     if (!ext.compare("png")) return _find(FileType::Png);
     if (!ext.compare("jpg")) return _find(FileType::Jpg);
     if (!ext.compare("webp")) return _find(FileType::Webp);
@@ -148,6 +164,7 @@ static LoadModule* _findByType(const string& mimeType)
 
     if (mimeType == "tvg") type = FileType::Tvg;
     else if (mimeType == "svg" || mimeType == "svg+xml") type = FileType::Svg;
+    else if (mimeType == "lottie") type = FileType::Lottie;
     else if (mimeType == "raw") type = FileType::Raw;
     else if (mimeType == "png") type = FileType::Png;
     else if (mimeType == "jpg" || mimeType == "jpeg") type = FileType::Jpg;
@@ -197,22 +214,24 @@ shared_ptr<LoadModule> LoaderMgr::loader(const string& path, bool* invalid)
 
 shared_ptr<LoadModule> LoaderMgr::loader(const char* data, uint32_t size, const string& mimeType, bool copy)
 {
-    //Try first with the given MimeType
-    if (auto loader = _findByType(mimeType)) {
-        if (loader->open(data, size, copy)) {
-            return shared_ptr<LoadModule>(loader);
-        } else {
-            TVGLOG("LOADER", "Given mimetype \"%s\" seems incorrect or not supported. Will try again with other types.", mimeType.c_str());
-            delete(loader);
+    //Try with the given MimeType
+    if (!mimeType.empty()) {
+        if (auto loader = _findByType(mimeType)) {
+            if (loader->open(data, size, copy)) {
+                return shared_ptr<LoadModule>(loader);
+            } else {
+                TVGLOG("LOADER", "Given mimetype \"%s\" seems incorrect or not supported.", mimeType.c_str());
+                delete(loader);
+            }
         }
-    }
-
-    //Abnormal MimeType. Try with the candidates in the order
-    for (int i = 0; i < static_cast<int>(FileType::Unknown); i++) {
-        auto loader = _find(static_cast<FileType>(i));
-        if (loader) {
-            if (loader->open(data, size, copy)) return shared_ptr<LoadModule>(loader);
-            else delete(loader);
+    //Unkown MimeType. Try with the candidates in the order
+    } else {
+        for (int i = 0; i < static_cast<int>(FileType::Unknown); i++) {
+            auto loader = _find(static_cast<FileType>(i));
+            if (loader) {
+                if (loader->open(data, size, copy)) return shared_ptr<LoadModule>(loader);
+                else delete(loader);
+            }
         }
     }
     return nullptr;

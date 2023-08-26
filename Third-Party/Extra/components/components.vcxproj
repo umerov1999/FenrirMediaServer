@@ -82,7 +82,6 @@
     <ClInclude Include="pugixml\pugixml.hpp" />
     <ClInclude Include="sha1.hpp" />
     <ClInclude Include="sha3.hpp" />
-    <ClInclude Include="ThreadAccessGuard.h" />
     <ClInclude Include="UsrInf.h" />
     <ClInclude Include="vk_api_interface.h" />
     <ClInclude Include="WinMessageBox.h" />

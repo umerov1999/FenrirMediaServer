@@ -87,7 +87,6 @@
     <ClInclude Include="pugixml\pugixml.hpp" />
     <ClInclude Include="sha1.hpp" />
     <ClInclude Include="sha3.hpp" />
-    <ClInclude Include="ThreadAccessGuard.h" />
     <ClInclude Include="UListBox.h" />
     <ClInclude Include="Ulottie.h" />
     <ClInclude Include="urgb.h" />

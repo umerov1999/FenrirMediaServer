@@ -671,7 +671,7 @@ BOOL ColorEdit::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 	if (pMsg->wParam == IDC_POPUP_SELECT_TEXT)
-		CreateThreadSimple(&ShowText, this);
+		CreateThreadDetachedSimple(&ShowText, this);
 	if (pMsg->wParam == IDC_POPUP_STYLE)
 	{
 		if (TextAlign == Align::CENTER_ALIGN)

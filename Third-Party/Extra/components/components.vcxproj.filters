@@ -49,9 +49,6 @@
     <ClInclude Include="Map.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadAccessGuard.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="UsrInf.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

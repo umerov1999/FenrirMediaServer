@@ -145,16 +145,22 @@ SOCKET tcp_listen(int Port)
 	SOCKET sock;
 	struct sockaddr_in sin;
 	const int qlen = 1;
-	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) <= 0) {
 		return SOCKET_ERROR;
+	}
+
+	int tr = 1;
+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&tr, sizeof(tr));
 
 	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(Port);
-	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0)
+	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0) {
 		return SOCKET_ERROR;
-	if (::listen(sock, qlen) == SOCKET_ERROR)
+	}
+	if (::listen(sock, qlen) < 0) {
 		return SOCKET_ERROR;
+	}
 	return sock;
 }
 
@@ -408,11 +414,11 @@ DWORD WINAPI Server(LPVOID)
 	while (true)
 	{
 		client_sock = accept(server_sock, (SOCKADDR*)&FromAddr, &len);
-		if (client_sock == INVALID_SOCKET)
+		if (client_sock <= 0)
 			continue;
 		SOCKET* tmp = new SOCKET();
 		*tmp = client_sock;
-		CreateThreadSimple(&ClientConnected, tmp);
+		CreateThreadDetachedSimple(&ClientConnected, tmp);
 	}
 	closesocket(server_sock);
 	(win_message().message_type(MSG_TYPE::TYPE_ERROR) << L"Сбой!").show();
@@ -461,7 +467,7 @@ void SSLRequestDialog::OnStart()
 		(win_message(m_hWnd).timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Ошибка инициализации сокетов").show();
 		return;
 	}
-	CreateThreadSimple(&Server);
+	CreateThreadDetachedSimple(&Server);
 }
 
 HCURSOR SSLRequestDialog::OnQueryDragIcon()

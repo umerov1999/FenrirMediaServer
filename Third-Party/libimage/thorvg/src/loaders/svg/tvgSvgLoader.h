@@ -48,6 +48,7 @@ public:
     bool resize(Paint* paint, float w, float h) override;
     bool read() override;
     bool close() override;
+
     unique_ptr<Paint> paint() override;
 
 private:
@@ -60,7 +61,7 @@ private:
     float vh = 0;
 
     bool header();
-    void clear();
+    void clear(bool all = true);
     void run(unsigned tid) override;
 };
 

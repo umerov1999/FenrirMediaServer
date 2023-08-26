@@ -2,7 +2,7 @@
 #include <afxwin.h>
 #include <iostream>
 #include <vector>
-#include "ThreadAccessGuard.h"
+#include "win_api_utils.h"
 #include "urgb.h"
 #include "Map.h"
 

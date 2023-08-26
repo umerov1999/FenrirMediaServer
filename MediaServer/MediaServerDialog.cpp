@@ -2,7 +2,7 @@
 #include "MediaServerDialog.h"
 #include "MediaServerMediaFoldersDialog.h"
 #include "MediaServerTask.h"
-#include "ThreadAccessGuard.h"
+#include "win_api_utils.h"
 #include "WSTRUtils.h"
 #include "libimage.h"
 #include "json.hpp"
@@ -604,7 +604,7 @@ DWORD WINAPI AutoStartServer(LPVOID)
 		dlgS.StartBT.SetWindowTextW((L"(" + to_wstring(i) + L")").c_str());
 		Sleep(1000);
 	}
-	CreateThreadSimple(&InitMediaServerThread, new START_SERVER_OPTION(false));
+	CreateThreadDetachedSimple(&InitMediaServerThread, new START_SERVER_OPTION(false));
 	return 0;
 }
 
@@ -702,7 +702,7 @@ BOOL MediaServerDialog::OnInitDialog()
 		FFMPEGProcCount.EnableWindow(FALSE);
 		PhotosThumb.EnableWindow(FALSE);
 		CanEdit.EnableWindow(FALSE);
-		CreateThreadSimple(&AutoStartServer);
+		CreateThreadDetachedSimple(&AutoStartServer);
 	}
 
 	return TRUE;
@@ -928,7 +928,7 @@ bool MediaServerDialog::doStart(bool onlySerialize) {
 	}
 	pSettings.SerializeSettings();
 	if (!onlySerialize) {
-		CreateThreadSimple(&InitMediaServerThread, new START_SERVER_OPTION(true));
+		CreateThreadDetachedSimple(&InitMediaServerThread, new START_SERVER_OPTION(true));
 	}
 	return true;
 }
@@ -970,7 +970,7 @@ void MediaServerDialog::OnScanCovers() {
 		OnMediaFolders();
 		return;
 	}
-	CreateThreadSimple(&doScanCovers);
+	CreateThreadDetachedSimple(&doScanCovers);
 }
 
 void MediaServerDialog::OnSelectSSL()

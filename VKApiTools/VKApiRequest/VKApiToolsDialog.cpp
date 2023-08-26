@@ -409,7 +409,7 @@ void VKApiToolsDialog::OnExecute()
 	Options.Option4 = Check4.GetCheck() == TRUE;
 
 	OnInsert(Story(Tkn.GetString(), ApiMtd.GetString(), ApiParam.GetString()));
-	CreateThreadSimple(&RunMeth, new ThParam(wchar_to_UTF8(Tkn.GetString()), wchar_to_UTF8(ApiMtd.GetString()), hpr, Mt.Func, Options));
+	CreateThreadDetachedSimple(&RunMeth, new ThParam(wchar_to_UTF8(Tkn.GetString()), wchar_to_UTF8(ApiMtd.GetString()), hpr, Mt.Func, Options));
 }
 
 void VKApiToolsDialog::OnSelect()

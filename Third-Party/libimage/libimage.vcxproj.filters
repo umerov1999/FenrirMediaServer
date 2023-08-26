@@ -58,6 +58,9 @@
     <Filter Include="Файлы исходного кода\thorvg\lib\sw_engine">
       <UniqueIdentifier>{e960df56-6557-47b8-be90-cf3f96591fca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\utils">
+      <UniqueIdentifier>{07e651a7-5b79-4870-8939-1e17b30adcd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="./jpeg/cdjpeg.c">
@@ -441,9 +444,6 @@
     <ClCompile Include="thorvg\src\lib\tvgAccessor.cpp">
       <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\lib\tvgBezier.cpp">
-      <Filter>Файлы исходного кода\thorvg\lib</Filter>
-    </ClCompile>
     <ClCompile Include="thorvg\src\lib\tvgCanvas.cpp">
       <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClCompile>
@@ -494,6 +494,21 @@
     </ClCompile>
     <ClCompile Include="bmp2png.cpp">
       <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\lib\tvgAnimation.cpp">
+      <Filter>Файлы исходного кода\thorvg\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\utils\tvgBezier.cpp">
+      <Filter>Файлы исходного кода\thorvg\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\utils\tvgStr.cpp">
+      <Filter>Файлы исходного кода\thorvg\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\utils\tvgMath.cpp">
+      <Filter>Файлы исходного кода\thorvg\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\utils\tvgCompressor.cpp">
+      <Filter>Файлы исходного кода\thorvg\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -755,12 +770,6 @@
     <ClInclude Include="thorvg\src\lib\config.h">
       <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\lib\tvgArray.h">
-      <Filter>Файлы исходного кода\thorvg\lib</Filter>
-    </ClInclude>
-    <ClInclude Include="thorvg\src\lib\tvgBezier.h">
-      <Filter>Файлы исходного кода\thorvg\lib</Filter>
-    </ClInclude>
     <ClInclude Include="thorvg\src\lib\tvgBinaryDesc.h">
       <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
@@ -780,9 +789,6 @@
       <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
     <ClInclude Include="thorvg\src\lib\tvgLoadModule.h">
-      <Filter>Файлы исходного кода\thorvg\lib</Filter>
-    </ClInclude>
-    <ClInclude Include="thorvg\src\lib\tvgMath.h">
       <Filter>Файлы исходного кода\thorvg\lib</Filter>
     </ClInclude>
     <ClInclude Include="thorvg\src\lib\tvgPaint.h">
@@ -805,6 +811,21 @@
     </ClInclude>
     <ClInclude Include="thorvg\src\lib\tvgTaskScheduler.h">
       <Filter>Файлы исходного кода\thorvg\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\utils\tvgBezier.h">
+      <Filter>Файлы исходного кода\thorvg\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\utils\tvgMath.h">
+      <Filter>Файлы исходного кода\thorvg\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\utils\tvgStr.h">
+      <Filter>Файлы исходного кода\thorvg\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\utils\tvgArray.h">
+      <Filter>Файлы исходного кода\thorvg\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\utils\tvgCompressor.h">
+      <Filter>Файлы исходного кода\thorvg\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "rlottie.h"
-#include "ThreadAccessGuard.h"
+#include "win_api_utils.h"
 #include "urgb.h"
 
 class Ulottie : public CStatic

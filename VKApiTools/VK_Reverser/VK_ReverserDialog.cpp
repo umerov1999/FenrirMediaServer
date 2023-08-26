@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "VK_ReverserDialog.h"
 #include "VK_ReverserServer.h"
-#include "ThreadAccessGuard.h"
+#include "win_api_utils.h"
 #include "WSTRUtils.h"
 #include "config_json_parse.h"
 #include "libimage.h"
@@ -527,7 +527,7 @@ void VK_ReverserDialog::OnStart()
 		return;
 	}
 	pSettings.SerializeSettings();
-	CreateThreadSimple(&InitVK_ReverserThread);
+	CreateThreadDetachedSimple(&InitVK_ReverserThread);
 }
 
 void VK_ReverserDialog::OnSelectSSL()

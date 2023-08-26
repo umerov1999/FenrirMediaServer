@@ -484,6 +484,7 @@ struct SvgStyleProperty
     char* cssClass;
     bool paintOrder; //true if default (fill, stroke), false otherwise
     SvgStyleFlags flags;
+    SvgStyleFlags flagsImportance; //indicates the importance of the flag - if set, higher priority is applied (https://drafts.csswg.org/css-cascade-4/#importance)
 };
 
 struct SvgNode
@@ -550,6 +551,7 @@ struct SvgLoaderData
     SvgParser* svgParse = nullptr;
     Array<SvgNodeIdPair> cloneNodes;
     Array<SvgNodeIdPair> nodesToStyle;
+    Array<char*> images;        //embedded images
     int level = 0;
     bool result = false;
     bool style = false;
@@ -559,19 +561,5 @@ struct Box
 {
     float x, y, w, h;
 };
-
-/*
- * https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/strtof-strtod-l-wcstod-wcstod-l?view=vs-2017
- *
- * src should be one of the following form :
- *
- * [whitespace] [sign] {digits [radix digits] | radix digits} [{e | E} [sign] digits]
- * [whitespace] [sign] {INF | INFINITY}
- * [whitespace] [sign] NAN [sequence]
- *
- * No hexadecimal form supported
- * no sequence supported after NAN
- */
-float customStrtof(const char *nptr, char **endptr);
 
 #endif

@@ -398,7 +398,7 @@ void VKApiToolsDialog::OnExecute()
 	Options.Option2 = Check2.GetCheck() == TRUE;
 	Options.Option3 = Check3.GetCheck() == TRUE;
 	Options.Option4 = Check4.GetCheck() == TRUE;
-	CreateThreadSimple(&RunMeth, new ThParam(wchar_to_UTF8(Tkn.GetString()), wchar_to_UTF8(OldTkn.GetString()), Mt.Func, Options));
+	CreateThreadDetachedSimple(&RunMeth, new ThParam(wchar_to_UTF8(Tkn.GetString()), wchar_to_UTF8(OldTkn.GetString()), Mt.Func, Options));
 }
 
 void VKApiToolsDialog::OnSelect()

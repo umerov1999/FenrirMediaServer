@@ -26,7 +26,7 @@
 #include "json.hpp"
 #include "libimage.h"
 #include "WSTRUtils.h"
-#include "ThreadAccessGuard.h"
+#include "win_api_utils.h"
 using namespace std;
 using namespace nlohmann;
 using namespace WSTRUtils;
@@ -314,11 +314,11 @@ SOCKET tcp_listen(int Port)
 	SOCKET sock;
 	struct sockaddr_in sin;
 	const int qlen = 1;
-	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) <= 0) {
 		return SOCKET_ERROR;
 	}
 
-	DWORD tr = 1;
+	int tr = 1;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&tr, sizeof(tr));
 
 	sin.sin_addr.s_addr = INADDR_ANY;
@@ -327,7 +327,7 @@ SOCKET tcp_listen(int Port)
 	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0) {
 		return SOCKET_ERROR;
 	}
-	if (::listen(sock, qlen) == SOCKET_ERROR) {
+	if (::listen(sock, qlen) < 0) {
 		return SOCKET_ERROR;
 	}
 	return sock;
@@ -948,14 +948,14 @@ void InitVK_Reverser()
 	while (true)
 	{
 		client_sock = accept(HTTPSserver_sock, (SOCKADDR*)&FromAddr, &len);
-		if (client_sock == SOCKET_ERROR)
+		if (client_sock <= 0)
 			continue;
 		SetTimeOutsSocket(client_sock);
 		ACCEPT_STRUCT* satr = new ACCEPT_STRUCT;
 		satr->connection = GetConnectionIP(FromAddr) + string(":") + to_string(ntohs(FromAddr.sin_port));
 		satr->client_sock = client_sock;
 		satr->ssl_ctx = ctx;
-		CreateThreadSimple(&HTTPS_ServerThread, satr);
+		CreateThreadDetachedSimple(&HTTPS_ServerThread, satr);
 	}
 	shutdown(HTTPSserver_sock, SD_BOTH);
 	closesocket(HTTPSserver_sock);

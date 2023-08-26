@@ -24,6 +24,7 @@
 #define _TVG_SHAPE_IMPL_H_
 
 #include <memory.h>
+#include "tvgMath.h"
 #include "tvgPaint.h"
 
 /************************************************************************/
@@ -45,9 +46,9 @@ struct Shape::Impl
 
     bool dispose(RenderMethod& renderer)
     {
-        auto ret = renderer.dispose(rd);
+        renderer.dispose(rd);
         rd = nullptr;
-        return ret;
+        return true;
     }
 
     bool render(RenderMethod& renderer)
@@ -69,7 +70,7 @@ struct Shape::Impl
         if (opacity == 0) return false;
 
         //Shape composition is only necessary when stroking & fill are valid.
-        if (!rs.stroke || rs.stroke->width < FLT_EPSILON || rs.stroke->color[3] == 0) return false;
+        if (!rs.stroke || rs.stroke->width < FLT_EPSILON || (!rs.stroke->fill && rs.stroke->color[3] == 0)) return false;
         if (!rs.fill && rs.color[3] == 0) return false;
 
         //translucent fill & stroke
@@ -103,7 +104,7 @@ struct Shape::Impl
         return renderer.region(rd);
     }
 
-    bool bounds(float* x, float* y, float* w, float* h)
+    bool bounds(float* x, float* y, float* w, float* h, bool stroking)
     {
         //Path bounding size
         if (rs.path.pts.count > 0 ) {
@@ -125,7 +126,7 @@ struct Shape::Impl
         }
 
         //Stroke feathering
-        if (rs.stroke) {
+        if (stroking && rs.stroke) {
             if (x) *x -= rs.stroke->width * 0.5f;
             if (y) *y -= rs.stroke->width * 0.5f;
             if (w) *w += rs.stroke->width;
@@ -294,6 +295,12 @@ struct Shape::Impl
         return true;
     }
 
+    bool strokeFirst()
+    {
+        if (!rs.stroke) return true;
+        return rs.stroke->strokeFirst;
+    }
+
     bool strokeFirst(bool strokeFirst)
     {
         if (!rs.stroke) rs.stroke = new RenderStroke();
@@ -301,6 +308,11 @@ struct Shape::Impl
         flag |= RenderUpdateFlag::Stroke;
 
         return true;
+    }
+
+    void update(RenderUpdateFlag flag)
+    {
+        this->flag |= flag;
     }
 
     Paint* duplicate()

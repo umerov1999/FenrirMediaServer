@@ -62,7 +62,9 @@ using namespace tvg;
 #define TVG_CLASS_ID_LINEAR    4
 #define TVG_CLASS_ID_RADIAL    5
 
-enum class FileType { Tvg = 0, Svg, Raw, Png, Jpg, Webp, Unknown };
+enum class FileType { Tvg = 0, Svg, Lottie, Raw, Png, Jpg, Webp, Unknown };
+
+using Size = Point;
 
 #ifdef THORVG_LOG_ENABLED
     constexpr auto ErrorColor = "\033[31m";  //red
@@ -79,5 +81,8 @@ enum class FileType { Tvg = 0, Svg, Raw, Png, Jpg, Webp, Unknown };
 #endif
 
 uint16_t THORVG_VERSION_NUMBER();
+
+
+#define P(A) ((A)->pImpl)     //Access to pimpl.
 
 #endif //_TVG_COMMON_H_

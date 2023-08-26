@@ -135,10 +135,7 @@ public:
 			ctx.u.sb[i * 8 + 7] = (uint8_t)(t2 >> 24);
 		}
 
-		std::string result;
-		result.resize(2 * (ctx.digest_length / 8));
-		for (uint64_t i = 0; i < ctx.digest_length / 8; i++)
-			sprintf_s(result.data() + i * 2, 3, "%02x", ctx.u.sb[i]);
+		std::string result = to_hex_bytes(ctx.digest_length / 8, ctx.u.sb);
 
 		SHA3_Init(ctx.digest_length);
 		return result;
@@ -158,6 +155,25 @@ private:
 	SHA3_CONST(0x8000000080008081UL), SHA3_CONST(0x8000000000008080UL),
 	SHA3_CONST(0x0000000080000001UL), SHA3_CONST(0x8000000080008008UL)
 	};
+
+	template<typename U>
+	static std::string to_hex_bytes(size_t count, const U* arr) {
+		if (count <= 0) {
+			return "";
+		}
+
+		const char hexChars[16] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
+		std::string result;
+		result.reserve(count * sizeof(U) * 2);
+		for (size_t s = 0; s < count; s++) {
+			auto buf = (uint8_t*)arr;
+			for (auto i = (int)sizeof(U) - 1; i >= 0; i--) {
+				result.push_back(*(hexChars + ((*(buf + i + s * sizeof(U)) & 0xF0) >> 4)));
+				result.push_back(*(hexChars + (*(buf + i + s * sizeof(U)) & 0xF)));
+			}
+		}
+		return result;
+	}
 
 	static inline const uint32_t keccakf_rotc[24] = {
 	1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14, 27, 41, 56, 8, 25, 43, 62,
