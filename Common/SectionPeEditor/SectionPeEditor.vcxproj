@@ -45,7 +45,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>pe_lib;../../Third-Party/XTPSkinFramework v20.1.0/SkinFramework</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Third-Party/XTPSkinFramework v22.1.0/SkinFramework;pe_lib</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -248,7 +248,7 @@
     <Image Include="Res\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Third-Party\XTPSkinFramework v20.1.0\SkinFrameworkStatic_vc160.vcxproj">
+    <ProjectReference Include="..\..\Third-Party\XTPSkinFramework v22.1.0\SkinFrameworkStatic.vcxproj">
       <Project>{44399486-2259-2815-3336-338422327369}</Project>
     </ProjectReference>
   </ItemGroup>

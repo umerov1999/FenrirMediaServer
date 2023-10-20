@@ -48,7 +48,6 @@ void VKApiTools::CreateDialogMFC()
 
 void VKApiTools::LoadStyle()
 {
-	XTPSkinMgr()->SetApplyOptions(XTPSkinManager()->GetApplyOptions() | xtpSkinApplyMetrics);
 	if (XTPSkinMgr()->SkinLoadMemory(APP_STYLE_DATA, APP_STYLE_SIZE) == FALSE)
 	{
 		(win_message().timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Стиль повреждён!").show();
@@ -69,7 +68,7 @@ std::wstring ExtractAppPath()
 		: fname.substr(0, pos);
 }
 
-BEGIN_MESSAGE_MAP(VKApiTools, CWinApp)
+BEGIN_MESSAGE_MAP(VKApiTools, CXTPWinApp)
 
 END_MESSAGE_MAP()
 

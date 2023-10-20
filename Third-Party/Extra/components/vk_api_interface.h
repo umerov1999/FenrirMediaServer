@@ -158,6 +158,7 @@ public:
 			return ret;
 		std::list<VK_ApiMethodParam> TempParams = Params;
 		TempParams.push_back(VK("access_token", Token));
+		TempParams.push_back(VK("lang", "ru"));
 		TempParams.push_back(VK("v", VKAPI_VERSION));
 
 		std::string ResultLink = std::string("https://api.vk.com/method") + "/" + Method;

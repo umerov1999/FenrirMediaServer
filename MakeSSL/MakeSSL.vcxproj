@@ -46,7 +46,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>../Third-Party/XTPSkinFramework v20.1.0/SkinFramework;../Third-Party/Extra/components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Third-Party/XTPSkinFramework v22.1.0/SkinFramework;../Third-Party/Extra/components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -90,7 +90,7 @@
     <ProjectReference Include="..\Third-Party\Extra\components\components_mfc.vcxproj">
       <Project>{433709a8-9119-4051-9593-2c0698abf6bc}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Third-Party\XTPSkinFramework v20.1.0\SkinFrameworkStatic_vc160.vcxproj">
+    <ProjectReference Include="..\Third-Party\XTPSkinFramework v22.1.0\SkinFrameworkStatic.vcxproj">
       <Project>{44399486-2259-2815-3336-338422327369}</Project>
     </ProjectReference>
   </ItemGroup>

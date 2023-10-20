@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "afxdialogex.h"
 #include "ColorEdit.h"
+#include "XTPComboBoxNotEdited.h"
 
 class VKApiToolsDialog : public CDialogEx
 {
@@ -24,7 +25,7 @@ public:
 	CButton Exec;
 	CEdit NewToken;
 	CEdit OldToken;
-	CComboBox FFunc;
+	CXTPComboBoxNotEdited FFunc;
 
 	CButton Check1;
 	CButton Check2;

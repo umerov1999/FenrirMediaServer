@@ -32,7 +32,6 @@ void SectionPeEditor::CreateDialogMFC()
 
 void SectionPeEditor::LoadStyle()
 {
-	XTPSkinMgr()->SetApplyOptions(XTPSkinManager()->GetApplyOptions() | xtpSkinApplyMetrics);
 	if (XTPSkinMgr()->SkinLoadMemory(APP_STYLE_DATA, APP_STYLE_SIZE) == FALSE)
 	{
 		MessageBoxW(0, L"Стиль повреждён!", L"Внимание!", MB_ICONINFORMATION);
@@ -40,7 +39,7 @@ void SectionPeEditor::LoadStyle()
 	}
 }
 
-BEGIN_MESSAGE_MAP(SectionPeEditor, CWinApp)
+BEGIN_MESSAGE_MAP(SectionPeEditor, CXTPWinApp)
 
 END_MESSAGE_MAP()
 

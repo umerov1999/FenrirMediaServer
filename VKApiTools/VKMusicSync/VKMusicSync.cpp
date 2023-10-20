@@ -292,57 +292,63 @@ private:
 	bool Disabled;
 };
 
-UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int64_t UserId)
-{
-	VK_APIMETHOD_SECURE& point = (UserId >= 0 ? Method["users.get"] : Method["groups.getById"]);
-	if (UserId != 0)
-	{
-		if (UserId > 0)
-		{
+UserInfo GetUserNameById(VK_APIMETHOD_SECURE& Method, int64_t UserId) {
+	bool isGroup = UserId < 0;
+	VK_APIMETHOD_SECURE& point = (!isGroup ? Method["users.get"] : Method["groups.getById"]);
+	if (UserId != 0) {
+		if (!isGroup) {
 			point << VKI("user_ids", UserId);
 			point << VK("fields", "photo_200_orig,contacts,connections,site");
 		}
-		else
-		{
+		else {
 			point << VKI("group_ids", abs(UserId));
 			point << VK("fields", "photo_200_orig");
 		}
 	}
-	else
+	else {
 		point << VK("fields", "photo_200_orig,contacts,connections,site");
+	}
 	VKAPI_ANSWER Answer = point();
-	if (Answer.IsError == true || Answer.Object.find("response") == Answer.Object.end())
+	if (Answer.IsError == true || Answer.Object.find("response") == Answer.Object.end()) {
 		return UserInfo(UserId, wstring(L"id") + to_wstring(UserId), AVATAR_USER_DEFAULT, "", "", "", false);
+	}
 	try {
 		json info = Answer.Object.at("response").get<json>();
-		info = info.begin().value();
-		string AvatarLink = AVATAR_USER_DEFAULT;
-		if (info.find("photo_200_orig") != info.end())
-		{
-			if (!info.at("photo_200_orig").is_string())
-				AvatarLink = AVATAR_USER_DEFAULT;
-			else
-				AvatarLink = info.at("photo_200_orig").get<string>();
+		if (isGroup && info.find("groups") == info.end()) {
+			return UserInfo(UserId, wstring(L"id") + to_wstring(UserId), AVATAR_USER_DEFAULT, "", "", "", false);
 		}
-		if (UserId >= 0)
-		{
+		info = (!isGroup ? info.begin().value() : info.at("groups").begin().value());
+		string AvatarLink = AVATAR_USER_DEFAULT;
+		if (info.find("photo_200_orig") != info.end()) {
+			if (!info.at("photo_200_orig").is_string()) {
+				AvatarLink = AVATAR_USER_DEFAULT;
+			}
+			else {
+				AvatarLink = info.at("photo_200_orig").get<string>();
+			}
+		}
+		if (!isGroup) {
 			string phone_number;
 			string instagram;
 			string site;
 			int64_t user_id = 0;
-			if (info.find("mobile_phone") != info.end() && info.at("mobile_phone").is_string())
+			if (info.find("mobile_phone") != info.end() && info.at("mobile_phone").is_string()) {
 				phone_number = FixFileName(info.at("mobile_phone").get<string>());
-			if (info.find("instagram") != info.end() && info.at("instagram").is_string())
+			}
+			if (info.find("instagram") != info.end() && info.at("instagram").is_string()) {
 				instagram = FixFileName(info.at("instagram").get<string>());
-			if (info.find("site") != info.end() && info.at("site").is_string())
+			}
+			if (info.find("site") != info.end() && info.at("site").is_string()) {
 				site = FixFileName(info.at("site").get<string>());
-			if (info.find("id") != info.end())
+			}
+			if (info.find("id") != info.end()) {
 				user_id = info.at("id").get<int64_t>();
-
+			}
 			return UserInfo(user_id, FixFileName(UTF8_to_wchar(info.at("last_name").get<string>()) + L" " + UTF8_to_wchar(info.at("first_name").get<string>())), AvatarLink, phone_number, instagram, site, true);
 		}
-		else
+		else {
 			return UserInfo(UserId, FixFileName(UTF8_to_wchar(info.at("name").get<string>())), AvatarLink, "", "", "", true);
+		}
 	}
 	catch (json::exception e) {
 		e.what();

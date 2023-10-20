@@ -388,3 +388,53 @@ int DoCurlMultipart(const std::string& Link, const std::wstring& filePath, const
 	}
 	return -1;
 }
+
+//0 ok, 1 false, 2 error
+int DoCurlGetAndReturnUrl(const string& Link, const string& UserAgent, string& ReciveData, int wait)
+{
+	ReciveData.clear();
+	CURL_WR wrt;
+	wrt.Data = &ReciveData;
+	CURL* curl_handle = curl_easy_init();
+	wrt.curl_handle = curl_handle;
+	if (curl_handle)
+	{
+		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_easy_setopt(curl_handle, CURLOPT_URL, Link.c_str());
+		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UserAgent.c_str());
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriter);
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &wrt);
+		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
+		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
+		CURLcode res = curl_easy_perform(curl_handle);
+		int retry = 0;
+		while (res != CURLE_OK && retry < 3) {
+			wrt.reset();
+			Sleep(2000);
+			res = curl_easy_perform(curl_handle);
+			retry++;
+		}
+		long long Code = 0;
+		curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &Code);
+		if (res == CURLE_OK) {
+			if (Code == 200) {
+				char* url_string{ nullptr };
+				curl_easy_getinfo(curl_handle, CURLINFO_EFFECTIVE_URL, &url_string);
+				ReciveData = url_string;
+				curl_easy_cleanup(curl_handle);
+				return 0;
+			}
+			else {
+				curl_easy_cleanup(curl_handle);
+				return 1;
+			}
+		}
+		else {
+			curl_easy_cleanup(curl_handle);
+			ReciveData.clear();
+		}
+	}
+	return 2;
+}

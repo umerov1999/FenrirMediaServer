@@ -32,7 +32,6 @@ void MakeSSL::CreateDialogMFC()
 
 void MakeSSL::LoadStyle()
 {
-	XTPSkinMgr()->SetApplyOptions(XTPSkinManager()->GetApplyOptions() | xtpSkinApplyMetrics);
 	if (XTPSkinMgr()->SkinLoadMemory(APP_STYLE_DATA, APP_STYLE_SIZE) == FALSE)
 	{
 		(win_message().timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Стиль повреждён!").show();
@@ -40,7 +39,7 @@ void MakeSSL::LoadStyle()
 	}
 }
 
-BEGIN_MESSAGE_MAP(MakeSSL, CWinApp)
+BEGIN_MESSAGE_MAP(MakeSSL, CXTPWinApp)
 
 END_MESSAGE_MAP()
 

@@ -998,8 +998,6 @@ void MediaServerDialog::ToggleStopAudio(bool visible) {
 
 void MediaServerDialog::OnClose()
 {
-	PrintMessage(L"[Выход: (" + GetTimeLocal() + L")]", URGB(255, 0, 0));
-	WaitForSingleObject(hMessageMutex, INFINITE);
 	if (HTTPSserver_sock != 0) {
 		shutdown(HTTPSserver_sock, SD_BOTH);
 		closesocket(HTTPSserver_sock);

@@ -331,6 +331,6 @@ int _tmain(int argc, _TCHAR* argv[]) {
 
 	second.load_files(argv[2]);
 	second.check_empty_files(L"new");
-	printf("Copyright (c) Umerov Artem, 2022\n");
+	printf("Copyright (c) Umerov Artem, 2024\n");
 	return 0;
 }

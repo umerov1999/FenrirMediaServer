@@ -248,7 +248,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	locale::global(locale("ru_RU.UTF-8"));
 	cout << "ColorMove:" << endl;
-	cout << "Copyright (c) Umerov, 2022" << endl << endl;
+	cout << "Copyright (c) Umerov Artem, 2024" << endl << endl;
 
 	cout << "Select mode: 0 - pick color, 1 - generate Material You colors: " << endl;
 	int md;

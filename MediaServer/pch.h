@@ -6,8 +6,9 @@
 #include <afxext.h>
 #include <afxdisp.h>
 */
-#include <XTSkinFrameworkPro.h>
+#include <XTToolkitPro.h>
 #include "WinMessageBox.h"
+#include "api_vk_constants.h"
 #include "win_api_utils.h"
 
 #endif

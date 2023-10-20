@@ -8,6 +8,7 @@
 #include "Shlobj.h"
 #include "Hex2BinDialog.h"
 #include "pe_structures.h"
+#include "XTPComboBoxNotEdited.h"
 #pragma comment (lib, "psapi.lib")
 
 using namespace pe_bliss;
@@ -27,7 +28,7 @@ static char THIS_FILE[] = __FILE__;
 
 std::vector<uint32_t> Characters;
 int SelIndex = -1;
-CComboBox SectionsLst;
+CXTPComboBoxNotEdited SectionsLst;
 CButton Check1;
 CButton Check2;
 CButton Check3;
@@ -97,6 +98,8 @@ static wchar_t *GetUTF16FromANSI(const char * pANSI)
 SectionPeEditorDialog::SectionPeEditorDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(SectionPeEditorDialog::IDD, pParent)
 {
+	m_hIcon = nullptr;
+	memset(szBuf, 0, sizeof(szBuf));
 }
 
 SectionPeEditorDialog::~SectionPeEditorDialog()

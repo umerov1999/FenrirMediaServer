@@ -171,7 +171,7 @@ enum class CompositeMethod
     AlphaMask,          ///< Alpha Masking using the compositing target's pixels as an alpha value.
     InvAlphaMask,       ///< Alpha Masking using the complement to the compositing target's pixels as an alpha value.
     LumaMask,           ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the compositing target's pixels. @since 0.9
-    InvLumaMask,        ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the complement to the compositing target's pixels. @BETA_API
+    InvLumaMask,        ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the complement to the compositing target's pixels.
     AddMask,            ///< Combines the target and source objects pixels using target alpha. (T * TA) + (S * (255 - TA)) @BETA_API
     SubtractMask,       ///< Subtracts the source color from the target color while considering their respective target alpha. (T * TA) - (S * (255 - TA)) @BETA_API
     IntersectMask,      ///< Computes the result by taking the minimum value between the target alpha and the source alpha and multiplies it with the target color. (T * min(TA, SA)) @BETA_API
@@ -213,7 +213,8 @@ enum class BlendMethod : uint8_t
 enum class CanvasEngine
 {
     Sw = (1 << 1), ///< CPU rasterizer.
-    Gl = (1 << 2)  ///< OpenGL rasterizer.
+    Gl = (1 << 2), ///< OpenGL rasterizer.
+    Wg = (1 << 3), ///< WebGPU rasterizer. @BETA_API
 };
 
 
@@ -239,6 +240,7 @@ struct Matrix
     float e21, e22, e23;
     float e31, e32, e33;
 };
+
 
 /**
  * @brief A data structure representing a texture mesh vertex
@@ -1040,7 +1042,7 @@ public:
      *
      * @return Result::Success when succeed, Result::NonSupport unsupported value, Result::FailedAllocation otherwise.
      * 
-     * @BETA_API
+     * @since 0.11
      */
     Result strokeMiterlimit(float miterlimit) noexcept;
 
@@ -1194,7 +1196,7 @@ public:
      *
      * @return The stroke miterlimit value when succeed, 4 if no stroke was set.
      *
-     * @BETA_API
+     * @since 0.11
      */
     float strokeMiterlimit() const noexcept;
 
@@ -1593,6 +1595,42 @@ public:
 
 
 /**
+ * @class WgCanvas
+ *
+ * @brief A class for the rendering graphic elements with a WebGPU raster engine.
+ *
+ * @warning Please do not use it. This class is not fully supported yet.
+ *
+ * @BETA_API
+ */
+class TVG_API WgCanvas final : public Canvas
+{
+public:
+    ~WgCanvas();
+
+    /**
+     * @brief Sets the target window for the rasterization.
+     *
+     * @warning Please do not use it, this API is not official one. It could be modified in the next version.
+     *
+     * @BETA_API
+     */
+    Result target(void* window, uint32_t w, uint32_t h) noexcept;
+
+    /**
+     * @brief Creates a new WgCanvas object.
+     *
+     * @return A new WgCanvas object.
+     *
+     * @BETA_API
+     */
+    static std::unique_ptr<WgCanvas> gen() noexcept;
+
+    _TVG_DECLARE_PRIVATE(WgCanvas);
+};
+
+
+/**
  * @class Initializer
  *
  * @brief A class that enables initialization and termination of the TVG engines.
@@ -1854,10 +1892,9 @@ public:
 
 /**
  * @brief The cast() function is a utility function used to cast a 'Paint' to type 'T'.
- *
- * @BETA_API
+ * @since 0.11
  */
-template<typename T>
+template<typename T = tvg::Paint>
 std::unique_ptr<T> cast(Paint* paint)
 {
     return std::unique_ptr<T>(static_cast<T*>(paint));
@@ -1866,10 +1903,9 @@ std::unique_ptr<T> cast(Paint* paint)
 
 /**
  * @brief The cast() function is a utility function used to cast a 'Fill' to type 'T'.
- *
- * @BETA_API
+ * @since 0.11
  */
-template<typename T>
+template<typename T = tvg::Fill>
 std::unique_ptr<T> cast(Fill* fill)
 {
     return std::unique_ptr<T>(static_cast<T*>(fill));

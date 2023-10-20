@@ -6,7 +6,7 @@
 #include <afxext.h>
 #include <afxdisp.h>
 */
-#include <XTSkinFrameworkPro.h>
+#include <XTToolkitPro.h>
 #include "WinMessageBox.h"
 
 #endif

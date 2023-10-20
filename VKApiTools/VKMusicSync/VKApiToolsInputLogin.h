@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "afxdialogex.h"
 #include "libimage.h"
+#include "XTPComboBoxNotEdited.h"
 
 class VKApiToolsInputLogin : public CDialogEx
 {
@@ -27,7 +28,7 @@ public:
 	CEdit EdToken;
 	CEdit UserName;
 	CEdit SMS;
-	CComboBox KateMobilePref;
+	CXTPComboBoxNotEdited KateMobilePref;
 	LIB_IMAGE::win_image VK_IconBitmap;
 	void* util_info;
 

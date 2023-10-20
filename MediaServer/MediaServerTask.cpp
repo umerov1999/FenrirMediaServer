@@ -27,7 +27,6 @@
 #include "win_api_utils.h"
 #include "do_curl.h"
 #include "../../Third-Party/USound/src/USound.h"
-#define VKAPI_VERSION "5.131"
 #include "vk_api_interface.h"
 using namespace std;
 using namespace nlohmann;
@@ -203,22 +202,24 @@ void UTF8Stream::Clear()
 SOCKET tcp_listen(int Port)
 {
 	SOCKET sock;
-	struct sockaddr_in sin;
+	struct sockaddr_in sin {};
 	const int qlen = 1;
 	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) <= 0) {
 		return SOCKET_ERROR;
 	}
 
-	int tr = 1;
+	DWORD tr = 1;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&tr, sizeof(tr));
 
 	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(Port);
 	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0) {
+		closesocket(sock);
 		return SOCKET_ERROR;
 	}
 	if (::listen(sock, qlen) < 0) {
+		closesocket(sock);
 		return SOCKET_ERROR;
 	}
 	return sock;
@@ -347,20 +348,36 @@ error:
 	return NULL;
 }
 
-bool ReciveNetBinary(SOCKET Socket, const void* Buffer, int Len, int Timeout)
-{
-	memset((void*)Buffer, 0, Len);
-	DWORD timeout = Timeout * 1000;
+static bool ReciveNetBinary(SOCKET_C Socket, const void* Buffer, int Len, int Timeout) {
+#if defined(__linux__)
+	struct timeval timeout {};
+	timeout.tv_sec = Timeout;
+	timeout.tv_usec = 0;
+#else
+	DWORD timeout = (DWORD)(Timeout * 1000);
+#endif
 	setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 	int rsz = recv(Socket, (char*)Buffer, Len, 0);
-	if (rsz != Len)
+	if (rsz != Len) {
+		if (rsz >= 0 && rsz <= Len) {
+			memset((char*)Buffer + rsz, 0, Len - rsz);
+		}
+		else {
+			memset((char*)Buffer, 0, Len);
+		}
 		return false;
+	}
 	return true;
 }
 
-bool SendNetBinary(SOCKET Socket, const string& BinData, int Timeout)
-{
-	DWORD timeout = Timeout * 1000;
+static bool SendNetBinary(SOCKET_C Socket, const string& BinData, int Timeout) {
+#if defined(__linux__)
+	struct timeval timeout {};
+	timeout.tv_sec = Timeout;
+	timeout.tv_usec = 0;
+#else
+	DWORD timeout = (DWORD)(Timeout * 1000);
+#endif
 	setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout));
 	int rsz = send(Socket, (char*)BinData.data(), (int)BinData.size(), 0);
 	if (rsz != (int)BinData.size())
@@ -1748,7 +1765,7 @@ out:
 	return 0;
 }
 
-static string GetConnectionIP(SOCKADDR_IN& FromAddr)
+static string GetConnectionIP(const sockaddr_in& FromAddr)
 {
 	string buf;
 	buf.resize(260);
@@ -2647,11 +2664,11 @@ void InitMediaServer()
 	else {
 		PrintMessage(L"[HTTP инициализирован, порт " + to_wstring(Startinit.HttpPort) + L"]", URGB(0, 140, 255));
 	}
-	SOCKADDR_IN FromAddr;
-	int len = sizeof(SOCKADDR_IN);
+	sockaddr_in FromAddr;
+	int len = sizeof(FromAddr);
 	while (true)
 	{
-		client_sock = accept(HTTPSserver_sock, (SOCKADDR*)&FromAddr, &len);
+		client_sock = accept(HTTPSserver_sock, (struct sockaddr*)&FromAddr, &len);
 		if (client_sock <= 0)
 			continue;
 		SetTimeOutsSocket(client_sock);

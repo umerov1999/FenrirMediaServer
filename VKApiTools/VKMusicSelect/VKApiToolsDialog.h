@@ -8,6 +8,7 @@
 #include "ColorEdit.h"
 #include "UListBox.h"
 #include "WSTRUtils.h"
+#include "XTPComboBoxNotEdited.h"
 
 class VKApiToolsDialog : public CDialogEx
 {
@@ -28,7 +29,7 @@ public:
 	CButton Play;
 	CButton Stop;
 	CEdit NewToken;
-	CComboBox FFunc;
+	CXTPComboBoxNotEdited FFunc;
 
 	CButton Check1;
 	CButton Check2;

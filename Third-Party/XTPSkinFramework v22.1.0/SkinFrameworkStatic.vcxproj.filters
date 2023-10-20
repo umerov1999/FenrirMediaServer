@@ -1,0 +1,1795 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{db7f5c2c-346c-4c23-9cc2-08981a7d2b3a}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\Common">
+      <UniqueIdentifier>{0ba7e376-9e13-4e26-90cd-ff90b9978986}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\Common\Common.Base">
+      <UniqueIdentifier>{ef6c4872-4001-4678-9c34-d158b8b5c70b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.Base\Common.Base.Types">
+      <UniqueIdentifier>{e7f7b6b5-b6eb-480c-be4c-5878906ab97c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.Base\Common.Base.Diagnostic">
+      <UniqueIdentifier>{71635c49-5e03-4c6e-9a94-70545a172bb6}</UniqueIdentifier>
+      <Extensions>*.cpp;*.h</Extensions>
+    </Filter>
+    <Filter Include="Source\Common\Common.Controls">
+      <UniqueIdentifier>{4e91e1a0-f598-4cc4-b862-8145bf425b58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.Controls\Common.Controls.Progress">
+      <UniqueIdentifier>{3949ad30-3138-418c-9965-9adbefd60f95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.FrameShadow">
+      <UniqueIdentifier>{51fbf3fd-201a-4c5b-a267-72fd81892375}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.Hook">
+      <UniqueIdentifier>{c55efc16-ae42-4c7b-9d3c-c2bd706735ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.Math">
+      <UniqueIdentifier>{fb96d01e-f0ef-4948-bf47-5ec5601f23e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.PropExchange">
+      <UniqueIdentifier>{c172c4ef-3c57-4810-9e7d-d952fe44141b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.ScrollBar">
+      <UniqueIdentifier>{38be0ec5-6a7d-4383-a5b3-abcc74f33fc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.ScrollBar\Common.ScrollBar.Themes">
+      <UniqueIdentifier>{4267ff5c-bb06-4010-bb23-fc37cf0c30a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common\Common.IIDs">
+      <UniqueIdentifier>{25f03319-7326-4e27-a531-a75e414a8254}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GraphicLibrary">
+      <UniqueIdentifier>{dfa9f3df-b276-40fa-9e1f-0e0011bb4813}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\GraphicLibrary\GraphicLibrary.GDIPlus">
+      <UniqueIdentifier>{bd28aa29-64cc-425c-8098-a9a417d3ed9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GraphicLibrary\GraphicLibrary.libpng">
+      <UniqueIdentifier>{5c04f80c-4880-43e7-9fd4-9bb794a6b70d}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\GraphicLibrary\GraphicLibrary.unzip">
+      <UniqueIdentifier>{fd716891-c949-401e-bfb3-23f97b1a847c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GraphicLibrary\GraphicLibrary.zlib">
+      <UniqueIdentifier>{7f63916d-cd1a-4074-a367-c30164c02a68}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\SkinFramework">
+      <UniqueIdentifier>{c72b29e8-5cc1-4836-a4ec-40d3cd159edd}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\SkinFramework\SkinFramework.ApiHook">
+      <UniqueIdentifier>{9622be84-245a-4ea9-baa9-b54049a8b394}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SkinFramework\SkinFramework.ApiHook\SkinFramework.ApiHook.Detours">
+      <UniqueIdentifier>{f23d60fa-c2cf-4089-b8f9-a91a68ffeaed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Markup">
+      <UniqueIdentifier>{e24c8650-350c-48f6-81ad-63b946527040}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\Markup\Markup.Controls">
+      <UniqueIdentifier>{6eba712b-83b5-4bd8-935f-590af8320251}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\Markup\Markup.DeviceContext">
+      <UniqueIdentifier>{ca974a9c-79bc-4116-b30f-617349ac4fda}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\Markup\Markup.Extensions">
+      <UniqueIdentifier>{a4e345dc-be9c-4608-a47a-644b12d6d9ad}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\Markup\Markup.Shapes">
+      <UniqueIdentifier>{6cbcfae6-3d49-4f08-93dd-29dd8f73bee3}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\Markup\Markup.Text">
+      <UniqueIdentifier>{b470583e-64b5-43a7-839e-532bb37da354}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Source\Markup\Markup.Transform">
+      <UniqueIdentifier>{ca76d2ed-bad8-469e-a2b2-b9652035a7f2}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;rc;rc2;inl;</Extensions>
+    </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{c5b40db7-ea9f-4bf6-b4d8-4423da507bc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GraphicLibrary\GraphicLibrary.lz4">
+      <UniqueIdentifier>{74bebacf-8706-4223-8610-00aad0dd50af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SkinFramework\Xml">
+      <UniqueIdentifier>{2c2558c5-03d7-454a-87e9-ca5e13638651}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SkinFramework\XTPResource.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Includes.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Resource.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Schemadef.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Tmschema.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Uxtheme.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPActiveScriptEngine.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPApplication.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPCasting.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPColorManager.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPCustomHeap.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPDLLExports.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPDrawHelpers.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPFontManager.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPFramework.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPGdiObjects.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPHookManager.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPImageList.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPImageManager.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPImageManagerResource.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPIntel80Helpers.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPMacros.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPMarkupRender.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPMarkupTheme.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPMaskEditT.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPNotifyConnection.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPNumberFormat.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPPropExchange.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPRegExp.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPResource.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPResourceImage.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPResourceImageList.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPResourceManager.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPRichRender.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPSingleton.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPSmartPtrInternalT.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPSynchro.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPSystemHelpers.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPSystemMetrics.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPTheme.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPThemeDLL.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPToolTipContext.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPTypeId.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPVersion.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPWinThemeWrapper.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPXMLHelpers.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\XTPWinApp.h">
+      <Filter>Source\Common\Common.Base</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Types\XTPPoint2.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Types</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Types\XTPPoint3.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Types</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Types\XTPRect.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Types</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Types\XTPSize.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Types</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Diagnostic\XTPBeginAfxMap.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Diagnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Diagnostic\XTPDisableAdvancedWarnings.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Diagnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Diagnostic\XTPDisableNoisyWarnings.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Diagnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Diagnostic\XTPEnableAdvancedWarnings.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Diagnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Diagnostic\XTPEnableNoisyWarnings.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Diagnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\Diagnostic\XTPEndAfxMap.h">
+      <Filter>Source\Common\Common.Base\Common.Base.Diagnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Controls\Progress\XTPProgressBase.h">
+      <Filter>Source\Common\Common.Controls\Common.Controls.Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\FrameShadow\XTPFrameShadow.h">
+      <Filter>Source\Common\Common.FrameShadow</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\FrameShadow\XTPFrameShadowManager.h">
+      <Filter>Source\Common\Common.FrameShadow</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Hook\XTPWinEventHook.h">
+      <Filter>Source\Common\Common.Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Math\XTPArcBall.h">
+      <Filter>Source\Common\Common.Math</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Math\XTPMathStats.h">
+      <Filter>Source\Common\Common.Math</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Math\XTPMathUtils.h">
+      <Filter>Source\Common\Common.Math</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Math\XTPMatrix.h">
+      <Filter>Source\Common\Common.Math</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\PropExchange\XTPPropExchangeArchive.h">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\PropExchange\XTPPropExchangeEnumerator.h">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\PropExchange\XTPPropExchangeEnumeratorPtr.h">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\PropExchange\XTPPropExchangeIniFile.h">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\PropExchange\XTPPropExchangeRegistry.h">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\PropExchange\XTPPropExchangeSection.h">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\PropExchange\XTPPropExchangeXMLNode.h">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\XTPScrollable.h">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\XTPScrollBarContainer.h">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\XTPScrollBarCtrl.h">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\XTPScrollBarPaintManager.h">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\XTPScrollBase.h">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\XTPScrollInfo.h">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\XTPWnd.h">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeFlat.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeNativeWindows10.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeOffice2000.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeOffice2003.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeOffice2013.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeOfficeXP.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeResource.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeUltraFlat.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2012.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2015.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeWindowsClassic.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeWindowsUx.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\IIDs\XTPColorManagerIIDs.h">
+      <Filter>Source\Common\Common.IIDs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\IIDs\XTPFrameShadowManagerIIDs.h">
+      <Filter>Source\Common\Common.IIDs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\IIDs\XTPImageManagerIIDs.h">
+      <Filter>Source\Common\Common.IIDs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\IIDs\XTPOleDragDropIIDs.h">
+      <Filter>Source\Common\Common.IIDs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\IIDs\XTPPrintingIIDs.h">
+      <Filter>Source\Common\Common.IIDs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\IIDs\XTPPropExchangeIIDs.h">
+      <Filter>Source\Common\Common.IIDs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\IIDs\XTPResourceImagesIIDs.h">
+      <Filter>Source\Common\Common.IIDs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\IIDs\XTPToolTipContextIIDs.h">
+      <Filter>Source\Common\Common.IIDs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\Includes.h">
+      <Filter>Source\GraphicLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\XTGraphicUtils.h">
+      <Filter>Source\GraphicLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\XTPGraphicBitmapPng.h">
+      <Filter>Source\GraphicLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlus.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusBase.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusBitmap.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusBrush.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusCachedBitmap.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusColor.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusColorMatrix.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusEffects.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusEnums.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusFlat.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusFont.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusFontCollection.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusFontFamily.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusGpStubs.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusGraphics.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusHeaders.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusimageAttributes.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusImageCodec.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusImaging.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusInit.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusLineCaps.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusMatrix.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusMem.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusMetaFile.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusMetaHeader.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusPath.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusPen.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusPixelFormats.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusRegion.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusStringFormat.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\GdiPlusTypes.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\GdiPlus\XTPGdiPlus.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.GDIPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\libpng\png.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\libpng\pngconf.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\libpng\pngdebug.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\libpng\pnginfo.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\libpng\pnglibconf.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\libpng\pngpriv.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\libpng\pngstruct.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\unzip\unzip.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\deflate.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\gzguts.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffast.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffixed.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inflate.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inftrees.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\trees.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zconf.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zlib.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zutil.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\Includes.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinDrawTools.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinFrameworkIIDs.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinImage.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinManager.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinManagerApiHook.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinManagerColorFilter.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinManagerModuleList.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinManagerResource.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinManagerSchema.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinManagerSchemaCodes.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObject.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectButton.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectComboBox.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectEdit.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectFrame.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectHeader.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectListBox.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectListView.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectMDI.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectMenu.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectProgress.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectReBar.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectScrollBar.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectSpin.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectStatusBar.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectTab.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectToolBar.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectTrackBar.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\XTPSkinObjectTreeView.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\ApiHook\XTPSkinManagerApiHookBase.h">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\ApiHook\XTPSkinManagerApiHookConfig.h">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\ApiHook\XTPSkinManagerDetoursApiHook.h">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\ApiHook\XTPSkinManagerLegacyApiHook.h">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\ApiHook\Detours\detours.h">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook\SkinFramework.ApiHook.Detours</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\ApiHook\Detours\detver.h">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook\SkinFramework.ApiHook.Detours</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Includes.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupBuilder.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupContext.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupDelegate.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupDrawingContext.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupEventHandlerMap.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupFrameworkContentElement.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupFrameworkElement.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupIIDs.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupInputElement.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupKeyboardNavigation.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupMouseButtonEventArgs.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupMouseEventArgs.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupMouseWheelEventArgs.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupObject.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupParser.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupQueryCursorEventArgs.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupResourceDictionary.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupRoutedEvent.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupRoutedEventArgs.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupSetter.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupSetterCollection.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupString.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupStyle.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupThickness.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupTools.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupTrigger.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupTriggerCollection.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupTypedSimpleStack.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\XTPMarkupUIElement.h">
+      <Filter>Source\Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupBorder.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupButton.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupButtonBase.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupCanvas.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupCheckBox.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupColumnDefinition.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupColumnDefinitionCollection.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupContentControl.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupControl.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupDecorator.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupDefinitionBase.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupDockPanel.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupGrid.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupGridLength.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupImage.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupPage.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupPanel.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupRadioButton.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupRowDefinition.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupRowDefinitionCollection.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupScrollBar.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupScrollViewer.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupStackPanel.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupTextBlock.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupToggleButton.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupUIElementCollection.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupUniformGrid.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupViewbox.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Controls\XTPMarkupWrapPanel.h">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\DeviceContext\XTPGdiPlus.h">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\DeviceContext\XTPMarkupDeviceContext.h">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\DeviceContext\XTPMarkupDeviceDependentImage.h">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\DeviceContext\XTPMarkupGdiImage.h">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\DeviceContext\XTPMarkupGdiPlusDeviceContext.h">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\DeviceContext\XTPMarkupGdiPlusImage.h">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Extensions\XTPMarkupAmbientColorsStaticExtension.h">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Extensions\XTPMarkupExtension.h">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Extensions\XTPMarkupStaticExtension.h">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Extensions\XTPMarkupSystemColorsStaticExtension.h">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Extensions\XTPMarkupXtpScript.h">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupEllipse.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupLine.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupPath.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupPathData.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupPathGeometry.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupPathGeometryBuilder.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupPathGeometryFigures.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupPolygon.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupPolyline.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupRectangle.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Shapes\XTPMarkupShape.h">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupBold.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupHyperlink.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupInline.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupInlineCollection.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupInlineUIContainer.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupItalic.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupLineBreak.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupRun.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupSpan.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupTextElement.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Text\XTPMarkupUnderline.h">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusRotateTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusScaleTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusSkewTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusTransformationMatrix.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusTransformObject.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusTranslateTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupRenderTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupRotateTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupScaleTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupSkewTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupTransformationMatrix.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupTranslateTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\XTPvc160Helpers.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\lz4\lz4.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\lz4\lz4hc.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\Xml\pugixml.hpp">
+      <Filter>Source\SkinFramework\Xml</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\Xml\pugiconfig.hpp">
+      <Filter>Source\SkinFramework\Xml</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\WSTRUtils.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\Lz4Pack.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\SkinFramework\TMap.h">
+      <Filter>Source\SkinFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\Base\cxminmax.h">
+      <Filter>Source\Common\Common.Base</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2017.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2019.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2022.h">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusMatrixTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupMatrixTransform.h">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\XTToolkitPro.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\XTPComboBoxNotEdited.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SkinFramework\Common\XTPActiveScriptEngine.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPApplication.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPCasting.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPColorManager.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPCustomHeap.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPDrawHelpers.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPFontManager.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPFramework.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPGdiObjects.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPHookManager.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPImageList.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPImageManager.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPImageManagerResource.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPMarkupRender.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPMarkupTheme.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPNotifyConnection.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPNumberFormat.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPPropExchange.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPResource.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPResourceImage.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPResourceImageList.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPResourceManager.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPRichRender.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPSingleton.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPSynchro.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPSystemHelpers.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPSystemMetrics.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPTheme.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPThemeDLL.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPToolTipContext.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPTypeId.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPWinThemeWrapper.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\XTPXMLHelpers.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\Base\XTPWinApp.cpp">
+      <Filter>Source\Common\Common.Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\Base\Types\XTPRect.cpp">
+      <Filter>Source\Common\Common.Base\Common.Base.Types</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\FrameShadow\XTPFrameShadow.cpp">
+      <Filter>Source\Common\Common.FrameShadow</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\FrameShadow\XTPFrameShadowManager.cpp">
+      <Filter>Source\Common\Common.FrameShadow</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\Hook\XTPWinEventHook.cpp">
+      <Filter>Source\Common\Common.Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\Math\XTPArcBall.cpp">
+      <Filter>Source\Common\Common.Math</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\Math\XTPMathStats.cpp">
+      <Filter>Source\Common\Common.Math</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\Math\XTPMathUtils.cpp">
+      <Filter>Source\Common\Common.Math</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\PropExchange\XTPPropExchangeArchive.cpp">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\PropExchange\XTPPropExchangeEnumerator.cpp">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\PropExchange\XTPPropExchangeEnumeratorPtr.cpp">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\PropExchange\XTPPropExchangeIniFile.cpp">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\PropExchange\XTPPropExchangeRegistry.cpp">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\PropExchange\XTPPropExchangeSection.cpp">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\PropExchange\XTPPropExchangeXMLNode.cpp">
+      <Filter>Source\Common\Common.PropExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\XTPScrollable.cpp">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\XTPScrollBarContainer.cpp">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\XTPScrollBarCtrl.cpp">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\XTPScrollBarPaintManager.cpp">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\XTPScrollBase.cpp">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\XTPWnd.cpp">
+      <Filter>Source\Common\Common.ScrollBar</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeFlat.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeNativeWindows10.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeOffice2000.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeOffice2003.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeOffice2013.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeOfficeXP.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeResource.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeUltraFlat.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2012.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2015.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeWindowsClassic.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeWindowsUx.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\XTGraphicUtils.cpp">
+      <Filter>Source\GraphicLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\XTPGraphicBitmapPng.cpp">
+      <Filter>Source\GraphicLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\png.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngerror.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngget.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngmem.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngpread.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngread.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngrio.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngrtran.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngrutil.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngset.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngtrans.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngwio.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngwrite.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngwtran.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\pngwutil.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\unzip\unzip.cpp">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\adler32.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\compress.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\crc32.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzclose.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzlib.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzread.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzwrite.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\infback.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inffast.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inflate.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inftrees.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\trees.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\uncompr.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\zutil.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinDrawTools.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinImage.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinManager.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinManagerColorFilter.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinManagerModuleList.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinManagerResource.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinManagerSchema.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObject.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectButton.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectComboBox.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectEdit.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectFrame.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectHeader.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectListBox.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectListView.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectMDI.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectMenu.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectProgress.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectReBar.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectScrollBar.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectSpin.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectStatusBar.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectTab.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectToolBar.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectTrackBar.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\XTPSkinObjectTreeView.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\ApiHook\XTPSkinManagerApiHookBase.cpp">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\ApiHook\XTPSkinManagerDetoursApiHook.cpp">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\ApiHook\XTPSkinManagerLegacyApiHook.cpp">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\ApiHook\Detours\creatwth.cpp">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook\SkinFramework.ApiHook.Detours</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\ApiHook\Detours\detours.cpp">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook\SkinFramework.ApiHook.Detours</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\ApiHook\Detours\disolx64.cpp">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook\SkinFramework.ApiHook.Detours</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\ApiHook\Detours\disolx86.cpp">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook\SkinFramework.ApiHook.Detours</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\ApiHook\Detours\image.cpp">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook\SkinFramework.ApiHook.Detours</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\ApiHook\Detours\modules.cpp">
+      <Filter>Source\SkinFramework\SkinFramework.ApiHook\SkinFramework.ApiHook.Detours</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupBuilder.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupContext.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupDrawingContext.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupEventHandlerMap.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupFrameworkContentElement.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupFrameworkElement.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupInputElement.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupKeyboardNavigation.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupMouseButtonEventArgs.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupMouseEventArgs.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupMouseWheelEventArgs.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupObject.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupParser.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupQueryCursorEventArgs.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupResourceDictionary.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupRoutedEvent.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupRoutedEventArgs.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupSetter.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupSetterCollection.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupString.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupStyle.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupThickness.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupTrigger.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupTriggerCollection.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\XTPMarkupUIElement.cpp">
+      <Filter>Source\Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupBorder.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupButton.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupButtonBase.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupCanvas.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupCheckBox.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupColumnDefinition.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupColumnDefinitionCollection.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupContentControl.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupControl.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupDecorator.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupDefinitionBase.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupDockPanel.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupGrid.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupGridLength.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupImage.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupPage.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupPanel.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupRadioButton.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupRowDefinition.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupRowDefinitionCollection.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupScrollBar.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupScrollViewer.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupStackPanel.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupTextBlock.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupToggleButton.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupUIElementCollection.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupUniformGrid.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupViewbox.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Controls\XTPMarkupWrapPanel.cpp">
+      <Filter>Source\Markup\Markup.Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\DeviceContext\XTPGdiPlus.cpp">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\DeviceContext\XTPMarkupDeviceContext.cpp">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\DeviceContext\XTPMarkupDeviceDependentImage.cpp">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\DeviceContext\XTPMarkupGdiImage.cpp">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\DeviceContext\XTPMarkupGdiPlusDeviceContext.cpp">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\DeviceContext\XTPMarkupGdiPlusImage.cpp">
+      <Filter>Source\Markup\Markup.DeviceContext</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Extensions\XTPMarkupAmbientColorsStaticExtension.cpp">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Extensions\XTPMarkupExtension.cpp">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Extensions\XTPMarkupStaticExtension.cpp">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Extensions\XTPMarkupSystemColorsStaticExtension.cpp">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Extensions\XTPMarkupXtpScript.cpp">
+      <Filter>Source\Markup\Markup.Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupEllipse.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupLine.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupPath.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupPathData.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupPathGeometry.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupPathGeometryBuilder.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupPathGeometryFigures.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupPolygon.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupPolyline.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupRectangle.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Shapes\XTPMarkupShape.cpp">
+      <Filter>Source\Markup\Markup.Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupBold.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupHyperlink.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupInline.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupInlineCollection.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupInlineUIContainer.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupItalic.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupLineBreak.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupRun.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupSpan.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupTextElement.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Text\XTPMarkupUnderline.cpp">
+      <Filter>Source\Markup\Markup.Text</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusRotateTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusScaleTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusSkewTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusTransformationMatrix.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusTransformObject.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusTranslateTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupRenderTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupRotateTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupScaleTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupSkewTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupTransformationMatrix.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupTranslateTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\lz4\lz4.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.lz4</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\lz4\lz4hc.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.lz4</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\Xml\pugixml.cpp">
+      <Filter>Source\SkinFramework\Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\SkinFramework\Lz4Pack.cpp">
+      <Filter>Source\SkinFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2017.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2019.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2022.cpp">
+      <Filter>Source\Common\Common.ScrollBar\Common.ScrollBar.Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusMatrixTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\Markup\Transform\XTPMarkupMatrixTransform.cpp">
+      <Filter>Source\Markup\Markup.Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\XTPComboBoxNotEdited.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SkinFramework\Common\XTPPropExchange.inc">
+      <Filter>Source\Common</Filter>
+    </None>
+    <None Include="SkinFramework\Common\XTPXMLHelpers.inl">
+      <Filter>Source\Common</Filter>
+    </None>
+  </ItemGroup>
+</Project>

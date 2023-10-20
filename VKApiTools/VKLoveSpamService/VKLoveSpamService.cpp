@@ -495,7 +495,7 @@ bool ProcMain(bool is_service) {
 						continue;
 					}
 				}
-				VkReq["messages.send"] << VKI("peer_id", config.peer_id) << VKI("random_id", time(0)) << VK("message", ms.message);
+				VkReq["messages.send"] << VKI("peer_ids", config.peer_id) << VKI("random_id", time(0)) << VK("message", ms.message);
 				if (VkReq().IsError) {
 					continue;
 				}

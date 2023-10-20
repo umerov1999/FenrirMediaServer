@@ -16,6 +16,8 @@ static char THIS_FILE[] = __FILE__;
 SectionPeEditorSectionSetNameDialog::SectionPeEditorSectionSetNameDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(SectionPeEditorSectionSetNameDialog::IDD, pParent)
 {
+	m_hIcon = nullptr;
+	Ret = false;
 }
 
 SectionPeEditorSectionSetNameDialog::~SectionPeEditorSectionSetNameDialog()

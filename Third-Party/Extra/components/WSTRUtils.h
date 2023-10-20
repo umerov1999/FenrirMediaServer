@@ -5,19 +5,15 @@
 #include <ctime>
 #include <cstdint>
 #define DO_SECOND_OF(first,do_second) if(first) {first = false;} else { do_second; }
-namespace WSTRUtils
-{
-	static std::string wchar_to_UTF8(const std::wstring &In)
-	{
+namespace WSTRUtils {
+	static std::string wchar_to_UTF8(const std::wstring &In) {
 		const wchar_t* in = In.c_str();
 		std::string out;
 		unsigned int codepoint = 0;
-		for (in; *in != 0; ++in)
-		{
+		for (in; *in != 0; ++in) {
 			if (*in >= 0xd800 && *in <= 0xdbff)
 				codepoint = ((*in - 0xd800) << 10) + 0x10000;
-			else
-			{
+			else {
 				if (*in >= 0xdc00 && *in <= 0xdfff)
 					codepoint |= *in - 0xdc00;
 				else
@@ -25,19 +21,16 @@ namespace WSTRUtils
 
 				if (codepoint <= 0x7f)
 					out.append(1, static_cast<char>(codepoint));
-				else if (codepoint <= 0x7ff)
-				{
+				else if (codepoint <= 0x7ff) {
 					out.append(1, static_cast<char>(0xc0 | ((codepoint >> 6) & 0x1f)));
 					out.append(1, static_cast<char>(0x80 | (codepoint & 0x3f)));
 				}
-				else if (codepoint <= 0xffff)
-				{
+				else if (codepoint <= 0xffff) {
 					out.append(1, static_cast<char>(0xe0 | ((codepoint >> 12) & 0x0f)));
 					out.append(1, static_cast<char>(0x80 | ((codepoint >> 6) & 0x3f)));
 					out.append(1, static_cast<char>(0x80 | (codepoint & 0x3f)));
 				}
-				else
-				{
+				else {
 					out.append(1, static_cast<char>(0xf0 | ((codepoint >> 18) & 0x07)));
 					out.append(1, static_cast<char>(0x80 | ((codepoint >> 12) & 0x3f)));
 					out.append(1, static_cast<char>(0x80 | ((codepoint >> 6) & 0x3f)));
@@ -49,13 +42,11 @@ namespace WSTRUtils
 		return out;
 	}
 
-	static std::wstring UTF8_to_wchar(const std::string &In)
-	{
+	static std::wstring UTF8_to_wchar(const std::string &In) {
 		const char* in = In.c_str();
 		std::wstring out;
 		unsigned int codepoint = 0;
-		while (*in != 0)
-		{
+		while (*in != 0) {
 			unsigned char ch = static_cast<unsigned char>(*in);
 			if (ch <= 0x7f)
 				codepoint = ch;
@@ -68,12 +59,77 @@ namespace WSTRUtils
 			else
 				codepoint = ch & 0x07;
 			++in;
-			if (((*in & 0xc0) != 0x80) && (codepoint <= 0x10ffff))
-			{
+			if (((*in & 0xc0) != 0x80) && (codepoint <= 0x10ffff)) {
 				if (sizeof(wchar_t) > 2)
 					out.append(1, static_cast<wchar_t>(codepoint));
-				else if (codepoint > 0xffff)
-				{
+				else if (codepoint > 0xffff) {
+					out.append(1, static_cast<wchar_t>(0xd800 + (codepoint >> 10)));
+					out.append(1, static_cast<wchar_t>(0xdc00 + (codepoint & 0x03ff)));
+				}
+				else if (codepoint < 0xd800 || codepoint >= 0xe000)
+					out.append(1, static_cast<wchar_t>(codepoint));
+			}
+		}
+		return out;
+	}
+
+	static std::string utf16_to_UTF8(const std::u16string& In) {
+		const char16_t* in = In.c_str();
+		std::string out;
+		unsigned int codepoint = 0;
+		for (in; *in != 0; ++in) {
+			if (*in >= 0xd800 && *in <= 0xdbff)
+				codepoint = ((*in - 0xd800) << 10) + 0x10000;
+			else {
+				if (*in >= 0xdc00 && *in <= 0xdfff)
+					codepoint |= *in - 0xdc00;
+				else
+					codepoint = *in;
+
+				if (codepoint <= 0x7f)
+					out.append(1, static_cast<char>(codepoint));
+				else if (codepoint <= 0x7ff) {
+					out.append(1, static_cast<char>(0xc0 | ((codepoint >> 6) & 0x1f)));
+					out.append(1, static_cast<char>(0x80 | (codepoint & 0x3f)));
+				}
+				else if (codepoint <= 0xffff) {
+					out.append(1, static_cast<char>(0xe0 | ((codepoint >> 12) & 0x0f)));
+					out.append(1, static_cast<char>(0x80 | ((codepoint >> 6) & 0x3f)));
+					out.append(1, static_cast<char>(0x80 | (codepoint & 0x3f)));
+				}
+				else {
+					out.append(1, static_cast<char>(0xf0 | ((codepoint >> 18) & 0x07)));
+					out.append(1, static_cast<char>(0x80 | ((codepoint >> 12) & 0x3f)));
+					out.append(1, static_cast<char>(0x80 | ((codepoint >> 6) & 0x3f)));
+					out.append(1, static_cast<char>(0x80 | (codepoint & 0x3f)));
+				}
+				codepoint = 0;
+			}
+		}
+		return out;
+	}
+
+	static std::u16string UTF8_to_utf16(const std::string& In) {
+		const char* in = In.c_str();
+		std::u16string out;
+		unsigned int codepoint = 0;
+		while (*in != 0) {
+			unsigned char ch = static_cast<unsigned char>(*in);
+			if (ch <= 0x7f)
+				codepoint = ch;
+			else if (ch <= 0xbf)
+				codepoint = (codepoint << 6) | (ch & 0x3f);
+			else if (ch <= 0xdf)
+				codepoint = ch & 0x1f;
+			else if (ch <= 0xef)
+				codepoint = ch & 0x0f;
+			else
+				codepoint = ch & 0x07;
+			++in;
+			if (((*in & 0xc0) != 0x80) && (codepoint <= 0x10ffff)) {
+				if (sizeof(wchar_t) > 2)
+					out.append(1, static_cast<wchar_t>(codepoint));
+				else if (codepoint > 0xffff) {
 					out.append(1, static_cast<wchar_t>(0xd800 + (codepoint >> 10)));
 					out.append(1, static_cast<wchar_t>(0xdc00 + (codepoint & 0x03ff)));
 				}
@@ -154,17 +210,13 @@ namespace WSTRUtils
 		return ret;
 	}
 
-	static std::wstring FixFileName(const std::wstring &Path)
-	{
+	static std::wstring FixFileName(const std::wstring &Path) {
 		std::wstring ret = Path;
-		for (auto& i : ret)
-		{
+		for (auto& i : ret) {
 			if(i >= 0x0001U && i < 0x001FU)
 				i = L' ';
-			else
-			{
-				switch (i)
-				{
+			else {
+				switch (i) {
 				case L'\\':
 				case L'/':
 				case L':':
@@ -183,17 +235,13 @@ namespace WSTRUtils
 		return ret;
 	}
 
-	static std::string FixFileName(const std::string &Path)
-	{
+	static std::string FixFileName(const std::string &Path) {
 		std::string ret = Path;
-		for (auto& i : ret)
-		{
+		for (auto& i : ret) {
 			if (i >= 0x01U && i < 0x1FU)
 				i = u8' ';
-			else
-			{
-				switch (i)
-				{
+			else {
+				switch (i) {
 				case u8'\\':
 				case u8'/':
 				case u8':':
@@ -212,17 +260,13 @@ namespace WSTRUtils
 		return ret;
 	}
 
-	static std::wstring FixFileNameNotSlash(const std::wstring &Path)
-	{
+	static std::wstring FixFileNameNotSlash(const std::wstring &Path) {
 		std::wstring ret = Path;
-		for (auto& i : ret)
-		{
+		for (auto& i : ret) {
 			if (i >= 0x0001U && i < 0x001FU)
 				i = L' ';
-			else
-			{
-				switch (i)
-				{
+			else {
+				switch (i) {
 				case L':':
 				case L'*':
 				case L'?':
@@ -239,17 +283,13 @@ namespace WSTRUtils
 		return Path;
 	}
 
-	static std::string FixFileNameNotSlash(const std::string &Path)
-	{
+	static std::string FixFileNameNotSlash(const std::string &Path) {
 		std::string ret = Path;
-		for (auto& i : ret)
-		{
+		for (auto& i : ret) {
 			if (i >= 0x01U && i < 0x1FU)
 				i = u8' ';
-			else
-			{
-				switch (i)
-				{
+			else {
+				switch (i) {
 				case u8':':
 				case u8'*':
 				case u8'?':
@@ -266,16 +306,13 @@ namespace WSTRUtils
 		return ret;
 	}
 
-	static std::wstring FixFileNameAudio(const std::wstring &Path)
-	{
+	static std::wstring FixFileNameAudio(const std::wstring &Path) {
 		std::wstring bad = { L'#', L'%', L'&', L'{', L'}', L'\\', L'<', L'>', L'*', L'?', L'/', L'$', L'\'', L'\"', L':', L'@', L'`', L'|', L'=' };
 		std::wstring ret = Path;
-		for (auto& i : ret)
-		{
+		for (auto& i : ret) {
 			if (i >= 0x0001U && i < 0x001FU)
 				i = L'_';
-			else
-			{
+			else {
 				if (bad.find(i) != std::wstring::npos)
 					i = L'_';
 			}
@@ -284,16 +321,13 @@ namespace WSTRUtils
 		return ret;
 	}
 
-	static std::string FixFileNameAudio(const std::string &Path)
-	{
+	static std::string FixFileNameAudio(const std::string &Path) {
 		std::string bad = { u8'#', u8'%', u8'&', u8'{', u8'}', u8'\\', u8'<', u8'>', u8'*', u8'?', u8'/', u8'$', u8'\'', u8'\"', u8':', u8'@', u8'`', u8'|', u8'=' };
 		std::string ret = Path;
-		for (auto& i : ret)
-		{
+		for (auto& i : ret) {
 			if (i >= 0x01U && i < 0x1FU)
 				i = u8'_';
-			else
-			{
+			else {
 				if (bad.find(i) != std::string::npos)
 					i = u8'_';
 			}
@@ -302,11 +336,9 @@ namespace WSTRUtils
 		return ret;
 	}
 
-	static std::string FixJSonSlashs(const std::string& Path)
-	{
+	static std::string FixJSonSlashs(const std::string& Path) {
 		std::string ret = Path;
-		for (auto& i : ret)
-		{
+		for (auto& i : ret) {
 			if (i == u8'\\')
 				i = u8'/';
 		}
@@ -314,11 +346,9 @@ namespace WSTRUtils
 		return ret;
 	}
 
-	static std::wstring FixJSonSlashs(const std::wstring& Path)
-	{
+	static std::wstring FixJSonSlashs(const std::wstring& Path) {
 		std::wstring ret = Path;
-		for (auto& i : ret)
-		{
+		for (auto& i : ret) {
 			if (i == L'\\')
 				i = L'/';
 		}
@@ -354,8 +384,7 @@ namespace WSTRUtils
 		return ret;
 	}
 
-	static wchar_t ToWLower(wchar_t c)
-	{
+	static wchar_t ToWLower(wchar_t c) {
 		if (c >= L'А' && c <= L'Я')
 			return c + (L'я' > L'Я' ? L'я' - L'Я' : L'Я' - L'я');
 		if (c >= L'A' && c <= L'Z')
@@ -371,8 +400,7 @@ namespace WSTRUtils
 		return v;
 	}
 
-	static char ToLower(char c)
-	{
+	static char ToLower(char c) {
 		if (c >= u8'A' && c <= u8'Z')
 			return c + (u8'z' > u8'Z' ? u8'z' - u8'Z' : u8'Z' - u8'z');
 		return c;
@@ -386,35 +414,29 @@ namespace WSTRUtils
 		return v;
 	}
 
-	static bool compare(const std::string &Pattern, const std::string &Cmp)
-	{
+	static bool compare(const std::string &Pattern, const std::string &Cmp) {
 		if (Pattern.length() < Cmp.length())
 			return false;
-		for (size_t i = 0; i < Cmp.length(); i++)
-		{
+		for (size_t i = 0; i < Cmp.length(); i++) {
 			if (ToLower(Pattern[i]) != ToLower(Cmp[i]))
 				return false;
 		}
 		return true;
 	}
 
-	static bool Wcompare(const std::wstring &Pattern, const std::wstring &Cmp)
-	{
+	static bool Wcompare(const std::wstring &Pattern, const std::wstring &Cmp) {
 		if (Pattern.length() < Cmp.length())
 			return false;
-		for (size_t i = 0; i < Cmp.length(); i++)
-		{
+		for (size_t i = 0; i < Cmp.length(); i++) {
 			if (ToWLower(Pattern[i]) != ToWLower(Cmp[i]))
 				return false;
 		}
 		return true;
 	}
 
-	static size_t wsearch(const std::wstring &Buf, const std::wstring &Find)
-	{
+	static size_t wsearch(const std::wstring &Buf, const std::wstring &Find) {
 		int dwOffset = 0;
-		while (dwOffset + (int)Find.length() <= (int)Buf.length())
-		{
+		while (dwOffset + (int)Find.length() <= (int)Buf.length()) {
 			if (Wcompare(&Buf[dwOffset], Find) == true)
 				return dwOffset;
 			dwOffset++;
@@ -422,11 +444,9 @@ namespace WSTRUtils
 		return std::string::npos;
 	}
 
-	static size_t search(const std::string &Buf, const std::string &Find)
-	{
+	static size_t search(const std::string &Buf, const std::string &Find) {
 		int dwOffset = 0;
-		while (dwOffset + (int)Find.length() <= (int)Buf.length())
-		{
+		while (dwOffset + (int)Find.length() <= (int)Buf.length()) {
 			if (compare(&Buf[dwOffset], Find) == true)
 				return dwOffset;
 			dwOffset++;
@@ -434,11 +454,9 @@ namespace WSTRUtils
 		return std::string::npos;
 	}
 
-	static size_t not_const_wsearch(const std::wstring &Buf, const std::wstring &Find)
-	{
+	static size_t not_const_wsearch(const std::wstring &Buf, const std::wstring &Find) {
 		int dwOffset = 0;
-		while (dwOffset + (int)Find.length() <= (int)Buf.length())
-		{
+		while (dwOffset + (int)Find.length() <= (int)Buf.length()) {
 			if (Wcompare(&Buf[dwOffset], Find) == true)
 				return dwOffset;
 			dwOffset++;
@@ -446,11 +464,9 @@ namespace WSTRUtils
 		return std::string::npos;
 	}
 
-	static size_t not_const_search(const std::string &Buf, const std::string &Find)
-	{
+	static size_t not_const_search(const std::string &Buf, const std::string &Find) {
 		int dwOffset = 0;
-		while (dwOffset + (int)Find.length() <= (int)Buf.length())
-		{
+		while (dwOffset + (int)Find.length() <= (int)Buf.length()) {
 			if (compare(&Buf[dwOffset], Find) == true)
 				return dwOffset;
 			dwOffset++;
@@ -458,8 +474,7 @@ namespace WSTRUtils
 		return std::string::npos;
 	}
 
-	static std::string GetStringDate(const tm* t_m)
-	{
+	static std::string GetStringDate(const tm* t_m) {
 		char Week[7][4] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 		char Month[12][4] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 		char Strbuf[80];
@@ -469,8 +484,7 @@ namespace WSTRUtils
 		return Strbuf;
 	}
 
-	static std::wstring WGetStringDate(const tm& t_m)
-	{
+	static std::wstring WGetStringDate(const tm& t_m) {
 		wchar_t Week[7][4] = { L"Вс", L"Пн", L"Вт", L"Ср", L"Чт", L"Пт", L"Сб" };
 		wchar_t Month[12][4] = { L"Янв", L"Фев", L"Мар", L"Апр", L"Май", L"Июн", L"Июл", L"Авг", L"Сен", L"Окт", L"Ноя", L"Дек" };
 		wchar_t Strbuf[80];
@@ -480,8 +494,7 @@ namespace WSTRUtils
 		return Strbuf;
 	}
 
-	static std::string GetTimeGMT(int SkipDay)
-	{
+	static std::string GetTimeGMT(int SkipDay) {
 		tm u;
 		const time_t timer = time(NULL);
 		gmtime_s(&u, &timer);
@@ -490,28 +503,24 @@ namespace WSTRUtils
 		return GetStringDate(&u);
 	}
 
-	static std::wstring GetTimeLocal()
-	{
+	static std::wstring GetTimeLocal() {
 		tm u;
 		const time_t timer = time(NULL);
 		localtime_s(&u, &timer);
 		return WGetStringDate(u);
 	}
 
-	static std::wstring GetTimeAT(time_t timer)
-	{
+	static std::wstring GetTimeAT(time_t timer) {
 		tm u;
 		localtime_s(&u, &timer);
 		return WGetStringDate(u);
 	}
 
-	static std::string urlencodewchar(const std::wstring &link)
-	{
+	static std::string urlencodewchar(const std::wstring &link) {
 		return url_encode(wchar_to_UTF8(link));
 	}
 
-	static std::string wchar_to_Cp1251(const std::wstring &In)
-	{
+	static std::string wchar_to_Cp1251(const std::wstring &In) {
 		std::string ret;
 		ret.reserve(In.size());
 		std::wstring::const_iterator it = In.begin(), it_e = In.end();
@@ -534,8 +543,7 @@ namespace WSTRUtils
 		return ret;
 	}
 
-	static std::string UTF8_to_Cp1251(const std::string& In)
-	{
+	static std::string UTF8_to_Cp1251(const std::string& In) {
 		return wchar_to_Cp1251(UTF8_to_wchar(In));
 	}
 
@@ -598,8 +606,7 @@ namespace WSTRUtils
 	}
 
 #ifdef BIND_CONSOLE
-	static void BindStdHandlesToConsole()
-	{
+	static void BindStdHandlesToConsole() {
 		AllocConsole();
 
 		FILE* fl1, *fl2, *fl3;

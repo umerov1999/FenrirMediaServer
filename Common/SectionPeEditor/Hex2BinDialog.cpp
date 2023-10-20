@@ -37,6 +37,8 @@ static char * GetANSIFromUTF16(const wchar_t * pUTF16)
 Hex2BinDialog::Hex2BinDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(Hex2BinDialog::IDD, pParent)
 {
+	m_hIcon = nullptr;
+	memset(szBuf, 0, sizeof(szBuf));
 }
 
 Hex2BinDialog::~Hex2BinDialog()

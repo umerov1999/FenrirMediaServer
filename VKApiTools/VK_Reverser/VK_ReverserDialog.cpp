@@ -305,6 +305,10 @@ static void ReadCert(const wstring &FilePath)
 VK_ReverserDialog::VK_ReverserDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(VK_ReverserDialog::IDD, pParent)
 {
+	IsStart = false;
+	memset(szBuf, 0, sizeof(szBuf));
+	m_hIcon = nullptr;
+	m_hCursor = nullptr;
 }
 
 VK_ReverserDialog::~VK_ReverserDialog()
@@ -546,8 +550,6 @@ void VK_ReverserDialog::OnSelectSSL()
 
 void VK_ReverserDialog::OnClose()
 {
-	PrintMessage(L"[Выход: (" + GetTimeLocal() + L")]", URGB(255, 0, 0));
-	WaitForSingleObject(hMessageMutex, INFINITE);
 	if (HTTPSserver_sock != 0) {
 		shutdown(HTTPSserver_sock, SD_BOTH);
 		closesocket(HTTPSserver_sock);

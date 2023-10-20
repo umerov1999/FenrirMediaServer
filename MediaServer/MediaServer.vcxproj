@@ -43,7 +43,7 @@
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0600;ZSTD_MULTITHREAD=1;ZSTD_LEGACY_SUPPORT=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../Third-Party/openssl/include;../Third-Party/XTPSkinFramework v20.1.0/SkinFramework;./;../Third-Party/Extra;../Third-Party/libimage;../Third-Party/Extra/components;../Third-Party/libcurl/include;../Third-Party/libzstd;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Third-Party/XTPSkinFramework v22.1.0/SkinFramework;../Third-Party/openssl/include;./;../Third-Party/Extra;../Third-Party/libimage;../Third-Party/Extra/components;../Third-Party/libcurl/include;../Third-Party/libzstd;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -131,7 +131,7 @@
     <ProjectReference Include="..\Third-Party\USound\USound.vcxproj">
       <Project>{60da55f1-5825-3da3-bf06-0bafa6b95cdf}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Third-Party\XTPSkinFramework v20.1.0\SkinFrameworkStatic_vc160.vcxproj">
+    <ProjectReference Include="..\Third-Party\XTPSkinFramework v22.1.0\SkinFrameworkStatic.vcxproj">
       <Project>{44399486-2259-2815-3336-338422327369}</Project>
     </ProjectReference>
   </ItemGroup>

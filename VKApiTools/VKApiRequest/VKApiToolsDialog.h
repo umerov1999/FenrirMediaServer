@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include "ColorEdit.h"
 #include "Ulottie.h"
+#include "XTPComboBoxNotEdited.h"
 
 class Story {
 public:
@@ -43,7 +44,7 @@ public:
 	CEdit NewToken;
 	CEdit APIMethod;
 	CEdit ParamsEd;
-	CComboBox FFunc;
+	CXTPComboBoxNotEdited FFunc;
 
 	CButton Left;
 	CButton Right;

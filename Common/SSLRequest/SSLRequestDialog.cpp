@@ -143,22 +143,24 @@ struct RequestParserStruct
 SOCKET tcp_listen(int Port)
 {
 	SOCKET sock;
-	struct sockaddr_in sin;
+	struct sockaddr_in sin {};
 	const int qlen = 1;
 	if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) <= 0) {
 		return SOCKET_ERROR;
 	}
 
-	int tr = 1;
+	DWORD tr = 1;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&tr, sizeof(tr));
 
 	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(Port);
 	if (::bind(sock, (struct sockaddr*)&sin, sizeof(sin)) < 0) {
+		closesocket(sock);
 		return SOCKET_ERROR;
 	}
 	if (::listen(sock, qlen) < 0) {
+		closesocket(sock);
 		return SOCKET_ERROR;
 	}
 	return sock;
@@ -295,6 +297,8 @@ string GetFileData(wstring File)
 SSLRequestDialog::SSLRequestDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(SSLRequestDialog::IDD, pParent)
 {
+	m_hIcon = nullptr;
+	memset(szBuf, 0, sizeof(szBuf));
 }
 
 SSLRequestDialog::~SSLRequestDialog()
@@ -409,11 +413,11 @@ DWORD WINAPI Server(LPVOID)
 		(win_message().timeout(5).message_type(MSG_TYPE::TYPE_ERROR) << L"Сбой в инициализации сервера(socket bind)").show();
 		return -1;
 	}
-	SOCKADDR_IN FromAddr;
-	int len = sizeof(SOCKADDR_IN);
+	sockaddr_in FromAddr;
+	int len = sizeof(FromAddr);
 	while (true)
 	{
-		client_sock = accept(server_sock, (SOCKADDR*)&FromAddr, &len);
+		client_sock = accept(server_sock, (struct sockaddr*)&FromAddr, &len);
 		if (client_sock <= 0)
 			continue;
 		SOCKET* tmp = new SOCKET();

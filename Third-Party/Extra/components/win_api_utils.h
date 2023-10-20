@@ -146,7 +146,7 @@ static inline bool CreateThreadDetachedSimple(void* (*start_routine) (void*), co
 	pthread_t ret = 0;
 	int thid = pthread_create(&ret, NULL, start_routine, (void*)lpParameter);
 	if (!thid) {
-		pthread_detach(thid);
+		pthread_detach(ret);
 		return true;
 	}
 	return false;

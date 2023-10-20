@@ -1,11 +1,22 @@
 ﻿#pragma once
 
-#define VKAPI_VERSION "5.131"
+#define VKAPI_VERSION "5.154"
 #define VKAPI_VERSION_AUTH VKAPI_VERSION
 #define VKAPI_VERSION_FOR_AUDIO "5.90"
 
-#define KATE_USERAGENT "KateMobileAndroid/104.1 lite-542 (Android 13; SDK 31; arm64-v8a; SAMSUNG SM-G980F; ru; 3200x1440)"
-#define ANDROID_USERAGENT "VKAndroidApp/8.15-15271 (Android 13; SDK 31; arm64-v8a; SAMSUNG SM-G980F; ru; 3200x1440)"
+#define KATE_VERSION_STRING "105"
+#define KATE_VERSION_CODE "543"
 
-#define IPHONE_USERAGENT "com.vk.vkclient/12 (unknown, iOS 11.0, iPhone, Scale/2.000000)"
-#define IPAD_USERAGENT "com.vk.vkclient/12 (unknown, iOS 11.0, iPad, Scale/2.000000)"
+#define ANDROID_VERSION_STRING "8.15"
+#define ANDROID_VERSION_CODE "15271"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#define KATE_USERAGENT "KateMobileAndroid/" KATE_VERSION_STRING " lite-" KATE_VERSION_CODE " (Android 14; SDK 34; arm64-v8a; SAMSUNG SM-G980F; ru; 3200x1440)"
+#define ANDROID_USERAGENT "VKAndroidApp/" ANDROID_VERSION_STRING "-" ANDROID_VERSION_CODE " (Android 14; SDK 34; arm64-v8a; SAMSUNG SM-G980F; ru; 3200x1440)"
+
+#define KATE_USERAGENT_DEVICED(device) (std::string("KateMobileAndroid/" KATE_VERSION_STRING " lite-" KATE_VERSION_CODE " (Android 14; SDK 34; arm64-v8a; ") + device + std::string("; ru; 3200x1440)"))
+#define ANDROID_USERAGENT_DEVICED(device) (std::string("VKAndroidApp/" ANDROID_VERSION_STRING "-" ANDROID_VERSION_CODE " (Android 14; SDK 34; arm64-v8a; ") + device + std::string("; ru; 3200x1440)"))
+
+#define IPHONE_USERAGENT "com.vk.vkclient/3893 (iPhone, iOS 16.1, iPhone11,2, Scale/3.0)"
+#define IPAD_USERAGENT "com.vk.vkclient/3893 (iPhone, iOS 16.1, iPhone11,2, Scale/3.0)"
