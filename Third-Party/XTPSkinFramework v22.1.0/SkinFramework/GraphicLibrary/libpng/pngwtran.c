@@ -577,4 +577,3 @@ png_do_write_transformations(png_structrp png_ptr, png_row_infop row_info)
 #endif /* WRITE */
 
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
-

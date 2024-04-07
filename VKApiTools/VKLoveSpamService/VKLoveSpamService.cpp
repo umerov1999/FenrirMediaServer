@@ -546,10 +546,10 @@ int main() {
 }
 */
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR szCmdLine, int iCmdShow)
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nShowCmd)
 {
 	srand((unsigned int)time(0));
-	if (wstring(szCmdLine).find(L"--service") != wstring::npos) {
+	if (wstring(lpCmdLine).find(L"--service") != wstring::npos) {
 		SERVICE_TABLE_ENTRYW ServiceTable[1];
 		ServiceTable[0].lpServiceName = (LPWSTR)SERVICENAME;
 		ServiceTable[0].lpServiceProc = (LPSERVICE_MAIN_FUNCTION)ServiceMain;

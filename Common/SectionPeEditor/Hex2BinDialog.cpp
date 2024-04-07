@@ -128,7 +128,7 @@ void Hex2BinDialog::HextToBin(const wchar_t*fl)
 	char*strbf = GetANSIFromUTF16((wchar_t*)Bughf.GetString());
 	strbf = _strlwr(strbf);
 
-	char cc[2];
+	char cc[3] = {};
 
 	for (int i = 0; i < Bughf.GetLength(); i+=2)
 	{
@@ -187,7 +187,7 @@ void Hex2BinDialog::BinToHex(const wchar_t*fl)
 	out += "\"";
 
 	Edk.SetWindowTextW(out.GetString());
-	free(bv);
+	delete[] bv;
 }
 
 void Hex2BinDialog::OnOpen()
@@ -211,8 +211,14 @@ void Hex2BinDialog::OnCopy()
 	Edk.GetWindowTextW(nmm);
 	OpenClipboard();
 	EmptyClipboard();
-	HGLOBAL hStrMem = GlobalAlloc(GMEM_MOVEABLE, (nmm.GetLength() +3) * sizeof(wchar_t));
+	HGLOBAL hStrMem = GlobalAlloc(GMEM_MOVEABLE, (nmm.GetLength() + 1) * sizeof(wchar_t));
+	if (!hStrMem) {
+		return;
+	}
 	void* pStrMem = GlobalLock(hStrMem);
+	if (!pStrMem) {
+		return;
+	}
 	memcpy(pStrMem, nmm.GetString(), nmm.GetLength() * sizeof(wchar_t));
 	GlobalUnlock(pStrMem);
 	SetClipboardData(CF_UNICODETEXT, hStrMem);
@@ -248,7 +254,7 @@ BOOL Hex2BinDialog::PreTranslateMessage(MSG* pMsg)
 			long ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0xFFFFFFFF, NULL, 0);
 			if (ResultQueryFile == 1)
 			{
-				ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0, szBuf, sizeof(szBuf));
+				ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0, szBuf, sizeof(szBuf) / sizeof(wchar_t));
 				FILE*tmp = _wfopen(szBuf, L"rb");
 				if (!tmp)
 				{

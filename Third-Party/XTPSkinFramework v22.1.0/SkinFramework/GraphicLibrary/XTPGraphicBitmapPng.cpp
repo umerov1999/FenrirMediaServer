@@ -104,7 +104,7 @@ BOOL CXTPGraphicBitmapPng::CCallback::PngLoadImage(CFile* pFile, png_byte** ppbI
 
 	pFile->Read(pbSig, 8);
 
-	if (!png_check_sig(pbSig, 8))
+	if (png_sig_cmp(pbSig, 0, 8) != 0)
 	{
 		*ppbImageData = pbImageData = NULL;
 		return FALSE;

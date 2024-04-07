@@ -1,7 +1,7 @@
 
 /* pngwutil.c - utilities to write a PNG file
  *
- * Copyright (c) 2018-2022 Cosmin Truta
+ * Copyright (c) 2018-2024 Cosmin Truta
  * Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson
  * Copyright (c) 1996-1997 Andreas Dilger
  * Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
@@ -2313,7 +2313,7 @@ png_setup_sub_row(png_structrp png_ptr, png_uint_32 bpp,
         break;
    }
 
-   return (sum);
+   return sum;
 }
 
 static void /* PRIVATE */
@@ -2363,7 +2363,7 @@ png_setup_up_row(png_structrp png_ptr, size_t row_bytes, size_t lmins)
         break;
    }
 
-   return (sum);
+   return sum;
 }
 static void /* PRIVATE */
 png_setup_up_row_only(png_structrp png_ptr, size_t row_bytes)
@@ -2419,7 +2419,7 @@ png_setup_avg_row(png_structrp png_ptr, png_uint_32 bpp,
         break;
    }
 
-   return (sum);
+   return sum;
 }
 static void /* PRIVATE */
 png_setup_avg_row_only(png_structrp png_ptr, png_uint_32 bpp,
@@ -2502,7 +2502,7 @@ png_setup_paeth_row(png_structrp png_ptr, png_uint_32 bpp,
         break;
    }
 
-   return (sum);
+   return sum;
 }
 static void /* PRIVATE */
 png_setup_paeth_row_only(png_structrp png_ptr, png_uint_32 bpp,

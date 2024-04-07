@@ -1,5 +1,5 @@
 /* gzlib.c -- zlib functions common to reading and writing gzip files
- * Copyright (C) 2004-2019 Mark Adler
+ * Copyright (C) 2004-2024 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -232,7 +232,7 @@ local gzFile gz_open(const void *path, int fd, const char *mode) {
 #ifdef WIDECHAR
         fd == -2 ? _wopen(path, oflag, 0666) :
 #endif
-        open((const char *)path, oflag, 0666));
+        _open((const char *)path, oflag, 0666));
     if (state->fd == -1) {
         free(state->path);
         free(state);
@@ -563,20 +563,20 @@ void ZLIB_INTERNAL gz_error(gz_statep state, int err, const char *msg) {
 #endif
 }
 
-#ifndef INT_MAX
 /* portably return maximum value for an int (when limits.h presumed not
    available) -- we need to do this to cover cases where 2's complement not
    used, since C standard permits 1's complement and sign-bit representations,
    otherwise we could just use ((unsigned)-1) >> 1 */
 unsigned ZLIB_INTERNAL gz_intmax(void) {
-    unsigned p, q;
-
-    p = 1;
+#ifdef INT_MAX
+    return INT_MAX;
+#else
+    unsigned p = 1, q;
     do {
         q = p;
         p <<= 1;
         p++;
     } while (p > q);
     return q >> 1;
-}
 #endif
+}

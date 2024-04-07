@@ -4,6 +4,9 @@
 class clWAVDataEncoder
 {
 public:
+	clWAVDataEncoder() {
+		m_DataChunkPos = 0;
+	}
 	bool ResetEncoder( int NumChannels, int NumSamplesPerSec, int BitsPerSample, float Quality );
 	void EncodePCMData( const void* PCMData, size_t PCMDataSizeBytes );
 	LPVOID FinalizeAndGetResource();

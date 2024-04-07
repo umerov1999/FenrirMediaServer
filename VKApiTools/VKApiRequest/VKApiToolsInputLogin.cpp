@@ -34,6 +34,8 @@ static char THIS_FILE[] = __FILE__;
 VKApiToolsInputLogin::VKApiToolsInputLogin(CWnd* pParent /*=NULL*/)
 	: CDialogEx(VKApiToolsInputLogin::IDD, pParent)
 {
+	memset(szBuf, 0, sizeof(szBuf));
+	m_hIcon = nullptr;
 }
 
 VKApiToolsInputLogin::~VKApiToolsInputLogin()

@@ -19,8 +19,12 @@
 #define ENDL "\r\n"
 #define WENDL L"\r\n"
 
-struct InitServer
+class InitServer
 {
+public:
+	InitServer() {
+		HttpsPort = 0;
+	}
 	int HttpsPort;
 };
 
@@ -28,8 +32,9 @@ struct InitServer
 #define USSL_CERTPART_BUNDLE 1
 #define USSL_CERTPART_KEY 2
 
-struct USSL_CERT
+class USSL_CERT
 {
+public:
 	USSL_CERT()
 	{
 		Inited = false;
@@ -40,8 +45,13 @@ struct USSL_CERT
 	Map::Map<int, std::string>CertPart;
 };
 
-struct ACCEPT_STRUCT
+class ACCEPT_STRUCT
 {
+public:
+	ACCEPT_STRUCT() {
+		ssl_ctx = nullptr;
+		client_sock = NULL;
+	}
 	std::string connection;
 	void* ssl_ctx;
 	SOCKET client_sock;
@@ -137,8 +147,14 @@ enum class TARGET_DEVICES
 };
 void InitVK_Reverser();
 
-struct RequestParserStruct
+class RequestParserStruct
 {
+public:
+	RequestParserStruct() {
+		Device = TARGET_DEVICES::DEVICE_UNKNOW;
+		method = HTTP_METHOD::HTTP_METHOD_UNKNOW;
+	}
+
 	TARGET_DEVICES Device;
 	HTTP_METHOD method;
 	std::string connection;

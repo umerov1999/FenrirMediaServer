@@ -2505,7 +2505,15 @@ enum class MSG_TYPE
 class MessageBoxDialog
 {
 public:
-	int show(HWND phParrent, std::wstring TMessage, MSG_TYPE TYPE_MESSAGE, MSG_BUTTON TYPE_BUTTON, int TTime, std::wstring YES_BUTTON, std::wstring NO_BUTTON, std::wstring CANCEL_BUTTON)
+	MessageBoxDialog() {
+		hParrent = nullptr;
+		TYPE_BUTTON = MSG_BUTTON::BUTTON_OK;
+		TYPE_MESSAGE = MSG_TYPE::TYPE_INFO;
+		hIcon = nullptr;
+		Time = 0;
+	}
+
+	int show(HWND phParrent, const std::wstring &TMessage, MSG_TYPE TYPE_MESSAGE, MSG_BUTTON TYPE_BUTTON, int TTime, const std::wstring& YES_BUTTON, const std::wstring& NO_BUTTON, const std::wstring& CANCEL_BUTTON)
 	{
 		this->hParrent = phParrent;
 		this->hIcon = NULL;
@@ -2794,7 +2802,7 @@ public:
 		return *this;
 	}
 
-	win_message& buttons_title(std::wstring yes = L"ДА", std::wstring no = L"Нет", std::wstring cancel = L"Отмена")
+	win_message& buttons_title(const std::wstring& yes = L"ДА", const std::wstring& no = L"Нет", const std::wstring& cancel = L"Отмена")
 	{
 		YES_BUTTON = yes;
 		NO_BUTTON = no;

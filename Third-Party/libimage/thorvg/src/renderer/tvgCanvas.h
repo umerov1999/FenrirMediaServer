@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,14 +20,11 @@
  * SOFTWARE.
  */
 
-#ifndef _TVG_CANVAS_IMPL_H_
-#define _TVG_CANVAS_IMPL_H_
+#ifndef _TVG_CANVAS_H_
+#define _TVG_CANVAS_H_
 
 #include "tvgPaint.h"
 
-/************************************************************************/
-/* Internal Class Implementation                                        */
-/************************************************************************/
 
 struct Canvas::Impl
 {
@@ -36,14 +33,27 @@ struct Canvas::Impl
     bool refresh = false;   //if all paints should be updated by force.
     bool drawing = false;   //on drawing condition?
 
-    Impl(RenderMethod* pRenderer):renderer(pRenderer)
+    Impl(RenderMethod* pRenderer) : renderer(pRenderer)
     {
+        renderer->ref();
     }
 
     ~Impl()
     {
-        clear(true);
-        delete(renderer);
+        //make it sure any deffered jobs
+        if (renderer) renderer->sync();
+
+        clearPaints();
+
+        if (renderer && (renderer->unref() == 0)) delete(renderer);
+    }
+
+    void clearPaints()
+    {
+        for (auto paint : paints) {
+            if (P(paint)->unref() == 0) delete(paint);
+        }
+        paints.clear();
     }
 
     Result push(unique_ptr<Paint> paint)
@@ -59,22 +69,16 @@ struct Canvas::Impl
         return update(p, true);
     }
 
-    Result clear(bool free)
+    Result clear(bool paints, bool buffer)
     {
-        //Clear render target before drawing
-        if (!renderer || !renderer->clear()) return Result::InsufficientCondition;
+        if (drawing) return Result::InsufficientCondition;
 
-        //Free paints
-        if (free) {
-            for (auto paint : paints) {
-                P(paint)->unref();
-                if (paint->pImpl->dispose(*renderer) && P(paint)->refCnt == 0) {
-                    delete(paint);
-                }
-            }
-            paints.clear();
+        //Clear render target
+        if (buffer) {
+            if (!renderer || !renderer->clear()) return Result::InsufficientCondition;
         }
-        drawing = false;
+
+        if (paints) clearPaints();
 
         return Result::Success;
     }
@@ -92,25 +96,14 @@ struct Canvas::Impl
         auto flag = RenderUpdateFlag::None;
         if (refresh || force) flag = RenderUpdateFlag::All;
 
-        //Update single paint node
         if (paint) {
-            //Optimize Me: Can we skip the searching?
-            for (auto paint2 : paints) {
-                if (paint2 == paint) {
-                    paint->pImpl->update(*renderer, nullptr, clips, 255, flag);
-                    return Result::Success;
-                }
-            }
-            return Result::InvalidArguments;
-        //Update all retained paint nodes
+            paint->pImpl->update(renderer, nullptr, clips, 255, flag);
         } else {
             for (auto paint : paints) {
-                paint->pImpl->update(*renderer, nullptr, clips, 255, flag);
+                paint->pImpl->update(renderer, nullptr, clips, 255, flag);
             }
+            refresh = false;
         }
-
-        refresh = false;
-
         return Result::Success;
     }
 
@@ -120,7 +113,7 @@ struct Canvas::Impl
 
         bool rendered = false;
         for (auto paint : paints) {
-            if (paint->pImpl->render(*renderer)) rendered = true;
+            if (paint->pImpl->render(renderer)) rendered = true;
         }
 
         if (!rendered || !renderer->postRender()) return Result::InsufficientCondition;
@@ -143,4 +136,4 @@ struct Canvas::Impl
     }
 };
 
-#endif /* _TVG_CANVAS_IMPL_H_ */
+#endif /* _TVG_CANVAS_H_ */

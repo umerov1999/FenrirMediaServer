@@ -394,7 +394,7 @@ static HBITMAP PrepareFromBufferJPG(HWND hwnd, const void* pDataBuffer, int nBuf
 	{
 		if (pDataBuffer == NULL || nBufferSize <= 0)
 			return NULL;
-		if (memcmp(pDataBuffer, JPGHeader, min(strlen(JPGHeader), nBufferSize)) != 0)
+		if (memcmp(pDataBuffer, JPGHeader, min((int)strlen(JPGHeader), nBufferSize)) != 0)
 			return NULL;
 		jpeg_decompress_struct	cinfo;
 		jpeg_membuffer_t buf;
@@ -516,7 +516,7 @@ static HBITMAP PrepareFromBufferPNG(HWND hwnd, const void* pDataBuffer, int nBuf
 	unsigned char* pBuffer = (unsigned char*)pDataBuffer;
 
 	png_byte  sig[number] = { 0 };
-	if (!png_check_sig(const_cast<png_bytep>(pBuffer), number))
+	if (png_sig_cmp(const_cast<png_bytep>(pBuffer), 0, number) != 0)
 		return NULL;
 
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
@@ -670,7 +670,7 @@ win_image LIB_IMAGE::PrepareImageFromBufferAutoType(HWND hwnd, const void* pData
 	if (pDataBuffer == NULL || nBufferSize < strlen(JPGHeader) || nBufferSize < 8) {
 		return makeErrorBitmap(hwnd, size, show_error_bitmap);
 	}
-	if (memcmp(pDataBuffer, JPGHeader, min(strlen(JPGHeader), nBufferSize)) == 0)
+	if (memcmp(pDataBuffer, JPGHeader, min((int)strlen(JPGHeader), nBufferSize)) == 0)
 	{
 		HBITMAP bp = PrepareFromBufferJPG(hwnd, pDataBuffer, nBufferSize, size.size_x, size.size_y);
 		if (bp == NULL) {
@@ -684,7 +684,7 @@ win_image LIB_IMAGE::PrepareImageFromBufferAutoType(HWND hwnd, const void* pData
 		const int number = 8;
 		unsigned char* pBuffer = (unsigned char*)pDataBuffer;
 		png_byte  sig[number] = { 0 };
-		if (!png_check_sig(const_cast<png_bytep>(pBuffer), number))
+		if (png_sig_cmp(const_cast<png_bytep>(pBuffer), 0, number) != 0)
 			return makeErrorBitmap(hwnd, size, show_error_bitmap);
 		HBITMAP bp = PrepareFromBufferPNG(hwnd, pDataBuffer, nBufferSize, size.size_x, size.size_y);
 		if (bp == NULL) {
@@ -744,10 +744,11 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	tvg::CanvasEngine tvgEngine = tvg::CanvasEngine::Sw;
 
 	//Threads Count
-	auto threads = thread::hardware_concurrency();
+	//auto threads = thread::hardware_concurrency();
+	auto threads = 0;
 
 	//Initialize ThorVG Engine
-	if (tvg::Initializer::init(tvgEngine, threads) != tvg::Result::Success) {
+	if (tvg::Initializer::init(threads, tvgEngine) != tvg::Result::Success) {
 		return makeErrorBitmap(hwnd, size, true);
 	}
 
@@ -759,7 +760,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	}
 
 	auto picture = tvg::Picture::gen();
-	tvg::Result result = picture->load((const char*)pDataBuffer, nBufferSize, "svg", false);
+	tvg::Result result = picture->load((const char*)pDataBuffer, nBufferSize, "svg", "", false);
 	if (result != tvg::Result::Success) {
 		tvg::Initializer::term(tvgEngine);
 		return makeErrorBitmap(hwnd, size, true);
@@ -811,7 +812,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	canvas->push(move(picture));
 	canvas->draw();
 	canvas->sync();
-	canvas->clear(true);
+	canvas->clear(true, false);
 	tvg::Initializer::term(tvgEngine);
 	return win_image(hOutputImage, size);
 }

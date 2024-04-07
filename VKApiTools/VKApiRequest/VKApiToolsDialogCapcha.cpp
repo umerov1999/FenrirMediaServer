@@ -23,6 +23,7 @@ static char THIS_FILE[] = __FILE__;
 VKApiToolsDialogCapcha::VKApiToolsDialogCapcha(CString Link, CString UserAgent, CWnd* pParent /*=NULL*/)
 	: CDialogEx(VKApiToolsDialogCapcha::IDD, pParent)
 {
+	m_hIcon = nullptr;
 	LinkStr = Link;
 	UserAgentStr = UserAgent;
 	NeedCapcha = true;

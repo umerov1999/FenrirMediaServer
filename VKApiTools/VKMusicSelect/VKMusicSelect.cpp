@@ -31,8 +31,9 @@ extern wstring UserName;
 extern string GetCapchaCode(const string &Link, const string& UserAgent);
 
 ////VKAPITOOLSDIALOGINTERFACE
-struct UsesOptionInMethodResult
+class UsesOptionInMethodResult
 {
+public:
 	UsesOptionInMethodResult()
 	{
 		Option1 = false;

@@ -7,6 +7,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="lame\bitstream.c" />
     <ClCompile Include="lame\encoder.c" />
     <ClCompile Include="lame\fft.c" />
@@ -30,6 +32,8 @@
     <ClCompile Include="lame\version.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config.h" />
+    <ClInclude Include="lame.h" />
     <ClInclude Include="lame\bitstream.h" />
     <ClInclude Include="lame\encoder.h" />
     <ClInclude Include="lame\fft.h" />
@@ -40,6 +44,7 @@
     <ClInclude Include="lame\lameerror.h" />
     <ClInclude Include="lame\lame_global_flags.h" />
     <ClInclude Include="lame\machine.h" />
+    <ClInclude Include="lame\mpglib\mpglib.h" />
     <ClInclude Include="lame\newmdct.h" />
     <ClInclude Include="lame\psymodel.h" />
     <ClInclude Include="lame\quantize.h" />
@@ -50,6 +55,7 @@
     <ClInclude Include="lame\util.h" />
     <ClInclude Include="lame\vbrquantize.h" />
     <ClInclude Include="lame\VbrTag.h" />
+    <ClInclude Include="lame\VbrTagCrc.h" />
     <ClInclude Include="lame\vector\lame_intrin.h" />
     <ClInclude Include="lame\version.h" />
   </ItemGroup>
@@ -87,7 +93,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WIN32_WINNT=0x0600;_LIB;HAVE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;NDEBUG;_WIN32_WINNT=0x0600;_LIB;HAVE_CONFIG_H;HAVE_XMMINTRIN_H;MIN_ARCH_SSE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>

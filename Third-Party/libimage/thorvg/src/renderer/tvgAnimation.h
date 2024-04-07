@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
+ * Copyright (c) 2024 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -11,7 +11,7 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY  KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -20,30 +20,29 @@
  * SOFTWARE.
  */
 
-#ifndef _TVG_BEZIER_H_
-#define _TVG_BEZIER_H_
+#ifndef _TVG_ANIMATION_H_
+#define _TVG_ANIMATION_H_
 
 #include "tvgCommon.h"
+#include "tvgPaint.h"
+#include "tvgPicture.h"
 
-namespace tvg
+struct Animation::Impl
 {
+    Picture* picture = nullptr;
 
-struct Bezier
-{
-    Point start;
-    Point ctrl1;
-    Point ctrl2;
-    Point end;
+    Impl()
+    {
+        picture = Picture::gen().release();
+        PP(picture)->ref();
+    }
+
+    ~Impl()
+    {
+        if (PP(picture)->unref() == 0) {
+            delete(picture);
+        }
+    }
 };
 
-void bezSplit(const Bezier&cur, Bezier& left, Bezier& right);
-float bezLength(const Bezier& cur);
-void bezSplitLeft(Bezier& cur, float at, Bezier& left);
-float bezAt(const Bezier& bz, float at, float length);
-void bezSplitAt(const Bezier& cur, float at, Bezier& left, Bezier& right);
-Point bezPointAt(const Bezier& bz, float t);
-float bezAngleAt(const Bezier& bz, float t);
-
-}
-
-#endif //_TVG_BEZIER_H_
+#endif //_TVG_ANIMATION_H_

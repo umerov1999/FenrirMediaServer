@@ -1,7 +1,7 @@
 
 /* pngwrite.c - general routines to write a PNG file
  *
- * Copyright (c) 2018-2023 Cosmin Truta
+ * Copyright (c) 2018-2024 Cosmin Truta
  * Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson
  * Copyright (c) 1996-1997 Andreas Dilger
  * Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
@@ -373,7 +373,8 @@ png_write_end(png_structrp png_ptr, png_inforp info_ptr)
       png_error(png_ptr, "No IDATs written into file");
 
 #ifdef PNG_WRITE_CHECK_FOR_INVALID_INDEX_SUPPORTED
-   if (png_ptr->num_palette_max > png_ptr->num_palette)
+   if (png_ptr->color_type == PNG_COLOR_TYPE_PALETTE &&
+       png_ptr->num_palette_max >= png_ptr->num_palette)
       png_benign_error(png_ptr, "Wrote palette index exceeding num_palette");
 #endif
 
@@ -718,11 +719,11 @@ png_write_row(png_structrp png_ptr, png_const_bytep row)
    /* 1.5.6: moved from png_struct to be a local structure: */
    png_row_info row_info;
 
-   if (png_ptr == NULL)
-      return;
-
    png_debug2(1, "in png_write_row (row %u, pass %d)",
        png_ptr->row_number, png_ptr->pass);
+
+   if (png_ptr == NULL)
+      return;
 
    /* Initialize transformations and other stuff if first time */
    if (png_ptr->row_number == 0 && png_ptr->pass == 0)
@@ -1214,6 +1215,8 @@ png_set_compression_strategy(png_structrp png_ptr, int strategy)
 void PNGAPI
 png_set_compression_window_bits(png_structrp png_ptr, int window_bits)
 {
+   png_debug(1, "in png_set_compression_window_bits");
+
    if (png_ptr == NULL)
       return;
 
@@ -1297,6 +1300,8 @@ png_set_text_compression_strategy(png_structrp png_ptr, int strategy)
 void PNGAPI
 png_set_text_compression_window_bits(png_structrp png_ptr, int window_bits)
 {
+   png_debug(1, "in png_set_text_compression_window_bits");
+
    if (png_ptr == NULL)
       return;
 
@@ -1334,6 +1339,8 @@ png_set_text_compression_method(png_structrp png_ptr, int method)
 void PNGAPI
 png_set_write_status_fn(png_structrp png_ptr, png_write_status_ptr write_row_fn)
 {
+   png_debug(1, "in png_set_write_status_fn");
+
    if (png_ptr == NULL)
       return;
 
@@ -1361,6 +1368,8 @@ void PNGAPI
 png_write_png(png_structrp png_ptr, png_inforp info_ptr,
     int transforms, voidp params)
 {
+   png_debug(1, "in png_write_png");
+
    if (png_ptr == NULL || info_ptr == NULL)
       return;
 
@@ -2413,4 +2422,3 @@ png_image_write_to_file(png_imagep image, const char *file_name,
 #endif /* WRITE */
 
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
-

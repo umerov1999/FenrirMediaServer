@@ -67,9 +67,11 @@
     <ClCompile Include="pugixml\pugixml.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aes256.hpp" />
     <ClInclude Include="base.hpp" />
     <ClInclude Include="config_json_parse.h" />
     <ClInclude Include="crc32.hpp" />
+    <ClInclude Include="crc64.hpp" />
     <ClInclude Include="CriticalDebug.h" />
     <ClInclude Include="CTar.h" />
     <ClInclude Include="do_curl.h" />
@@ -77,6 +79,7 @@
     <ClInclude Include="json.hpp" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="md5.hpp" />
+    <ClInclude Include="MimeTypes.hpp" />
     <ClInclude Include="progress_bar.h" />
     <ClInclude Include="pugixml\pugiconfig.hpp" />
     <ClInclude Include="pugixml\pugixml.hpp" />

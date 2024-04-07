@@ -23,6 +23,7 @@ extern std::wstring ExtractAppPath();
 MediaServerMediaFoldersDialog::MediaServerMediaFoldersDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(MediaServerMediaFoldersDialog::IDD, pParent)
 {
+	memset(szBuf, 0, sizeof(szBuf));
 	m_hIcon = nullptr;
 	m_hCursor = nullptr;
 }

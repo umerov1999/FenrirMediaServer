@@ -49,8 +49,9 @@ public:
 #define USSL_CERTPART_BUNDLE 1
 #define USSL_CERTPART_KEY 2
 
-struct USSL_CERT
+class USSL_CERT
 {
+public:
 	USSL_CERT()
 	{
 		Inited = false;
@@ -66,7 +67,7 @@ class ACCEPT_STRUCT
 public:
 	ACCEPT_STRUCT() {
 		isSSL = false;
-		ssl_ctx = NULL;
+		ssl_ctx = nullptr;
 		client_sock = NULL;
 	}
 	bool isSSL;
@@ -166,8 +167,13 @@ enum class TARGET_DEVICES
 };
 void InitMediaServer();
 
-struct RequestParserStruct
+class RequestParserStruct
 {
+public:
+	RequestParserStruct() {
+		method = HTTP_METHOD::HTTP_METHOD_UNKNOW;
+		Device = TARGET_DEVICES::DEVICE_UNKNOW;
+	}
 	TARGET_DEVICES Device;
 	HTTP_METHOD method;
 	std::string connection;

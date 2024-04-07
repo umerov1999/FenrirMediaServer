@@ -119,6 +119,9 @@ bool Compressor::build(const wstring& arch) {
     if (_wfopen_s(&fl, arch.c_str(), L"wb") != 0) {
         return false;
     }
+    if (!fl) {
+        return false;
+    }
     vector<PackerEntry> entries;
     vector<char> compressed_entries;
     

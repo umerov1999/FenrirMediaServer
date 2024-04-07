@@ -1223,6 +1223,9 @@ bool do_convert_mp3(const wstring& in, const wstring& out) {
 	if (_wfopen_s(&test, out.c_str(), L"rb") != 0) {
 		return false;
 	}
+	if (!test) {
+		return false;
+	}
 	fseek(test, 0, SEEK_END);
 	if (ftell(test) <= 0) {
 		fclose(test);
@@ -1803,10 +1806,12 @@ void ServerMethods::Execute(const string& UTF8Path, RequestParserStruct& Req, vo
 			if (PasswordWrongCount >= 2) {
 				FILE* fll = nullptr;
 				if (_wfopen_s(&fll, (ExtractAppPath() + L"\\password-errors").c_str(), L"wb") == 0) {
-					string herror = WSTRUtils::wchar_to_UTF8(error);
-					fwrite(UTF8START, 1, strlen(UTF8START), fll);
-					fwrite(herror.c_str(), 1, herror.size(), fll);
-					fclose(fll);
+					if (fll) {
+						string herror = WSTRUtils::wchar_to_UTF8(error);
+						fwrite(UTF8START, 1, strlen(UTF8START), fll);
+						fwrite(herror.c_str(), 1, herror.size(), fll);
+						fclose(fll);
+					}
 				}
 				XTPSkinMgr()->ExitProgramm();
 				return;
@@ -1824,10 +1829,12 @@ void ServerMethods::Execute(const string& UTF8Path, RequestParserStruct& Req, vo
 		if (PasswordWrongCount >= 2) {
 			FILE* fll = nullptr;
 			if (_wfopen_s(&fll, (ExtractAppPath() + L"\\password-errors").c_str(), L"wb") == 0) {
-				string herror = WSTRUtils::wchar_to_UTF8(error);
-				fwrite(UTF8START, 1, strlen(UTF8START), fll);
-				fwrite(herror.c_str(), 1, herror.size(), fll);
-				fclose(fll);
+				if (fll) {
+					string herror = WSTRUtils::wchar_to_UTF8(error);
+					fwrite(UTF8START, 1, strlen(UTF8START), fll);
+					fwrite(herror.c_str(), 1, herror.size(), fll);
+					fclose(fll);
+				}
 			}
 			XTPSkinMgr()->ExitProgramm();
 			return;
@@ -1895,9 +1902,9 @@ enum class TYPE_SCAN {
 };
 
 static bool isBadExt(const wstring& str, TYPE_SCAN type) {
-	vector<wstring> skip = { L"jpg", L"jpeg", L"png", L"gif", L"txt", L"pdf", L"doc", L"docx", L"ppt", L"pptx", L"ini", L"xml", L"html" };
+	vector<wstring> skip = { L"jpg", L"jpeg", L"png", L"gif", L"txt", L"pdf", L"doc", L"docx", L"ppt", L"pptx", L"ini", L"xml", L"html", L"log", L"cue", L"zip", L"tar", L"rar", L"7z", L"gz", L"lzma" };
 	if (type == TYPE_SCAN::TYPE_SCAN_PHOTO) {
-		skip = { L"gif", L"txt", L"pdf", L"doc", L"docx", L"ppt", L"pptx", L"ini", L"xml", L"html" };
+		skip = { L"gif", L"txt", L"pdf", L"doc", L"docx", L"ppt", L"pptx", L"ini", L"xml", L"html", L"log", L"cue", L"zip", L"tar", L"rar", L"7z", L"gz", L"lzma" };
 	}
 	for (auto& i : skip) {
 		size_t ll = str.find_last_of(L'.');
@@ -1924,6 +1931,14 @@ static void cleanLoaded(TYPE_SCAN type) {
 		mPhotos.clear();
 		break;
 	}
+}
+
+static inline long long getFindDataSize(const WIN32_FIND_DATAW& dt) {
+	LARGE_INTEGER sz;
+	sz.LowPart = dt.nFileSizeLow;
+	sz.HighPart = dt.nFileSizeHigh;
+
+	return sz.QuadPart;
 }
 
 static void scanFiles(const wstring &root, const wstring& offset, const wstring& dir_entry, bool scanFS, TYPE_SCAN type, bool is_main = true) {
@@ -1959,45 +1974,45 @@ static void scanFiles(const wstring &root, const wstring& offset, const wstring&
 				switch (type)
 				{
 				case TYPE_SCAN::TYPE_SCAN_AUDIO:
-					a = Audio(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+					a = Audio(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), getFindDataSize(data));
 					mAudios[a.get_hash()] = a;
 					if (scanFS) {
 						auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
-						Inode(data.cFileName).audio((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+						Inode(data.cFileName).audio(getFindDataSize(data), to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
 					}
 					break;
 				case TYPE_SCAN::TYPE_SCAN_DISCOGRAPHY:
-					a = Audio(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+					a = Audio(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), getFindDataSize(data));
 					mDiscography[a.get_hash()] = a;
 					if (scanFS) {
 						auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
-						Inode(data.cFileName).audio((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+						Inode(data.cFileName).audio(getFindDataSize(data), to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
 					}
 					break;
 				case TYPE_SCAN::TYPE_SCAN_VIDEO:
-					v = Video(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+					v = Video(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), getFindDataSize(data));
 					mVideos[v.get_hash()] = v;
 					if (scanFS) {
 						auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
-						Inode(data.cFileName).video((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+						Inode(data.cFileName).video(getFindDataSize(data), to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
 					}
 					break;
 				case TYPE_SCAN::TYPE_SCAN_PHOTO:
 					wstring fl = data.cFileName;
 					if (WSTRUtils::wsearch(fl, L".jpg") != wstring::npos || WSTRUtils::wsearch(fl, L".jpeg") != wstring::npos || WSTRUtils::wsearch(fl, L".png") != wstring::npos || WSTRUtils::wsearch(fl, L".tiff") != wstring::npos || WSTRUtils::wsearch(fl, L".webp") != wstring::npos) {
-						p = Photo(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+						p = Photo(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), getFindDataSize(data));
 						mPhotos[p.get_hash()] = p;
 						if (scanFS) {
 							auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
-							Inode(data.cFileName).photo((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+							Inode(data.cFileName).photo(getFindDataSize(data), to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
 						}
 					}
 					else {
-						v = Video(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), (data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow);
+						v = Video(combine_path(root, offset), data.cFileName, to_time_t(data.ftLastWriteTime), to_time_t(data.ftCreationTime), getFindDataSize(data));
 						mVideos[v.get_hash()] = v;
 						if (scanFS) {
 							auto dirPtr = RootDir.find_by_path(combine_path(dir_entry, offset));
-							Inode(data.cFileName).video((data.nFileSizeHigh * (MAXDWORD + 1)) + data.nFileSizeLow, to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
+							Inode(data.cFileName).video(getFindDataSize(data), to_time_t(data.ftLastWriteTime)).attachTo(*dirPtr, root);
 						}
 					}
 					break;

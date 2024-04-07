@@ -104,8 +104,8 @@
     <ClCompile Include="rlottie\src\vector\vraster.cpp" />
     <ClCompile Include="rlottie\src\vector\vrect.cpp" />
     <ClCompile Include="rlottie\src\vector\vrle.cpp" />
-    <ClCompile Include="thorvg\src\common\tvgBezier.cpp" />
     <ClCompile Include="thorvg\src\common\tvgCompressor.cpp" />
+    <ClCompile Include="thorvg\src\common\tvgLines.cpp" />
     <ClCompile Include="thorvg\src\common\tvgMath.cpp" />
     <ClCompile Include="thorvg\src\common\tvgStr.cpp" />
     <ClCompile Include="thorvg\src\loaders\raw\tvgRawLoader.cpp" />
@@ -139,6 +139,7 @@
     <ClCompile Include="thorvg\src\renderer\tvgShape.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgSwCanvas.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgTaskScheduler.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgText.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgWgCanvas.cpp" />
     <ClCompile Include="zlib\adler32.c" />
     <ClCompile Include="zlib\compress.c" />
@@ -217,8 +218,10 @@
     <ClInclude Include="rlottie\src\vector\vtaskqueue.h" />
     <ClInclude Include="thorvg\inc\thorvg.h" />
     <ClInclude Include="thorvg\src\common\tvgArray.h" />
-    <ClInclude Include="thorvg\src\common\tvgBezier.h" />
     <ClInclude Include="thorvg\src\common\tvgCompressor.h" />
+    <ClInclude Include="thorvg\src\common\tvgFormat.h" />
+    <ClInclude Include="thorvg\src\common\tvgInlist.h" />
+    <ClInclude Include="thorvg\src\common\tvgLines.h" />
     <ClInclude Include="thorvg\src\common\tvgMath.h" />
     <ClInclude Include="thorvg\src\common\tvgStr.h" />
     <ClInclude Include="thorvg\src\loaders\raw\tvgRawLoader.h" />
@@ -236,7 +239,6 @@
     <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterNeon.h" />
     <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterTexmap.h" />
     <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRenderer.h" />
-    <ClInclude Include="thorvg\src\renderer\tvgBinaryDesc.h" />
     <ClInclude Include="thorvg\src\renderer\tvgCanvas.h" />
     <ClInclude Include="thorvg\src\renderer\tvgCommon.h" />
     <ClInclude Include="thorvg\src\renderer\tvgFill.h" />
@@ -251,6 +253,7 @@
     <ClInclude Include="thorvg\src\renderer\tvgScene.h" />
     <ClInclude Include="thorvg\src\renderer\tvgShape.h" />
     <ClInclude Include="thorvg\src\renderer\tvgTaskScheduler.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgText.h" />
     <ClInclude Include="zlib\crc32.h" />
     <ClInclude Include="zlib\deflate.h" />
     <ClInclude Include="zlib\gzguts.h" />
@@ -294,7 +297,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0600;TVG_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0600;TVG_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./jpeg;./png;./zlib;./rlottie/inc;./rlottie/src/lottie;./rlottie/src/vector;./rlottie/src/vector/freetype;./thorvg/inc;./thorvg/src/renderer;./thorvg/src/renderer/sw_engine;./thorvg/src/common;./thorvg/src/loaders/svg;./thorvg/src/loaders/raw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <Optimization>MaxSpeed</Optimization>

@@ -92,8 +92,14 @@ void SectionPeEditorSectionsInfoDialog::ToWinBuf()
 	ResultsEd.GetWindowTextW(nmm);
 	OpenClipboard();
 	EmptyClipboard();
-	HGLOBAL hStrMem = GlobalAlloc(GMEM_MOVEABLE, nmm.GetLength() * sizeof(wchar_t));
+	HGLOBAL hStrMem = GlobalAlloc(GMEM_MOVEABLE, (nmm.GetLength() + 1) * sizeof(wchar_t));
+	if (!hStrMem) {
+		return;
+	}
 	void* pStrMem = GlobalLock(hStrMem);
+	if (!pStrMem) {
+		return;
+	}
 	memcpy(pStrMem, nmm.GetString(), nmm.GetLength() * sizeof(wchar_t));
 	GlobalUnlock(pStrMem);
 	SetClipboardData(CF_UNICODETEXT, hStrMem);

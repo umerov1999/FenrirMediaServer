@@ -480,5 +480,4 @@ struct png_struct_def
 };
 
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
-
 #endif /* PNGSTRUCT_H */

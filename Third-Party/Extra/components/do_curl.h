@@ -13,3 +13,4 @@ int DoCurlDownload(const std::string &Link, const std::string &UserAgent, std::s
 int DoCurlPostJsonAuth(const std::string& Link, const std::string& PostJson, const std::string& UserAgent, const std::string& login, const std::string& password, std::string& ReciveData);
 int DoCurlMultipart(const std::string& Link, const std::wstring& filePath, const std::string& partName, const std::string& fileName, const std::string& UserAgent, std::string& ReciveData, bool IsJSON);
 int DoCurlGetAndReturnUrl(const std::string& Link, const std::string& UserAgent, std::string& ReciveData, int wait);
+int DoCurlPostJsonAuthCustomRequest(const std::string& Link, const std::string& PostJson, const std::string& UserAgent, const std::string& login, const std::string& password, std::string& ReciveData, const std::string& request = "PATCH");

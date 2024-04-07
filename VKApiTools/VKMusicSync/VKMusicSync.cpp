@@ -33,8 +33,9 @@ extern string GetCapchaCode(const string &Link, const string& UserAgent);
 
 ////VKAPITOOLSDIALOGINTERFACE
 extern void PrintMessage(const string &Msg, URGB Color);
-struct UsesOptionInMethodResult
+class UsesOptionInMethodResult
 {
+public:
 	UsesOptionInMethodResult()
 	{
 		Option1 = false;

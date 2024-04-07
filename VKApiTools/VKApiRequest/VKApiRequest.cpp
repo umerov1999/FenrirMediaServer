@@ -23,8 +23,9 @@ using namespace WSTRUtils;
 
 ////VKAPITOOLSDIALOGINTERFACE
 extern void PrintMessage(const string &Msg, URGB Color);
-struct UsesOptionInMethodResult
+class UsesOptionInMethodResult
 {
+public:
 	UsesOptionInMethodResult()
 	{
 		Option1 = false;

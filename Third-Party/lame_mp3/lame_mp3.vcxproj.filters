@@ -5,141 +5,169 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Исходные файлы\vector">
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{1c50a39f-d42c-42ae-b14e-8216291acdbc}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Исходные файлы\lame">
+      <UniqueIdentifier>{072a7d1f-48f9-4164-ba42-16c6eaefda70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\lame\vector">
       <UniqueIdentifier>{1471fc05-4223-462a-8a43-47223fb3ed8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\lame">
+      <UniqueIdentifier>{8e737acb-6b76-4898-aec6-c3ef93f64164}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\lame\vector">
+      <UniqueIdentifier>{5494f79a-adf3-42de-bca7-f675f72af906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\lame\mpglib">
+      <UniqueIdentifier>{b2ac4029-4f19-4836-98ec-5078a2602b8e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lame\bitstream.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\encoder.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\fft.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\gain_analysis.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\id3tag.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\lame.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\mpglib_interface.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\newmdct.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\presets.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\psymodel.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\quantize.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\quantize_pvt.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\reservoir.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\set_get.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\tables.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\takehiro.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\util.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\vbrquantize.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="lame\VbrTag.c">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="lame\vector\xmm_quantize_sub.c">
+      <Filter>Исходные файлы\lame\vector</Filter>
     </ClCompile>
     <ClCompile Include="lame\version.c">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\lame</Filter>
     </ClCompile>
-    <ClCompile Include="lame\vector\xmm_quantize_sub.c">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="lame\bitstream.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\encoder.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\fft.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\gain_analysis.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\id3tag.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\lame.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\mpglib_interface.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\newmdct.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\presets.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\psymodel.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\quantize.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\quantize_pvt.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\reservoir.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\set_get.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\tables.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\takehiro.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\util.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\vbrquantize.c">
+      <Filter>Исходные файлы\lame</Filter>
+    </ClCompile>
+    <ClCompile Include="lame\VbrTag.c">
+      <Filter>Исходные файлы\lame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lame\bitstream.h">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="config.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="lame\encoder.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\fft.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\gain_analysis.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\id3tag.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\l3side.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\lame_global_flags.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\lame-analysis.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\lameerror.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\machine.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\newmdct.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\psymodel.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\quantize.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\quantize_pvt.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\reservoir.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\set_get.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\tables.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="lame\util.h">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="lame.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="lame\vbrquantize.h">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Файлы заголовков\lame</Filter>
     </ClInclude>
     <ClInclude Include="lame\VbrTag.h">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\VbrTagCrc.h">
+      <Filter>Файлы заголовков\lame</Filter>
     </ClInclude>
     <ClInclude Include="lame\version.h">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\bitstream.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\encoder.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\fft.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\gain_analysis.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\id3tag.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\l3side.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\lame_global_flags.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\lame-analysis.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\lameerror.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\machine.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\newmdct.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\psymodel.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\quantize.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\quantize_pvt.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\reservoir.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\set_get.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\tables.h">
+      <Filter>Файлы заголовков\lame</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\util.h">
+      <Filter>Файлы заголовков\lame</Filter>
     </ClInclude>
     <ClInclude Include="lame\vector\lame_intrin.h">
-      <Filter>Исходные файлы\vector</Filter>
+      <Filter>Файлы заголовков\lame\vector</Filter>
+    </ClInclude>
+    <ClInclude Include="lame\mpglib\mpglib.h">
+      <Filter>Файлы заголовков\lame\mpglib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

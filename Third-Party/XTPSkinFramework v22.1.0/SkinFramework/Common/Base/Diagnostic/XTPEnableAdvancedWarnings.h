@@ -114,7 +114,6 @@
 // C4738: (level 3) storing 32-bit float result in memory, possible loss of performance
 // C4820: (level 4) 'bytes' bytes padding added after construct 'member_name'
 // C4826: (level 2) conversion from 'type1' to 'type2' is sign-extended. This may cause unexpected runtime behavior
-// C4836: (level 1) nonstandard extension used : 'type' : local types or unnamed types cannot be used as template arguments
 // C4837: (level 4) trigraph detected: '??%c' replaced by '%c'
 // C4905: (level 1) wide string literal cast to 'LPSTR'
 // C4906: (level 1) string literal cast to 'LPWSTR'
@@ -144,7 +143,7 @@
 // clang-format on
 #			define XTP_ADVANCED_WARNING_CONTROL(action)                                           \
 				__pragma(warning(                                                                  \
-					action : 4097 4061 4062 4191 4201 4242 4254 4255 4263 4264 4265 4266 4287 4289 4296 4302 4350 4365 4412 4431 4514 4536 4545 4546 4547 4548 4549 4555 4557 4571 4619 4623 4625 4626 4628 4640 4641 4668 4686 4692 4710 4711 4738 4820 4826 4836 4837 4905 4906 4917 4928 4931 4946 4962 4987 5026 5027 4710 4471 4458 5039 4768 4986 5045 5204 5220 5038 4131 4371 5246))
+					action : 4097 4061 4062 4191 4201 4242 4254 4255 4263 4264 4265 4266 4287 4289 4296 4302 4350 4365 4412 4431 4514 4536 4545 4546 4547 4548 4549 4555 4557 4571 4619 4623 4625 4626 4628 4640 4641 4668 4686 4692 4710 4711 4738 4820 4826 4837 4905 4906 4917 4928 4931 4946 4962 4987 5026 5027 4710 4471 4458 5039 4768 4986 5045 5204 5220 5038 4131 4371 5246))
 #		endif /*!XTP_INTERNAL_WARNING_CONTROL*/
 
 #		ifdef XTP_DISABLE_ADVANCED_WARNINGS

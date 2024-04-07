@@ -40,8 +40,9 @@ extern void PrintMessage(const string &Msg, URGB Color);
 extern void PrintDownload(const string& Msg, URGB Color);
 extern void RemoveLastLine();
 extern ColoredMessage getLastLine();
-struct UsesOptionInMethodResult
+class UsesOptionInMethodResult
 {
+public:
 	UsesOptionInMethodResult()
 	{
 		Option1 = false;
@@ -307,8 +308,15 @@ private:
 	string UserAgent;
 };
 
-struct DocDownloader
+class DocDownloader
 {
+public:
+	DocDownloader() {
+		CreatedTime = 0;
+		DialogTime = 0;
+		DialogID = 0;
+		ConversationID = 0;
+	}
 	int64_t CreatedTime;
 	int64_t DialogTime;
 	int64_t DialogID;
@@ -324,8 +332,9 @@ struct DocDownloader
 	std::string TempAccessKey;
 };
 
-struct VKDialog
+class VKDialog
 {
+public:
 	VKDialog(bool IsChat, const std::wstring& Title, int last_conversation_message_id)
 	{
 		this->IsChat = IsChat;

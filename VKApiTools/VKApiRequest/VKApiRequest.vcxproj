@@ -98,6 +98,9 @@
     <Image Include="Res\VK.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Third-Party\Extra\components\components.vcxproj">
+      <Project>{b886e0f4-5d86-4af7-87b7-66163cfd6e61}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Third-Party\Extra\components\components_mfc.vcxproj">
       <Project>{433709a8-9119-4051-9593-2c0698abf6bc}</Project>
     </ProjectReference>

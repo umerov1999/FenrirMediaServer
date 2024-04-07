@@ -492,9 +492,6 @@
     <ClCompile Include="thorvg\src\renderer\tvgTaskScheduler.cpp">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\common\tvgBezier.cpp">
-      <Filter>Файлы исходного кода\thorvg\common</Filter>
-    </ClCompile>
     <ClCompile Include="thorvg\src\common\tvgCompressor.cpp">
       <Filter>Файлы исходного кода\thorvg\common</Filter>
     </ClCompile>
@@ -506,6 +503,12 @@
     </ClCompile>
     <ClCompile Include="thorvg\src\renderer\tvgWgCanvas.cpp">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgText.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\common\tvgLines.cpp">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -764,9 +767,6 @@
     <ClInclude Include="thorvg\src\renderer\config.h">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\renderer\tvgBinaryDesc.h">
-      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
-    </ClInclude>
     <ClInclude Include="thorvg\src\renderer\tvgCommon.h">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClInclude>
@@ -797,9 +797,6 @@
     <ClInclude Include="thorvg\src\renderer\tvgTaskScheduler.h">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\common\tvgBezier.h">
-      <Filter>Файлы исходного кода\thorvg\common</Filter>
-    </ClInclude>
     <ClInclude Include="thorvg\src\common\tvgCompressor.h">
       <Filter>Файлы исходного кода\thorvg\common</Filter>
     </ClInclude>
@@ -823,6 +820,18 @@
     </ClInclude>
     <ClInclude Include="thorvg\src\renderer\tvgCanvas.h">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgFormat.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgInlist.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgText.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgLines.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

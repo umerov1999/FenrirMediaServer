@@ -41,10 +41,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>
       </SDLCheck>
-      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;CURL_STATICLIB;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\libcurl\include;..\..\libimage\rlottie\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\libimage\rlottie\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -62,39 +62,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ColorEdit.cpp" />
-    <ClCompile Include="CriticalDebug.cpp" />
-    <ClCompile Include="CTar.cpp" />
-    <ClCompile Include="do_curl.cpp" />
-    <ClCompile Include="lz4.c" />
-    <ClCompile Include="pugixml\pugixml.cpp" />
     <ClCompile Include="UListBox.cpp" />
     <ClCompile Include="Ulottie.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="base.hpp" />
     <ClInclude Include="ColorEdit.h" />
-    <ClInclude Include="config_json_parse.h" />
-    <ClInclude Include="crc32.hpp" />
-    <ClInclude Include="CriticalDebug.h" />
-    <ClInclude Include="CTar.h" />
-    <ClInclude Include="do_curl.h" />
-    <ClInclude Include="FlBin.h" />
-    <ClInclude Include="json.hpp" />
-    <ClInclude Include="lz4.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="md5.hpp" />
-    <ClInclude Include="pugixml\pugiconfig.hpp" />
-    <ClInclude Include="pugixml\pugixml.hpp" />
-    <ClInclude Include="sha1.hpp" />
-    <ClInclude Include="sha3.hpp" />
     <ClInclude Include="UListBox.h" />
     <ClInclude Include="Ulottie.h" />
     <ClInclude Include="urgb.h" />
-    <ClInclude Include="UsrInf.h" />
-    <ClInclude Include="vk_api_interface.h" />
-    <ClInclude Include="WinMessageBox.h" />
-    <ClInclude Include="win_api_utils.h" />
-    <ClInclude Include="WSTRUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

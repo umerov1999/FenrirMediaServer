@@ -9,6 +9,51 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Файлы исходного кода\id3v2lib">
+      <UniqueIdentifier>{bbbee08c-d4fa-41d8-97b1-0dbe1f1a047b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\id3v2lib\src">
+      <UniqueIdentifier>{b6004cbd-0f92-4027-be26-cffa3d8868c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\id3v2lib\include">
+      <UniqueIdentifier>{ebcc3112-44f9-4a90-acad-21ee8bf50a54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\id3v2lib\include\id3v2lib">
+      <UniqueIdentifier>{981d9736-8812-4ee5-b473-6fe853e8a938}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libogg">
+      <UniqueIdentifier>{8a6c9ed4-0665-4329-bd8b-504732b9cf82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libogg\src">
+      <UniqueIdentifier>{d14a7569-e1d4-45dd-95bc-df58b3d39f28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libogg\include">
+      <UniqueIdentifier>{18a888db-8c11-4a73-a60e-8cdaec6b7658}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libogg\include\ogg">
+      <UniqueIdentifier>{eeae454a-695f-4541-bf2f-4f9d637c616a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libvorbis">
+      <UniqueIdentifier>{20acf083-6537-4978-947a-d8c685ca5d5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libvorbis\lib">
+      <UniqueIdentifier>{c03cb1f3-9e95-4656-b38a-c25b7fd54433}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libvorbis\lib\books">
+      <UniqueIdentifier>{80f862a6-8345-4ce7-918b-feb5633e4734}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libvorbis\lib\modes">
+      <UniqueIdentifier>{350785ef-3282-464d-8e1b-7e3267976789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libvorbis\include">
+      <UniqueIdentifier>{a12cd46d-c240-44e6-86d0-20feb379a6bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libvorbis\include\vorbis">
+      <UniqueIdentifier>{dd73eae2-4cb0-4155-a21b-599e9b722316}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\minimp3">
+      <UniqueIdentifier>{22599453-0d9d-4cc2-a92b-f725d5bd2a58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OGGDataProvider.cpp">
@@ -22,6 +67,99 @@
     </ClCompile>
     <ClCompile Include="src\MP3DataProvider.cpp">
       <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\id3v2lib\src\header.cpp">
+      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\id3v2lib\src\id3v2lib.cpp">
+      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\id3v2lib\src\types.cpp">
+      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\id3v2lib\src\util.cpp">
+      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\id3v2lib\src\frame.cpp">
+      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libogg\src\bitwise.c">
+      <Filter>Файлы исходного кода\libogg\src</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libogg\src\framing.c">
+      <Filter>Файлы исходного кода\libogg\src</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\window.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\analysis.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\barkmel.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\bitrate.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\block.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\codebook.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\envelope.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\floor0.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\floor1.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\info.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\lookup.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\lpc.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\lsp.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\mapping0.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\mdct.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\psy.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\registry.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\res0.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\sharedbook.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\smallft.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\synthesis.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\vorbisenc.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\libvorbis\lib\vorbisfile.c">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\minimp3\minimp3.c">
+      <Filter>Файлы исходного кода\minimp3</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -39,6 +177,174 @@
     </ClInclude>
     <ClInclude Include="src\WaveBlobs.h">
       <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib.h">
+      <Filter>Файлы исходного кода\id3v2lib\include</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\constants.h">
+      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\frame.h">
+      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\header.h">
+      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\types.h">
+      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\util.h">
+      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libogg\include\ogg\ogg.h">
+      <Filter>Файлы исходного кода\libogg\include\ogg</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libogg\include\ogg\os_types.h">
+      <Filter>Файлы исходного кода\libogg\include\ogg</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libogg\src\crctable.h">
+      <Filter>Файлы исходного кода\libogg\src</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\books\coupled\res_books_51.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\books</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\books\coupled\res_books_stereo.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\books</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\books\floor\floor_books.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\books</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\books\uncoupled\res_books_uncoupled.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\books</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\floor_all.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\psych_11.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\psych_16.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\psych_44.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\psych_8.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_16.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_44.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_44p51.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_44u.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_8.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_11.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_16.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_22.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_32.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_44.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_44p51.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_44u.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_8.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_X.h">
+      <Filter>Файлы исходного кода\libvorbis\lib\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\window.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\backends.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\bitrate.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\codebook.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\codec_internal.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\envelope.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\highlevel.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\lookup.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\lookup_data.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\lpc.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\lsp.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\masking.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\mdct.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\misc.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\os.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\psy.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\registry.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\scales.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\lib\smallft.h">
+      <Filter>Файлы исходного кода\libvorbis\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\include\vorbis\codec.h">
+      <Filter>Файлы исходного кода\libvorbis\include\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\include\vorbis\vorbisenc.h">
+      <Filter>Файлы исходного кода\libvorbis\include\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\libvorbis\include\vorbis\vorbisfile.h">
+      <Filter>Файлы исходного кода\libvorbis\include\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\minimp3\libc.h">
+      <Filter>Файлы исходного кода\minimp3</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\minimp3\minimp3.h">
+      <Filter>Файлы исходного кода\minimp3</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

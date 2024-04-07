@@ -140,6 +140,15 @@ namespace WSTRUtils {
 		return out;
 	}
 
+	static std::wstring utf16_to_wchar(const std::u16string& In) {
+		std::wstring out;
+		out.reserve(In.size());
+		for (auto& i : In) {
+			out.push_back((wchar_t)i);
+		}
+		return out;
+	}
+
 	static inline char from_hex(char ch) {
 		return (char)(isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10);
 	}

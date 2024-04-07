@@ -20,6 +20,10 @@ static BYTE CurrentAlpha = 240;
 UStyleViewerDialog::UStyleViewerDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(UStyleViewerDialog::IDD, pParent)
 {
+	memset(szBuf, 0, sizeof(szBuf));
+	m_hIcon = nullptr;
+	m_hCursor = nullptr;
+
 	int argcou = 0;
 	std::wstring Path = L"";
 	LPWSTR* CommandLns = CommandLineToArgvW(XTPSkinMgr()->GetCommandLineTool().GetString(), &argcou);
@@ -266,7 +270,7 @@ BOOL UStyleViewerDialog::PreTranslateMessage(MSG* pMsg)
 			long ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0xFFFFFFFF, NULL, 0);
 			if (ResultQueryFile == 1)
 			{
-				ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0, szBuf, sizeof(szBuf));
+				ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0, szBuf, sizeof(szBuf) / sizeof(wchar_t));
 
 				if (XTPSkinMgr()->SkinLoadFile(szBuf) == FALSE)
 				{

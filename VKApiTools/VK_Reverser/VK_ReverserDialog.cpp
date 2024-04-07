@@ -265,6 +265,10 @@ static void ReadCert(const wstring &FilePath)
 		(msg << L"Ошибка: Невозможно открыть сертификат " << FilePath).show();
 		return;
 	}
+	if (!ucert) {
+		(msg << L"Ошибка: Невозможно открыть сертификат " << FilePath).show();
+		return;
+	}
 	UCERTHeader hdr;
 	fread(&hdr, sizeof(UCERTHeader), 1, ucert);
 	if (memcmp(hdr.Magic, UMagic, strlen(UMagic)) != 0)
@@ -305,8 +309,8 @@ static void ReadCert(const wstring &FilePath)
 VK_ReverserDialog::VK_ReverserDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(VK_ReverserDialog::IDD, pParent)
 {
-	IsStart = false;
 	memset(szBuf, 0, sizeof(szBuf));
+	IsStart = false;
 	m_hIcon = nullptr;
 	m_hCursor = nullptr;
 }

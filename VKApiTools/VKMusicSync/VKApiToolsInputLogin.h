@@ -30,7 +30,6 @@ public:
 	CEdit SMS;
 	CXTPComboBoxNotEdited KateMobilePref;
 	LIB_IMAGE::win_image VK_IconBitmap;
-	void* util_info;
 
 	virtual BOOL OnInitDialog();
 	afx_msg BOOL PreTranslateMessage(MSG* pMsg);

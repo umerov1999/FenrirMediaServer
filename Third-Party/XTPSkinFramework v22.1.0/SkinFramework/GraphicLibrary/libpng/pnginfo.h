@@ -268,5 +268,4 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
 };
 
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
-
 #endif /* PNGINFO_H */

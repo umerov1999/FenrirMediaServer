@@ -129,8 +129,14 @@ enum HTTP_METHOD
 	HTTP_METHOD_UNKNOW
 };
 
-struct RequestParserStruct
+class RequestParserStruct
 {
+public:
+	RequestParserStruct() {
+		is_mobile = false;
+		method = HTTP_METHOD::HTTP_METHOD_UNKNOW;
+	}
+
 	bool is_mobile;
 	HTTP_METHOD method;
 	string connection;
@@ -276,8 +282,12 @@ std::string filename(const std::string& fname)
 string GetFileData(wstring File)
 {
 	FILE* fl = NULL;
-	if (_wfopen_s(&fl, File.c_str(), L"rb") != 0)
+	if (_wfopen_s(&fl, File.c_str(), L"rb") != 0) {
 		return "";
+	}
+	if (!fl) {
+		return "";
+	}
 	fseek(fl, 0, SEEK_END);
 	int Size = ftell(fl);
 	if (Size <= 0)

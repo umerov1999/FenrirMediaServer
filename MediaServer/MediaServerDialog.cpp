@@ -384,6 +384,10 @@ static void ReadCert(const wstring& FilePath)
 		(msg << L"Ошибка: Невозможно открыть сертификат " << FilePath).show();
 		return;
 	}
+	if (!ucert) {
+		(msg << L"Ошибка: Невозможно открыть сертификат " << FilePath).show();
+		return;
+	}
 	UCERTHeader hdr;
 	fread(&hdr, sizeof(UCERTHeader), 1, ucert);
 	if (memcmp(hdr.Magic, UMagic, strlen(UMagic)) != 0)
@@ -471,10 +475,10 @@ void RegDelKeyValue(const wstring& NameReg, const wstring& PatchReg)
 MediaServerDialog::MediaServerDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(MediaServerDialog::IDD, pParent)
 {
+	memset(szBuf, 0, sizeof(szBuf));
 	IsStart = false;
 	IsAutostart = false;
 	NeedAutoStart = false;
-	memset(szBuf, 0, sizeof(szBuf));
 	m_hIcon = nullptr;
 	m_hCursor = nullptr;
 }

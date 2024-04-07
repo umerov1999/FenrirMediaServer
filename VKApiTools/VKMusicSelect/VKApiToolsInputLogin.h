@@ -28,7 +28,6 @@ public:
 	CEdit UserName;
 	CEdit SMS;
 	LIB_IMAGE::win_image VK_IconBitmap;
-	void* util_info;
 
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);

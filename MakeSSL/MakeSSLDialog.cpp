@@ -30,8 +30,8 @@ struct UCERTHeader
 MakeSSLDialog::MakeSSLDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(MakeSSLDialog::IDD, pParent)
 {
-	m_hIcon = nullptr;
 	memset(szBuf, 0, sizeof(szBuf));
+	m_hIcon = nullptr;
 }
 
 MakeSSLDialog::~MakeSSLDialog()

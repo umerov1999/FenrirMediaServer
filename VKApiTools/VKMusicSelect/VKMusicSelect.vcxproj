@@ -99,23 +99,14 @@
     <Image Include="Res\VK.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Third-Party\Extra\components\components.vcxproj">
+      <Project>{b886e0f4-5d86-4af7-87b7-66163cfd6e61}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Third-Party\Extra\components\components_mfc.vcxproj">
       <Project>{433709a8-9119-4051-9593-2c0698abf6bc}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\Third-Party\libimage\libimage.vcxproj">
       <Project>{d6973076-9317-4ef2-a0b8-b7a18ac0713e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Third-Party\USound\libs\id3v2lib\id3v2.vcxproj">
-      <Project>{980cc12e-e463-35f2-95fa-ab8ba20c6d16}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Third-Party\USound\libs\libogg\libogg.vcxproj">
-      <Project>{1c22e4dd-1e42-3e22-a952-1cd0fd910e71}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Third-Party\USound\libs\libvorbis\libvorbis.vcxproj">
-      <Project>{d9c2fda1-8c50-390f-b9c2-4f5919e75505}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Third-Party\USound\libs\minimp3\minimp3.vcxproj">
-      <Project>{969ef30b-b20f-3c3c-9adc-376e34055a6a}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\Third-Party\USound\USound.vcxproj">
       <Project>{60da55f1-5825-3da3-bf06-0bafa6b95cdf}</Project>

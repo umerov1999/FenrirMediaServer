@@ -7,12 +7,99 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="libs\id3v2lib\src\frame.cpp" />
+    <ClCompile Include="libs\id3v2lib\src\header.cpp" />
+    <ClCompile Include="libs\id3v2lib\src\id3v2lib.cpp" />
+    <ClCompile Include="libs\id3v2lib\src\types.cpp" />
+    <ClCompile Include="libs\id3v2lib\src\util.cpp" />
+    <ClCompile Include="libs\libogg\src\bitwise.c" />
+    <ClCompile Include="libs\libogg\src\framing.c" />
+    <ClCompile Include="libs\libvorbis\lib\analysis.c" />
+    <ClCompile Include="libs\libvorbis\lib\barkmel.c" />
+    <ClCompile Include="libs\libvorbis\lib\bitrate.c" />
+    <ClCompile Include="libs\libvorbis\lib\block.c" />
+    <ClCompile Include="libs\libvorbis\lib\codebook.c" />
+    <ClCompile Include="libs\libvorbis\lib\envelope.c" />
+    <ClCompile Include="libs\libvorbis\lib\floor0.c" />
+    <ClCompile Include="libs\libvorbis\lib\floor1.c" />
+    <ClCompile Include="libs\libvorbis\lib\info.c" />
+    <ClCompile Include="libs\libvorbis\lib\lookup.c" />
+    <ClCompile Include="libs\libvorbis\lib\lpc.c" />
+    <ClCompile Include="libs\libvorbis\lib\lsp.c" />
+    <ClCompile Include="libs\libvorbis\lib\mapping0.c" />
+    <ClCompile Include="libs\libvorbis\lib\mdct.c" />
+    <ClCompile Include="libs\libvorbis\lib\psy.c" />
+    <ClCompile Include="libs\libvorbis\lib\registry.c" />
+    <ClCompile Include="libs\libvorbis\lib\res0.c" />
+    <ClCompile Include="libs\libvorbis\lib\sharedbook.c" />
+    <ClCompile Include="libs\libvorbis\lib\smallft.c" />
+    <ClCompile Include="libs\libvorbis\lib\synthesis.c" />
+    <ClCompile Include="libs\libvorbis\lib\vorbisenc.c" />
+    <ClCompile Include="libs\libvorbis\lib\vorbisfile.c" />
+    <ClCompile Include="libs\libvorbis\lib\window.c" />
+    <ClCompile Include="libs\minimp3\minimp3.c" />
     <ClCompile Include="src\MP3DataProvider.cpp" />
     <ClCompile Include="src\OGGDataProvider.cpp" />
     <ClCompile Include="src\USound.cpp" />
     <ClCompile Include="src\WAVDataEncoder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib.h" />
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\constants.h" />
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\frame.h" />
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\header.h" />
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\types.h" />
+    <ClInclude Include="libs\id3v2lib\include\id3v2lib\util.h" />
+    <ClInclude Include="libs\libogg\include\ogg\ogg.h" />
+    <ClInclude Include="libs\libogg\include\ogg\os_types.h" />
+    <ClInclude Include="libs\libogg\src\crctable.h" />
+    <ClInclude Include="libs\libvorbis\include\vorbis\codec.h" />
+    <ClInclude Include="libs\libvorbis\include\vorbis\vorbisenc.h" />
+    <ClInclude Include="libs\libvorbis\include\vorbis\vorbisfile.h" />
+    <ClInclude Include="libs\libvorbis\lib\backends.h" />
+    <ClInclude Include="libs\libvorbis\lib\bitrate.h" />
+    <ClInclude Include="libs\libvorbis\lib\books\coupled\res_books_51.h" />
+    <ClInclude Include="libs\libvorbis\lib\books\coupled\res_books_stereo.h" />
+    <ClInclude Include="libs\libvorbis\lib\books\floor\floor_books.h" />
+    <ClInclude Include="libs\libvorbis\lib\books\uncoupled\res_books_uncoupled.h" />
+    <ClInclude Include="libs\libvorbis\lib\codebook.h" />
+    <ClInclude Include="libs\libvorbis\lib\codec_internal.h" />
+    <ClInclude Include="libs\libvorbis\lib\envelope.h" />
+    <ClInclude Include="libs\libvorbis\lib\highlevel.h" />
+    <ClInclude Include="libs\libvorbis\lib\lookup.h" />
+    <ClInclude Include="libs\libvorbis\lib\lookup_data.h" />
+    <ClInclude Include="libs\libvorbis\lib\lpc.h" />
+    <ClInclude Include="libs\libvorbis\lib\lsp.h" />
+    <ClInclude Include="libs\libvorbis\lib\masking.h" />
+    <ClInclude Include="libs\libvorbis\lib\mdct.h" />
+    <ClInclude Include="libs\libvorbis\lib\misc.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\floor_all.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\psych_11.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\psych_16.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\psych_44.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\psych_8.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_16.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_44.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_44p51.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_44u.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\residue_8.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_11.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_16.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_22.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_32.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_44.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_44p51.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_44u.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_8.h" />
+    <ClInclude Include="libs\libvorbis\lib\modes\setup_X.h" />
+    <ClInclude Include="libs\libvorbis\lib\os.h" />
+    <ClInclude Include="libs\libvorbis\lib\psy.h" />
+    <ClInclude Include="libs\libvorbis\lib\registry.h" />
+    <ClInclude Include="libs\libvorbis\lib\scales.h" />
+    <ClInclude Include="libs\libvorbis\lib\smallft.h" />
+    <ClInclude Include="libs\libvorbis\lib\window.h" />
+    <ClInclude Include="libs\minimp3\libc.h" />
+    <ClInclude Include="libs\minimp3\minimp3.h" />
     <ClInclude Include="src\MP3DataProvider.h" />
     <ClInclude Include="src\OGGDataProvider.h" />
     <ClInclude Include="src\USound.h" />
@@ -47,12 +134,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level1</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>src;libs\libogg\include;libs\libvorbis\include;libs\id3v2lib\include;libs\minimp3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;libs\libogg\include;libs\libvorbis\include;libs\id3v2lib\include;libs\id3v2lib\include\id3v2lib;libs\minimp3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <LanguageStandard>stdcpp20</LanguageStandard>

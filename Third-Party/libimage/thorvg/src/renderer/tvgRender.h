@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 
 #include "tvgCommon.h"
 #include "tvgArray.h"
+#include "tvgLock.h"
 
 namespace tvg
 {
@@ -32,11 +33,11 @@ namespace tvg
 using RenderData = void*;
 using pixel_t = uint32_t;
 
-enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, All = 255};
+enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, Blend = 128, All = 255};
 
 struct Surface;
 
-enum ColorSpace
+enum ColorSpace : uint8_t
 {
     ABGR8888 = 0,      //The channels are joined in the order: alpha, blue, green, red. Colors are alpha-premultiplied.
     ARGB8888,          //The channels are joined in the order: alpha, red, green, blue. Colors are alpha-premultiplied.
@@ -49,17 +50,31 @@ enum ColorSpace
 struct Surface
 {
     union {
-        pixel_t* data;       //system based data pointer
-        uint32_t* buf32;     //for explicit 32bits channels
-        uint8_t*  buf8;      //for explicit 8bits grayscale
+        pixel_t* data = nullptr;    //system based data pointer
+        uint32_t* buf32;            //for explicit 32bits channels
+        uint8_t*  buf8;             //for explicit 8bits grayscale
     };
-    uint32_t stride;
-    uint32_t w, h;
-    ColorSpace  cs;
-    uint8_t channelSize;
+    Key key;                        //a reserved lock for the thread safety
+    uint32_t stride = 0;
+    uint32_t w = 0, h = 0;
+    ColorSpace cs = ColorSpace::Unsupported;
+    uint8_t channelSize = 0;
+    bool premultiplied = false;         //Alpha-premultiplied
 
-    bool premultiplied;      //Alpha-premultiplied
-    bool owner;              //Only owner could modify the buffer
+    Surface()
+    {
+    }
+
+    Surface(const Surface* rhs)
+    {
+        data = rhs->data;
+        stride = rhs->stride;
+        w = rhs->w;
+        h = rhs->h;
+        cs = rhs->cs;
+        channelSize = rhs->channelSize;
+        premultiplied = rhs->premultiplied;
+    }
 };
 
 struct Compositor
@@ -123,10 +138,10 @@ struct RenderTransform
     float scale = 1.0f;   //scale factor
     bool overriding = false;  //user transform?
 
-    bool update();
+    void update();
     void override(const Matrix& m);
 
-    RenderTransform();
+    RenderTransform() {}
     RenderTransform(const RenderTransform* lhs, const RenderTransform* rhs);
 };
 
@@ -138,14 +153,15 @@ struct RenderStroke
     float* dashPattern = nullptr;
     uint32_t dashCnt = 0;
     float dashOffset = 0.0f;
+    float miterlimit = 4.0f;
     StrokeCap cap = StrokeCap::Square;
     StrokeJoin join = StrokeJoin::Bevel;
-    float miterlimit = 4.0f;
     bool strokeFirst = false;
 
     struct {
         float begin = 0.0f;
         float end = 1.0f;
+        bool individual = false;
     } trim;
 
     ~RenderStroke()
@@ -164,8 +180,8 @@ struct RenderShape
     } path;
 
     Fill *fill = nullptr;
-    RenderStroke *stroke = nullptr;
     uint8_t color[4] = {0, 0, 0, 0};    //r, g, b, a
+    RenderStroke *stroke = nullptr;
     FillRule rule = FillRule::Winding;
 
     ~RenderShape()
@@ -196,7 +212,7 @@ struct RenderShape
         return true;
     }
 
-    bool strokeColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
+    bool strokeFill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
     {
         if (!stroke) return false;
 
@@ -244,7 +260,23 @@ struct RenderShape
 
 class RenderMethod
 {
+private:
+    uint32_t refCnt = 0;        //reference count
+    Key key;
+
 public:
+    uint32_t ref()
+    {
+        ScopedLock lock(key);
+        return (++refCnt);
+    }
+
+    uint32_t unref()
+    {
+        ScopedLock lock(key);
+        return (--refCnt);
+    }
+
     virtual ~RenderMethod() {}
     virtual RenderData prepare(const RenderShape& rshape, RenderData data, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags, bool clipper) = 0;
     virtual RenderData prepare(const Array<RenderData>& scene, RenderData data, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags) = 0;
@@ -253,7 +285,7 @@ public:
     virtual bool renderShape(RenderData data) = 0;
     virtual bool renderImage(RenderData data) = 0;
     virtual bool postRender() = 0;
-    virtual bool dispose(RenderData data) = 0;
+    virtual void dispose(RenderData data) = 0;
     virtual RenderRegion region(RenderData data) = 0;
     virtual RenderRegion viewport() = 0;
     virtual bool viewport(const RenderRegion& vp) = 0;
@@ -305,7 +337,7 @@ static inline uint8_t CHANNEL_SIZE(ColorSpace cs)
     }
 }
 
-static inline ColorSpace COMPOSITE_TO_COLORSPACE(RenderMethod& renderer, CompositeMethod method)
+static inline ColorSpace COMPOSITE_TO_COLORSPACE(RenderMethod* renderer, CompositeMethod method)
 {
     switch(method) {
         case CompositeMethod::AlphaMask:
@@ -318,7 +350,7 @@ static inline ColorSpace COMPOSITE_TO_COLORSPACE(RenderMethod& renderer, Composi
         //TODO: Optimize Luma/InvLuma colorspace to Grayscale8
         case CompositeMethod::LumaMask:
         case CompositeMethod::InvLumaMask:
-            return renderer.colorSpace();
+            return renderer->colorSpace();
         default:
             TVGERR("RENDERER", "Unsupported Composite Size! = %d", (int)method);
             return ColorSpace::Unsupported;

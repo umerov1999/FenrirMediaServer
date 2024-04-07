@@ -30,8 +30,9 @@ static char THIS_FILE[] = __FILE__;
 #define LWA_ALPHA 0x00000002 
 #endif
 
-struct UsesOptionInMethodResult
+class UsesOptionInMethodResult
 {
+public:
 	UsesOptionInMethodResult()
 	{
 		Option1 = false;
@@ -161,6 +162,7 @@ string GetCapchaCode(const string &Link, const string &UserAgent)
 VKApiToolsDialog::VKApiToolsDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(VKApiToolsDialog::IDD, pParent)
 {
+	m_hIcon = nullptr;
 }
 
 VKApiToolsDialog::~VKApiToolsDialog()
@@ -249,10 +251,12 @@ DWORD WINAPI RunMeth(LPVOID param)
 	FILE* fl = NULL;
 	if (_wfopen_s(&fl, PREFS_NAME.c_str(), L"wb") == 0)
 	{
-		string jsonS = "{ \"current_token\":\"" + par.Token + "\", \"owner_id\":\"" + par.OldToken + "\", \"user_agent\":\"" + DEFAULT_USER_AGENT + "\" }";
-		fwrite(UTF8START, 1, strlen(UTF8START), fl);
-		fwrite(jsonS.c_str(), 1, jsonS.length(), fl);
-		fclose(fl);
+		if (fl) {
+			string jsonS = "{ \"current_token\":\"" + par.Token + "\", \"owner_id\":\"" + par.OldToken + "\", \"user_agent\":\"" + DEFAULT_USER_AGENT + "\" }";
+			fwrite(UTF8START, 1, strlen(UTF8START), fl);
+			fwrite(jsonS.c_str(), 1, jsonS.length(), fl);
+			fclose(fl);
+		}
 	}
 
 	PrintMessage("=====================", URGB(0, 170, 100));

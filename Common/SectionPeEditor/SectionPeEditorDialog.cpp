@@ -659,7 +659,7 @@ void SectionPeEditorDialog::Execute(int ID)
 		}
 		if (ID != -1 && ID != -2)
 		{
-			free(Section);
+			delete[] Section;
 		}
 
 		std::ofstream new_pe_file0(fgf.GetString(), std::ios::out | std::ios::binary | std::ios::trunc);
@@ -871,7 +871,7 @@ void SectionPeEditorDialog::OnExtractOverImage()
 	int result = (int)fileDialog.DoModal();
 	if (result != 1)
 	{
-		free(mbuf);
+		delete[] mbuf;
 		return;
 	}
 	else
@@ -879,13 +879,13 @@ void SectionPeEditorDialog::OnExtractOverImage()
 		FILE*tmp = _wfopen(fileDialog.GetPathName().GetString(), L"wb");
 		if (!tmp)
 		{
-			free(mbuf);
+			delete[] mbuf;
 			MessageBoxW(L"Невозможно записать в файл!", L"Внимание!", MB_ICONINFORMATION);
 			return;
 		}
 
 		fwrite(mbuf, sizeof(char), jz - zsz, tmp);
-		free(mbuf);
+		delete[] mbuf;
 		fclose(tmp);
 	}
 	MessageBoxW(L"Выполнено!", L"Внимание!", MB_ICONINFORMATION);
@@ -1080,7 +1080,7 @@ BOOL SectionPeEditorDialog::PreTranslateMessage(MSG* pMsg)
 			long ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0xFFFFFFFF, NULL, 0);
 			if (ResultQueryFile == 1)
 			{
-				ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0, szBuf, sizeof(szBuf));
+				ResultQueryFile = DragQueryFileW((HDROP)pMsg->wParam, 0, szBuf, sizeof(szBuf) / sizeof(wchar_t));
 				FILE* tmp = _wfopen(szBuf, L"rb");
 				if (!tmp)
 				{

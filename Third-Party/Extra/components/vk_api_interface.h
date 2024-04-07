@@ -6,8 +6,13 @@
 #include "WSTRUtils.h"
 #include "do_curl.h"
 #include "json.hpp"
-struct VKAPI_ANSWER
+
+class VKAPI_ANSWER
 {
+public:
+	VKAPI_ANSWER() {
+		IsError = false;
+	}
 	std::string Request;
 	std::string PostParams;
 	nlohmann::json Object;

@@ -170,4 +170,3 @@ png_set_write_fn(png_structrp png_ptr, png_voidp io_ptr,
 #endif /* WRITE */
 
 #include "Common/Base/Diagnostic/XTPEnableAdvancedWarnings.h"
-
