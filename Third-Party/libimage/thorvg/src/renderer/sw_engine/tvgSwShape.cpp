@@ -124,7 +124,7 @@ static void _dashLineTo(SwDashStroke& dash, const Point* to, const Matrix* trans
                 len -= dash.curLen;
                 lineSplitAt(cur, dash.curLen, left, right);
                 if (!dash.curOpGap) {
-                    if (dash.move || dash.pattern[dash.curIdx] - dash.curLen < FLT_EPSILON) {
+                    if (dash.move || dash.pattern[dash.curIdx] - dash.curLen < FLOAT_EPSILON) {
                         _outlineMoveTo(*dash.outline, &left.pt1, transform);
                         dash.move = false;
                     }
@@ -185,7 +185,7 @@ static void _dashCubicTo(SwDashStroke& dash, const Point* ctrl1, const Point* ct
                 len -= dash.curLen;
                 bezSplitAt(cur, dash.curLen, left, right);
                 if (!dash.curOpGap) {
-                    if (dash.move || dash.pattern[dash.curIdx] - dash.curLen < FLT_EPSILON) {
+                    if (dash.move || dash.pattern[dash.curIdx] - dash.curLen < FLOAT_EPSILON) {
                         _outlineMoveTo(*dash.outline, &left.start, transform);
                         dash.move = false;
                     }
@@ -370,8 +370,8 @@ static float _outlineLength(const RenderShape* rshape)
 
     const Point* close = nullptr;
     auto length = 0.0f;
-    auto slength = 0.0f;
-    auto simutaneous = !rshape->stroke->trim.individual;
+    auto slength = -1.0f;
+    auto simultaneous = !rshape->stroke->trim.individual;
 
     //Compute the whole length
     while (cmdCnt-- > 0) {
@@ -379,8 +379,8 @@ static float _outlineLength(const RenderShape* rshape)
             case PathCommand::Close: {
                 length += mathLength(pts - 1, close);
                 //retrieve the max length of the shape if the simultaneous mode.
-                if (simutaneous && slength < length) {
-                    slength = length;
+                if (simultaneous) {
+                    if (slength < length) slength = length;
                     length = 0.0f;
                 }
                 break;
@@ -403,7 +403,7 @@ static float _outlineLength(const RenderShape* rshape)
         }
         ++cmds;
     }
-    if (simutaneous && slength > length) return slength;
+    if (simultaneous && slength > length) return slength;
     else return length;
 }
 

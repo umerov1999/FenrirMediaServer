@@ -192,7 +192,7 @@ void VKApiToolsInputLogin::OnLogin()
 				else
 					PhoneMask = (const char*)u8"Введите код, отправленный на" + jres.at("phone_mask").get<string>();
 				if (jres.find("validation_sid") != jres.end())
-					DoCurlGet(string("https://api.vk.com/method/auth.validatePhone?client_id=") + "2274003" + "&api_id=" + "2685278" + "&client_secret=" + "hHbZxrka2uZ6jB1inYsH" + "&sid=" + jres.at("validation_sid").get<string>() + "&v=" + VKAPI_VERSION_AUTH, ANDROID_USERAGENT, AnswerVK, true);
+					DoCurlGet(string("https://api.vk.com/method/auth.validatePhone?client_id=") + "2274003" + "&api_id=" + "2274003" + "&client_secret=" + "hHbZxrka2uZ6jB1inYsH" + "&sid=" + jres.at("validation_sid").get<string>() + "&v=" + VKAPI_VERSION_AUTH, ANDROID_USERAGENT, AnswerVK, true);
 				SMS.EnableWindow(TRUE);
 				(win_message().message_type(MSG_TYPE::TYPE_WARNING) << L"Валидация: " << PhoneMask).show();
 			}

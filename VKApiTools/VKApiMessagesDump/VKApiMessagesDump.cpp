@@ -1265,7 +1265,9 @@ void DownloadDialog(const string& access_token, bool avatarsBase64, bool needAlb
 			json itemtuo = it.value().at("conversation").get<json>();
 			json item = itemtuo.at("peer").get<json>();
 			VKDialog gdlg;
-			gdlg.last_conversation_message_id = it.value().at("last_message").get<json>().at("conversation_message_id").get<int>();
+			if (it.value().find("last_message") != it.value().end() && it.value().at("last_message").find("conversation_message_id") != it.value().at("last_message").end()) {
+				gdlg.last_conversation_message_id = it.value().at("last_message").get<json>().at("conversation_message_id").get<int>();
+			}
 			int64_t DialogID = item.at("id").get<int64_t>();
 			gdlg.Title = wstring(L"id") + to_wstring(DialogID);
 			if (item.at("type").get<string>() == "chat")

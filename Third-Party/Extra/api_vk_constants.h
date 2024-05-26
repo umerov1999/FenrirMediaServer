@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#define VKAPI_VERSION "5.154"
+#define VKAPI_VERSION "5.186"
 #define VKAPI_VERSION_AUTH VKAPI_VERSION
 #define VKAPI_VERSION_FOR_AUDIO "5.90"
 

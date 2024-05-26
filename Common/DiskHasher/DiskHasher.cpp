@@ -38,16 +38,16 @@ public:
 		this->file_name = file_name;
 		this->hash = hash;
 	}
-	bool operator==(const HashFile& file) {
+	bool operator==(const HashFile& file) const {
 		return this->file_name == file.file_name;
 	}
-	bool operator!=(const HashFile& file) {
+	bool operator!=(const HashFile& file) const {
 		return this->file_name != file.file_name;
 	}
-	bool operator>(const HashFile& file) {
+	bool operator>(const HashFile& file) const {
 		return this->file_name > file.file_name;
 	}
-	bool operator<(const HashFile& file) {
+	bool operator<(const HashFile& file) const {
 		return this->file_name < file.file_name;
 	}
 	HashFile& deserialize(json& pref) {
