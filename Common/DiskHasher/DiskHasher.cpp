@@ -209,7 +209,6 @@ int _tmain(int argc, _TCHAR* argv[]) {
 		return 1;
 	}
 	if (wstring(argv[1]) == L"--hash") {
-		//PHasher hasher(argv[2], { L"System Volume Information", L"$Recycle.Bin", L"FOUND.000", L"found.000", L"Backup\\Android" });
 		PHasher hasher(argv[2], { L"System Volume Information", L"$Recycle.Bin", L"FOUND.000", L"found.000" });
 		auto v = hasher.makeHashs();
 		writeJsonConfig(ExtractAppPath() + L"\\" + FixFileNameAudio(argv[2]) + L".json", v);

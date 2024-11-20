@@ -3,28 +3,27 @@
 #include <iostream>
 #include <Windows.h>
 
-namespace LIB_IMAGE
-{
-	enum class win_image_type
-	{
+namespace LIB_IMAGE {
+	static bool thorvg_inited = false;
+	bool thorvg_init();
+	bool thorvg_destroy();
+
+	enum class win_image_type {
 		WIN_IMAGE_JPG = 0,
-		WIN_IMAGE_PNG
+		WIN_IMAGE_PNG,
+		WIN_IMAGE_WEBP
 	};
 
-	struct win_image_size
-	{
-		win_image_size()
-		{
+	struct win_image_size {
+		win_image_size() {
 			size_x = -1;
 			size_y = -1;
 		}
-		win_image_size(int tsize_x, int tsize_y)
-		{
+		win_image_size(int tsize_x, int tsize_y) {
 			size_x = tsize_x;
 			size_y = tsize_y;
 		}
-		~win_image_size()
-		{
+		~win_image_size() {
 			size_x = -1;
 			size_y = -1;
 		}
@@ -32,28 +31,23 @@ namespace LIB_IMAGE
 		int size_y;
 	};
 
-	class win_image
-	{
+	class win_image {
 	public:
 		static std::string decompress_gzip(const std::string& str);
-		win_image()
-		{
+		win_image() {
 			links = new size_t[1];
 			*links = 0;
 			hPicture = NULL;
 		}
-		win_image(HBITMAP Picture, win_image_size size)
-		{
+		win_image(HBITMAP Picture, win_image_size size) {
 			links = new size_t[1];
 			*links = 0;
 			hPicture = Picture;
 			if (Picture)
 				image_size = size;
 		}
-		win_image(win_image& image)
-		{
-			if (image.is_has_image())
-			{
+		win_image(win_image& image) {
+			if (image.is_has_image()) {
 				links = image.links;
 				(*links)++;
 				image_size = image.image_size;
@@ -65,8 +59,7 @@ namespace LIB_IMAGE
 			}
 		}
 		void release() {
-			if (*links == 0 && is_has_image())
-			{
+			if (*links == 0 && is_has_image()) {
 				DeleteObject(hPicture);
 				hPicture = NULL;
 			}
@@ -74,10 +67,8 @@ namespace LIB_IMAGE
 				(*links)--;
 			}
 		}
-		~win_image()
-		{
-			if (*links == 0 && is_has_image())
-			{
+		~win_image() {
+			if (*links == 0 && is_has_image()) {
 				DeleteObject(hPicture);
 				hPicture = NULL;
 			}
@@ -88,28 +79,22 @@ namespace LIB_IMAGE
 				(*links)--;
 			}
 		}
-		bool is_has_image() const
-		{
+		bool is_has_image() const {
 			return hPicture != NULL;
 		}
-		win_image_size get_size() const
-		{
+		win_image_size get_size() const {
 			return image_size;
 		}
-		win_image& resize(int X, int Y)
-		{
-			if (is_has_image())
-			{
+		win_image& resize(int X, int Y) {
+			if (is_has_image()) {
 				hPicture = StretchBitmap(hPicture, X, Y, true);
 				image_size.size_x = X;
 				image_size.size_y = Y;
 			}
 			return *this;
 		}
-		win_image& operator=(const win_image& image)
-		{
-			if (image.is_has_image())
-			{
+		win_image& operator=(const win_image& image) {
+			if (image.is_has_image()) {
 				if (*links == 0) {
 					delete links;
 					links = NULL;
@@ -128,10 +113,8 @@ namespace LIB_IMAGE
 			}
 			return *this;
 		}
-		void clone_to_image(win_image& image)
-		{
-			if (is_has_image())
-			{
+		void clone_to_image(win_image& image) {
+			if (is_has_image()) {
 				if (*image.links == 0) {
 					if (image.hPicture) {
 						DeleteObject(image.hPicture);
@@ -148,8 +131,7 @@ namespace LIB_IMAGE
 		}
 		win_image& make_RGB(HWND hwnd, DWORD Color);
 
-		HBITMAP get_hBitmap(bool tnot_released = false)
-		{
+		HBITMAP get_hBitmap(bool tnot_released = false) {
 			if (tnot_released)
 				*links = LONG_MAX;
 			return hPicture;
@@ -161,29 +143,10 @@ namespace LIB_IMAGE
 		win_image_size image_size;
 	};
 
-	static inline void swap_rgb(unsigned char* rgb_buffer, int len)
-	{
-		unsigned char tmp = 0;
-		int i = 0;
-		for (i = 0; i < len; i += 3)
-		{
-			tmp = *(rgb_buffer + i);
-			*(rgb_buffer + i) = *(rgb_buffer + i + 2);
-			*(rgb_buffer + i + 2) = tmp;
-		}
-	}
+	inline void swap_rgb(unsigned char* rgb_buffer, int len);
+	inline void swap_rgba(unsigned char* rgba_buffer, int len);
 
-	static inline void swap_rgba(unsigned char* rgba_buffer, int len)
-	{
-		unsigned char tmp = 0;
-		int i = 0;
-		for (i = 0; i < len; i += 4)
-		{
-			tmp = *(rgba_buffer + i);
-			*(rgba_buffer + i) = *(rgba_buffer + i + 2);
-			*(rgba_buffer + i + 2) = tmp;
-		}
-	}
+	void registerCustomColorSVG(std::string name, uint32_t value);
 
 	win_image PrepareImageFromBufferByType(HWND hwnd, const void* pDataBuffer, int nBufferSize, win_image_type Type, bool show_error_bitmap = true);
 	win_image PrepareImageFromBufferAutoType(HWND hwnd, const void* pDataBuffer, int nBufferSize, bool show_error_bitmap = true);

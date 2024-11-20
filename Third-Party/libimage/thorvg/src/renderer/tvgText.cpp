@@ -35,9 +35,8 @@
 /************************************************************************/
 
 
-Text::Text() : pImpl(new Impl)
+Text::Text() : pImpl(new Impl(this))
 {
-    Paint::pImpl->id = TVG_CLASS_ID_TEXT;
 }
 
 
@@ -59,10 +58,10 @@ Result Text::font(const char* name, float size, const char* style) noexcept
 }
 
 
-Result Text::load(const std::string& path) noexcept
+Result Text::load(const char* path) noexcept
 {
     bool invalid; //invalid path
-    if (!LoaderMgr::loader(path, &invalid)) {
+    if (!LoaderMgr::loader(path, &invalid, nullptr)) {
         if (invalid) return Result::InvalidArguments;
         else return Result::NonSupport;
     }
@@ -71,29 +70,37 @@ Result Text::load(const std::string& path) noexcept
 }
 
 
-Result Text::unload(const std::string& path) noexcept
+Result Text::load(const char* name, const char* data, uint32_t size, const char* mimeType, bool copy) noexcept
 {
-    if (LoaderMgr::retrieve(path)) return Result::Success;
+    if (!name || (size == 0 && data)) return Result::InvalidArguments;
+
+    //unload font
+    if (!data) {
+        if (LoaderMgr::retrieve(name)) return Result::Success;
+        return Result::InsufficientCondition;
+    }
+
+    if (!LoaderMgr::loader(name, data, size, mimeType, copy, nullptr)) return Result::NonSupport;
+    return Result::Success;
+}
+
+
+Result Text::unload(const char* filename) noexcept
+{
+    if (LoaderMgr::retrieve(filename)) return Result::Success;
     return Result::InsufficientCondition;
 }
 
 
 Result Text::fill(uint8_t r, uint8_t g, uint8_t b) noexcept
 {
-    if (!pImpl->paint) return Result::InsufficientCondition;
-
-    return pImpl->fill(r, g, b);
+    return pImpl->shape->fill(r, g, b);
 }
 
 
 Result Text::fill(unique_ptr<Fill> f) noexcept
 {
-    if (!pImpl->paint) return Result::InsufficientCondition;
-
-    auto p = f.release();
-    if (!p) return Result::MemoryCorruption;
-
-    return pImpl->fill(p);
+    return pImpl->shape->fill(std::move(f));
 }
 
 
@@ -103,7 +110,7 @@ unique_ptr<Text> Text::gen() noexcept
 }
 
 
-uint32_t Text::identifier() noexcept
+Type Text::type() const noexcept
 {
-    return TVG_CLASS_ID_TEXT;
+    return Type::Text;
 }

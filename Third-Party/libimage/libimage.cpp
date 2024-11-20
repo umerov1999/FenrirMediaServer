@@ -3,15 +3,22 @@
 #include <vector>
 #include <sstream>
 #include <thread>
+#include <emmintrin.h>
+#include <tmmintrin.h>
+#include <mutex>
+#include <map>
 #include <Windows.h>
 #include "jpeglib.h"
 #include "png.h"
+#include "webp/decode.h"
 #include "libimage.h"
 #include "thorvg.h"
 #include "zlib.h"
 using namespace std;
 #define BitmapWidth(width, bitsPerPixel) (((width * bitsPerPixel + 31) & ~31) >> 3)
 #define JPGHeader "\xff\xd8\xff"
+#define RIFFHeader "RIFF"
+#define WEBPHeader "WEBP"
 const int c_JPEGInputBufferSize = 4096;
 using namespace LIB_IMAGE;
 
@@ -193,36 +200,49 @@ const char * ERROR_ICON = "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a\x00\x00\x00\x0d\x49\
 "\x49\x45\x4e\x44\xae\x42\x60\x82";
 int ERROR_ICON_SIZE = 2808;
 
-struct jpeg_membuffer_t
-{
+static std::mutex customColorsTableSVGMutex;
+static std::map<std::string, uint32_t> customColorsTableSVG;
+
+void getCustomColorSVG(const std::string& name, uint8_t* r, uint8_t* g, uint8_t* b) {
+	customColorsTableSVGMutex.lock();
+	uint32_t clr = customColorsTableSVG[name];
+	customColorsTableSVGMutex.unlock();
+	*r = (((uint8_t*)(&(clr)))[2]);
+	*g = (((uint8_t*)(&(clr)))[1]);
+	*b = (((uint8_t*)(&(clr)))[0]);
+}
+
+void LIB_IMAGE::registerCustomColorSVG(std::string name, uint32_t value) {
+	customColorsTableSVGMutex.lock();
+	customColorsTableSVG["[|" + name + "|]"] = value;
+	customColorsTableSVGMutex.unlock();
+}
+
+struct jpeg_membuffer_t {
 	const unsigned char*	amem_buff;
 	size_t					pos,
 		size;
 };
 
-struct cDataManagerJPEGSource
-{
+struct cDataManagerJPEGSource {
 	jpeg_source_mgr			pub;
 	jpeg_membuffer_t*		read_buffer;
 	JOCTET*					buffer;
 	bool					sof;
 };
 
-struct cDataManagerJPEGDest
-{
+struct cDataManagerJPEGDest {
 	jpeg_destination_mgr	mgr;
 	unsigned char*			buffer;
 };
 
-struct png_membuffer_t
-{
+struct png_membuffer_t {
 	const unsigned char* amem_buff;
 	size_t					pos,
 		size;
 };
 
-void png_read_memory_data_fn(png_structp png_ptr, png_bytep data, png_size_t length)
-{
+void png_read_memory_data_fn(png_structp png_ptr, png_bytep data, png_size_t length) {
 	png_membuffer_t* membuff = (png_membuffer_t*)png_get_io_ptr(png_ptr);
 	size_t nbytes = membuff->size - membuff->pos;
 	nbytes = nbytes > length ? length : nbytes;
@@ -230,8 +250,7 @@ void png_read_memory_data_fn(png_structp png_ptr, png_bytep data, png_size_t len
 	membuff->pos += nbytes;
 }
 
-HBITMAP CreateDIB(HDC hdc, int aWidth, int aHeight, int aPixelBit)
-{
+HBITMAP CreateDIB(HDC hdc, int aWidth, int aHeight, int aPixelBit) {
 	HBITMAP hBitmap = NULL;
 
 	BITMAPINFO      pBitmapInfo = { 0 };
@@ -249,13 +268,11 @@ HBITMAP CreateDIB(HDC hdc, int aWidth, int aHeight, int aPixelBit)
 	return hBitmap;
 }
 
-HBITMAP CreateDIB(HWND hwnd, int aWidth, int aHeight, int aPixelBit)
-{
+HBITMAP CreateDIB(HWND hwnd, int aWidth, int aHeight, int aPixelBit) {
 	return CreateDIB(GetDC(hwnd), aWidth, aHeight, aPixelBit);
 }
 
-HBITMAP win_image::StretchBitmap(HBITMAP hSRCBitmap, int cxNew, int cyNew, bool clearOrig)
-{
+HBITMAP win_image::StretchBitmap(HBITMAP hSRCBitmap, int cxNew, int cyNew, bool clearOrig) {
 	if (!hSRCBitmap) {
 		return hSRCBitmap;
 	}
@@ -310,14 +327,12 @@ HBITMAP win_image::StretchBitmap(HBITMAP hSRCBitmap, int cxNew, int cyNew, bool 
 	return dst;
 }
 
-void JPEGInitSource(j_decompress_ptr cinfo)
-{
+void JPEGInitSource(j_decompress_ptr cinfo) {
 	cDataManagerJPEGSource* src = (cDataManagerJPEGSource*)cinfo->src;
 	src->sof = true;
 }
 
-boolean JPEGFillInputBuffer(j_decompress_ptr cinfo)
-{
+boolean JPEGFillInputBuffer(j_decompress_ptr cinfo) {
 	cDataManagerJPEGSource* src = (cDataManagerJPEGSource*)cinfo->src;
 
 	size_t nbytes = src->read_buffer->size - src->read_buffer->pos;
@@ -340,8 +355,7 @@ boolean JPEGFillInputBuffer(j_decompress_ptr cinfo)
 	return(TRUE);
 }
 
-void JPEGSkipInputData(j_decompress_ptr cinfo, long num_bytes)
-{
+void JPEGSkipInputData(j_decompress_ptr cinfo, long num_bytes) {
 	cDataManagerJPEGSource* src = (cDataManagerJPEGSource*)cinfo->src;
 	if (num_bytes <= 0) return;
 
@@ -354,18 +368,15 @@ void JPEGSkipInputData(j_decompress_ptr cinfo, long num_bytes)
 	src->pub.bytes_in_buffer -= (size_t)num_bytes;
 }
 
-void JPEGTermSource(j_decompress_ptr cinfo)
-{
+void JPEGTermSource(j_decompress_ptr cinfo) {
 
 }
 
-void JPEGStdioSrc(j_decompress_ptr cinfo, jpeg_membuffer_t* file)
-{
+void JPEGStdioSrc(j_decompress_ptr cinfo, jpeg_membuffer_t* file) {
 	cDataManagerJPEGSource* src = 0;
 
 
 	if (cinfo->src == 0) {
-
 		cinfo->src = (struct jpeg_source_mgr *) (*cinfo->mem->alloc_small)
 			((j_common_ptr)cinfo, JPOOL_PERMANENT, sizeof(cDataManagerJPEGSource));
 		src = (cDataManagerJPEGSource*)cinfo->src;
@@ -388,10 +399,8 @@ void JPEGStdioSrc(j_decompress_ptr cinfo, jpeg_membuffer_t* file)
 	src->pub.next_input_byte = 0;
 }
 
-static HBITMAP PrepareFromBufferJPG(HWND hwnd, const void* pDataBuffer, int nBufferSize, int &widthd, int &heightd)
-{
-	try
-	{
+static HBITMAP PrepareFromBufferJPG(HWND hwnd, const void* pDataBuffer, int nBufferSize, int &widthd, int &heightd) {
+	try {
 		if (pDataBuffer == NULL || nBufferSize <= 0)
 			return NULL;
 		if (memcmp(pDataBuffer, JPGHeader, min((int)strlen(JPGHeader), nBufferSize)) != 0)
@@ -415,8 +424,7 @@ static HBITMAP PrepareFromBufferJPG(HWND hwnd, const void* pDataBuffer, int nBuf
 
 		if(cinfo.output_components != 3)
 			return NULL;
-		if (cinfo.output_width <= 0 || cinfo.output_height <= 0)
-		{
+		if (cinfo.output_width <= 0 || cinfo.output_height <= 0) {
 			jpeg_destroy_decompress(&cinfo);
 			return NULL;
 		}
@@ -425,16 +433,14 @@ static HBITMAP PrepareFromBufferJPG(HWND hwnd, const void* pDataBuffer, int nBuf
 
 		HBITMAP hOutputImage;
 		hOutputImage = (HBITMAP)CreateDIB(hwnd, widthd, heightd, cinfo.output_components * 8);
-		if (!hOutputImage)
-		{
+		if (!hOutputImage) {
 			jpeg_destroy_decompress(&cinfo);
 			return NULL;
 		}
 		BITMAP btmOutputImage;
 		::GetObject(hOutputImage, sizeof(BITMAP), &btmOutputImage);
 		unsigned char* pImageBuffer = (unsigned char*)btmOutputImage.bmBits;
-		if (!pImageBuffer)
-		{
+		if (!pImageBuffer) {
 			DeleteObject(hOutputImage);
 			jpeg_destroy_decompress(&cinfo);
 			return NULL;
@@ -443,8 +449,7 @@ static HBITMAP PrepareFromBufferJPG(HWND hwnd, const void* pDataBuffer, int nBuf
 		for (unsigned int i = 0; i < heightd; i++)
 			rows[heightd - i - 1] = pImageBuffer + BitmapWidth(widthd, cinfo.output_components * 8) * (heightd - i - 1);
 
-		while (cinfo.output_scanline < heightd)
-		{
+		while (cinfo.output_scanline < heightd) {
 			jpeg_read_scanlines(&cinfo, rows + cinfo.output_scanline, 1);
 			if(cinfo.output_components == 3)
 				swap_rgb(rows[cinfo.output_scanline - 1], widthd * 3);
@@ -454,22 +459,19 @@ static HBITMAP PrepareFromBufferJPG(HWND hwnd, const void* pDataBuffer, int nBuf
 		delete[] rows;
 		return hOutputImage;
 	}
-	catch (std::runtime_error e)
-	{
+	catch (std::runtime_error e) {
 		MessageBoxA(0, e.what(), "Error!", MB_ICONERROR);
 	}
 	return NULL;
 }
 
-inline void colortorgb(DWORD color, int& r, int& g, int& b)
-{
+inline void colortorgb(DWORD color, int& r, int& g, int& b) {
 	r = (color >> 16) & 0xff;
 	g = (color >> 8) & 0xff;
 	b = (color) & 0xff;
 }
 
-static void ApplyAlphaToLineWidth(unsigned char* pInputImageBuffer, unsigned char* pOutputImageBuffer, int width, DWORD Color)
-{
+static void ApplyAlphaToLineWidth(unsigned char* pInputImageBuffer, unsigned char* pOutputImageBuffer, int width, DWORD Color) {
 	int r, g, b;
 	colortorgb(Color, r, g, b);
 
@@ -481,8 +483,7 @@ static void ApplyAlphaToLineWidth(unsigned char* pInputImageBuffer, unsigned cha
 	}
 }
 
-static HBITMAP ApplyAlphaLayerToColor(HWND hwnd, HBITMAP alpha_image, DWORD Color)
-{
+static HBITMAP ApplyAlphaLayerToColor(HWND hwnd, HBITMAP alpha_image, DWORD Color) {
 	BITMAP btmInputImage;
 	::GetObject(alpha_image, sizeof(BITMAP), &btmInputImage);
 
@@ -500,14 +501,47 @@ static HBITMAP ApplyAlphaLayerToColor(HWND hwnd, HBITMAP alpha_image, DWORD Colo
 	return hOutputImage;
 }
 
-win_image& win_image::make_RGB(HWND hwnd, DWORD Color)
-{
+win_image& win_image::make_RGB(HWND hwnd, DWORD Color) {
 	hPicture = ApplyAlphaLayerToColor(hwnd, hPicture, Color);
 	return *this;
 }
 
-static HBITMAP PrepareFromBufferPNG(HWND hwnd, const void* pDataBuffer, int nBufferSize, int& widthP, int& heightP)
-{
+static HBITMAP PrepareFromBufferWEBP(HWND hwnd, const void* pDataBuffer, int nBufferSize, int& widthP, int& heightP) {
+	const int number = 8;
+
+	if (pDataBuffer == NULL || nBufferSize <= 0)
+		return NULL;
+
+	unsigned char* pBuffer = (unsigned char*)pDataBuffer;
+
+	if (!WebPGetInfo(pBuffer, nBufferSize, &widthP, &heightP)) {
+		return NULL;
+	}
+	auto pResultBuffer = WebPDecodeBGRA(pBuffer, nBufferSize, nullptr, nullptr);
+	if (!pResultBuffer) {
+		return NULL;
+	}
+
+	HBITMAP hOutputImage = (HBITMAP)CreateDIB(hwnd, widthP, heightP, 32);
+
+	if (hOutputImage == NULL)
+	{
+		WebPFree(pResultBuffer);
+		return NULL;
+	}
+
+	BITMAP btmOutputImage;
+	::GetObject(hOutputImage, sizeof(BITMAP), &btmOutputImage);
+
+	unsigned char* pImageBuffer = (unsigned char*)btmOutputImage.bmBits;
+
+	memcpy(pImageBuffer, pResultBuffer, widthP * heightP * sizeof(int32_t));
+	WebPFree(pResultBuffer);
+
+	return hOutputImage;
+}
+
+static HBITMAP PrepareFromBufferPNG(HWND hwnd, const void* pDataBuffer, int nBufferSize, int& widthP, int& heightP) {
 	const int number = 8;
 
 	if (pDataBuffer == NULL || nBufferSize <= 0)
@@ -568,8 +602,7 @@ static HBITMAP PrepareFromBufferPNG(HWND hwnd, const void* pDataBuffer, int nBuf
 
 	HBITMAP hOutputImage = (HBITMAP)CreateDIB(hwnd, width, height, nBitsCount);
 
-	if (hOutputImage == NULL)
-	{
+	if (hOutputImage == NULL) {
 		delete[] row_pointers;
 		return NULL;
 	}
@@ -583,20 +616,16 @@ static HBITMAP PrepareFromBufferPNG(HWND hwnd, const void* pDataBuffer, int nBuf
 		row_pointers[nRowNum] = pImageBuffer + nRowNum * BitmapWidth(width, nChannelRow * 8);
 
 	png_read_image(png_ptr, row_pointers);
-	for (int nY = 0; nY < btmOutputImage.bmHeight; ++nY)
-	{
-		switch (color_type)
-		{
-		case PNG_COLOR_TYPE_RGB:
-		{
-			swap_rgb(&pImageBuffer[nY * BitmapWidth(btmOutputImage.bmWidth, btmOutputImage.bmBitsPixel)], btmOutputImage.bmWidthBytes);
-			break;
-		}
-		case PNG_COLOR_TYPE_RGB_ALPHA:
-		{
-			swap_rgba(&pImageBuffer[nY * BitmapWidth(btmOutputImage.bmWidth, btmOutputImage.bmBitsPixel)], btmOutputImage.bmWidthBytes);
-			break;
-		}
+	for (int nY = 0; nY < btmOutputImage.bmHeight; ++nY) {
+		switch (color_type) {
+			case PNG_COLOR_TYPE_RGB: {
+				swap_rgb(&pImageBuffer[nY * BitmapWidth(btmOutputImage.bmWidth, btmOutputImage.bmBitsPixel)], btmOutputImage.bmWidthBytes);
+				break;
+			}
+			case PNG_COLOR_TYPE_RGB_ALPHA: {
+				swap_rgba(&pImageBuffer[nY * BitmapWidth(btmOutputImage.bmWidth, btmOutputImage.bmBitsPixel)], btmOutputImage.bmWidthBytes);
+				break;
+			}
 		}
 	}
 	delete[] row_pointers;
@@ -608,8 +637,7 @@ static HBITMAP PrepareFromBufferPNG(HWND hwnd, const void* pDataBuffer, int nBuf
 	return hOutputImage;
 }
 
-std::string LIB_IMAGE::GetDataFromResourceUtil(std::wstring ResType, int Res, HMODULE hMod)
-{
+std::string LIB_IMAGE::GetDataFromResourceUtil(std::wstring ResType, int Res, HMODULE hMod) {
 	std::string Ret;
 	HRSRC hResBin = FindResourceW(hMod, MAKEINTRESOURCEW(Res), ResType.c_str());
 	if (!hResBin)
@@ -620,8 +648,7 @@ std::string LIB_IMAGE::GetDataFromResourceUtil(std::wstring ResType, int Res, HM
 	void* pointer = LockResource(mem_block);
 	size_t SizeB = (int)SizeofResource(hMod, hResBin);
 
-	if (SizeB <= 0 || mem_block == NULL)
-	{
+	if (SizeB <= 0 || mem_block == NULL) {
 		if (mem_block != NULL)
 			FreeResource(mem_block);
 		return Ret;
@@ -640,21 +667,24 @@ static win_image makeErrorBitmap(HWND hwnd, win_image_size size,  bool show_erro
 	return win_image(nullptr, size);
 }
 
-win_image LIB_IMAGE::PrepareImageFromBufferByType(HWND hwnd, const void* pDataBuffer, int nBufferSize, win_image_type Type, bool show_error_bitmap)
-{
+win_image LIB_IMAGE::PrepareImageFromBufferByType(HWND hwnd, const void* pDataBuffer, int nBufferSize, win_image_type Type, bool show_error_bitmap) {
 	win_image_size size;
-	if (Type == win_image_type::WIN_IMAGE_JPG)
-	{
+	if (Type == win_image_type::WIN_IMAGE_JPG) {
 		HBITMAP bp = PrepareFromBufferJPG(hwnd, pDataBuffer, nBufferSize, size.size_x, size.size_y);
 		if (bp == NULL) {
 			return makeErrorBitmap(hwnd, size, show_error_bitmap);
 		}
 		else
 			return win_image(bp, size);
-	}
-	else if (Type == win_image_type::WIN_IMAGE_PNG)
-	{
+	} else if (Type == win_image_type::WIN_IMAGE_PNG) {
 		HBITMAP bp = PrepareFromBufferPNG(hwnd, pDataBuffer, nBufferSize, size.size_x, size.size_y);
+		if (bp == NULL) {
+			return makeErrorBitmap(hwnd, size, show_error_bitmap);
+		}
+		else
+			return win_image(bp, size);
+	} else if (Type == win_image_type::WIN_IMAGE_WEBP) {
+		HBITMAP bp = PrepareFromBufferWEBP(hwnd, pDataBuffer, nBufferSize, size.size_x, size.size_y);
 		if (bp == NULL) {
 			return makeErrorBitmap(hwnd, size, show_error_bitmap);
 		}
@@ -664,14 +694,12 @@ win_image LIB_IMAGE::PrepareImageFromBufferByType(HWND hwnd, const void* pDataBu
 	return makeErrorBitmap(hwnd, size, show_error_bitmap);
 }
 
-win_image LIB_IMAGE::PrepareImageFromBufferAutoType(HWND hwnd, const void* pDataBuffer, int nBufferSize, bool show_error_bitmap)
-{
+win_image LIB_IMAGE::PrepareImageFromBufferAutoType(HWND hwnd, const void* pDataBuffer, int nBufferSize, bool show_error_bitmap) {
 	win_image_size size;
 	if (pDataBuffer == NULL || nBufferSize < strlen(JPGHeader) || nBufferSize < 8) {
 		return makeErrorBitmap(hwnd, size, show_error_bitmap);
 	}
-	if (memcmp(pDataBuffer, JPGHeader, min((int)strlen(JPGHeader), nBufferSize)) == 0)
-	{
+	if (memcmp(pDataBuffer, JPGHeader, min((int)strlen(JPGHeader), nBufferSize)) == 0) {
 		HBITMAP bp = PrepareFromBufferJPG(hwnd, pDataBuffer, nBufferSize, size.size_x, size.size_y);
 		if (bp == NULL) {
 			return makeErrorBitmap(hwnd, size, show_error_bitmap);
@@ -679,8 +707,15 @@ win_image LIB_IMAGE::PrepareImageFromBufferAutoType(HWND hwnd, const void* pData
 		else
 			return win_image(bp, size);
 	}
-	else
-	{
+	else if (nBufferSize > 12 && memcmp(pDataBuffer, RIFFHeader, (int)strlen(RIFFHeader)) == 0 && memcmp((unsigned char*)pDataBuffer + 8, WEBPHeader, (int)strlen(WEBPHeader)) == 0) {
+		HBITMAP bp = PrepareFromBufferWEBP(hwnd, pDataBuffer, nBufferSize, size.size_x, size.size_y);
+		if (bp == NULL) {
+			return makeErrorBitmap(hwnd, size, show_error_bitmap);
+		}
+		else
+			return win_image(bp, size);
+	}
+	else {
 		const int number = 8;
 		unsigned char* pBuffer = (unsigned char*)pDataBuffer;
 		png_byte  sig[number] = { 0 };
@@ -696,8 +731,7 @@ win_image LIB_IMAGE::PrepareImageFromBufferAutoType(HWND hwnd, const void* pData
 	return makeErrorBitmap(hwnd, size, show_error_bitmap);
 }
 
-std::string win_image::decompress_gzip(const std::string& str)
-{
+std::string win_image::decompress_gzip(const std::string& str) {
 	z_stream zs;                        // z_stream is zlib's control structure
 	memset(&zs, 0, sizeof(zs));
 	const int MOD_GZIP_ZLIB_WINDOWSIZE = 15;
@@ -737,32 +771,38 @@ std::string win_image::decompress_gzip(const std::string& str)
 	return outstring;
 }
 
+bool LIB_IMAGE::thorvg_init() {
+	if (!thorvg_inited) {
+		thorvg_inited = tvg::Initializer::init(4, tvg::CanvasEngine::Sw) == tvg::Result::Success;
+	}
+	return thorvg_inited;
+}
+
+bool LIB_IMAGE::thorvg_destroy() {
+	if (thorvg_inited) {
+		thorvg_inited = tvg::Initializer::term(tvg::CanvasEngine::Sw) == tvg::Result::Success;
+	}
+	return !thorvg_inited;
+}
+
 win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetHeight, const void* pDataBuffer, int nBufferSize, uint32_t bgColor) {
 	win_image_size size;
 	unique_ptr<tvg::SwCanvas> canvas;
-	//Canvas Engine
-	tvg::CanvasEngine tvgEngine = tvg::CanvasEngine::Sw;
-
-	//Threads Count
-	//auto threads = thread::hardware_concurrency();
-	auto threads = 0;
 
 	//Initialize ThorVG Engine
-	if (tvg::Initializer::init(threads, tvgEngine) != tvg::Result::Success) {
+	if (!thorvg_init()) {
 		return makeErrorBitmap(hwnd, size, true);
 	}
 
 	//Create a Canvas
 	canvas = tvg::SwCanvas::gen();
 	if (!canvas) {
-		tvg::Initializer::term(tvgEngine);
 		return makeErrorBitmap(hwnd, size, true);
 	}
 
 	auto picture = tvg::Picture::gen();
-	tvg::Result result = picture->load((const char*)pDataBuffer, nBufferSize, "svg", "", false);
+	tvg::Result result = picture->load((const char*)pDataBuffer, nBufferSize, "svg");
 	if (result != tvg::Result::Success) {
-		tvg::Initializer::term(tvgEngine);
 		return makeErrorBitmap(hwnd, size, true);
 	}
 	if (targetWidth == 0 || targetHeight == 0) {
@@ -772,13 +812,39 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 		targetHeight = static_cast<uint32_t>(fh);
 	}
 	else {
-		picture->size(targetWidth, targetHeight);
+		float scale;
+		float shiftX = 0.0f, shiftY = 0.0f;
+		float w2, h2;
+		picture->size(&w2, &h2);
+
+		if (targetHeight >= targetWidth) {
+			if (w2 >= h2) {
+				scale = (float)targetWidth / w2;
+				shiftY = ((float)targetHeight - h2 * scale) * 0.5f;
+			}
+			else {
+				scale = (float)targetHeight / h2;
+				shiftX = ((float)targetWidth - w2 * scale) * 0.5f;
+			}
+		}
+		else {
+			if (w2 < h2) {
+				scale = (float)targetWidth / w2;
+				shiftY = ((float)targetHeight - h2 * scale) * 0.5f;
+			}
+			else {
+				scale = (float)targetHeight / h2;
+				shiftX = ((float)targetWidth - w2 * scale) * 0.5f;
+			}
+		}
+
+		picture->scale(scale);
+		picture->translate(shiftX, shiftY);
 	}
 	size.size_x = targetWidth;
 	size.size_y = targetHeight;
 	HBITMAP hOutputImage = (HBITMAP)CreateDIB(hwnd, targetWidth, targetHeight, 32);
 	if (hOutputImage == NULL) {
-		tvg::Initializer::term(tvgEngine);
 		return makeErrorBitmap(hwnd, size, true);
 	}
 
@@ -786,8 +852,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	::GetObject(hOutputImage, sizeof(BITMAP), &btmOutputImage);
 
 	unsigned char* pImageBuffer = (unsigned char*)btmOutputImage.bmBits;
-	if (canvas->target((uint32_t*)pImageBuffer, targetWidth, targetWidth, targetHeight, tvg::SwCanvas::ARGB8888) != tvg::Result::Success) {
-		tvg::Initializer::term(tvgEngine);
+	if (canvas->target((uint32_t*)pImageBuffer, targetWidth, targetWidth, targetHeight, tvg::ColorSpace::ARGB8888) != tvg::Result::Success) {
 		DeleteObject(hOutputImage);
 		return makeErrorBitmap(hwnd, size, true);
 	}
@@ -802,7 +867,6 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 		shape->fill(r, g, b, 255);
 
 		if (canvas->push(move(shape)) != tvg::Result::Success) {
-			tvg::Initializer::term(tvgEngine);
 			DeleteObject(hOutputImage);
 			return makeErrorBitmap(hwnd, size, true);
 		}
@@ -810,10 +874,9 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 
 	//Drawing
 	canvas->push(move(picture));
-	canvas->draw();
-	canvas->sync();
-	canvas->clear(true, false);
-	tvg::Initializer::term(tvgEngine);
+	if (canvas->draw() == tvg::Result::Success) {
+		canvas->sync();
+	}
 	return win_image(hOutputImage, size);
 }
 
@@ -831,8 +894,7 @@ win_image LIB_IMAGE::PrepareImageFromSVGResource(HWND hwnd, int Res, int padding
 	return PrepareImageFromSVG(hwnd, jj.right - jj.left - padding, jj.bottom - jj.top - padding, DataPic.data(), (int)DataPic.size(), bgColor);
 }
 
-static PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
-{
+static PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp) {
 	BITMAP bmp;
 	PBITMAPINFO pbmi;
 	WORD    cClrBits;
@@ -894,8 +956,7 @@ static PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 	return pbmi;
 }
 
-void LIB_IMAGE::CreateBMPFile(LPCTSTR pszFile, HBITMAP hBMP)
-{
+void LIB_IMAGE::CreateBMPFile(LPCTSTR pszFile, HBITMAP hBMP) {
 	HANDLE hf;                 // file handle  
 	BITMAPFILEHEADER hdr;       // bitmap file-header  
 	PBITMAPINFOHEADER pbih;     // bitmap info-header  
@@ -961,4 +1022,48 @@ void LIB_IMAGE::CreateBMPFile(LPCTSTR pszFile, HBITMAP hBMP)
 
 	// Free memory.  
 	GlobalFree((HGLOBAL)lpBits);
+}
+
+inline void LIB_IMAGE::swap_rgb(unsigned char* rgb_buffer, int len) {
+	unsigned char tmp = 0;
+	int i = 0;
+
+	const __m128i swapRB = _mm_setr_epi8(2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 15);
+
+	while (len >= 16) {
+		__m128i rgba = _mm_loadu_si128((const __m128i*) rgb_buffer);
+		__m128i bgra = _mm_shuffle_epi8(rgba, swapRB);
+		_mm_storeu_si128((__m128i*) rgb_buffer, bgra);
+
+		rgb_buffer += 15;
+		len -= 15;
+	}
+
+	for (; i < len; i += 3) {
+		tmp = *(rgb_buffer + i);
+		*(rgb_buffer + i) = *(rgb_buffer + i + 2);
+		*(rgb_buffer + i + 2) = tmp;
+	}
+}
+
+inline void LIB_IMAGE::swap_rgba(unsigned char* rgba_buffer, int len) {
+	unsigned char tmp = 0;
+	int i = 0;
+
+	const __m128i swapRB = _mm_setr_epi8(2, 1, 0, 3, 6, 5, 4, 7, 10, 9, 8, 11, 14, 13, 12, 15);
+
+	while (len >= 16) {
+		__m128i rgba = _mm_loadu_si128((const __m128i*) rgba_buffer);
+		__m128i bgra = _mm_shuffle_epi8(rgba, swapRB);
+		_mm_storeu_si128((__m128i*) rgba_buffer, bgra);
+
+		rgba_buffer += 16;
+		len -= 16;
+	}
+
+	for (; i < len; i += 4) {
+		tmp = *(rgba_buffer + i);
+		*(rgba_buffer + i) = *(rgba_buffer + i + 2);
+		*(rgba_buffer + i + 2) = tmp;
+	}
 }

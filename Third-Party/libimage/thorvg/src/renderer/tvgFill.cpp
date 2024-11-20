@@ -134,18 +134,14 @@ FillSpread Fill::spread() const noexcept
 
 Result Fill::transform(const Matrix& m) noexcept
 {
-    if (!pImpl->transform) {
-        pImpl->transform = static_cast<Matrix*>(malloc(sizeof(Matrix)));
-    }
-    *pImpl->transform = m;
+    pImpl->transform = m;
     return Result::Success;
 }
 
 
-Matrix Fill::transform() const noexcept
+Matrix& Fill::transform() const noexcept
 {
-    if (pImpl->transform) return *pImpl->transform;
-    return {1, 0, 0, 0, 1, 0, 0, 0, 1};
+    return pImpl->transform;
 }
 
 
@@ -155,15 +151,8 @@ Fill* Fill::duplicate() const noexcept
 }
 
 
-uint32_t Fill::identifier() const noexcept
-{
-    return pImpl->id;
-}
-
-
 RadialGradient::RadialGradient():pImpl(new Impl())
 {
-    Fill::pImpl->id = TVG_CLASS_ID_RADIAL;
     Fill::pImpl->method(new FillDup<RadialGradient::Impl>(pImpl));
 }
 
@@ -174,17 +163,20 @@ RadialGradient::~RadialGradient()
 }
 
 
-Result RadialGradient::radial(float cx, float cy, float r) noexcept
+Result RadialGradient::radial(float cx, float cy, float r, float fx, float fy, float fr) noexcept
 {
-    return pImpl->radial(cx, cy, r, cx, cy, 0.0f);
+    return pImpl->radial(cx, cy, r, fx, fy, fr);
 }
 
 
-Result RadialGradient::radial(float* cx, float* cy, float* r) const noexcept
+Result RadialGradient::radial(float* cx, float* cy, float* r, float* fx, float* fy, float* fr) const noexcept
 {
     if (cx) *cx = pImpl->cx;
     if (cy) *cy = pImpl->cy;
     if (r) *r = pImpl->r;
+    if (fx) *fx = pImpl->fx;
+    if (fy) *fy = pImpl->fy;
+    if (fr) *fr = pImpl->fr;
 
     return Result::Success;
 }
@@ -196,15 +188,14 @@ unique_ptr<RadialGradient> RadialGradient::gen() noexcept
 }
 
 
-uint32_t RadialGradient::identifier() noexcept
+Type RadialGradient::type() const noexcept
 {
-    return TVG_CLASS_ID_RADIAL;
+    return Type::RadialGradient;
 }
 
 
 LinearGradient::LinearGradient():pImpl(new Impl())
 {
-    Fill::pImpl->id = TVG_CLASS_ID_LINEAR;
     Fill::pImpl->method(new FillDup<LinearGradient::Impl>(pImpl));
 }
 
@@ -243,8 +234,7 @@ unique_ptr<LinearGradient> LinearGradient::gen() noexcept
 }
 
 
-uint32_t LinearGradient::identifier() noexcept
+Type LinearGradient::type() const noexcept
 {
-    return TVG_CLASS_ID_LINEAR;
+    return Type::LinearGradient;
 }
-

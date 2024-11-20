@@ -16,27 +16,6 @@
     <Filter Include="Файлы исходного кода\zlib">
       <UniqueIdentifier>{3a533a1c-88d9-4062-843d-b846b48a3a7d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\rlottie">
-      <UniqueIdentifier>{5b3c6561-4ce3-49ff-b42b-36c81ef34d94}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\rlottie\src">
-      <UniqueIdentifier>{6cd1df83-b445-4ca2-ba39-cd6376720750}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\rlottie\src\lottie">
-      <UniqueIdentifier>{57539945-4383-416f-8586-cd7a139cd5c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\rlottie\src\vector">
-      <UniqueIdentifier>{7817fa96-d41f-4ab3-a501-f11ee02fb64c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\rlottie\src\vector\freetype">
-      <UniqueIdentifier>{b8d6d3f9-bd4e-4869-89e2-e7201aaa6b97}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\rlottie\src\vector\stb">
-      <UniqueIdentifier>{18dd94f6-8dab-40ee-a4aa-61f4c866ae78}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\rlottie\inc">
-      <UniqueIdentifier>{dbb30465-5171-46a4-836d-1426c98e2bd2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы исходного кода\thorvg">
       <UniqueIdentifier>{9ed503e4-b337-4f4f-909a-09bf781ec377}</UniqueIdentifier>
     </Filter>
@@ -60,6 +39,33 @@
     </Filter>
     <Filter Include="Файлы исходного кода\thorvg\common">
       <UniqueIdentifier>{914ad0d7-3154-4e63-832b-6b643bf6bea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\external_png">
+      <UniqueIdentifier>{2be8e13f-3f00-48e5-881f-6e719692de18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\lottie">
+      <UniqueIdentifier>{1bff548a-d4c8-4a88-b282-f13b2b552ac4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\jpg">
+      <UniqueIdentifier>{68d83dc8-960f-451d-b6fd-9f8643f73425}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\external_webp">
+      <UniqueIdentifier>{a9155b7e-8571-4820-9e4d-a740ede578a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp">
+      <UniqueIdentifier>{6823ce5e-3905-4db7-88e7-96af1314bc1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp\dec">
+      <UniqueIdentifier>{4329f5d6-41d5-40ad-a2af-0b11a9977752}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp\dsp">
+      <UniqueIdentifier>{2f952236-bf7d-44e3-a4ad-7ad9557bf656}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp\utils">
+      <UniqueIdentifier>{30702ed2-64c3-423a-999c-fba469abc18a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp\webp">
+      <UniqueIdentifier>{7a0aeaf0-d1a0-455f-bc0c-339342dd4d3c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -300,99 +306,6 @@
     <ClCompile Include="jpeg\jerror.cpp">
       <Filter>Файлы исходного кода\jpeg</Filter>
     </ClCompile>
-    <ClCompile Include="rlottie\src\lottie\lottieanimation.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\lottie\lottieitem.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\lottie\lottieitem_capi.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\lottie\lottiekeypath.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\lottie\lottieloader.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\lottie\lottiemodel.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\lottie\lottieparser.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vbezier.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vbitmap.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vbrush.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vdasher.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vdebug.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vdrawable.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vdrawhelper.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vdrawhelper_common.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vdrawhelper_sse2.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\velapsedtimer.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vimageloader.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vinterpolator.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vmatrix.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vpainter.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vpath.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vpathmesure.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vraster.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vrect.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\vrle.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\varenaalloc.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\freetype\v_ft_raster.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\freetype\v_ft_stroker.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\freetype\v_ft_math.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="rlottie\src\vector\stb\stb_image.cpp">
-      <Filter>Файлы исходного кода\rlottie\src\vector\stb</Filter>
-    </ClCompile>
     <ClCompile Include="thorvg\src\loaders\svg\tvgSvgCssStyle.cpp">
       <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
     </ClCompile>
@@ -507,8 +420,170 @@
     <ClCompile Include="thorvg\src\renderer\tvgText.cpp">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\common\tvgLines.cpp">
-      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwPostEffect.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\external_png\tvgPngLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_png</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieAnimation.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieBuilder.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieExpressions.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieInterpolator.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieModel.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieModifier.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieParser.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieParserHandler.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\jpg\tvgJpgd.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\jpg</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\jpg\tvgJpgLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\jpg</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\external_webp\tvgWebpLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_webp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\alpha_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\buffer_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\frame_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\idec_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\io_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\quant_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\tree_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\vp8l_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\vp8_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\webp_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\alpha_processing.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\alpha_processing_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\cpu.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\dec.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\dec_clip_tables.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\dec_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\filters.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\filters_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\lossless.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\lossless_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\rescaler.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\rescaler_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\ssim.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\ssim_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\upsampling.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\upsampling_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\yuv.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\yuv_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\bit_reader_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\bit_writer_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\color_cache_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\filters_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\huffman_encode_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\huffman_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\palette.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\quant_levels_dec_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\quant_levels_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\random_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\rescaler_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\thread_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -604,120 +679,6 @@
     </ClInclude>
     <ClInclude Include="zlib\crc32.h">
       <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\lottie\lottiefiltermodel.h">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\lottie\lottieitem.h">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\lottie\lottiekeypath.h">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\lottie\lottiemodel.h">
-      <Filter>Файлы исходного кода\rlottie\src\lottie</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\varenaalloc.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vbezier.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vbitmap.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vbrush.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vcowptr.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vdasher.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vdebug.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vdrawable.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vdrawhelper.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\velapsedtimer.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vglobal.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vimageloader.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vinterpolator.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vline.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vmatrix.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vpainter.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vpath.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vpathmesure.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vpoint.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vraster.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vrect.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vrle.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vsharedptr.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vstackallocator.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\vtaskqueue.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\freetype\v_ft_math.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\freetype\v_ft_raster.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\freetype\v_ft_stroker.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\freetype\v_ft_types.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector\freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\stb\stb_image.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector\stb</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\src\vector\config.h">
-      <Filter>Файлы исходного кода\rlottie\src\vector</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\inc\rlottie.h">
-      <Filter>Файлы исходного кода\rlottie\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\inc\rlottiecommon.h">
-      <Filter>Файлы исходного кода\rlottie\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="rlottie\inc\colorreplace.h">
-      <Filter>Файлы исходного кода\rlottie\inc</Filter>
     </ClInclude>
     <ClInclude Include="thorvg\inc\thorvg.h">
       <Filter>Файлы исходного кода\thorvg\inc</Filter>
@@ -821,17 +782,173 @@
     <ClInclude Include="thorvg\src\renderer\tvgCanvas.h">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\common\tvgFormat.h">
-      <Filter>Файлы исходного кода\thorvg\common</Filter>
-    </ClInclude>
     <ClInclude Include="thorvg\src\common\tvgInlist.h">
       <Filter>Файлы исходного кода\thorvg\common</Filter>
     </ClInclude>
     <ClInclude Include="thorvg\src\renderer\tvgText.h">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\common\tvgLines.h">
-      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    <ClInclude Include="thorvg\src\renderer\tvgBinaryDesc.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\external_png\tvgPngLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_png</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\thorvg_lottie.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieBuilder.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieCommon.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieExpressions.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieInterpolator.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieModel.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieModifier.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieParser.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieParserHandler.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieProperty.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieRenderPooler.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\jpg\tvgJpgd.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\jpg</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\jpg\tvgJpgLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\jpg</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\external_webp\tvgWebpLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\alphai_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\common_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\vp8i_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\vp8li_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\vp8_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\webpi_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\common_sse2.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\cpu.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\dsp.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\lossless.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\lossless_common.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\neon.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\quant.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\yuv.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\bit_reader_inl_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\bit_reader_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\bit_writer_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\color_cache_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\endian_inl_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\filters_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\huffman_encode_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\huffman_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\palette.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\quant_levels_dec_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\quant_levels_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\random_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\rescaler_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\thread_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\decode.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\demux.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\encode.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\format_constants.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\mux.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\mux_types.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\types.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\inc\colorreplace.h">
+      <Filter>Файлы исходного кода\thorvg\inc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

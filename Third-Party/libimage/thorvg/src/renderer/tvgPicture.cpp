@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+#include "tvgPaint.h"
 #include "tvgPicture.h"
 
 /************************************************************************/
@@ -62,10 +63,8 @@ bool Picture::Impl::needComposition(uint8_t opacity)
 
     //Composition test
     const Paint* target;
-    auto method = picture->composite(&target);
-    if (!target || method == tvg::CompositeMethod::ClipPath) return false;
-    if (target->pImpl->opacity == 255 || target->pImpl->opacity == 0) return false;
-
+    picture->mask(&target);
+    if (!target || target->pImpl->opacity == 255 || target->pImpl->opacity == 0) return false;
     return true;
 }
 
@@ -73,12 +72,14 @@ bool Picture::Impl::needComposition(uint8_t opacity)
 bool Picture::Impl::render(RenderMethod* renderer)
 {
     bool ret = false;
+    renderer->blend(PP(picture)->blendMethod);
+
     if (surface) return renderer->renderImage(rd);
     else if (paint) {
-        Compositor* cmp = nullptr;
+        RenderCompositor* cmp = nullptr;
         if (needComp) {
             cmp = renderer->target(bounds(renderer), renderer->colorSpace());
-            renderer->beginComposite(cmp, CompositeMethod::None, 255);
+            renderer->beginComposite(cmp, MaskMethod::None, 255);
         }
         ret = paint->pImpl->render(renderer);
         if (cmp) renderer->endComposite(cmp);
@@ -101,21 +102,6 @@ RenderRegion Picture::Impl::bounds(RenderMethod* renderer)
     if (rd) return renderer->region(rd);
     if (paint) return paint->pImpl->bounds(renderer);
     return {0, 0, 0, 0};
-}
-
-
-RenderTransform Picture::Impl::resizeTransform(const RenderTransform* pTransform)
-{
-    //Overriding Transformation by the desired image size
-    auto sx = w / loader->w;
-    auto sy = h / loader->h;
-    auto scale = sx < sy ? sx : sy;
-
-    RenderTransform tmp;
-    tmp.m = {scale, 0, 0, 0, scale, 0, 0, 0, 1};
-
-    if (!pTransform) return tmp;
-    else return RenderTransform(pTransform, &tmp);
 }
 
 
@@ -147,7 +133,6 @@ Result Picture::Impl::load(ImageLoader* loader)
 
 Picture::Picture() : pImpl(new Impl(this))
 {
-    Paint::pImpl->id = TVG_CLASS_ID_PICTURE;
 }
 
 
@@ -163,33 +148,33 @@ unique_ptr<Picture> Picture::gen() noexcept
 }
 
 
-uint32_t Picture::identifier() noexcept
+Type Picture::type() const noexcept
 {
-    return TVG_CLASS_ID_PICTURE;
+    return Type::Picture;
 }
 
 
-Result Picture::load(const std::string& path) noexcept
+Result Picture::load(const char* filename, std::unique_ptr<ColorReplace> colorReplacement) noexcept
 {
-    if (path.empty()) return Result::InvalidArguments;
+    if (!filename) return Result::InvalidArguments;
 
-    return pImpl->load(path);
+    return pImpl->load(filename, std::move(colorReplacement));
 }
 
 
-Result Picture::load(const char* data, uint32_t size, const string& mimeType, const string& rpath, bool copy) noexcept
+Result Picture::load(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, std::unique_ptr<ColorReplace> colorReplacement) noexcept
 {
     if (!data || size <= 0) return Result::InvalidArguments;
 
-    return pImpl->load(data, size, mimeType, rpath, copy);
+    return pImpl->load(data, size, mimeType, rpath, copy, std::move(colorReplacement));
 }
 
 
-Result Picture::load(uint32_t* data, uint32_t w, uint32_t h, bool premultiplied, bool copy) noexcept
+Result Picture::load(uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy) noexcept
 {
-    if (!data || w <= 0 || h <= 0) return Result::InvalidArguments;
+    if (!data || w <= 0 || h <= 0 || cs == ColorSpace::Unknown)  return Result::InvalidArguments;
 
-    return pImpl->load(data, w, h, premultiplied, copy);
+    return pImpl->load(data, w, h, cs, copy);
 }
 
 
@@ -209,18 +194,24 @@ Result Picture::size(float* w, float* h) const noexcept
 }
 
 
-Result Picture::mesh(const Polygon* triangles, uint32_t triangleCnt) noexcept
+const Paint* Picture::paint(uint32_t id) noexcept
 {
-    if (!triangles && triangleCnt > 0) return Result::InvalidArguments;
-    if (triangles && triangleCnt == 0) return Result::InvalidArguments;
+    struct Value
+    {
+        uint32_t id;
+        const Paint* ret;
+    } value = {id, nullptr};
 
-    pImpl->mesh(triangles, triangleCnt);
-    return Result::Success;
-}
+    auto cb = [](const tvg::Paint* paint, void* data) -> bool
+    {
+        auto p = static_cast<Value*>(data);
+        if (p->id == paint->id) {
+            p->ret = paint;
+            return false;
+        }
+        return true;
+    };
 
-
-uint32_t Picture::mesh(const Polygon** triangles) const noexcept
-{
-    if (triangles) *triangles = pImpl->rm.triangles;
-    return pImpl->rm.triangleCnt;
+    tvg::Accessor::gen()->set(this, cb, &value);
+    return value.ret;
 }

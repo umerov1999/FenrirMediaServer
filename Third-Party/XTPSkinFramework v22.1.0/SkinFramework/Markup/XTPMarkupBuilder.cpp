@@ -1000,8 +1000,8 @@ void CXTPMarkupBuilder::LoadMarkupObjectTextContent(CXTPMarkupObject* pObject,
 			{
 				lpszContent = NormalizeXmlContentText(lpszContent, textBuffer,
 													  XTPToIntChecked(nodeText.length()),
-													  pContent->previousSibling,
-													  pContent->nextSibling);
+													  pContent->previousSibling != nullptr,
+													  pContent->nextSibling != nullptr);
 			}
 		}
 

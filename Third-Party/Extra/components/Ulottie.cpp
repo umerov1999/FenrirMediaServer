@@ -3,26 +3,32 @@
 #include <vector>
 #include <string>
 #include "afxdialogex.h"
-#include "rlottie.h"
+#include "libimage.h"
 #include "lz4.h"
 using namespace std;
-using namespace rlottie;
 
 IMPLEMENT_DYNAMIC(Ulottie, CStatic)
 #define TIMER_PLAY_ANIM 1015
 
-Ulottie::Ulottie()
-{
+Ulottie::Ulottie() {
+	canvas_pushed = false;
 	curFrame = -1;
-	curColor = UINT32_MAX;
 	backColor = URGB(0, 0, 0);
 	animWidth = 0;
 	animHeight = 0;
 	bytesPerLine = 0;
 	THREAD_ACCESS_REGISTER_POINTERS(Async, &anim);
+	inited = LIB_IMAGE::thorvg_init();
 }
 
-void Ulottie::load_animation(URGB background, const void* json_data, size_t size, internal::ColorReplace* colorReplace) {
+Ulottie::~Ulottie() {
+	canvas_pushed = false;
+}
+
+void Ulottie::load_animation(URGB background, const void* json_data, size_t size, std::unique_ptr<tvg::ColorReplace> colorReplacement) {
+	if (!inited) {
+		return;
+	}
 	THREAD_ACCESS_LOCK(Async, &anim);
 	KillTimer(TIMER_PLAY_ANIM);
 	setAnimationColor(background.r, background.g, background.b);
@@ -46,33 +52,14 @@ void Ulottie::load_animation(URGB background, const void* json_data, size_t size
 		memcpy(data.data(), json_data, size);
 	}
 
-	setAnimation(data, colorReplace);
+	if (!setAnimation(data, std::move(colorReplacement))) {
+		THREAD_ACCESS_UNLOCK(Async, &anim);
+		return;
+	}
 	curFrame = -1;
 	THREAD_ACCESS_UNLOCK(Async, &anim);
 	SetTimer(TIMER_PLAY_ANIM, 10, NULL);
 }
-
-void Ulottie::update_color_replacement(rlottie::internal::ColorReplace* colorReplace) {
-	THREAD_ACCESS_LOCK(Async, &anim);
-	if (!isAnimNULL() && anim->colorMap != nullptr) {
-		*anim->colorMap = *colorReplace;
-		delete colorReplace;
-		anim->resetCurrentFrame();
-	}
-	THREAD_ACCESS_UNLOCK(Async, &anim);
-}
-
-internal::ColorReplace* Ulottie::parseReplacement(const vector<int>& colors, bool useMoveColor) {
-	if (colors.empty() || colors.size() % 2 != 0) {
-		return NULL;
-	}
-	auto ret = new internal::ColorReplace(useMoveColor);
-	for (int32_t a = 0; a < (int32_t)(colors.size() / 2); a++) {
-		ret->colorMap[colors[a * 2]] = colors[a * 2 + 1];
-	}
-	return ret;
-}
-
 
 BEGIN_MESSAGE_MAP(Ulottie, CStatic)
 	ON_WM_PAINT()
@@ -80,16 +67,67 @@ BEGIN_MESSAGE_MAP(Ulottie, CStatic)
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
-void Ulottie::setAnimation(const string &json_data, internal::ColorReplace* colorReplace)
-{
-	anim = Animation::loadFromData(json_data.c_str(), colorReplace);
-	anim->size(animWidth, animHeight);
+bool Ulottie::setAnimation(const string &json_data, std::unique_ptr<tvg::ColorReplace> colorReplacement) {
+	canvas_pushed = false;
+	if (canvas) {
+		canvas->clear(true, true);
+	}
+	anim = tvg::Animation::gen();
+	canvas = nullptr;
+	if (anim->picture()->load(json_data.c_str(), (uint32_t)json_data.size(), "lottie", "", true, std::move(colorReplacement)) != tvg::Result::Success) {
+		anim = nullptr;
+		return false;
+	}
+
+	CRect rect;
+	GetClientRect(&rect);
+	animWidth = rect.Width();
+	animHeight = rect.Height();
+
+	canvas = tvg::SwCanvas::gen();
+	if (!canvas) {
+		anim = nullptr;
+		return false;
+	}
+	
+	float scale;
+	float shiftX = 0.0f, shiftY = 0.0f;
+	float w2, h2;
+	anim->picture()->size(&w2, &h2);
+
+	if (animHeight >= animWidth) {
+		if (w2 >= h2) {
+			scale = (float)animWidth / w2;
+			shiftY = ((float)animHeight - h2 * scale) * 0.5f;
+		}
+		else {
+			scale = (float)animHeight / h2;
+			shiftX = ((float)animWidth - w2 * scale) * 0.5f;
+		}
+	}
+	else {
+		if (w2 < h2) {
+			scale = (float)animWidth / w2;
+			shiftY = ((float)animHeight - h2 * scale) * 0.5f;
+		}
+		else {
+			scale = (float)animHeight / h2;
+			shiftX = ((float)animWidth - w2 * scale) * 0.5f;
+		}
+	}
+
+	anim->picture()->scale(scale);
+	anim->picture()->translate(shiftX, shiftY);
+
 	bytesPerLine = animWidth * sizeof(uint32_t);
 	buffer.resize(bytesPerLine * animHeight);
+	if (canvas->target((uint32_t*)buffer.data(), (uint32_t)animWidth, (uint32_t)animWidth, (uint32_t)animHeight, tvg::ColorSpace::ARGB8888) != tvg::Result::Success) {
+		return false;
+	}
+	return true;
 }
 
-void Ulottie::OnTimer(UINT_PTR uid)
-{
+void Ulottie::OnTimer(UINT_PTR uid) {
 	if (uid == TIMER_PLAY_ANIM) {
 		THREAD_ACCESS_LOCK(Async, &anim);
 		if (isAnimNULL()) {
@@ -101,68 +139,64 @@ void Ulottie::OnTimer(UINT_PTR uid)
 	}
 }
 
-void Ulottie::renderRLottieAnimation(uint32_t frameNum)
-{
-	Surface surface = Surface(buffer.data(), animWidth, animHeight, bytesPerLine);
-	anim->renderSync(frameNum, surface, true);
-	for (size_t i = 0; i < animHeight; i++) {
-		for (size_t j = 0; j < animWidth; ++j)
-		{
-			uint32_t* v = buffer.data() + i * animWidth + j;
-			if (*v == 0) *v = curColor;
-		}
+void Ulottie::renderRLottieAnimation(uint32_t frameNum) {
+	anim->frame((float)frameNum);
+
+	if (canvas_pushed) {
+		canvas->clear(false, true);
+		canvas->update();
+	}
+	else {
+		canvas->push(tvg::cast<tvg::Paint>(anim->picture()));
+		canvas_pushed = true;
+	}
+	if (canvas->draw() == tvg::Result::Success) {
+		canvas->sync();
 	}
 }
 
-void Ulottie::setAnimationColor(int r, int g, int b)
-{
-	curColor = ((255 << 16) * r) + ((255 << 8) * g) + 255 * b;
+void Ulottie::setAnimationColor(int r, int g, int b) {
 	backColor = URGB(r, g, b);
 }
 
-size_t Ulottie::getTotalFrame()
-{
-	return anim->totalFrame();
+int Ulottie::getTotalFrame() {
+	return (int)anim->totalFrame();
 }
 
-bool Ulottie::isAnimNULL()
-{
+bool Ulottie::isAnimNULL() {
 	return anim == NULL;
 }
 
-void Ulottie::CreateBitmap()
-{
+void Ulottie::CreateBitmap() {
 	DeleteObject(target_anim.m_hObject);
 	target_anim.CreateBitmap((int)animWidth, (int)animHeight, 1, 32, buffer.data());
 }
 
-void Ulottie::renderAnimation(UINT frameNum)
-{
+void Ulottie::renderAnimation(UINT frameNum) {
 	if (isAnimNULL()) return;
 
-	curFrame = frameNum % getTotalFrame();
+	curFrame = frameNum % std::max(getTotalFrame(), 1);
 
 	renderRLottieAnimation(curFrame);
 	CreateBitmap();
 	InvalidateRect(FALSE);
 }
 
-BOOL Ulottie::OnEraseBkgnd(CDC* pMsg)
-{
+BOOL Ulottie::OnEraseBkgnd(CDC* pMsg) {
 	return TRUE;
 }
 
-void Ulottie::Clear()
-{
+void Ulottie::Clear() {
 	THREAD_ACCESS_LOCK(Async, &anim);
 	KillTimer(TIMER_PLAY_ANIM);
 	anim = nullptr;
+	canvas_pushed = false;
+	canvas = nullptr;
 	InvalidateRect(FALSE);
 	THREAD_ACCESS_UNLOCK(Async, &anim);
 }
 
-void Ulottie::OnPaint()
-{
+void Ulottie::OnPaint() {
 	CPaintDC pDC(this);
 	pDC.SetStretchBltMode(COLORONCOLOR);
 

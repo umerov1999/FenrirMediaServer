@@ -495,7 +495,7 @@ bool SendHTTTPAnswerWithTree(const CLIENT_CONNECTION& client, RequestParserStruc
 		dst.resize(cBuffSize);
 		auto dstp = const_cast<void*>(static_cast<const void*>(dst.c_str()));
 		auto srcp = static_cast<const void*>(src.c_str());
-		size_t const cSize = ZSTD_compress(dstp, cBuffSize, srcp, src.size(), ZSTD_btultra2);
+		size_t const cSize = ZSTD_compress(dstp, cBuffSize, srcp, src.size(), ZSTD_fast);
 		auto code = ZSTD_isError(cSize);
 		if (!code) {
 			dst.resize(cSize);

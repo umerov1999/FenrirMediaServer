@@ -20,34 +20,6 @@
  * SOFTWARE.
  */
 
-/*
- * Copyright notice for the EFL:
-
- * Copyright (C) EFL developers (see AUTHORS)
-
- * All rights reserved.
-
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
-
- *   1. Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer in the
- *      documentation and/or other materials provided with the distribution.
-
- * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-
 #define _USE_MATH_DEFINES       //Math Constants are not defined in Standard C/C++.
 
 #include <cstring>
@@ -126,7 +98,7 @@ void _pathAppendArcTo(Array<PathCommand>* cmds, Array<Point>* pts, Point* cur, P
     rx = fabsf(rx);
     ry = fabsf(ry);
 
-    angle = mathDeg2Rad(angle);
+    angle = deg2rad(angle);
     cosPhi = cosf(angle);
     sinPhi = sinf(angle);
     dx2 = (sx - x) / 2.0f;
@@ -190,14 +162,14 @@ void _pathAppendArcTo(Array<PathCommand>* cmds, Array<Point>* pts, Point* cur, P
     cx += (sx + x) / 2.0f;
     cy += (sy + y) / 2.0f;
 
-    //Sstep 4 (F6.5.4)
+    //Step 4 (F6.5.4)
     //We dont' use arccos (as per w3c doc), see
     //http://www.euclideanspace.com/maths/algebra/vectors/angleBetween/index.htm
     //Note: atan2 (0.0, 1.0) == 0.0
-    at = atan2(((y1p - cyp) / ry), ((x1p - cxp) / rx));
+    at = tvg::atan2(((y1p - cyp) / ry), ((x1p - cxp) / rx));
     theta1 = (at < 0.0f) ? 2.0f * MATH_PI + at : at;
 
-    nat = atan2(((-y1p - cyp) / ry), ((-x1p - cxp) / rx));
+    nat = tvg::atan2(((-y1p - cyp) / ry), ((-x1p - cxp) / rx));
     deltaTheta = (nat < at) ? 2.0f * MATH_PI - at + nat : nat - at;
 
     if (sweep) {
@@ -469,12 +441,12 @@ static bool _processCommand(Array<PathCommand>* cmds, Array<Point>* pts, char cm
         }
         case 'a':
         case 'A': {
-            if (mathZero(arr[0]) || mathZero(arr[1])) {
+            if (tvg::zero(arr[0]) || tvg::zero(arr[1])) {
                 Point p = {arr[5], arr[6]};
                 cmds->push(PathCommand::LineTo);
                 pts->push(p);
                 *cur = {arr[5], arr[6]};
-            } else if (!mathEqual(cur->x, arr[5]) || !mathEqual(cur->y, arr[6])) {
+            } else if (!tvg::equal(cur->x, arr[5]) || !tvg::equal(cur->y, arr[6])) {
                 _pathAppendArcTo(cmds, pts, cur, curCtl, arr[5], arr[6], fabsf(arr[0]), fabsf(arr[1]), arr[2], arr[3], arr[4]);
                 *cur = *curCtl = {arr[5], arr[6]};
                 *isQuadratic = false;

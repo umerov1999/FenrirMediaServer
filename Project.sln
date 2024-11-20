@@ -61,6 +61,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SkinBuilder", "Third-Party\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UStyleViewer", "Third-Party\XTPSkinFramework v22.1.0\UStyleViewer\UStyleViewer.vcxproj", "{EE5416F9-F299-4C01-BFCC-99C098F160B0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LottieViewer", "Common\LottieViewer\LottieViewer.vcxproj", "{E66D9C57-B92C-4322-931B-5859A456622F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|x64 = Release|x64
@@ -116,6 +118,8 @@ Global
 		{49D09CF9-44B0-407F-A5BA-581B3E4EE0E3}.Release|x64.Build.0 = Release|x64
 		{EE5416F9-F299-4C01-BFCC-99C098F160B0}.Release|x64.ActiveCfg = Release|x64
 		{EE5416F9-F299-4C01-BFCC-99C098F160B0}.Release|x64.Build.0 = Release|x64
+		{E66D9C57-B92C-4322-931B-5859A456622F}.Release|x64.ActiveCfg = Release|x64
+		{E66D9C57-B92C-4322-931B-5859A456622F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,6 +151,7 @@ Global
 		{44399486-2259-2815-3336-338422327369} = {6325BA07-393F-49FA-956A-6F481BF4D33B}
 		{49D09CF9-44B0-407F-A5BA-581B3E4EE0E3} = {6325BA07-393F-49FA-956A-6F481BF4D33B}
 		{EE5416F9-F299-4C01-BFCC-99C098F160B0} = {6325BA07-393F-49FA-956A-6F481BF4D33B}
+		{E66D9C57-B92C-4322-931B-5859A456622F} = {904B4F87-0655-41A9-8E8C-C8970ADD3EAB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF495E62-7883-4E5D-95A3-71DA35677C85}
