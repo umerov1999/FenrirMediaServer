@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,16 @@
 #ifndef _TVG_PAINT_H_
 #define _TVG_PAINT_H_
 
+#include "tvgCommon.h"
 #include "tvgRender.h"
 #include "tvgMath.h"
 
+
+#define PAINT(A) ((Paint::Impl*)A->pImpl)
+
 namespace tvg
 {
-    enum ContextFlag : uint8_t {Invalid = 0, FastTrack = 1};
+    enum ContextFlag : uint8_t {Default = 0, FastTrack = 1};
 
     struct Iterator
     {
@@ -48,12 +52,14 @@ namespace tvg
     struct Paint::Impl
     {
         Paint* paint = nullptr;
+        Paint* parent = nullptr;
         Mask* maskData = nullptr;
         Paint* clipper = nullptr;
         RenderMethod* renderer = nullptr;
+        RenderData rd = nullptr;
+
         struct {
             Matrix m;                 //input matrix
-            Matrix cm;                //multipled parents matrix
             float degree;             //rotation degree
             float scale;              //scale factor
             bool overriding;          //user transform?
@@ -68,111 +74,211 @@ namespace tvg
                 m.e31 = 0.0f;
                 m.e32 = 0.0f;
                 m.e33 = 1.0f;
-                tvg::scale(&m, scale, scale);
+                tvg::scale(&m, {scale, scale});
                 tvg::rotate(&m, degree);
             }
         } tr;
+        RenderUpdateFlag renderFlag = RenderUpdateFlag::None;
         BlendMethod blendMethod;
-        uint8_t renderFlag;
         uint8_t ctxFlag;
         uint8_t opacity;
-        uint8_t refCnt = 0;                              //reference count
+        uint8_t refCnt = 0;       //reference count
 
         Impl(Paint* pnt) : paint(pnt)
         {
+            pnt->pImpl = this;
             reset();
         }
 
-        ~Impl()
+        virtual ~Impl()
         {
             if (maskData) {
-                if (P(maskData->target)->unref() == 0) delete(maskData->target);
-                free(maskData);
+                PAINT(maskData->target)->unref();
+                tvg::free(maskData);
             }
-            if (clipper && P(clipper)->unref() == 0) delete(clipper);
-            if (renderer && (renderer->unref() == 0)) delete(renderer);
+
+            if (clipper) PAINT(clipper)->unref();
+
+            if (renderer) {
+                if (rd) renderer->dispose(rd);
+                if (renderer->unref() == 0) delete(renderer);
+            }
         }
 
         uint8_t ref()
         {
-            if (refCnt == 255) TVGERR("RENDERER", "Corrupted reference count!");
-            return ++refCnt;
+            if (refCnt == UINT8_MAX) TVGERR("RENDERER", "Reference Count Overflow!");
+            else ++refCnt;
+            return refCnt;
         }
 
-        uint8_t unref()
+        uint8_t unref(bool free = true)
         {
-            if (refCnt == 0) TVGERR("RENDERER", "Corrupted reference count!");
-            return --refCnt;
+            parent = nullptr;
+            return unrefx(free);
+        }
+
+        uint8_t unrefx(bool free)
+        {
+            if (refCnt > 0) --refCnt;
+            else TVGERR("RENDERER", "Corrupted Reference Count!");
+
+            if (free && refCnt == 0) {
+                delete(paint);
+                return 0;
+            }
+
+            return refCnt;
+        }
+
+        void mark(RenderUpdateFlag flag)
+        {
+            renderFlag |= flag;
         }
 
         bool transform(const Matrix& m)
         {
             if (&tr.m != &m) tr.m = m;
             tr.overriding = true;
-            renderFlag |= RenderUpdateFlag::Transform;
+            mark(RenderUpdateFlag::Transform);
 
             return true;
         }
 
-        Matrix& transform(bool origin = false)
+        Matrix& transform()
         {
             //update transform
             if (renderFlag & RenderUpdateFlag::Transform) tr.update();
-            if (origin) return tr.cm;
             return tr.m;
         }
 
-        void clip(Paint* clp)
+        Matrix ptransform()
         {
-            if (this->clipper) {
-                P(this->clipper)->unref();
-                if (this->clipper != clp && P(this->clipper)->refCnt == 0) {
-                    delete(this->clipper);
-                }
+            auto p = this;
+            auto tm = identity();
+            while (p->parent) {
+                p = PAINT(p->parent);
+                tm = p->transform() * tm;
             }
-            this->clipper = clp;
-            if (!clp) return;
-
-            P(clipper)->ref();
+            return tm;
         }
 
-        bool mask(Paint* source, Paint* target, MaskMethod method)
+        Result clip(Paint* clp)
         {
-            //Invalid case
-            if ((!target && method != MaskMethod::None) || (target && method == MaskMethod::None)) return false;
+            if (clp && PAINT(clp)->parent) return Result::InsufficientCondition;
+            if (clipper) PAINT(clipper)->unref(clipper != clp);
+            clipper = clp;
+            if (clp) {
+                clp->ref();
+                PAINT(clp)->parent = parent;
+            }
+            return Result::Success;
+        }
+
+        Result mask(Paint* target, MaskMethod method)
+        {
+            if (target && PAINT(target)->parent) return Result::InsufficientCondition;
 
             if (maskData) {
-                P(maskData->target)->unref();
-                if ((maskData->target != target) && P(maskData->target)->refCnt == 0) {
-                    delete(maskData->target);
-                }
-                //Reset scenario
-                if (!target && method == MaskMethod::None) {
-                    free(maskData);
-                    maskData = nullptr;
-                    return true;
-                }
-            } else {
-                if (!target && method == MaskMethod::None) return true;
-                maskData = static_cast<Mask*>(malloc(sizeof(Mask)));
+                PAINT(maskData->target)->unref(maskData->target != target);
+                tvg::free(maskData);
+                maskData = nullptr;
             }
-            P(target)->ref();
+
+            if (!target && method == MaskMethod::None) return Result::Success;
+
+            maskData = tvg::malloc<Mask*>(sizeof(Mask));
+            target->ref();
             maskData->target = target;
-            maskData->source = source;
+            PAINT(target)->parent = parent;
+            maskData->source = paint;
             maskData->method = method;
+            return Result::Success;
+        }
+
+        MaskMethod mask(const Paint** target) const
+        {
+            if (maskData) {
+                if (target) *target = maskData->target;
+                return maskData->method;
+            } else {
+                if (target) *target = nullptr;
+                return MaskMethod::None;
+            }
+        }
+
+        void reset()
+        {
+            if (clipper) {
+                PAINT(clipper)->unref();
+                clipper = nullptr;
+            }
+
+            if (maskData) {
+                PAINT(maskData->target)->unref();
+                tvg::free(maskData);
+                maskData = nullptr;
+            }
+
+            tvg::identity(&tr.m);
+            tr.degree = 0.0f;
+            tr.scale = 1.0f;
+            tr.overriding = false;
+
+            parent = nullptr;
+            blendMethod = BlendMethod::Normal;
+            renderFlag = RenderUpdateFlag::None;
+            ctxFlag = ContextFlag::Default;
+            opacity = 255;
+            paint->id = 0;
+        }
+
+        bool rotate(float degree)
+        {
+            if (tr.overriding) return false;
+            if (tvg::equal(degree, tr.degree)) return true;
+            tr.degree = degree;
+            mark(RenderUpdateFlag::Transform);
+
             return true;
+        }
+
+        bool scale(float factor)
+        {
+            if (tr.overriding) return false;
+            if (tvg::equal(factor, tr.scale)) return true;
+            tr.scale = factor;
+            mark(RenderUpdateFlag::Transform);
+
+            return true;
+        }
+
+        bool translate(float x, float y)
+        {
+            if (tr.overriding) return false;
+            if (tvg::equal(x, tr.m.e13) && tvg::equal(y, tr.m.e23)) return true;
+            tr.m.e13 = x;
+            tr.m.e23 = y;
+            mark(RenderUpdateFlag::Transform);
+
+            return true;
+        }
+
+        void blend(BlendMethod method)
+        {
+            if (blendMethod != method) {
+                blendMethod = method;
+                mark(RenderUpdateFlag::Blend);
+            }
         }
 
         RenderRegion bounds(RenderMethod* renderer) const;
         Iterator* iterator();
-        bool rotate(float degree);
-        bool scale(float factor);
-        bool translate(float x, float y);
-        bool bounds(float* x, float* y, float* w, float* h, bool transformed, bool stroking, bool origin = false);
+        Result bounds(float* x, float* y, float* w, float* h, Matrix* pm, bool stroking);
+        Result bounds(Point* pt4, Matrix* pm, bool obb, bool stroking);
         RenderData update(RenderMethod* renderer, const Matrix& pm, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper = false);
         bool render(RenderMethod* renderer);
         Paint* duplicate(Paint* ret = nullptr);
-        void reset();
     };
 }
 

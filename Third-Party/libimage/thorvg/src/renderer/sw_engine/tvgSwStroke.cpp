@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,6 @@
  * SOFTWARE.
  */
 
-#include <string.h>
-#include <math.h>
 #include "tvgSwCommon.h"
 
 /************************************************************************/
@@ -58,8 +56,8 @@ static void _growBorder(SwStrokeBorder* border, uint32_t newPts)
     while (maxCur < maxNew)
         maxCur += (maxCur >> 1) + 16;
     //OPTIMIZE: use mempool!
-    border->pts = static_cast<SwPoint*>(realloc(border->pts, maxCur * sizeof(SwPoint)));
-    border->tags = static_cast<uint8_t*>(realloc(border->tags, maxCur * sizeof(uint8_t)));
+    border->pts = tvg::realloc<SwPoint*>(border->pts, maxCur * sizeof(SwPoint));
+    border->tags = tvg::realloc<uint8_t*>(border->tags, maxCur * sizeof(uint8_t));
     border->maxPts = maxCur;
 }
 
@@ -374,8 +372,12 @@ static void _lineTo(SwStroke& stroke, const SwPoint& to)
 {
     auto delta = to - stroke.center;
 
-    //a zero-length lineto is a no-op; avoid creating a spurious corner
-    if (delta.zero()) return;
+    //a zero-length lineto is a no-op
+    if (delta.zero()) {
+        //round and square caps are expected to be drawn as a dot even for zero-length lines
+        if (stroke.firstPt && stroke.cap != StrokeCap::Butt) _firstSubPath(stroke, 0, 0); 
+        return; 
+    }
 
     /* The lineLength is used to determine the intersection of strokes outlines.
        The scale needs to be reverted since the stroke width has not been scaled.
@@ -454,6 +456,9 @@ static void _cubicTo(SwStroke& stroke, const SwPoint& ctrl1, const SwPoint& ctrl
         //ignoreable size
         if (valid < 0 && arc == bezStack) {
             stroke.center = to;
+
+            //round and square caps are expected to be drawn as a dot even for zero-length lines
+            if (stroke.firstPt && stroke.cap != StrokeCap::Butt) _firstSubPath(stroke, 0, 0);
             return;
         }
 
@@ -590,14 +595,10 @@ static void _addCap(SwStroke& stroke, SwFixed angle, int32_t side)
         delta += delta2 + stroke.center;
 
         _borderLineTo(border, delta, false);
-
     } else if (stroke.cap == StrokeCap::Round) {
-
         stroke.angleIn = angle;
         stroke.angleOut = angle + SW_ANGLE_PI;
         _arcTo(stroke, side);
-        return;
-
     } else {  //Butt
         auto rotate = SIDE_TO_ROTATE(side);
         auto border = stroke.borders + side;
@@ -803,15 +804,15 @@ void strokeFree(SwStroke* stroke)
     if (!stroke) return;
 
     //free borders
-    if (stroke->borders[0].pts) free(stroke->borders[0].pts);
-    if (stroke->borders[0].tags) free(stroke->borders[0].tags);
-    if (stroke->borders[1].pts) free(stroke->borders[1].pts);
-    if (stroke->borders[1].tags) free(stroke->borders[1].tags);
+    if (stroke->borders[0].pts) tvg::free(stroke->borders[0].pts);
+    if (stroke->borders[0].tags) tvg::free(stroke->borders[0].tags);
+    if (stroke->borders[1].pts) tvg::free(stroke->borders[1].pts);
+    if (stroke->borders[1].tags) tvg::free(stroke->borders[1].tags);
 
     fillFree(stroke->fill);
     stroke->fill = nullptr;
 
-    free(stroke);
+    tvg::free(stroke);
 }
 
 
@@ -838,9 +839,10 @@ bool strokeParseOutline(SwStroke* stroke, const SwOutline& outline)
     uint32_t first = 0;
     uint32_t i = 0;
 
-    for (auto cntr = outline.cntrs.begin(); cntr < outline.cntrs.end(); ++cntr, ++i) {
-        auto last = *cntr;           //index of last point in contour
+    ARRAY_FOREACH(p, outline.cntrs) {
+        auto last = *p;           //index of last point in contour
         auto limit = outline.pts.data + last;
+        ++i;
 
         //Skip empty points
         if (last <= first) {
@@ -857,7 +859,7 @@ bool strokeParseOutline(SwStroke* stroke, const SwOutline& outline)
         if (type == SW_CURVE_TYPE_CUBIC) return false;
         ++types;
 
-        auto closed =  outline.closed.data ? outline.closed.data[i]: false;
+        auto closed =  outline.closed.data ? outline.closed.data[i - 1]: false;
 
         _beginSubPath(*stroke, start, closed);
 

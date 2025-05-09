@@ -1,4 +1,8 @@
 ﻿#include <iostream>
+#if defined(__linux__)
+#include <chrono>
+#include <thread>
+#endif
 #include "curl/curl.h"
 #include "do_curl.h"
 using namespace std;
@@ -86,7 +90,11 @@ int DoCurlDownload(const string &Link, const string &UserAgent, string& ReciveDa
 		int retry = 0;
 		while (res != CURLE_OK && retry < 3) {
 			wrt.reset();
+#if defined(__linux__)
+			this_thread::sleep_for(chrono::milliseconds(2000));
+#else
 			Sleep(2000);
+#endif
 			res = curl_easy_perform(curl_handle);
 			retry++;
 		}
@@ -130,13 +138,6 @@ int DoCurlCapcha(const string& Link, const string& UserAgent, string& ReciveData
 		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 2);
 		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
 		CURLcode res = curl_easy_perform(curl_handle);
-		//		int retry = 0;
-		//		while (res != CURLE_OK && retry < 3) {
-		//			wrt.reset();
-		//			Sleep(2000);
-		//			res = curl_easy_perform(curl_handle);
-		//			retry++;
-		//		}
 		long long Code = 0;
 		curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &Code);
 		curl_easy_cleanup(curl_handle);
@@ -170,7 +171,11 @@ int DoCurlGet(const string& Link, const string& UserAgent, string& ReciveData, b
 		int retry = 0;
 		while (res != CURLE_OK && retry < 3) {
 			wrt.reset();
+#if defined(__linux__)
+			this_thread::sleep_for(chrono::milliseconds(2000));
+#else
 			Sleep(2000);
+#endif
 			res = curl_easy_perform(curl_handle);
 			retry++;
 		}
@@ -212,7 +217,11 @@ int DoCurlGetWithContentType(const string& Link, const string& UserAgent, string
 		int retry = 0;
 		while (res != CURLE_OK && retry < 3) {
 			wrt.reset();
+#if defined(__linux__)
+			this_thread::sleep_for(chrono::milliseconds(2000));
+#else
 			Sleep(2000);
+#endif
 			res = curl_easy_perform(curl_handle);
 			retry++;
 		}
@@ -260,7 +269,11 @@ int DoCurlPost(const string& Link, const string& PostParams, const string& UserA
 		int retry = 0;
 		while (res != CURLE_OK && retry < 3) {
 			wrt.reset();
+#if defined(__linux__)
+			this_thread::sleep_for(chrono::milliseconds(2000));
+#else
 			Sleep(2000);
+#endif
 			res = curl_easy_perform(curl_handle);
 			retry++;
 		}
@@ -294,7 +307,9 @@ int DoCurlPostJsonAuth(const string& Link, const string& PostJson, const string&
 		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0);
 
-		curl_easy_setopt(curl_handle, CURLOPT_USERPWD, (login + ":" + password).c_str());
+		if (!login.empty()) {
+			curl_easy_setopt(curl_handle, CURLOPT_USERPWD, (login + ":" + password).c_str());
+		}
 		
 		curl_easy_setopt(curl_handle, CURLOPT_URL, Link.c_str());
 		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UserAgent.c_str());
@@ -312,12 +327,14 @@ int DoCurlPostJsonAuth(const string& Link, const string& PostJson, const string&
 		int retry = 0;
 		while (res != CURLE_OK && retry < 3) {
 			wrt.reset();
+#if defined(__linux__)
+			this_thread::sleep_for(chrono::milliseconds(2000));
+#else
 			Sleep(2000);
+#endif
 			res = curl_easy_perform(curl_handle);
 			retry++;
 		}
-		long long Code = 0;
-		curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &Code);
 		curl_easy_cleanup(curl_handle);
 		if (headers != NULL) {
 			curl_slist_free_all(headers);
@@ -417,7 +434,11 @@ int DoCurlGetAndReturnUrl(const string& Link, const string& UserAgent, string& R
 		int retry = 0;
 		while (res != CURLE_OK && retry < 3) {
 			wrt.reset();
+#if defined(__linux__)
+			this_thread::sleep_for(chrono::milliseconds(2000));
+#else
 			Sleep(2000);
+#endif
 			res = curl_easy_perform(curl_handle);
 			retry++;
 		}
@@ -482,7 +503,11 @@ int DoCurlPostJsonAuthCustomRequest(const string& Link, const string& PostJson, 
 		int retry = 0;
 		while (res != CURLE_OK && retry < 3) {
 			wrt.reset();
+#if defined(__linux__)
+			this_thread::sleep_for(chrono::milliseconds(2000));
+#else
 			Sleep(2000);
+#endif
 			res = curl_easy_perform(curl_handle);
 			retry++;
 		}

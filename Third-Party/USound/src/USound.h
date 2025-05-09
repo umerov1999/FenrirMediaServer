@@ -3,29 +3,22 @@
 #include <iostream>
 #include <vector>
 #include <list>
-#include <Windows.h>
 
-namespace SoundMap
-{
+namespace SoundMap {
 	template<typename KEY, typename VALUE>
-	class Pair
-	{
+	class Pair {
 	public:
-		Pair(const KEY& key, const VALUE& value)
-		{
+		Pair(const KEY& key, const VALUE& value) {
 			this->key = key;
 			this->value = value;
 		}
-		const KEY& get_key() const
-		{
+		const KEY& get_key() const {
 			return key;
 		}
-		const VALUE& get_value() const
-		{
+		const VALUE& get_value() const {
 			return value;
 		}
-		VALUE& get_value()
-		{
+		VALUE& get_value() {
 			return value;
 		}
 	private:
@@ -34,16 +27,13 @@ namespace SoundMap
 	};
 
 	template<typename KEY, typename VALUE>
-	class Map
-	{
+	class Map {
 	public:
 		Map() {}
-		Map(const Map<KEY, VALUE>& v)
-		{
+		Map(const Map<KEY, VALUE>& v) {
 			List = v.List;
 		}
-		VALUE operator[](const KEY& v) const
-		{
+		VALUE operator[](const KEY& v) const {
 			for (auto& i : List)
 			{
 				if (i.get_key() == v)
@@ -51,93 +41,72 @@ namespace SoundMap
 			}
 			throw std::runtime_error("ERROR: Map Key not found!");
 		}
-		VALUE& operator[](const KEY& v)
-		{
-			for (auto& i : List)
-			{
+		VALUE& operator[](const KEY& v) {
+			for (auto& i : List) {
 				if (i.get_key() == v)
 					return i.get_value();
 			}
 			List.push_back(Pair<KEY, VALUE>(v, VALUE()));
 			return List.back().get_value();
 		}
-		bool exist(const KEY& v) const
-		{
-			for (auto& i : List)
-			{
+		bool exist(const KEY& v) const {
+			for (auto& i : List) {
 				if (i.get_key() == v)
 					return true;
 			}
 			return false;
 		}
-		void erase(const KEY& v)
-		{
-			for (auto i = List.begin(); i != List.end(); i++)
-			{
-				if ((*i).get_key() == v)
-				{
+		void erase(const KEY& v) {
+			for (auto i = List.begin(); i != List.end(); i++) {
+				if ((*i).get_key() == v) {
 					List.erase(i);
 					return;
 				}
 			}
 		}
-		VALUE at(const KEY& v) const
-		{
-			for (auto& i : List)
-			{
+		VALUE at(const KEY& v) const {
+			for (auto& i : List) {
 				if (i.get_key() == v)
 					return i.get_value();
 			}
 			throw std::runtime_error("ERROR: Map Key not found!");
 		}
-		VALUE& at(const KEY& v)
-		{
-			for (auto& i : List)
-			{
+		VALUE& at(const KEY& v) {
+			for (auto& i : List) {
 				if (i.get_key() == v)
 					return i.get_value();
 			}
 			throw std::runtime_error("ERROR: Map Key not found!");
 		}
-		void operator=(const Map<KEY, VALUE>& v)
-		{
+		void operator=(const Map<KEY, VALUE>& v) {
 			List = v.List;
 		}
-		size_t size() const
-		{
+		size_t size() const {
 			return List.size();
 		}
-		auto begin() const
-		{
+		auto begin() const {
 			return List.begin();
 		}
-		auto end() const
-		{
+		auto end() const {
 			return List.end();
 		}
-		auto begin()
-		{
+		auto begin() {
 			return List.begin();
 		}
-		auto end()
-		{
+		auto end() {
 			return List.end();
 		}
-		void push_front(const KEY& key, const VALUE& value)
-		{
+		void push_front(const KEY& key, const VALUE& value) {
 			List.push_front(Pair<KEY, VALUE>(key, value));
 		}
-		std::list<Pair<KEY, VALUE>>& operator()()
-		{
+		std::list<Pair<KEY, VALUE>>& operator()() {
 			return List;
 		}
 		template<typename SORTFNC>
-		void sort(SORTFNC fnc)
-		{
+		void sort(SORTFNC fnc) {
 			List.sort(fnc);
 		}
-		void clear()
-		{
+		void clear() {
 			List.clear();
 		}
 
@@ -146,8 +115,7 @@ namespace SoundMap
 	};
 }
 
-class USound
-{
+class USound {
 public:
 	~USound();
 	void RegisterResourceMP3Sounds(const std::string& data);
@@ -156,6 +124,6 @@ public:
 	void PlayMemorySound(bool Loop, bool NoStop) const;
 	void Stop();
 private:
-	SoundMap::Map<int, LPVOID>ResourceSounds;
+	SoundMap::Map<int, void*>ResourceSounds;
 	std::vector<uint8_t> MemoryTrack;
 };

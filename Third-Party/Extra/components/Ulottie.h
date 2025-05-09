@@ -16,7 +16,7 @@ public:
 	~Ulottie();
 
 	afx_msg void Clear();
-	afx_msg void load_animation(URGB background, const void* json_data, size_t size, std::unique_ptr<tvg::ColorReplace> colorReplacement = nullptr);
+	afx_msg void load_animation(URGB background, const void* json_data, size_t size, tvg::ColorReplace* colorReplacement = nullptr);
 protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnPaint();
@@ -25,7 +25,7 @@ protected:
 	afx_msg void renderAnimation(UINT frameNum);
 	afx_msg void OnTimer(UINT_PTR uid);
 
-	afx_msg bool setAnimation(const std::string& json_data, std::unique_ptr<tvg::ColorReplace> colorReplacement);
+	afx_msg bool setAnimation(const std::string& json_data, tvg::ColorReplace *colorReplacement);
 	afx_msg void renderRLottieAnimation(uint32_t frameNum);
 	afx_msg void setAnimationColor(int r, int g, int b);
 	afx_msg int getTotalFrame();
@@ -33,8 +33,8 @@ protected:
 private:
 	bool inited;
 	bool canvas_pushed;
-	std::unique_ptr<tvg::Animation> anim;
-	std::unique_ptr<tvg::SwCanvas> canvas;
+	tvg::Animation *anim;
+	tvg::SwCanvas *canvas;
 
 	std::vector<uint32_t> buffer;
 	size_t animWidth, animHeight;

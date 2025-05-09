@@ -19,13 +19,24 @@ Ulottie::Ulottie() {
 	bytesPerLine = 0;
 	THREAD_ACCESS_REGISTER_POINTERS(Async, &anim);
 	inited = LIB_IMAGE::thorvg_init();
+
+	canvas = nullptr;
+	anim = nullptr;
 }
 
 Ulottie::~Ulottie() {
 	canvas_pushed = false;
+	if (canvas) {
+		delete canvas;
+		canvas = nullptr;
+	}
+	if (anim) {
+		delete anim;
+		anim = nullptr;
+	}
 }
 
-void Ulottie::load_animation(URGB background, const void* json_data, size_t size, std::unique_ptr<tvg::ColorReplace> colorReplacement) {
+void Ulottie::load_animation(URGB background, const void* json_data, size_t size, tvg::ColorReplace* colorReplacement) {
 	if (!inited) {
 		return;
 	}
@@ -52,7 +63,7 @@ void Ulottie::load_animation(URGB background, const void* json_data, size_t size
 		memcpy(data.data(), json_data, size);
 	}
 
-	if (!setAnimation(data, std::move(colorReplacement))) {
+	if (!setAnimation(data, colorReplacement)) {
 		THREAD_ACCESS_UNLOCK(Async, &anim);
 		return;
 	}
@@ -67,14 +78,19 @@ BEGIN_MESSAGE_MAP(Ulottie, CStatic)
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
-bool Ulottie::setAnimation(const string &json_data, std::unique_ptr<tvg::ColorReplace> colorReplacement) {
+bool Ulottie::setAnimation(const string &json_data, tvg::ColorReplace* colorReplacement) {
 	canvas_pushed = false;
 	if (canvas) {
-		canvas->clear(true, true);
+		delete canvas;
+		canvas = nullptr;
+	}
+	if (anim) {
+		delete anim;
+		anim = nullptr;
 	}
 	anim = tvg::Animation::gen();
-	canvas = nullptr;
-	if (anim->picture()->load(json_data.c_str(), (uint32_t)json_data.size(), "lottie", "", true, std::move(colorReplacement)) != tvg::Result::Success) {
+	if (anim->picture()->load(json_data.c_str(), (uint32_t)json_data.size(), "lottie", nullptr, true, colorReplacement) != tvg::Result::Success) {
+		delete anim;
 		anim = nullptr;
 		return false;
 	}
@@ -86,6 +102,7 @@ bool Ulottie::setAnimation(const string &json_data, std::unique_ptr<tvg::ColorRe
 
 	canvas = tvg::SwCanvas::gen();
 	if (!canvas) {
+		delete anim;
 		anim = nullptr;
 		return false;
 	}
@@ -122,6 +139,10 @@ bool Ulottie::setAnimation(const string &json_data, std::unique_ptr<tvg::ColorRe
 	bytesPerLine = animWidth * sizeof(uint32_t);
 	buffer.resize(bytesPerLine * animHeight);
 	if (canvas->target((uint32_t*)buffer.data(), (uint32_t)animWidth, (uint32_t)animWidth, (uint32_t)animHeight, tvg::ColorSpace::ARGB8888) != tvg::Result::Success) {
+		delete canvas;
+		canvas = nullptr;
+		delete anim;
+		anim = nullptr;
 		return false;
 	}
 	return true;
@@ -143,14 +164,13 @@ void Ulottie::renderRLottieAnimation(uint32_t frameNum) {
 	anim->frame((float)frameNum);
 
 	if (canvas_pushed) {
-		canvas->clear(false, true);
 		canvas->update();
 	}
 	else {
-		canvas->push(tvg::cast<tvg::Paint>(anim->picture()));
+		canvas->push(anim->picture());
 		canvas_pushed = true;
 	}
-	if (canvas->draw() == tvg::Result::Success) {
+	if (canvas->draw(true) == tvg::Result::Success) {
 		canvas->sync();
 	}
 }
@@ -189,9 +209,15 @@ BOOL Ulottie::OnEraseBkgnd(CDC* pMsg) {
 void Ulottie::Clear() {
 	THREAD_ACCESS_LOCK(Async, &anim);
 	KillTimer(TIMER_PLAY_ANIM);
-	anim = nullptr;
 	canvas_pushed = false;
-	canvas = nullptr;
+	if (canvas) {
+		delete canvas;
+		canvas = nullptr;
+	}
+	if (anim) {
+		delete anim;
+		anim = nullptr;
+	}
 	InvalidateRect(FALSE);
 	THREAD_ACCESS_UNLOCK(Async, &anim);
 }

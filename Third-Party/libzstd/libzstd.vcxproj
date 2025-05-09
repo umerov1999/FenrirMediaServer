@@ -38,6 +38,7 @@
     <ClInclude Include="compress\zstd_ldm.h" />
     <ClInclude Include="compress\zstd_ldm_geartab.h" />
     <ClInclude Include="compress\zstd_opt.h" />
+    <ClInclude Include="compress\zstd_preSplit.h" />
     <ClInclude Include="decompress\zstd_ddict.h" />
     <ClInclude Include="decompress\zstd_decompress_block.h" />
     <ClInclude Include="decompress\zstd_decompress_internal.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="compress\zstd_lazy.c" />
     <ClCompile Include="compress\zstd_ldm.c" />
     <ClCompile Include="compress\zstd_opt.c" />
+    <ClCompile Include="compress\zstd_preSplit.c" />
     <ClCompile Include="decompress\huf_decompress.c" />
     <ClCompile Include="decompress\zstd_ddict.c" />
     <ClCompile Include="decompress\zstd_decompress.c" />

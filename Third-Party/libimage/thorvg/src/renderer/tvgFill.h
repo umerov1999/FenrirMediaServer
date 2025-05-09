@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,84 +23,161 @@
 #ifndef _TVG_FILL_H_
 #define _TVG_FILL_H_
 
-#include <cstdlib>
-#include <cstring>
 #include "tvgCommon.h"
+#include "tvgMath.h"
 
-template<typename T>
-struct DuplicateMethod
-{
-    virtual ~DuplicateMethod() {}
-    virtual T* duplicate() = 0;
-};
+#define LINEAR(A) static_cast<LinearGradientImpl*>(A)
+#define CONST_LINEAR(A) static_cast<const LinearGradientImpl*>(A)
 
-template<class T>
-struct FillDup : DuplicateMethod<Fill>
-{
-    T* inst = nullptr;
-
-    FillDup(T* _inst) : inst(_inst) {}
-    ~FillDup() {}
-
-    Fill* duplicate() override
-    {
-        return inst->duplicate();
-    }
-};
+#define RADIAL(A) static_cast<RadialGradientImpl*>(A)
+#define CONST_RADIAL(A) static_cast<const RadialGradientImpl*>(A)
 
 struct Fill::Impl
 {
     ColorStop* colorStops = nullptr;
-    Matrix transform = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-    uint32_t cnt = 0;
-    DuplicateMethod<Fill>* dup = nullptr;
-    FillSpread spread;
+    Matrix transform = tvg::identity();
+    uint16_t cnt = 0;
+    FillSpread spread = FillSpread::Pad;
 
-    ~Impl()
+    virtual ~Impl()
     {
-        delete(dup);
-        free(colorStops);
+        tvg::free(colorStops);
     }
 
-    void method(DuplicateMethod<Fill>* dup)
+    void copy(const Fill::Impl& dup)
     {
-        this->dup = dup;
+        cnt = dup.cnt;
+        spread = dup.spread;
+        colorStops = tvg::malloc<ColorStop*>(sizeof(ColorStop) * dup.cnt);
+        if (dup.cnt > 0) memcpy(colorStops, dup.colorStops, sizeof(ColorStop) * dup.cnt);
+        transform = dup.transform;
     }
 
-    Fill* duplicate()
+    Result update(const ColorStop* colorStops, uint32_t cnt)
     {
-        auto ret = dup->duplicate();
+        if ((!colorStops && cnt > 0) || (colorStops && cnt == 0)) return Result::InvalidArguments;
 
-        ret->pImpl->cnt = cnt;
-        ret->pImpl->spread = spread;
-        ret->pImpl->colorStops = static_cast<ColorStop*>(malloc(sizeof(ColorStop) * cnt));
-        memcpy(ret->pImpl->colorStops, colorStops, sizeof(ColorStop) * cnt);
-        ret->pImpl->transform = transform;
+        if (cnt == 0) {
+            if (this->colorStops) {
+                tvg::free(this->colorStops);
+                this->colorStops = nullptr;
+                this->cnt = 0;
+            }
+            return Result::Success;
+        }
 
-        return ret;
+        if (cnt != this->cnt) {
+            this->colorStops = tvg::realloc<ColorStop*>(this->colorStops, cnt * sizeof(ColorStop));
+        }
+
+        this->cnt = cnt;
+        memcpy(this->colorStops, colorStops, cnt * sizeof(ColorStop));
+
+        return Result::Success;
     }
 };
 
 
-struct RadialGradient::Impl
+struct RadialGradientImpl : RadialGradient
 {
+    Fill::Impl impl;
+
     float cx = 0.0f, cy = 0.0f;
     float fx = 0.0f, fy = 0.0f;
     float r = 0.0f, fr = 0.0f;
 
-    Fill* duplicate();
-    Result radial(float cx, float cy, float r, float fx, float fy, float fr);
+    RadialGradientImpl()
+    {
+        Fill::pImpl = &impl;
+    }
+
+    Fill* duplicate() const
+    {
+        auto ret = RadialGradient::gen();
+        RADIAL(ret)->impl.copy(this->impl);
+        RADIAL(ret)->cx = cx;
+        RADIAL(ret)->cy = cy;
+        RADIAL(ret)->r = r;
+        RADIAL(ret)->fx = fx;
+        RADIAL(ret)->fy = fy;
+        RADIAL(ret)->fr = fr;
+
+        return ret;
+    }
+
+    Result radial(float cx, float cy, float r, float fx, float fy, float fr)
+    {
+        if (r < 0 || fr < 0) return Result::InvalidArguments;
+
+        this->cx = cx;
+        this->cy = cy;
+        this->r = r;
+        this->fx = fx;
+        this->fy = fy;
+        this->fr = fr;
+
+        return Result::Success;
+    }
+
+    Result radial(float* cx, float* cy, float* r, float* fx, float* fy, float* fr) const
+    {
+        if (cx) *cx = this->cx;
+        if (cy) *cy = this->cy;
+        if (r) *r = this->r;
+        if (fx) *fx = this->fx;
+        if (fy) *fy = this->fy;
+        if (fr) *fr = this->fr;
+
+        return Result::Success;
+    }
 };
 
 
-struct LinearGradient::Impl
+struct LinearGradientImpl :  LinearGradient
 {
+    Fill::Impl impl;
+
     float x1 = 0.0f;
     float y1 = 0.0f;
     float x2 = 0.0f;
     float y2 = 0.0f;
 
-    Fill* duplicate();
+    LinearGradientImpl()
+    {
+        Fill::pImpl = &impl;
+    }
+
+    Fill* duplicate() const
+    {
+        auto ret = LinearGradient::gen();
+        LINEAR(ret)->impl.copy(this->impl);
+        LINEAR(ret)->x1 = x1;
+        LINEAR(ret)->y1 = y1;
+        LINEAR(ret)->x2 = x2;
+        LINEAR(ret)->y2 = y2;
+
+        return ret;
+    }
+
+    Result linear(float x1, float y1, float x2, float y2) noexcept
+    {
+        this->x1 = x1;
+        this->y1 = y1;
+        this->x2 = x2;
+        this->y2 = y2;
+
+        return Result::Success;
+    }
+
+    Result linear(float* x1, float* y1, float* x2, float* y2) const noexcept
+    {
+        if (x1) *x1 = this->x1;
+        if (x2) *x2 = this->x2;
+        if (y1) *y1 = this->y1;
+        if (y2) *y2 = this->y2;
+
+        return Result::Success;
+    }
 };
 
 

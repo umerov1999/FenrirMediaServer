@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-#include <cstring>
 #include "tvgSvgUtil.h"
 
 /************************************************************************/
@@ -46,7 +45,7 @@ size_t svgUtilURLDecode(const char *src, char** dst)
     auto length = strlen(src);
     if (length == 0) return 0;
 
-    char* decoded = (char*)malloc(sizeof(char) * length + 1);
+    char* decoded = tvg::malloc<char*>(sizeof(char) * length + 1);
 
     char a, b;
     int idx =0;

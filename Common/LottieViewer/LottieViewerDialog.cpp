@@ -144,8 +144,11 @@ BOOL LottieViewerDialog::PreTranslateMessage(MSG* pMsg)
 						fread(buf, 1, sz, fl);
 						fclose(fl);
 
-						Anim.load_animation(URGB(0, 0, 0), buf, sz, tvg::ColorReplace().setUseCustomColorsLottieOffset().registerCustomColorLottie(RGB(255, 129, 46), RGB(68, 138, 255))._ptr());
-						Anim.load_animation(URGB(0, 0, 0), buf, sz, tvg::ColorReplace().registerCustomColorLottie(RGB(0, 0, 0), RGB(68, 138, 255)).registerCustomColorLottie(RGB(119, 119, 119), RGB(30, 136, 229))._ptr());
+						//auto customColors = tvg::ColorReplace().setUseCustomColorsLottieOffset().registerCustomColorLottie(RGB(255, 129, 46), RGB(68, 138, 255));
+						//Anim.load_animation(URGB(0, 0, 0), buf, sz, &customColors);
+
+						auto customColors = tvg::ColorReplace().registerCustomColorLottie(RGB(0, 0, 0), RGB(68, 138, 255)).registerCustomColorLottie(RGB(119, 119, 119), RGB(30, 136, 229));
+						Anim.load_animation(URGB(0, 0, 0), buf, sz, &customColors);
 						delete[] buf;
 					}
 				}

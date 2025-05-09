@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,44 +20,15 @@
  * SOFTWARE.
  */
 
-#include <cstdarg>
 #include "tvgScene.h"
 
-/************************************************************************/
-/* Internal Class Implementation                                        */
-/************************************************************************/
 
-Result Scene::Impl::resetEffects()
+Scene::Scene() = default;
+
+
+Scene* Scene::gen() noexcept
 {
-    if (effects) {
-        for (auto e = effects->begin(); e < effects->end(); ++e) {
-            delete(*e);
-        }
-        delete(effects);
-        effects = nullptr;
-    }
-    return Result::Success;
-}
-
-
-/************************************************************************/
-/* External Class Implementation                                        */
-/************************************************************************/
-
-Scene::Scene() : pImpl(new Impl(this))
-{
-}
-
-
-Scene::~Scene()
-{
-    delete(pImpl);
-}
-
-
-unique_ptr<Scene> Scene::gen() noexcept
-{
-    return unique_ptr<Scene>(new Scene);
+    return new SceneImpl;
 }
 
 
@@ -67,57 +38,29 @@ Type Scene::type() const noexcept
 }
 
 
-Result Scene::push(unique_ptr<Paint> paint) noexcept
+Result Scene::push(Paint* target, Paint* at) noexcept
 {
-    auto p = paint.release();
-    if (!p) return Result::MemoryCorruption;
-    PP(p)->ref();
-    pImpl->paints.push_back(p);
-
-    return Result::Success;
+    return SCENE(this)->insert(target, at);
 }
 
 
-Result Scene::clear(bool free) noexcept
+Result Scene::remove(Paint* paint) noexcept
 {
-    pImpl->clear(free);
-
-    return Result::Success;
+    if (paint) return SCENE(this)->remove(paint);
+    else return SCENE(this)->clearPaints();
 }
 
 
-list<Paint*>& Scene::paints() noexcept
+const list<Paint*>& Scene::paints() const noexcept
 {
-    return pImpl->paints;
+    return CONST_SCENE(this)->paints;
 }
 
 
 Result Scene::push(SceneEffect effect, ...) noexcept
 {
-    if (effect == SceneEffect::ClearAll) return pImpl->resetEffects();
-
-    if (!pImpl->effects) pImpl->effects = new Array<RenderEffect*>;
-
     va_list args;
     va_start(args, effect);
 
-    RenderEffect* re = nullptr;
-
-    switch (effect) {
-        case SceneEffect::GaussianBlur: {
-            re = RenderEffectGaussianBlur::gen(args);
-            break;
-        }
-        case SceneEffect::DropShadow: {
-            re = RenderEffectDropShadow::gen(args);
-            break;
-        }
-        default: break;
-    }
-
-    if (!re) return Result::InvalidArguments;
-
-    pImpl->effects->push(re);
-
-    return Result::Success;
+    return SCENE(this)->push(effect, args);
 }

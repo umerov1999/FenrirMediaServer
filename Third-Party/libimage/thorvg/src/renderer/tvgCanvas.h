@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,19 +25,18 @@
 
 #include "tvgPaint.h"
 
-
 enum Status : uint8_t {Synced = 0, Updating, Drawing, Damaged};
 
 struct Canvas::Impl
 {
-    list<Paint*> paints;
+    Scene* scene;
     RenderMethod* renderer;
     RenderRegion vport = {0, 0, INT32_MAX, INT32_MAX};
     Status status = Status::Synced;
 
-    Impl(RenderMethod* pRenderer) : renderer(pRenderer)
+    Impl() : scene(Scene::gen())
     {
-        renderer->ref();
+        scene->ref();
     }
 
     ~Impl()
@@ -45,80 +44,62 @@ struct Canvas::Impl
         //make it sure any deferred jobs
         renderer->sync();
 
-        clearPaints();
-
+        scene->unref();
         if (renderer->unref() == 0) delete(renderer);
     }
 
-    void clearPaints()
-    {
-        for (auto paint : paints) {
-            if (P(paint)->unref() == 0) delete(paint);
-        }
-        paints.clear();
-    }
-
-    Result push(unique_ptr<Paint> paint)
+    Result push(Paint* target, Paint* at)
     {
         //You cannot push paints during rendering.
         if (status == Status::Drawing) return Result::InsufficientCondition;
 
-        auto p = paint.release();
-        if (!p) return Result::MemoryCorruption;
-        PP(p)->ref();
-        paints.push_back(p);
+        auto ret = scene->push(target, at);
+        if (ret != Result::Success) return ret;
 
-        return update(p, true);
+        return update(target, true);
     }
 
-    Result clear(bool paints, bool buffer)
+    Result remove(Paint* paint)
     {
         if (status == Status::Drawing) return Result::InsufficientCondition;
-
-        //Clear render target
-        if (buffer) {
-            if (!renderer->clear()) return Result::InsufficientCondition;
-        }
-
-        if (paints) clearPaints();
-
-        return Result::Success;
+        return scene->remove(paint);
     }
 
     Result update(Paint* paint, bool force)
     {
-        if (paints.empty() || status == Status::Drawing) return Result::InsufficientCondition;
-
         Array<RenderData> clips;
         auto flag = RenderUpdateFlag::None;
         if (status == Status::Damaged || force) flag = RenderUpdateFlag::All;
 
-        auto m = Matrix{1, 0, 0, 0, 1, 0, 0, 0, 1};
+        auto m = tvg::identity();
 
-        if (paint) {
-            paint->pImpl->update(renderer, m, clips, 255, flag);
-        } else {
-            for (auto paint : paints) {
-                paint->pImpl->update(renderer, m, clips, 255, flag);
-            }
-        }
+        if (!renderer->preUpdate()) return Result::InsufficientCondition;
+
+        if (paint) PAINT(paint)->update(renderer, m, clips, 255, flag);
+        else PAINT(scene)->update(renderer, m, clips, 255, flag);
+
+        if (!renderer->postUpdate()) return Result::InsufficientCondition;
+
         status = Status::Updating;
         return Result::Success;
     }
 
-    Result draw()
+    Result draw(bool clear)
     {
+        if (status == Status::Drawing) return Result::InsufficientCondition;
+
+        if (clear && !renderer->clear()) return Result::InsufficientCondition;
+
+        if (scene->paints().empty()) return Result::InsufficientCondition;
+
         if (status == Status::Damaged) update(nullptr, false);
-        if (status == Status::Drawing || paints.empty() || !renderer->preRender()) return Result::InsufficientCondition;
 
-        bool rendered = false;
-        for (auto paint : paints) {
-            if (paint->pImpl->render(renderer)) rendered = true;
-        }
+        if (!renderer->preRender()) return Result::InsufficientCondition;
 
-        if (!rendered || !renderer->postRender()) return Result::InsufficientCondition;
+        if (!PAINT(scene)->render(renderer) || !renderer->postRender()) return Result::InsufficientCondition;
 
         status = Status::Drawing;
+
         return Result::Success;
     }
 

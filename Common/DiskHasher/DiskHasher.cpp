@@ -264,6 +264,6 @@ int _tmain(int argc, _TCHAR* argv[]) {
 		cout << "\nDiskHasher - usage is: \n\n      DiskHasher --hash <path>\n\n      DiskHasher --check <file_new> <file_old>\n\n      DiskHasher --restore <file_new> <file_old>\n\n";
 		return 1;
 	}
-	cout << "Copyright (c) Umerov Artem, 2024" << endl;
+	cout << "Copyright (c) Umerov Artem, 2025" << endl;
 	return 0;
 }

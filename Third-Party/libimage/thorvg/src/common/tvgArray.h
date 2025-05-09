@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,13 @@
 #ifndef _TVG_ARRAY_H_
 #define _TVG_ARRAY_H_
 
-#include <memory.h>
-#include <cstdint>
-#include <cstdlib>
+#include "tvgCommon.h"
+
+#define ARRAY_FOREACH(A, B) \
+    for (auto A = (B).begin(); A < (B).end(); ++A)
+
+#define ARRAY_REVERSE_FOREACH(A, B) \
+    for (auto A = (B).end() - 1; A >= (B).begin(); --A)
 
 namespace tvg
 {
@@ -37,7 +41,7 @@ struct Array
     uint32_t count = 0;
     uint32_t reserved = 0;
 
-    Array(){}
+    Array() = default;
 
     Array(int32_t size)
     {
@@ -54,7 +58,7 @@ struct Array
     {
         if (count + 1 > reserved) {
             reserved = count + (count + 2) / 2;
-            data = static_cast<T*>(realloc(data, sizeof(T) * reserved));
+            data = tvg::realloc<T*>(data, sizeof(T) * reserved);
         }
         data[count++] = element;
     }
@@ -71,7 +75,7 @@ struct Array
     {
         if (size > reserved) {
             reserved = size;
-            data = static_cast<T*>(realloc(data, sizeof(T) * reserved));
+            data = tvg::realloc<T*>(data, sizeof(T) * reserved);
         }
         return true;
     }
@@ -138,7 +142,7 @@ struct Array
 
     void reset()
     {
-        free(data);
+        tvg::free(data);
         data = nullptr;
         count = reserved = 0;
     }
@@ -168,7 +172,7 @@ struct Array
 
     ~Array()
     {
-        free(data);
+        tvg::free(data);
     }
 
 private:

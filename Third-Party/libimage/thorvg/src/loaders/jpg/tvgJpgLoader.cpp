@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2021 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-#include <memory.h>
 #include "tvgJpgLoader.h"
 
 /************************************************************************/
@@ -30,7 +29,7 @@
 void JpgLoader::clear()
 {
     jpgdDelete(decoder);
-    if (freeData) free(data);
+    if (freeData) tvg::free(data);
     decoder = nullptr;
     data = nullptr;
     freeData = false;
@@ -63,28 +62,33 @@ JpgLoader::JpgLoader() : ImageLoader(FileType::Jpg)
 
 JpgLoader::~JpgLoader()
 {
+    done();
     clear();
-    free(surface.buf8);
+    tvg::free(surface.buf8);
 }
 
 
-bool JpgLoader::open(const string& path, const ColorReplace& colorReplacement)
+bool JpgLoader::open(const char* path, const ColorReplace& colorReplacement)
 {
+#ifdef THORVG_FILE_IO_SUPPORT
     int width, height;
-    decoder = jpgdHeader(path.c_str(), &width, &height);
+    decoder = jpgdHeader(path, &width, &height);
     if (!decoder) return false;
 
     w = static_cast<float>(width);
     h = static_cast<float>(height);
 
     return true;
+#else
+    return false;
+#endif
 }
 
 
-bool JpgLoader::open(const char* data, uint32_t size, TVG_UNUSED const string& rpath, bool copy, const ColorReplace& colorReplacement)
+bool JpgLoader::open(const char* data, uint32_t size, TVG_UNUSED const char* rpath, bool copy, const ColorReplace& colorReplacement)
 {
     if (copy) {
-        this->data = (char *) malloc(size);
+        this->data = tvg::malloc<char*>(size);
         if (!this->data) return false;
         memcpy((char *)this->data, data, size);
         freeData = true;

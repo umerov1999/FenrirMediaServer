@@ -22,6 +22,7 @@
 #include "Common/XTPCasting.h"
 
 #include "GraphicLibrary/libpng/png.h"
+#include "GraphicLibrary/libpng/pngpriv.h"
 #include "GraphicLibrary/libpng/pngstruct.h"
 #include "GraphicLibrary/XTPGraphicBitmapPng.h"
 

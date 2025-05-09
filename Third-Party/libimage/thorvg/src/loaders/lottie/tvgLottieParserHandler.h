@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2023 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +51,7 @@
 
 using namespace rapidjson;
 
+#define PARSE_FLAGS (kParseDefaultFlags | kParseInsituFlag)
 
 struct LookaheadParserHandler
 {
@@ -172,8 +173,9 @@ struct LookaheadParserHandler
 
     void Error()
     {
-        TVGERR("LOTTIE", "Parsing Error!");
+        TVGERR("LOTTIE", "Invalid JSON: unexpected or misaligned data fields.");
         state = kError;
+        reader.IterativeParseNext<PARSE_FLAGS>(iss, *this);   //something wrong but try advancement.
     }
 
     bool Invalid()
@@ -192,9 +194,10 @@ struct LookaheadParserHandler
     void getNull();
     bool parseNext();
     const char* nextObjectKey();
-    void skip(const char* key);
+    void skip();
     void skipOut(int depth);
     int peekType();
+    char* getPos();
 };
 
 #endif //_TVG_LOTTIE_PARSER_HANDLER_H_

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +29,12 @@ struct LoaderMgr
 {
     static bool init();
     static bool term();
-    static LoadModule* loader(const char* filename, bool* invalid, std::unique_ptr<ColorReplace> colorReplacement);
-    static LoadModule* loader(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, std::unique_ptr<ColorReplace> colorReplacement);
+    static LoadModule* loader(const char* filename, bool* invalid, ColorReplace *colorReplacement);
+    static LoadModule* loader(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, ColorReplace *colorReplacement);
     static LoadModule* loader(const uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy);
-    static LoadModule* loader(const char* name, const char* data, uint32_t size, const char* mimeType, bool copy, std::unique_ptr<ColorReplace> colorReplacement);
-    static LoadModule* loader(const char* key, std::unique_ptr<ColorReplace> colorReplacement);
+    static LoadModule* loader(const char* name, const char* data, uint32_t size, const char* mimeType, bool copy, ColorReplace *colorReplacement);
+    static LoadModule* font(const char* name);
+    static LoadModule* anyfont();
     static bool retrieve(const char* filename);
     static bool retrieve(LoadModule* loader);
 };

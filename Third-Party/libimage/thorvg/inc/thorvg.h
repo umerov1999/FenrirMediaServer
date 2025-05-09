@@ -1,8 +1,8 @@
 #ifndef _THORVG_H_
 #define _THORVG_H_
 
+#include <cstdint>
 #include <functional>
-#include <memory>
 #include <list>
 
 #ifdef TVG_API
@@ -43,11 +43,15 @@
 
 #define _TVG_DECLARE_PRIVATE(A) \
     struct Impl; \
-    Impl* pImpl; \
 protected: \
     A(const A&) = delete; \
     const A& operator=(const A&) = delete; \
     A()
+
+#define _TVG_DECLARE_PRIVATE_BASE(A) \
+    _TVG_DECLARE_PRIVATE(A); \
+public: \
+    Impl* pImpl
 
 #define _TVG_DISABLE_CTOR(A) \
     A() = delete; \
@@ -121,9 +125,9 @@ enum class PathCommand : uint8_t
  */
 enum class StrokeCap : uint8_t
 {
-    Square = 0, ///< The stroke is extended in both end-points of a sub-path by a rectangle, with the width equal to the stroke width and the length equal to the half of the stroke width. For zero length sub-paths the square is rendered with the size of the stroke width.
-    Round,      ///< The stroke is extended in both end-points of a sub-path by a half circle, with a radius equal to the half of a stroke width. For zero length sub-paths a full circle is rendered.
-    Butt        ///< The stroke ends exactly at each of the two end-points of a sub-path. For zero length sub-paths no stroke is rendered.
+    Butt = 0, ///< The stroke ends exactly at each of the two end-points of a sub-path. For zero length sub-paths no stroke is rendered.
+    Round,    ///< The stroke is extended in both end-points of a sub-path by a half circle, with a radius equal to the half of a stroke width. For zero length sub-paths a full circle is rendered.
+    Square    ///< The stroke is extended in both end-points of a sub-path by a rectangle, with the width equal to the stroke width and the length equal to the half of the stroke width. For zero length sub-paths the square is rendered with the size of the stroke width.
 };
 
 
@@ -132,9 +136,9 @@ enum class StrokeCap : uint8_t
  */
 enum class StrokeJoin : uint8_t
 {
-    Bevel = 0, ///< The outer corner of the joined path segments is bevelled at the join point. The triangular region of the corner is enclosed by a straight line between the outer corners of each stroke.
+    Miter = 0, ///< The outer corner of the joined path segments is spiked. The spike is created by extension beyond the join point of the outer edges of the stroke until they intersect. In case the extension goes beyond the limit, the join style is converted to the Bevel style.
     Round,     ///< The outer corner of the joined path segments is rounded. The circular region is centered at the join point.
-    Miter      ///< The outer corner of the joined path segments is spiked. The spike is created by extension beyond the join point of the outer edges of the stroke until they intersect. In case the extension goes beyond the limit, the join style is converted to the Bevel style.
+    Bevel      ///< The outer corner of the joined path segments is bevelled at the join point. The triangular region of the corner is enclosed by a straight line between the outer corners of each stroke.
 };
 
 
@@ -154,7 +158,7 @@ enum class FillSpread : uint8_t
  */
 enum class FillRule : uint8_t
 {
-    Winding = 0, ///< A line from the point to a location outside the shape is drawn. The intersections of the line with the path segment of the shape are counted. Starting from zero, if the path segment of the shape crosses the line clockwise, one is added, otherwise one is subtracted. If the resulting sum is non zero, the point is inside the shape.
+    NonZero = 0, ///< A line from the point to a location outside the shape is drawn. The intersections of the line with the path segment of the shape are counted. Starting from zero, if the path segment of the shape crosses the line clockwise, one is added, otherwise one is subtracted. If the resulting sum is non zero, the point is inside the shape.
     EvenOdd      ///< A line from the point to a location outside the shape is drawn and its intersections with the path segments of the shape are counted. If the number of intersections is an odd number, the point is inside the shape.
 };
 
@@ -222,25 +226,16 @@ enum class BlendMethod : uint8_t
  *
  * @see Scene::push(SceneEffect effect, ...)
  *
- * @note Experimental API
+ * @since 1.0
  */
 enum class SceneEffect : uint8_t
 {
     ClearAll = 0,      ///< Reset all previously applied scene effects, restoring the scene to its original state.
     GaussianBlur,      ///< Apply a blur effect with a Gaussian filter. Param(3) = {sigma(float)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
-    DropShadow         ///< Apply a drop shadow effect with a Gaussian Blur filter. Param(8) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255], angle(float)[0 - 360], distance(float), blur_sigma(float)[> 0], quality(int)[0 - 100]}
-};
-
-
-/**
- * @brief Enumeration specifying the engine type used for the graphics backend. For multiple backends bitwise operation is allowed.
- */
-enum class CanvasEngine : uint8_t
-{
-    All = 0,       ///< All feasible rasterizers. @since 1.0
-    Sw = (1 << 1), ///< CPU rasterizer.
-    Gl = (1 << 2), ///< OpenGL rasterizer.
-    Wg = (1 << 3), ///< WebGPU rasterizer. @since 0.15
+    DropShadow,        ///< Apply a drop shadow effect with a Gaussian Blur filter. Param(8) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255], angle(double)[0 - 360], distance(double), blur_sigma(double)[> 0], quality(int)[0 - 100]}
+    Fill,              ///< Override the scene content color with a given fill information (Experimental API). Param(5) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
+    Tint,              ///< Tinting the current scene color with a given black, white color paramters (Experimental API). Param(7) = {black_R(int)[0 - 255], black_G(int)[0 - 255], black_B(int)[0 - 255], white_R(int)[0 - 255], white_G(int)[0 - 255], white_B(int)[0 - 255], intensity(float)[0 - 100]}
+    Tritone            ///< Apply a tritone color effect to the scene using three color parameters for shadows, midtones, and highlights (Experimental API). Param(9) = {Shadow_R(int)[0 - 255], Shadow_G(int)[0 - 255], Shadow_B(int)[0 - 255], Midtone_R(int)[0 - 255], Midtone_G(int)[0 - 255], Midtone_B(int)[0 - 255], Highlight_R(int)[0 - 255], Highlight_G(int)[0 - 255], Highlight_B(int)[0 - 255]}
 };
 
 
@@ -252,7 +247,7 @@ enum class CanvasEngine : uint8_t
  * @see Paint::type()
  * @see Fill::type()
  *
- * @note Experimental API
+ * @since 1.0
  */
 enum class Type : uint8_t
 {
@@ -303,6 +298,21 @@ class TVG_API Paint
 {
 public:
     virtual ~Paint();
+
+    /**
+     * @brief Retrieves the parent paint object.
+     *
+     * This function returns a pointer to the parent object if the current paint
+     * belongs to one. Otherwise, it returns @c nullptr.
+     *
+     * @return A pointer to the parent object if available, otherwise @c nullptr.
+     *
+     * @see Scene::push()
+     * @see Canvas::push()
+     *
+     * @since 1.0
+    */
+    const Paint* parent() const noexcept;
 
     /**
      * @brief Sets the angle by which the object is rotated.
@@ -376,8 +386,10 @@ public:
      *
      * @param[in] target The paint of the target object.
      * @param[in] method The method used to mask the source object with the target.
+     *
+     * @retval Result::InsufficientCondition if the target has already belonged to another paint.
      */
-    Result mask(std::unique_ptr<Paint> target, MaskMethod method) noexcept;
+    Result mask(Paint* target, MaskMethod method) noexcept;
 
     /**
      * @brief Clip the drawing region of the paint object.
@@ -387,11 +399,12 @@ public:
      * @param[in] clipper The shape object as the clipper.
      *
      * @retval Result::NonSupport If the @p clipper type is not Shape.
+     * @retval Result::InsufficientCondition if the target has already belonged to another paint.
      *
      * @note @p clipper only supports the Shape type.
-     * @note Experimental API
+     * @since 1.0
      */
-    Result clip(std::unique_ptr<Paint> clipper) noexcept;
+    Result clip(Paint* clipper) noexcept;
 
     /**
      * @brief Sets the blending method for the paint object.
@@ -402,25 +415,43 @@ public:
      *
      * @param[in] method The blending method to be set.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result blend(BlendMethod method) noexcept;
 
     /**
-     * @brief Gets the axis-aligned bounding box of the paint object.
+     * @brief Retrieves the object-oriented bounding box (OBB) of the paint object in canvas space.
+     * 
+     * This function returns the bounding box of the paint, as an oriented bounding box (OBB) after transformations are applied.
      *
-     * @param[out] x The x-coordinate of the upper-left corner of the object.
-     * @param[out] y The y-coordinate of the upper-left corner of the object.
-     * @param[out] w The width of the object.
-     * @param[out] h The height of the object.
-     * @param[in] transformed If @c true, the paint's transformations are taken into account in the scene it belongs to. Otherwise they aren't.
+     * @param[out] pt4 An array of four points representing the bounding box. The array size must be 4.
      *
-     * @note This is useful when you need to figure out the bounding box of the paint in the canvas space.
-     * @note The bounding box doesn't indicate the actual drawing region. It's the smallest rectangle that encloses the object.
-     * @note If @p transformed is @c true, the paint needs to be pushed into a canvas and updated before this api is called.
+     * @retval Result::InvalidArguments @p pt4 is @c nullptr.
+     * @retval Result::InsufficientCondition If it failed to compute the bounding box (mostly due to invalid path information).
+     * 
+     * @see Paint::bounds(float* x, float* y, folat* w, float* h)
+     * @see Canvas::update()
+     *
+     * @since 1.0
+     */
+    Result bounds(Point* pt4) const noexcept;
+
+    /**
+     * @brief Retrieves the axis-aligned bounding box (AABB) of the paint object in canvas space.
+     *
+     * This function returns the bounding box of the paint, as an axis-aligned bounding box (AABB) after transformations are applied.
+     *
+     * @param[out] x The x-coordinate of the upper-left corner of the bounding box.
+     * @param[out] y The y-coordinate of the upper-left corner of the bounding box.
+     * @param[out] w The width of the bounding box.
+     * @param[out] h The height of the bounding box.
+     *
+     * @retval Result::InsufficientCondition If it failed to compute the bounding box (mostly due to invalid path information).
+     *
+     * @see Paint::bounds(Point* pt4)
      * @see Canvas::update()
      */
-    Result bounds(float* x, float* y, float* w, float* h, bool transformed = false) const noexcept;
+    Result bounds(float* x, float* y, float* w, float* h) const noexcept;
 
     /**
      * @brief Duplicates the object.
@@ -450,6 +481,53 @@ public:
     MaskMethod mask(const Paint** target) const noexcept;
 
     /**
+     * @brief Increment the reference count for the Paint instance.
+     *
+     * This method increases the reference count of the Paint object, allowing shared ownership and control over its lifetime.
+     *
+     * @return The updated reference count after the increment by 1.
+     *
+     * @warning Please ensure that each call to ref() is paired with a corresponding call to unref() to prevent a dangling instance.
+     *
+     * @see Paint::unref()
+     * @see Paint::refCnt()
+     *
+     * @since 1.0
+     */
+    uint8_t ref() noexcept;
+
+    /**
+     * @brief Decrement the reference count for the Paint instance.
+     *
+     * This method decreases the reference count of the Paint object by 1.
+     * If the reference count reaches zero and the @p free flag is set to true, the Paint instance is automatically deleted.
+     *
+     * @param[in] free Flag indicating whether to delete the Paint instance when the reference count reaches zero.
+     *
+     * @return The updated reference count after the decrement.
+     *
+     * @see Paint::ref()
+     * @see Paint::refCnt()
+     *
+     * @since 1.0
+     */
+    uint8_t unref(bool free = true) noexcept;
+
+    /**
+     * @brief Retrieve the current reference count of the Paint instance.
+     *
+     * This method provides the current reference count, allowing the user to check the shared ownership state of the Paint object.
+     *
+     * @return The current reference count of the Paint instance.
+     *
+     * @see Paint::ref()
+     * @see Paint::unref()
+     *
+     * @since 1.0
+     */
+    uint8_t refCnt() const noexcept;
+
+    /**
      * @brief Returns the ID value of this class.
      *
      * This method can be used to check the current concrete instance type.
@@ -469,7 +547,7 @@ public:
      */
     uint32_t id = 0;
 
-    _TVG_DECLARE_PRIVATE(Paint);
+    _TVG_DECLARE_PRIVATE_BASE(Paint);
 };
 
 
@@ -570,7 +648,7 @@ public:
      */
     virtual Type type() const noexcept = 0;
 
-    _TVG_DECLARE_PRIVATE(Fill);
+    _TVG_DECLARE_PRIVATE_BASE(Fill);
 };
 
 
@@ -587,51 +665,60 @@ public:
 class TVG_API Canvas
 {
 public:
-    Canvas(RenderMethod*);
     virtual ~Canvas();
 
     /**
-     * @brief Returns the list of the paints that currently held by the Canvas.
+     * @brief Returns the list of paints currently held by the Canvas.
      *
-     * This function provides the list of paint nodes, allowing users a direct opportunity to modify the scene tree.
+     * This function provides a list of paint nodes, allowing users to access scene-graph information.
      *
      * @warning Please avoid accessing the paints during Canvas update/draw. You can access them after calling sync().
-     * @see Canvas::sync()
+     * @see Canvas::push()
+     * @see Canvas::remove()
      *
-     * @note Experimental API
+     * @warning This is read-only. Do not modify the list.
+     * @note 1.0
      */
-    std::list<Paint*>& paints() noexcept;
+    const std::list<Paint*>& paints() const noexcept;
 
     /**
-     * @brief Passes drawing elements to the Canvas using Paint objects.
+     * @brief Adds a paint object to the root scene.
      *
-     * Only pushed paints in the canvas will be drawing targets.
-     * They are retained by the canvas until you call Canvas::clear().
+     * This function appends a paint object to root scene of the canvas. If the optional @p at
+     * is provided, the new paint object will be inserted immediately before the specified
+     * paint object in the root scene. If @p at is @c nullptr, the paint object will be added
+     * to the end of the root scene.
      *
-     * @param[in] paint A Paint object to be drawn.
+     * @param[in] target A pointer to the Paint object to be added into the root scene.
+     *                   This parameter must not be @c nullptr.
+     * @param[in] at A pointer to an existing Paint object in the root scene before which
+     *               the new paint object will be added. If @c nullptr, the new
+     *               paint object is added to the end of the root scene. The default is @c nullptr.
      *
-     * @retval Result::MemoryCorruption In case a @c nullptr is passed as the argument.
+     * @note The ownership of the @p paint object is transferred to the canvas upon addition.
+     * @note The rendering order of the paints is the same as the order as they were pushed. Consider sorting the paints before pushing them if you intend to use layering.
      *
-     * @note The rendering order of the paints is the same as the order as they were pushed into the canvas. Consider sorting the paints before pushing them if you intend to use layering.
      * @see Canvas::paints()
-     * @see Canvas::clear()
+     * @see Canvas::remove()
      */
-    virtual Result push(std::unique_ptr<Paint> paint) noexcept;
+    Result push(Paint* target, Paint* at = nullptr) noexcept;
 
     /**
-     * @brief Clear the internal canvas resources that used for the drawing.
+     * @brief Removes a paint object or all paint objects from the root scene.
      *
-     * This API sets the total number of paints pushed into the canvas to zero.
-     * Depending on the value of the @p paints argument, the paints are either freed or retained.
-     * So if you need to update paint properties while maintaining the existing scene structure, you can set @p paints = false.
+     * This function removes a specified paint object from the root scene. If no paint
+     * object is specified (i.e., the default @c nullptr is used), the function
+     * performs to clear all paints from the root scene.
      *
-     * @param[in] paints If @c true, the memory occupied by paints is deallocated; otherwise, the paints will be retained on the canvas.
-     * @param[in] buffer If @c true, the canvas target buffer is cleared with a zero value.
+     * @param[in] paint A pointer to the Paint object to be removed from the root scene.
+     *                  If @c nullptr, remove all the paints from the root scene.
      *
      * @see Canvas::push()
      * @see Canvas::paints()
+     *
+     * @since 1.0
      */
-    virtual Result clear(bool paints = true, bool buffer = true) noexcept;
+    Result remove(Paint* paint = nullptr) noexcept;
 
     /**
      * @brief Request the canvas to update the paint objects.
@@ -643,15 +730,21 @@ public:
      *
      * @note The Update behavior can be asynchronous if the assigned thread number is greater than zero.
      */
-    virtual Result update(Paint* paint = nullptr) noexcept;
+    Result update(Paint* paint = nullptr) noexcept;
 
     /**
-     * @brief Requests the canvas to draw the Paint objects.
+     * @brief Requests the canvas to render Paint objects.
      *
-     * @note Drawing can be asynchronous if the assigned thread number is greater than zero. To guarantee the drawing is done, call sync() afterwards.
+     * @param[in] clear If @c true, clears the target buffer to zero before drawing.
+     *
+     * @note Clearing the buffer is unnecessary if the canvas will be fully covered 
+     *       with opaque content, which can improve performance.
+     * @note Drawing may be asynchronous if the thread count is greater than zero. 
+     *       To ensure drawing is complete, call sync() afterwards.
+     *
      * @see Canvas::sync()
      */
-    virtual Result draw() noexcept;
+    Result draw(bool clear = false) noexcept;
 
     /**
      * @brief Sets the drawing region in the canvas.
@@ -673,7 +766,7 @@ public:
      * @note When resetting the target, the viewport will also be reset to the target size.
      * @since 0.15
      */
-    virtual Result viewport(int32_t x, int32_t y, int32_t w, int32_t h) noexcept;
+    Result viewport(int32_t x, int32_t y, int32_t w, int32_t h) noexcept;
 
     /**
      * @brief Guarantees that drawing task is finished.
@@ -685,9 +778,9 @@ public:
      *
      * @see Canvas::draw()
      */
-    virtual Result sync() noexcept;
+    Result sync() noexcept;
 
-    _TVG_DECLARE_PRIVATE(Canvas);
+    _TVG_DECLARE_PRIVATE_BASE(Canvas);
 };
 
 
@@ -698,12 +791,12 @@ public:
  *
  * Besides the APIs inherited from the Fill class, it enables setting and getting the linear gradient bounds.
  * The behavior outside the gradient bounds depends on the value specified in the spread API.
+ *
+ * @warning This class is not designed for inheritance.
  */
-class TVG_API LinearGradient final : public Fill
+class TVG_API LinearGradient : public Fill
 {
 public:
-    ~LinearGradient();
-
     /**
      * @brief Sets the linear gradient bounds.
      *
@@ -740,7 +833,7 @@ public:
      *
      * @return A new LinearGradient object.
      */
-    static std::unique_ptr<LinearGradient> gen() noexcept;
+    static LinearGradient* gen() noexcept;
 
     /**
      * @brief Returns the ID value of this class.
@@ -762,12 +855,11 @@ public:
  *
  * @brief A class representing the radial gradient fill of the Shape object.
  *
+ * @warning This class is not designed for inheritance.
  */
-class TVG_API RadialGradient final : public Fill
+class TVG_API RadialGradient : public Fill
 {
 public:
-    ~RadialGradient();
-
     /**
      * @brief Sets the radial gradient attributes.
      *
@@ -812,7 +904,7 @@ public:
      *
      * @return A new RadialGradient object.
      */
-    static std::unique_ptr<RadialGradient> gen() noexcept;
+    static RadialGradient* gen() noexcept;
 
     /**
      * @brief Returns the ID value of this class.
@@ -840,12 +932,12 @@ public:
  *
  * The stroke of Shape is an optional property in case the Shape needs to be represented with/without the outline borders.
  * It's efficient since the shape path and the stroking path can be shared with each other. It's also convenient when controlling both in one context.
+ *
+ * @warning This class is not designed for inheritance.
  */
-class TVG_API Shape final : public Paint
+class TVG_API Shape : public Paint
 {
 public:
-    ~Shape();
-
     /**
      * @brief Resets the shape path.
      *
@@ -922,10 +1014,11 @@ public:
      * @param[in] h The height of the rectangle.
      * @param[in] rx The x-axis radius of the ellipse defining the rounded corners of the rectangle.
      * @param[in] ry The y-axis radius of the ellipse defining the rounded corners of the rectangle.
+     * @param[in] cw Specifies the path direction: @c true for clockwise, @c false for counterclockwise.
      *
      * @note For @p rx and @p ry greater than or equal to the half of @p w and the half of @p h, respectively, the shape become an ellipse.
      */
-    Result appendRect(float x, float y, float w, float h, float rx = 0, float ry = 0) noexcept;
+    Result appendRect(float x, float y, float w, float h, float rx = 0, float ry = 0, bool cw = true) noexcept;
 
     /**
      * @brief Appends an ellipse to the path.
@@ -940,9 +1033,10 @@ public:
      * @param[in] cy The vertical coordinate of the center of the ellipse.
      * @param[in] rx The x-axis radius of the ellipse.
      * @param[in] ry The y-axis radius of the ellipse.
+     * @param[in] cw Specifies the path direction: @c true for clockwise, @c false for counterclockwise.
      *
      */
-    Result appendCircle(float cx, float cy, float rx, float ry) noexcept;
+    Result appendCircle(float cx, float cy, float rx, float ry, bool cw = true) noexcept;
 
     /**
      * @brief Appends a given sub-path to the path.
@@ -986,7 +1080,7 @@ public:
      *
      * @retval Result::MemoryCorruption In case a @c nullptr is passed as the argument.
      */
-    Result strokeFill(std::unique_ptr<Fill> f) noexcept;
+    Result strokeFill(Fill* f) noexcept;
 
     /**
      * @brief Sets the dash pattern of the stroke.
@@ -1034,7 +1128,7 @@ public:
     Result strokeMiterlimit(float miterlimit) noexcept;
 
     /**
-     * @brief Sets the trim of the stroke along the defined path segment, allowing control over which part of the stroke is visible.
+     * @brief Sets the trim of the shape along the defined path segment, allowing control over which part of the shape is visible.
      *
      * If the values of the arguments @p begin and @p end exceed the 0-1 range, they are wrapped around in a manner similar to angle wrapping, effectively treating the range as circular.
      *
@@ -1043,9 +1137,9 @@ public:
      * @param[in] simultaneous Determines how to trim multiple paths within a single shape. If set to @c true (default), trimming is applied simultaneously to all paths;
      * Otherwise, all paths are treated as a single entity with a combined length equal to the sum of their individual lengths and are trimmed as such.
      *
-     * @note Experimental API
+     * @since 1.0
      */
-    Result strokeTrim(float begin, float end, bool simultaneous = true) noexcept;
+    Result trimpath(float begin, float end, bool simultaneous = true) noexcept;
 
     /**
      * @brief Sets the solid color for all of the figures from the path.
@@ -1070,12 +1164,12 @@ public:
      *
      * @note Either a solid color or a gradient fill is applied, depending on what was set as last.
      */
-    Result fill(std::unique_ptr<Fill> f) noexcept;
+    Result fill(Fill* f) noexcept;
 
     /**
      * @brief Sets the fill rule for the Shape object.
      *
-     * @param[in] r The fill rule value. The default value is @c FillRule::Winding.
+     * @param[in] r The fill rule value. The default value is @c FillRule::NonZero.
      */
     Result fill(FillRule r) noexcept;
 
@@ -1089,22 +1183,21 @@ public:
     Result order(bool strokeFirst) noexcept;
 
     /**
-     * @brief Gets the commands data of the path.
+     * @brief Retrieves the current path data of the shape.
      *
-     * @param[out] cmds The pointer to the array of the commands from the path.
+     * This function provides access to the shape's path data, including the commands
+     * and points that define the path.
      *
-     * @return The length of the @p cmds array when succeed, zero otherwise.
+     * @param[out] cmds Pointer to the array of commands representing the path.
+     *                  Can be @c nullptr if this information is not needed.
+     * @param[out] cmdsCnt Pointer to the variable that receives the number of commands in the @p cmds array.
+     *                     Can be @c nullptr if this information is not needed.
+     * @param[out] pts Pointer to the array of two-dimensional points that define the path.
+     *                 Can be @c nullptr if this information is not needed.
+     * @param[out] ptsCnt Pointer to the variable that receives the number of points in the @p pts array.
+     *                    Can be @c nullptr if this information is not needed.
      */
-    uint32_t pathCommands(const PathCommand** cmds) const noexcept;
-
-    /**
-     * @brief Gets the points values of the path.
-     *
-     * @param[out] pts The pointer to the array of the two-dimensional points from the path.
-     *
-     * @return The length of the @p pts array when succeed, zero otherwise.
-     */
-    uint32_t pathCoords(const Point** pts) const noexcept;
+    Result path(const PathCommand** cmds, uint32_t* cmdsCnt, const Point** pts, uint32_t* ptsCnt) const noexcept;
 
     /**
      * @brief Gets the pointer to the gradient fill of the shape.
@@ -1122,7 +1215,7 @@ public:
      * @param[out] a The alpha channel value in the range [0 ~ 255], where 0 is completely transparent and 255 is opaque.
      *
      */
-    Result fillColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a = nullptr) const noexcept;
+    Result fill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a = nullptr) const noexcept;
 
     /**
      * @brief Gets the fill rule value.
@@ -1196,7 +1289,7 @@ public:
      *
      * @return A new Shape object.
      */
-    static std::unique_ptr<Shape> gen() noexcept;
+    static Shape* gen() noexcept;
 
     /**
      * @brief Returns the ID value of this class.
@@ -1216,17 +1309,17 @@ public:
 /**
  * @class Picture
  *
- * @brief A class representing an image read in one of the supported formats: raw, svg, png, jpg, lottie(json) and etc.
+ * @brief A class representing an image read in one of the supported formats: raw, svg, png, jpg, lot and etc.
  * Besides the methods inherited from the Paint, it provides methods to load & draw images on the canvas.
  *
  * @note Supported formats are depended on the available TVG loaders.
  * @note See Animation class if the picture data is animatable.
+ *
+ * @warning This class is not designed for inheritance.
  */
-class TVG_API Picture final : public Paint
+class TVG_API Picture : public Paint
 {
 public:
-    ~Picture();
-
     /**
      * @brief Loads a picture data directly from a file.
      *
@@ -1242,7 +1335,7 @@ public:
      * @note The Load behavior can be asynchronous if the assigned thread number is greater than zero.
      * @see Initializer::init()
      */
-    Result load(const char* filename, std::unique_ptr<ColorReplace> colorReplacement = nullptr) noexcept;
+    Result load(const char* filename, ColorReplace *colorReplacement = nullptr) noexcept;
 
     /**
      * @brief Loads a picture data from a memory block of a given size.
@@ -1253,7 +1346,7 @@ public:
      *
      * @param[in] data A pointer to a memory location where the content of the picture file is stored. A null-terminated string is expected for non-binary data if @p copy is @c false.
      * @param[in] size The size in bytes of the memory occupied by the @p data.
-     * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "lottie", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
+     * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "lot", "lottie+json", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
      * @param[in] rpath A resource directory path, if the @p data needs to access any external resources.
      * @param[in] copy If @c true the data are copied into the engine local buffer, otherwise they are not.
      *
@@ -1262,10 +1355,10 @@ public:
      *
      * @warning It's the user responsibility to release the @p data memory.
      *
-     * @note If you are unsure about the MIME type, you can provide an empty value like @c "", and thorvg will attempt to figure it out.
+     * @note If you are unsure about the MIME type, you can provide an empty value like @c nullptr, and thorvg will attempt to figure it out.
      * @since 0.5
      */
-    Result load(const char* data, uint32_t size, const char* mimeType, const char* rpath = "", bool copy = false, std::unique_ptr<ColorReplace> colorReplacement = nullptr) noexcept;
+    Result load(const char* data, uint32_t size, const char* mimeType, const char* rpath = nullptr, bool copy = false, ColorReplace *colorReplacement = nullptr) noexcept;
 
     /**
      * @brief Resizes the picture content to the given width and height.
@@ -1317,7 +1410,7 @@ public:
      *
      * @see Accessor::id()
      *
-     * @note Experimental API
+     * @since 1.0
      */
     const Paint* paint(uint32_t id) noexcept;
 
@@ -1326,7 +1419,7 @@ public:
      *
      * @return A new Picture object.
      */
-    static std::unique_ptr<Picture> gen() noexcept;
+    static Picture* gen() noexcept;
 
     /**
      * @brief Returns the ID value of this class.
@@ -1354,51 +1447,62 @@ public:
  *
  * As a group, the scene can be transformed, made translucent and composited with other target paints,
  * its children will be affected by the scene world.
+ *
+ * @warning This class is not designed for inheritance.
  */
-class TVG_API Scene final : public Paint
+class TVG_API Scene : public Paint
 {
 public:
-    ~Scene();
-
     /**
-     * @brief Passes drawing elements to the Scene using Paint objects.
+     * @brief Inserts a paint object to the scene.
      *
-     * Only the paints pushed into the scene will be the drawn targets.
-     * The paints are retained by the scene until Scene::clear() is called.
+     * This function appends a paint object to the scene. If the optional @p at
+     * is provided, the new paint object will be inserted immediately before the specified
+     * paint object in the scene. If @p at is @c nullptr, the paint object will be added
+     * to the end of the scene.
      *
-     * @param[in] paint A Paint object to be drawn.
+     * @param[in] target A pointer to the Paint object to be added into the scene.
+     *                   This parameter must not be @c nullptr.
+     * @param[in] at A pointer to an existing Paint object in the scene before which
+     *               the new paint object will be added. If @c nullptr, the new
+     *               paint object is added to the end of the scene. The default is @c nullptr.
      *
+     * @note The ownership of the @p paint object is transferred to the scene upon addition.
      * @note The rendering order of the paints is the same as the order as they were pushed. Consider sorting the paints before pushing them if you intend to use layering.
      * @see Scene::paints()
-     * @see Scene::clear()
+     * @see Scene:remove()
      */
-    Result push(std::unique_ptr<Paint> paint) noexcept;
+    Result push(Paint* target, Paint* at = nullptr) noexcept;
 
     /**
-     * @brief Returns the list of the paints that currently held by the Scene.
+     * @brief Returns the list of paints currently held by the Scene.
      *
-     * This function provides the list of paint nodes, allowing users a direct opportunity to modify the scene tree.
+     * This function provides a list of paint nodes, allowing users to access scene-graph information.
      *
-     * @warning Please avoid accessing the paints during Scene update/draw. You can access them after calling Canvas::sync().
-     * @see Canvas::sync()
-     * @see Scene::push(std::unique_ptr<Paint> paint)
-     * @see Scene::clear()
+     * @see Scene::push()
+     * @see Scene:remove()
      *
-     * @note Experimental API
+     * @warning This is read-only. Do not modify the list.
+     * @since 1.0
      */
-    std::list<Paint*>& paints() noexcept;
+    const std::list<Paint*>& paints() const noexcept;
 
     /**
-     * @brief Sets the total number of the paints pushed into the scene to be zero.
-     * Depending on the value of the @p free argument, the paints are freed or not.
+     * @brief Removes a paint object or all paint objects from the scene.
      *
-     * @param[in] free If @c true, the memory occupied by paints is deallocated, otherwise it is not.
+     * This function removes a specified paint object from the scene. If no paint
+     * object is specified (i.e., the default @c nullptr is used), the function
+     * performs to clear all paints from the scene.
      *
-     * @warning If you don't free the paints they become dangled. They are supposed to be reused, otherwise you are responsible for their lives. Thus please use the @p free argument only when you know how it works, otherwise it's not recommended.
+     * @param[in] paint A pointer to the Paint object to be removed from the scene.
+     *                  If @c nullptr, remove all the paints from the scene.
      *
-     * @since 0.2
+     * @see Scene::push()
+     * @see Scene::paints()
+     *
+     * @since 1.0
      */
-    Result clear(bool free = true) noexcept;
+    Result remove(Paint* paint = nullptr) noexcept;
 
     /**
      * @brief Apply a post-processing effect to the scene.
@@ -1410,7 +1514,7 @@ public:
      *                   For example, use SceneEffect::GaussianBlur to apply a blur with specific parameters.
      * @param[in] ... Additional variadic parameters required for certain effects (e.g., sigma and direction for GaussianBlur).
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result push(SceneEffect effect, ...) noexcept;
 
@@ -1419,7 +1523,7 @@ public:
      *
      * @return A new Scene object.
      */
-    static std::unique_ptr<Scene> gen() noexcept;
+    static Scene* gen() noexcept;
 
     /**
      * @brief Returns the ID value of this class.
@@ -1441,13 +1545,13 @@ public:
  *
  * @brief A class to represent text objects in a graphical context, allowing for rendering and manipulation of unicode text.
  *
+ * @warning This class is not designed for inheritance.
+ *
  * @since 0.15
  */
-class TVG_API Text final : public Paint
+class TVG_API Text : public Paint
 {
 public:
-    ~Text();
-
     /**
      * @brief Sets the font properties for the text.
      *
@@ -1461,7 +1565,8 @@ public:
      *
      * @retval Result::InsufficientCondition when the specified @p name cannot be found.
      *
-     * @note Experimental API
+     * @note If the @p name is not specified, ThorVG will select any available font candidate.
+     * @since 1.0
      */
     Result font(const char* name, float size, const char* style = nullptr) noexcept;
 
@@ -1473,7 +1578,7 @@ public:
      *
      * @param[in] text The multi-byte text encoded with utf8 string to be rendered.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result text(const char* text) noexcept;
 
@@ -1502,7 +1607,7 @@ public:
      *
      * @since 0.15
      */
-    Result fill(std::unique_ptr<Fill> f) noexcept;
+    Result fill(Fill* f) noexcept;
 
     /**
      * @brief Loads a scalable font data (ttf) from a file.
@@ -1542,10 +1647,10 @@ public:
      * @warning It's the user responsibility to release the @p data memory.
      *
      * @note To unload the font data loaded using this API, pass the proper @p name and @c nullptr as @p data.
-     * @note If you are unsure about the MIME type, you can provide an empty value like @c "", and thorvg will attempt to figure it out.
+     * @note If you are unsure about the MIME type, you can provide an empty value like @c nullptr, and thorvg will attempt to figure it out.
      * @see Text::font(const char* name, float size, const char* style)
      *
-     * @note 0.15
+     * @since 0.15
      */
     static Result load(const char* name, const char* data, uint32_t size, const char* mimeType = "ttf", bool copy = false) noexcept;
 
@@ -1572,7 +1677,7 @@ public:
      *
      * @since 0.15
      */
-    static std::unique_ptr<Text> gen() noexcept;
+    static Text* gen() noexcept;
 
     /**
      * @brief Returns the ID value of this class.
@@ -1597,18 +1702,7 @@ public:
 class TVG_API SwCanvas final : public Canvas
 {
 public:
-    ~SwCanvas();
-
-    /**
-     * @brief Enumeration specifying the methods of Memory Pool behavior policy.
-     * @since 0.4
-     */
-    enum MempoolPolicy : uint8_t
-    {
-        Default = 0, ///< Default behavior that ThorVG is designed to.
-        Shareable,   ///< Memory Pool is shared among the SwCanvases.
-        Individual   ///< Allocate designated memory pool that is only used by current instance.
-    };
+    ~SwCanvas() override;
 
     /**
      * @brief Sets the drawing target for the rasterization.
@@ -1633,34 +1727,10 @@ public:
     Result target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs) noexcept;
 
     /**
-     * @brief Set sw engine memory pool behavior policy.
-     *
-     * Basically ThorVG draws a lot of shapes, it allocates/deallocates a few chunk of memory
-     * while processing rendering. It internally uses one shared memory pool
-     * which can be reused among the canvases in order to avoid memory overhead.
-     *
-     * Thus ThorVG suggests using a memory pool policy to satisfy user demands,
-     * if it needs to guarantee the thread-safety of the internal data access.
-     *
-     * @param[in] policy The method specifying the Memory Pool behavior. The default value is @c MempoolPolicy::Default.
-     *
-     * @retval Result::InsufficientCondition If the canvas contains some paints already.
-     * @retval Result::NonSupport In case the software engine is not supported.
-     *
-     * @note When @c policy is set as @c MempoolPolicy::Individual, the current instance of canvas uses its own individual
-     *       memory data, which is not shared with others. This is necessary when the canvas is accessed on a worker-thread.
-     *
-     * @warning It's not allowed after pushing any paints.
-     *
-     * @since 0.4
-    */
-    Result mempool(MempoolPolicy policy) noexcept;
-
-    /**
      * @brief Creates a new SwCanvas object.
      * @return A new SwCanvas object.
      */
-    static std::unique_ptr<SwCanvas> gen() noexcept;
+    static SwCanvas* gen() noexcept;
 
     _TVG_DECLARE_PRIVATE(SwCanvas);
 };
@@ -1676,7 +1746,7 @@ public:
 class TVG_API GlCanvas final : public Canvas
 {
 public:
-    ~GlCanvas();
+    ~GlCanvas() override;
 
     /**
      * @brief Sets the drawing target for rasterization.
@@ -1684,9 +1754,11 @@ public:
      * This function specifies the drawing target where the rasterization will occur. It can target
      * a specific framebuffer object (FBO) or the main surface.
      *
+     * @param[in] context The GL context assigning to the current canvas rendering.
      * @param[in] id The GL target ID, usually indicating the FBO ID. A value of @c 0 specifies the main surface.
      * @param[in] w The width (in pixels) of the raster image.
      * @param[in] h The height (in pixels) of the raster image.
+     * @param[in] cs Specifies how the pixel values should be interpreted. Currently, it only allows @c ColorSpace::ABGR8888S as @c GL_RGBA8.
      *
      * @retval Result::InsufficientCondition if the canvas is performing rendering. Please ensure the canvas is synced.
      * @retval Result::NonSupport In case the gl engine is not supported.
@@ -1694,10 +1766,9 @@ public:
      * @see Canvas::viewport()
      * @see Canvas::sync()
      *
-     * @note Currently, this only allows the GL_RGBA8 color space format.
      * @note Experimental API
     */
-    Result target(int32_t id, uint32_t w, uint32_t h) noexcept;
+    Result target(void* context, int32_t id, uint32_t w, uint32_t h, ColorSpace cs) noexcept;
 
     /**
      * @brief Creates a new GlCanvas object.
@@ -1706,7 +1777,7 @@ public:
      *
      * @since 0.14
      */
-    static std::unique_ptr<GlCanvas> gen() noexcept;
+    static GlCanvas* gen() noexcept;
 
     _TVG_DECLARE_PRIVATE(GlCanvas);
 };
@@ -1724,16 +1795,18 @@ public:
 class TVG_API WgCanvas final : public Canvas
 {
 public:
-    ~WgCanvas();
+    ~WgCanvas() override;
 
     /**
      * @brief Sets the drawing target for the rasterization.
      *
-     * @param[in] instance WGPUInstance, context for all other wgpu objects.
-     * @param[in] surface WGPUSurface, handle to a presentable surface.
-     * @param[in] w The width of the surface.
-     * @param[in] h The height of the surface.
      * @param[in] device WGPUDevice, a desired handle for the wgpu device. If it is @c nullptr, ThorVG will assign an appropriate device internally.
+     * @param[in] instance WGPUInstance, context for all other wgpu objects.
+     * @param[in] target Either WGPUSurface or WGPUTexture, serving as handles to a presentable surface or texture.
+     * @param[in] w The width of the target.
+     * @param[in] h The height of the target.
+     * @param[in] cs Specifies how the pixel values should be interpreted. Currently, it only allows @c ColorSpace::ABGR8888S as @c WGPUTextureFormat_RGBA8Unorm.
+     * @param[in] type @c 0: surface, @c 1: texture are used as pesentable target.
      *
      * @retval Result::InsufficientCondition if the canvas is performing rendering. Please ensure the canvas is synced.
      * @retval Result::NonSupport In case the wg engine is not supported.
@@ -1743,7 +1816,7 @@ public:
      * @see Canvas::viewport()
      * @see Canvas::sync()
      */
-    Result target(void* instance, void* surface, uint32_t w, uint32_t h, void* device = nullptr) noexcept;
+    Result target(void* device, void* instance, void* target, uint32_t w, uint32_t h, ColorSpace cs, int type = 0) noexcept;
 
     /**
      * @brief Creates a new WgCanvas object.
@@ -1752,7 +1825,7 @@ public:
      *
      * @since 0.15
      */
-    static std::unique_ptr<WgCanvas> gen() noexcept;
+    static WgCanvas* gen() noexcept;
 
     _TVG_DECLARE_PRIVATE(WgCanvas);
 };
@@ -1767,35 +1840,33 @@ class TVG_API Initializer final
 {
 public:
     /**
-     * @brief Initializes TVG engines.
+     * @brief Initializes the ThorVG engine.
      *
-     * TVG requires the running-engine environment.
-     * TVG runs its own task-scheduler for parallelizing rendering tasks efficiently.
-     * You can indicate the number of threads, the count of which is designated @p threads.
-     * In the initialization step, TVG will generate/spawn the threads as set by @p threads count.
+     * ThorVG requires an active runtime environment to operate.
+     * Internally, it utilizes a task scheduler to efficiently parallelize rendering operations.
+     * You can specify the number of worker threads using the @p threads parameter.
+     * During initialization, ThorVG will spawn the specified number of threads.
      *
-     * @param[in] threads The number of additional threads. Zero indicates only the main thread is to be used.
-     * @param[in] engine The engine types to initialize. This is relative to the Canvas types, in which it will be used. For multiple backends bitwise operation is allowed.
+     * @param[in] threads The number of worker threads to create. A value of zero indicates that only the main thread will be used.
      *
-     * @retval Result::NonSupport In case the engine type is not supported on the system.
-     *
-     * @note The Initializer keeps track of the number of times it was called. Threads count is fixed at the first init() call.
+     * @note The initializer uses internal reference counting to track multiple calls.
+     *       The number of threads is fixed on the first call to init() and cannot be changed in subsequent calls.
      * @see Initializer::term()
      */
-    static Result init(uint32_t threads, CanvasEngine engine = tvg::CanvasEngine::All) noexcept;
+    static Result init(uint32_t threads) noexcept;
 
     /**
-     * @brief Terminates TVG engines.
+     * @brief Terminates the ThorVG engine.
      *
-     * @param[in] engine The engine types to terminate. This is relative to the Canvas types, in which it will be used. For multiple backends bitwise operation is allowed
+     * Cleans up resources and stops any internal threads initialized by init().
      *
-     * @retval Result::InsufficientCondition In case there is nothing to be terminated.
-     * @retval Result::NonSupport In case the engine type is not supported on the system.
+     * @retval Result::InsufficientCondition Returned if there is nothing to terminate (e.g., init() was not called).
      *
-     * @note Initializer does own reference counting for multiple calls.
+     * @note The initializer maintains a reference count for safe repeated use.
+     *       Only the final call to term() will fully shut down the engine.
      * @see Initializer::init()
      */
-    static Result term(CanvasEngine engine = tvg::CanvasEngine::All) noexcept;
+    static Result term() noexcept;
 
     /**
      * @brief Retrieves the version of the TVG engine.
@@ -1823,11 +1894,10 @@ public:
  *
  * @since 0.13
  */
-
 class TVG_API Animation
 {
 public:
-    ~Animation();
+    virtual ~Animation();
 
     /**
      * @brief Specifies the current frame in the animation.
@@ -1842,21 +1912,19 @@ public:
      *       Values less than 0.001 may be disregarded and may not be accurately retained by the Animation.
      *
      * @see totalFrame()
-     *
      */
     Result frame(float no) noexcept;
 
     /**
      * @brief Retrieves a picture instance associated with this animation instance.
      *
-     * This function provides access to the picture instance that can be used to load animation formats, such as Lottie(json).
+     * This function provides access to the picture instance that can be used to load animation formats, such as lot.
      * After setting up the picture, it can be pushed to the designated canvas, enabling control over animation frames
      * with this Animation instance.
      *
      * @return A picture instance that is tied to this animation.
      *
      * @warning The picture instance is owned by Animation. It should not be deleted manually.
-     *
      */
     Picture* picture() const noexcept;
 
@@ -1867,9 +1935,8 @@ public:
      *
      * @note If the Picture is not properly configured, this function will return 0.
      *
-     * @see Animation::frame(float no)
+     * @see Animation::frame()
      * @see Animation::totalFrame()
-     *
      */
     float curFrame() const noexcept;
 
@@ -1880,7 +1947,6 @@ public:
      *
      * @note Frame numbering starts from 0.
      * @note If the Picture is not properly configured, this function will return 0.
-     *
      */
     float totalFrame() const noexcept;
 
@@ -1890,7 +1956,6 @@ public:
      * @return The duration of the animation in seconds.
      *
      * @note If the Picture is not properly configured, this function will return 0.
-     *
      */
     float duration() const noexcept;
 
@@ -1902,30 +1967,33 @@ public:
      * After setting, the number of animation frames and the playback time are calculated
      * by mapping the playback segment as the entire range.
      *
-     * @param[in] begin segment start.
-     * @param[in] end segment end.
+     * @param[in] begin segment begin frame.
+     * @param[in] end segment end frame.
      *
      * @retval Result::InsufficientCondition In case the animation is not loaded.
+     * @retval Result::InvalidArguments If the @p begin is higher than @p end.
      * @retval Result::NonSupport When it's not animatable.
      *
-     * @note Animation allows a range from 0.0 to 1.0. @p end should not be higher than @p begin.
+     * @note Animation allows a range from 0.0 to the total frame. @p end should not be higher than @p begin.
      * @note If a marker has been specified, its range will be disregarded.
-     * @see LottieAnimation::segment(const char* marker)
      *
-     * @note Experimental API
+     * @see LottieAnimation::segment(const char* marker)
+     * @see Animation::totalFrame()
+     *
+     * @since 1.0
      */
     Result segment(float begin, float end) noexcept;
 
     /**
-     * @brief Gets the current segment.
+     * @brief Gets the current segment range information.
      *
-     * @param[out] begin segment start.
-     * @param[out] end segment end.
+     * @param[out] begin segment begin frame.
+     * @param[out] end segment end frame.
      *
      * @retval Result::InsufficientCondition In case the animation is not loaded.
      * @retval Result::NonSupport When it's not animatable.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result segment(float* begin, float* end = nullptr) noexcept;
 
@@ -1933,11 +2001,10 @@ public:
      * @brief Creates a new Animation object.
      *
      * @return A new Animation object.
-     *
      */
-    static std::unique_ptr<Animation> gen() noexcept;
+    static Animation* gen() noexcept;
 
-    _TVG_DECLARE_PRIVATE(Animation);
+    _TVG_DECLARE_PRIVATE_BASE(Animation);
 };
 
 
@@ -1970,7 +2037,7 @@ public:
      *
      * @note Experimental API
      */
-    Result background(std::unique_ptr<Paint> paint) noexcept;
+    Result background(Paint* paint) noexcept;
 
     /**
      * @brief Exports the given @p paint data to the given @p path
@@ -1992,7 +2059,7 @@ public:
      *
      * @since 0.5
      */
-    Result save(std::unique_ptr<Paint> paint, const char* filename, uint32_t quality = 100) noexcept;
+    Result save(Paint* paint, const char* filename, uint32_t quality = 100) noexcept;
 
     /**
      * @brief Export the provided animation data to the specified file path.
@@ -2015,7 +2082,7 @@ public:
      *
      * @note Experimental API
      */
-    Result save(std::unique_ptr<Animation> animation, const char* filename, uint32_t quality = 100, uint32_t fps = 0) noexcept;
+    Result save(Animation* animation, const char* filename, uint32_t quality = 100, uint32_t fps = 0) noexcept;
 
     /**
      * @brief Guarantees that the saving task is finished.
@@ -2038,9 +2105,9 @@ public:
      *
      * @since 0.5
      */
-    static std::unique_ptr<Saver> gen() noexcept;
+    static Saver* gen() noexcept;
 
-    _TVG_DECLARE_PRIVATE(Saver);
+    _TVG_DECLARE_PRIVATE_BASE(Saver);
 };
 
 
@@ -2063,7 +2130,7 @@ public:
     /**
      * @brief Set the access function for traversing the Picture scene tree nodes.
      *
-     * @param[in] picture The picture node to traverse the internal scene-tree.
+     * @param[in] paint The paint node to traverse the internal scene-tree.
      * @param[in] func The callback function calling for every paint nodes of the Picture.
      * @param[in] data Data passed to the @p func as its argument.
      *
@@ -2071,7 +2138,7 @@ public:
      *
      * @note Experimental API
      */
-    Result set(const Picture* picture, std::function<bool(const Paint* paint, void* data)> func, void* data) noexcept;
+    Result set(Paint* paint, std::function<bool(const Paint* paint, void* data)> func, void* data) noexcept;
 
     /**
      * @brief Generate a unique ID (hash key) from a given name.
@@ -2094,33 +2161,10 @@ public:
      *
      * @return A new Accessor object.
      */
-    static std::unique_ptr<Accessor> gen() noexcept;
+    static Accessor* gen() noexcept;
 
-    _TVG_DECLARE_PRIVATE(Accessor);
+    _TVG_DECLARE_PRIVATE_BASE(Accessor);
 };
-
-
-/**
- * @brief The cast() function is a utility function used to cast a 'Paint' to type 'T'.
- * @since 0.11
- */
-template<typename T = tvg::Paint>
-std::unique_ptr<T> cast(Paint* paint)
-{
-    return std::unique_ptr<T>(static_cast<T*>(paint));
-}
-
-
-/**
- * @brief The cast() function is a utility function used to cast a 'Fill' to type 'T'.
- * @since 0.11
- */
-template<typename T = tvg::Fill>
-std::unique_ptr<T> cast(Fill* fill)
-{
-    return std::unique_ptr<T>(static_cast<T*>(fill));
-}
-
 
 /** @}*/
 

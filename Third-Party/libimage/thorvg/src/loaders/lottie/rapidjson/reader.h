@@ -1002,7 +1002,7 @@ private:
 //!@endcond
 
         for (;;) {
-            // Scan and copy string before "\\\"" or < 0x20. This is an optional optimization.
+            // Scan and copy string before "\\\"" or < 0x20. This is an optional optimzation.
             if (!(parseFlags & kParseValidateEncodingFlag))
                 ScanCopyUnescapedString(is, os);
 
@@ -1584,7 +1584,7 @@ private:
         // Parse frac = decimal-point 1*DIGIT
         int expFrac = 0;
         size_t decimalPosition;
-        if (Consume(s, '.')) {
+        if (!useNanOrInf && Consume(s, '.')) {
             decimalPosition = s.Length();
 
             if (RAPIDJSON_UNLIKELY(!(s.Peek() >= '0' && s.Peek() <= '9')))
@@ -1631,7 +1631,7 @@ private:
 
         // Parse exp = e [ minus / plus ] 1*DIGIT
         int exp = 0;
-        if (Consume(s, 'e') || Consume(s, 'E')) {
+        if (!useNanOrInf && (Consume(s, 'e') || Consume(s, 'E'))) {
             if (!useDouble) {
                 d = static_cast<double>(use64bit ? i64 : i);
                 useDouble = true;
@@ -2018,7 +2018,7 @@ private:
         case IterativeParsingObjectInitialState:
         case IterativeParsingArrayInitialState:
         {
-            // Push the state(Element or MemberValue) if we are nested in another array or value of member.
+            // Push the state(Element or MemeberValue) if we are nested in another array or value of member.
             // In this way we can get the correct state on ObjectFinish or ArrayFinish by frame pop.
             IterativeParsingState n = src;
             if (src == IterativeParsingArrayInitialState || src == IterativeParsingElementDelimiterState)

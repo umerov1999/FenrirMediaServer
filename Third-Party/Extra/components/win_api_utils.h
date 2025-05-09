@@ -228,4 +228,64 @@ static inline bool CreateProcessSimple(
 		lpProcessAttributes, lpThreadAttributes, bInheritHandles ? TRUE : FALSE, dwCreationFlags, lpEnvironment,
 		lpCurrentDirectory.empty() ? NULL : lpCurrentDirectory.c_str(), lpStartupInfo, lpProcessInformation) == TRUE;
 }
+
+static inline bool CreateProcessWithLogonSimple(
+	const std::wstring& lpApplicationName,
+	const std::wstring& lpCommandLine,
+	LPSTARTUPINFOW        lpStartupInfo,
+	LPPROCESS_INFORMATION lpProcessInformation,
+	const std::wstring& lpUsername = L"",
+	const std::wstring& lpDomain = L"",
+	const std::wstring& lpPassword = L"",
+    DWORD dwLogonFlags = LOGON_WITH_PROFILE,
+	const std::wstring& lpCurrentDirectory = L"",
+	DWORD                 dwCreationFlags = 0,
+	LPVOID                lpEnvironment = NULL
+) {
+	std::wstring cmdline;
+	if (lpApplicationName.empty() || lpCommandLine.empty()) {
+		cmdline = lpCommandLine;
+	}
+	else {
+		cmdline = L"\"" + lpApplicationName + L"\" " + lpCommandLine;
+	}
+	return ::CreateProcessWithLogonW(lpUsername.c_str(), lpDomain.empty() ? NULL : lpDomain.c_str(), lpPassword.c_str(), dwLogonFlags, lpApplicationName.empty() ? NULL : lpApplicationName.c_str(), cmdline.empty() ? NULL : (LPWSTR)cmdline.c_str(),
+		dwCreationFlags, lpEnvironment,
+		lpCurrentDirectory.empty() ? NULL : lpCurrentDirectory.c_str(), lpStartupInfo, lpProcessInformation) == TRUE;
+}
+
+static inline bool IsAppRunningAsAdminMode() {
+	BOOL fIsRunAsAdmin = FALSE;
+	DWORD dwError = ERROR_SUCCESS;
+	PSID pAdministratorsGroup = NULL;
+
+	SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+	if (!AllocateAndInitializeSid(
+		&NtAuthority,
+		2,
+		SECURITY_BUILTIN_DOMAIN_RID,
+		DOMAIN_ALIAS_RID_ADMINS,
+		0, 0, 0, 0, 0, 0,
+		&pAdministratorsGroup)) {
+		dwError = GetLastError();
+		goto Cleanup;
+	}
+
+	if (!CheckTokenMembership(NULL, pAdministratorsGroup, &fIsRunAsAdmin)) {
+		dwError = GetLastError();
+		goto Cleanup;
+	}
+
+Cleanup:
+	if (pAdministratorsGroup) {
+		FreeSid(pAdministratorsGroup);
+		pAdministratorsGroup = NULL;
+	}
+
+	if (ERROR_SUCCESS != dwError) {
+		return false;
+	}
+
+	return fIsRunAsAdmin;
+}
 #endif

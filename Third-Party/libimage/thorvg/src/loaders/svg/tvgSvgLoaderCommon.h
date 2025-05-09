@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,27 @@
 
 #include "tvgCommon.h"
 #include "tvgArray.h"
+
+struct Box
+{
+    float x, y, w, h;
+
+    void intersect(const Box& box)
+    {
+        auto x1 = x + w;
+        auto y1 = y + h;
+        auto x2 = box.x + box.w;
+        auto y2 = box.y + box.h;
+
+        x = x > box.x ? x : box.x;
+        y = y > box.y ? y : box.y;
+        w = (x1 < x2 ? x1 : x2) - x;
+        h = (y1 < y2 ? y1 : y2) - y;
+
+        if (w < 0.0f) w = 0.0f;
+        if (h < 0.0f) h = 0.0f;
+    }
+};
 
 struct SvgNode;
 struct SvgStyleGradient;
@@ -54,6 +75,8 @@ enum class SvgNodeType
     Mask,
     CssStyle,
     Symbol,
+    Filter,
+    GaussianBlur,
     Unknown
 };
 
@@ -142,6 +165,7 @@ enum class SvgStyleFlags
     PaintOrder = 0x10000,
     StrokeMiterlimit = 0x20000,
     StrokeDashOffset = 0x40000,
+    Filter = 0x80000
 };
 
 constexpr bool operator &(SvgStyleFlags a, SvgStyleFlags b)
@@ -197,12 +221,6 @@ constexpr SvgGradientFlags operator |(SvgGradientFlags a, SvgGradientFlags b)
 {
     return SvgGradientFlags(int(a) | int(b));
 }
-
-enum class SvgFillRule
-{
-    Winding = 0,
-    OddEven = 1
-};
 
 enum class SvgMaskType
 {
@@ -267,12 +285,8 @@ enum class AspectRatioMeetOrSlice
 
 struct SvgDocNode
 {
-    float w;       //unit: point or in percentage see: SvgViewFlag
-    float h;       //unit: point or in percentage see: SvgViewFlag
-    float vx;
-    float vy;
-    float vw;
-    float vh;
+    float w, h;   //unit: point or in percentage see: SvgViewFlag
+    Box vbox;
     SvgViewFlag viewFlag;
     SvgNode* defs;
     SvgNode* style;
@@ -311,37 +325,23 @@ struct SvgUseNode
 
 struct SvgEllipseNode
 {
-    float cx;
-    float cy;
-    float rx;
-    float ry;
+    float cx, cy, rx, ry;
 };
 
 struct SvgCircleNode
 {
-    float cx;
-    float cy;
-    float r;
+    float cx, cy, r;
 };
 
 struct SvgRectNode
 {
-    float x;
-    float y;
-    float w;
-    float h;
-    float rx;
-    float ry;
-    bool hasRx;
-    bool hasRy;
+    float x, y, w, h, rx, ry;
+    bool hasRx, hasRy;
 };
 
 struct SvgLineNode
 {
-    float x1;
-    float y1;
-    float x2;
-    float y2;
+    float x1, y1, x2, y2;
 };
 
 struct SvgImageNode
@@ -383,12 +383,26 @@ struct SvgTextNode
     float fontSize;
 };
 
+struct SvgGaussianBlurNode
+{
+    float stdDevX, stdDevY;
+    Box box;
+    bool isPercentage[4];
+    bool hasBox;
+    bool edgeModeWrap;
+};
+
+struct SvgFilterNode
+{
+    Box box;
+    bool isPercentage[4];
+    bool filterUserSpace;
+    bool primitiveUserSpace;
+};
+
 struct SvgLinearGradient
 {
-    float x1;
-    float y1;
-    float x2;
-    float y2;
+    float x1, y1, x2, y2;
     bool isX1Percentage;
     bool isY1Percentage;
     bool isX2Percentage;
@@ -397,12 +411,7 @@ struct SvgLinearGradient
 
 struct SvgRadialGradient
 {
-    float cx;
-    float cy;
-    float fx;
-    float fy;
-    float r;
-    float fr;
+    float cx, cy, fx, fy, r, fr;
     bool isCxPercentage;
     bool isCyPercentage;
     bool isFxPercentage;
@@ -420,9 +429,7 @@ struct SvgComposite
 
 struct SvgColor
 {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
+    uint8_t r, g, b;
 };
 
 struct SvgPaint
@@ -456,11 +463,11 @@ struct SvgStyleGradient
     void clear()
     {
         stops.reset();
-        free(transform);
-        free(radial);
-        free(linear);
-        free(ref);
-        free(id);
+        tvg::free(transform);
+        tvg::free(radial);
+        tvg::free(linear);
+        tvg::free(ref);
+        tvg::free(id);
     }
 };
 
@@ -486,12 +493,19 @@ struct SvgStyleStroke
     SvgDash dash;
 };
 
+struct SvgFilter
+{
+    char *url;
+    SvgNode* node;
+};
+
 struct SvgStyleProperty
 {
     SvgStyleFill fill;
     SvgStyleStroke stroke;
     SvgComposite clipPath;
     SvgComposite mask;
+    SvgFilter filter;
     int opacity;
     SvgColor color;
     char* cssClass;
@@ -528,6 +542,8 @@ struct SvgNode
         SvgCssStyleNode cssStyle;
         SvgSymbolNode symbol;
         SvgTextNode text;
+        SvgFilterNode filter;
+        SvgGaussianBlurNode gaussianBlur;
     } node;
     ~SvgNode();
 };
@@ -538,10 +554,7 @@ struct SvgParser
     SvgStyleGradient* styleGrad;
     Fill::ColorStop gradStop;
     SvgStopStyleFlags flags;
-    struct
-    {
-        float x, y, w, h;
-    } global;
+    Box global;
     struct
     {
         bool parsedFx;
@@ -553,6 +566,14 @@ struct SvgNodeIdPair
 {
     SvgNode* node;
     char *id;
+};
+
+struct FontFace
+{
+    char* name = nullptr;
+    char* src = nullptr;
+    size_t srcLen = 0;
+    char* decoded = nullptr;
 };
 
 enum class OpenedTagType : uint8_t
@@ -574,15 +595,11 @@ struct SvgLoaderData
     Array<SvgNodeIdPair> cloneNodes;
     Array<SvgNodeIdPair> nodesToStyle;
     Array<char*> images;        //embedded images
+    Array<FontFace> fonts;
     int level = 0;
     bool result = false;
     OpenedTagType openedTag = OpenedTagType::Other;
     SvgNode* currentGraphicsNode = nullptr;
-};
-
-struct Box
-{
-    float x, y, w, h;
 };
 
 #endif

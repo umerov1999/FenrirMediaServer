@@ -9,18 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Файлы исходного кода\id3v2lib">
-      <UniqueIdentifier>{bbbee08c-d4fa-41d8-97b1-0dbe1f1a047b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\id3v2lib\src">
-      <UniqueIdentifier>{b6004cbd-0f92-4027-be26-cffa3d8868c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\id3v2lib\include">
-      <UniqueIdentifier>{ebcc3112-44f9-4a90-acad-21ee8bf50a54}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\id3v2lib\include\id3v2lib">
-      <UniqueIdentifier>{981d9736-8812-4ee5-b473-6fe853e8a938}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы исходного кода\libogg">
       <UniqueIdentifier>{8a6c9ed4-0665-4329-bd8b-504732b9cf82}</UniqueIdentifier>
     </Filter>
@@ -67,21 +55,6 @@
     </ClCompile>
     <ClCompile Include="src\MP3DataProvider.cpp">
       <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\id3v2lib\src\header.cpp">
-      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\id3v2lib\src\id3v2lib.cpp">
-      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\id3v2lib\src\types.cpp">
-      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\id3v2lib\src\util.cpp">
-      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\id3v2lib\src\frame.cpp">
-      <Filter>Файлы исходного кода\id3v2lib\src</Filter>
     </ClCompile>
     <ClCompile Include="libs\libogg\src\bitwise.c">
       <Filter>Файлы исходного кода\libogg\src</Filter>
@@ -158,9 +131,6 @@
     <ClCompile Include="libs\libvorbis\lib\vorbisfile.c">
       <Filter>Файлы исходного кода\libvorbis\lib</Filter>
     </ClCompile>
-    <ClCompile Include="libs\minimp3\minimp3.c">
-      <Filter>Файлы исходного кода\minimp3</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\OGGDataProvider.h">
@@ -177,24 +147,6 @@
     </ClInclude>
     <ClInclude Include="src\WaveBlobs.h">
       <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib.h">
-      <Filter>Файлы исходного кода\id3v2lib\include</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\constants.h">
-      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\frame.h">
-      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\header.h">
-      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\types.h">
-      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\util.h">
-      <Filter>Файлы исходного кода\id3v2lib\include\id3v2lib</Filter>
     </ClInclude>
     <ClInclude Include="libs\libogg\include\ogg\ogg.h">
       <Filter>Файлы исходного кода\libogg\include\ogg</Filter>
@@ -339,9 +291,6 @@
     </ClInclude>
     <ClInclude Include="libs\libvorbis\include\vorbis\vorbisfile.h">
       <Filter>Файлы исходного кода\libvorbis\include\vorbis</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\minimp3\libc.h">
-      <Filter>Файлы исходного кода\minimp3</Filter>
     </ClInclude>
     <ClInclude Include="libs\minimp3\minimp3.h">
       <Filter>Файлы исходного кода\minimp3</Filter>

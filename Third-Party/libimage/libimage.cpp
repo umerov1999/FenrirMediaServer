@@ -773,21 +773,20 @@ std::string win_image::decompress_gzip(const std::string& str) {
 
 bool LIB_IMAGE::thorvg_init() {
 	if (!thorvg_inited) {
-		thorvg_inited = tvg::Initializer::init(4, tvg::CanvasEngine::Sw) == tvg::Result::Success;
+		thorvg_inited = tvg::Initializer::init(4) == tvg::Result::Success;
 	}
 	return thorvg_inited;
 }
 
 bool LIB_IMAGE::thorvg_destroy() {
 	if (thorvg_inited) {
-		thorvg_inited = tvg::Initializer::term(tvg::CanvasEngine::Sw) == tvg::Result::Success;
+		thorvg_inited = tvg::Initializer::term() == tvg::Result::Success;
 	}
 	return !thorvg_inited;
 }
 
 win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetHeight, const void* pDataBuffer, int nBufferSize, uint32_t bgColor) {
 	win_image_size size;
-	unique_ptr<tvg::SwCanvas> canvas;
 
 	//Initialize ThorVG Engine
 	if (!thorvg_init()) {
@@ -795,7 +794,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	}
 
 	//Create a Canvas
-	canvas = tvg::SwCanvas::gen();
+	auto canvas = tvg::SwCanvas::gen();
 	if (!canvas) {
 		return makeErrorBitmap(hwnd, size, true);
 	}
@@ -803,6 +802,8 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	auto picture = tvg::Picture::gen();
 	tvg::Result result = picture->load((const char*)pDataBuffer, nBufferSize, "svg");
 	if (result != tvg::Result::Success) {
+		delete canvas;
+		delete picture;
 		return makeErrorBitmap(hwnd, size, true);
 	}
 	if (targetWidth == 0 || targetHeight == 0) {
@@ -845,6 +846,8 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	size.size_y = targetHeight;
 	HBITMAP hOutputImage = (HBITMAP)CreateDIB(hwnd, targetWidth, targetHeight, 32);
 	if (hOutputImage == NULL) {
+		delete canvas;
+		delete picture;
 		return makeErrorBitmap(hwnd, size, true);
 	}
 
@@ -854,29 +857,36 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	unsigned char* pImageBuffer = (unsigned char*)btmOutputImage.bmBits;
 	if (canvas->target((uint32_t*)pImageBuffer, targetWidth, targetWidth, targetHeight, tvg::ColorSpace::ARGB8888) != tvg::Result::Success) {
 		DeleteObject(hOutputImage);
+		delete canvas;
+		delete picture;
 		return makeErrorBitmap(hwnd, size, true);
 	}
+	tvg::Shape* shape = nullptr;
 	//Background color if needed
 	if (bgColor != 0xffffffff) {
 		uint8_t r = (uint8_t)((bgColor & 0xff0000) >> 16);
 		uint8_t g = (uint8_t)((bgColor & 0x00ff00) >> 8);
 		uint8_t b = (uint8_t)((bgColor & 0x0000ff));
 
-		auto shape = tvg::Shape::gen();
+		shape = tvg::Shape::gen();
 		shape->appendRect(0, 0, targetWidth, targetHeight, 0, 0);
 		shape->fill(r, g, b, 255);
 
-		if (canvas->push(move(shape)) != tvg::Result::Success) {
+		if (canvas->push(shape) != tvg::Result::Success) {
+			delete canvas;
+			delete picture;
+			delete shape;
 			DeleteObject(hOutputImage);
 			return makeErrorBitmap(hwnd, size, true);
 		}
 	}
 
 	//Drawing
-	canvas->push(move(picture));
+	canvas->push(picture);
 	if (canvas->draw() == tvg::Result::Success) {
 		canvas->sync();
 	}
+	delete canvas;
 	return win_image(hOutputImage, size);
 }
 

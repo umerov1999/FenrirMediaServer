@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2023 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,36 +23,43 @@
 #ifndef _TVG_TEXT_H
 #define _TVG_TEXT_H
 
-#include <cstring>
+#include "tvgStr.h"
+#include "tvgMath.h"
 #include "tvgShape.h"
 #include "tvgFill.h"
 #include "tvgLoader.h"
 
-struct Text::Impl
+#define TEXT(A) static_cast<TextImpl*>(A)
+#define CONST_TEXT(A) static_cast<const TextImpl*>(A)
+
+struct TextImpl : Text
 {
+    Paint::Impl impl;
+    Shape* shape;   //text shape
     FontLoader* loader = nullptr;
-    Text* paint;
-    Shape* shape;
+    FontMetrics metrics;
     char* utf8 = nullptr;
     float fontSize;
     bool italic = false;
     bool changed = false;
 
-    Impl(Text* p) : paint(p), shape(Shape::gen().release())
+    TextImpl() : impl(Paint::Impl(this)), shape(Shape::gen())
     {
+        PAINT(shape)->parent = this;
+        shape->fill(FillRule::EvenOdd);
     }
 
-    ~Impl()
+    ~TextImpl()
     {
-        free(utf8);
+        tvg::free(utf8);
         LoaderMgr::retrieve(loader);
         delete(shape);
     }
 
     Result text(const char* utf8)
     {
-        free(this->utf8);
-        if (utf8) this->utf8 = strdup(utf8);
+        tvg::free(this->utf8);
+        if (utf8) this->utf8 = tvg::duplicate(utf8);
         else this->utf8 = nullptr;
         changed = true;
 
@@ -61,7 +68,7 @@ struct Text::Impl
 
     Result font(const char* name, float size, const char* style)
     {
-        auto loader = LoaderMgr::loader(name, nullptr);
+        auto loader = name ? LoaderMgr::font(name) : LoaderMgr::anyfont();
         if (!loader) return Result::InsufficientCondition;
 
         if (style && strstr(style, "italic")) italic = true;
@@ -84,59 +91,58 @@ struct Text::Impl
 
     RenderRegion bounds(RenderMethod* renderer)
     {
-        return P(shape)->bounds(renderer);
+        return SHAPE(shape)->bounds(renderer);
     }
 
     bool render(RenderMethod* renderer)
     {
         if (!loader) return true;
-        renderer->blend(PP(paint)->blendMethod);
-        return PP(shape)->render(renderer);
+        renderer->blend(impl.blendMethod);
+        return PAINT(shape)->render(renderer);
     }
 
-    bool load()
+    float load()
     {
-        if (!loader) return false;
+        if (!loader) return 0.0f;
 
-        loader->request(shape, utf8);
         //reload
         if (changed) {
-            loader->read();
+            loader->read(shape, utf8, metrics);
             changed = false;
         }
-        return loader->transform(shape, fontSize, italic);
+        return loader->transform(shape, metrics, fontSize, italic);
     }
 
     RenderData update(RenderMethod* renderer, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, TVG_UNUSED bool clipper)
     {
-        if (!load()) return nullptr;
+        auto scale = 1.0f / load();
+        if (tvg::zero(scale)) return nullptr;
 
         //transform the gradient coordinates based on the final scaled font.
-        auto fill = P(shape)->rs.fill;
-        if (fill && P(shape)->flag & RenderUpdateFlag::Gradient) {
-            auto scale = 1.0f / loader->scale;
+        auto fill = SHAPE(shape)->rs.fill;
+        if (fill && SHAPE(shape)->impl.renderFlag & RenderUpdateFlag::Gradient) {
             if (fill->type() == Type::LinearGradient) {
-                P(static_cast<LinearGradient*>(fill))->x1 *= scale;
-                P(static_cast<LinearGradient*>(fill))->y1 *= scale;
-                P(static_cast<LinearGradient*>(fill))->x2 *= scale;
-                P(static_cast<LinearGradient*>(fill))->y2 *= scale;
+                LINEAR(fill)->x1 *= scale;
+                LINEAR(fill)->y1 *= scale;
+                LINEAR(fill)->x2 *= scale;
+                LINEAR(fill)->y2 *= scale;
             } else {
-                P(static_cast<RadialGradient*>(fill))->cx *= scale;
-                P(static_cast<RadialGradient*>(fill))->cy *= scale;
-                P(static_cast<RadialGradient*>(fill))->r *= scale;
-                P(static_cast<RadialGradient*>(fill))->fx *= scale;
-                P(static_cast<RadialGradient*>(fill))->fy *= scale;
-                P(static_cast<RadialGradient*>(fill))->fr *= scale;
+                RADIAL(fill)->cx *= scale;
+                RADIAL(fill)->cy *= scale;
+                RADIAL(fill)->r *= scale;
+                RADIAL(fill)->fx *= scale;
+                RADIAL(fill)->fy *= scale;
+                RADIAL(fill)->fr *= scale;
             }
         }
-        return PP(shape)->update(renderer, transform, clips, opacity, pFlag, false);
+
+        return PAINT(shape)->update(renderer, transform, clips, opacity, pFlag, false);
     }
 
-    bool bounds(float* x, float* y, float* w, float* h, TVG_UNUSED bool stroking)
+    Result bounds(Point* pt4, Matrix& m, bool obb, TVG_UNUSED bool stroking)
     {
-        if (!load()) return false;
-        PP(shape)->bounds(x, y, w, h, true, true, false);
-        return true;
+        if (load() == 0.0f) return Result::InsufficientCondition;
+        return PAINT(shape)->bounds(pt4, &m, obb, true);
     }
 
     Paint* duplicate(Paint* ret)
@@ -145,16 +151,17 @@ struct Text::Impl
 
         load();
 
-        auto text = Text::gen().release();
-        auto dup = text->pImpl;
-        P(shape)->duplicate(dup->shape);
+        auto text = Text::gen();
+        auto dup = TEXT(text);
+
+        SHAPE(shape)->duplicate(dup->shape);
 
         if (loader) {
             dup->loader = loader;
             ++dup->loader->sharing;
         }
 
-        dup->utf8 = strdup(utf8);
+        dup->utf8 = tvg::duplicate(utf8);
         dup->italic = italic;
         dup->fontSize = fontSize;
 
@@ -166,7 +173,5 @@ struct Text::Impl
         return nullptr;
     }
 };
-
-
 
 #endif //_TVG_TEXT_H

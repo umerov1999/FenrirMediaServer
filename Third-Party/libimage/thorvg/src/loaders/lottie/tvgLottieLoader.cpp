@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2023 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-#include "tvgLottieLoader.h"
+#include "tvgStr.h"
+ #include "tvgLottieLoader.h"
 #include "tvgLottieModel.h"
 #include "tvgLottieParser.h"
 #include "tvgLottieBuilder.h"
-#include "tvgStr.h"
 
 /************************************************************************/
 /* Internal Class Implementation                                        */
@@ -37,11 +37,15 @@ void LottieLoader::run(unsigned tid)
         builder->update(comp, frameNo);
     //initial loading
     } else {
-        LottieParser parser(content, dirName, colorReplaceInternal);
+        LottieParser parser(content, dirName, builder->expressions(), colorReplaceInternal);
         if (!parser.parse()) return;
         {
             ScopedLock lock(key);
             comp = parser.comp;
+        }
+        if (parser.slots) {
+            override(parser.slots, true);
+            parser.slots = nullptr;
         }
         builder->build(comp);
 
@@ -54,11 +58,9 @@ void LottieLoader::run(unsigned tid)
 void LottieLoader::release()
 {
     if (copy) {
-        free((char*)content);
+        tvg::free((char*)content);
         content = nullptr;
     }
-    free(dirName);
-    dirName = nullptr;
 }
 
 
@@ -66,7 +68,7 @@ void LottieLoader::release()
 /* External Class Implementation                                        */
 /************************************************************************/
 
-LottieLoader::LottieLoader() : FrameModule(FileType::Lottie), builder(new LottieBuilder)
+LottieLoader::LottieLoader() : FrameModule(FileType::Lot), builder(new LottieBuilder)
 {
 
 }
@@ -81,6 +83,8 @@ LottieLoader::~LottieLoader()
     //TODO: correct position?
     delete(comp);
     delete(builder);
+
+    tvg::free(dirName);
 }
 
 
@@ -93,8 +97,7 @@ bool LottieLoader::header()
         if (comp) {
             w = static_cast<float>(comp->w);
             h = static_cast<float>(comp->h);
-            frameDuration = comp->duration();
-            frameCnt = comp->frameCnt();
+            segmentEnd = frameCnt = comp->frameCnt();
             frameRate = comp->frameRate;
             return true;
         } else {
@@ -124,7 +127,7 @@ bool LottieLoader::header()
             ++p;
             continue;
         }
-        //version.
+        //version
         if (!strncmp(p, "\"v\":", 4)) {
             p += 4;
             continue;
@@ -135,7 +138,7 @@ bool LottieLoader::header()
             p += 5;
             auto e = strstr(p, ",");
             if (!e) e = strstr(p, "}");
-            frameRate = strToFloat(p, nullptr);
+            frameRate = toFloat(p, nullptr);
             p = e;
             continue;
         }
@@ -145,7 +148,7 @@ bool LottieLoader::header()
             p += 5;
             auto e = strstr(p, ",");
             if (!e) e = strstr(p, "}");
-            startFrame = strToFloat(p, nullptr);
+            startFrame = toFloat(p, nullptr);
             p = e;
             continue;
         }
@@ -155,7 +158,7 @@ bool LottieLoader::header()
             p += 5;
             auto e = strstr(p, ",");
             if (!e) e = strstr(p, "}");
-            endFrame = strToFloat(p, nullptr);
+            endFrame = toFloat(p, nullptr);
             p = e;
             continue;
         }
@@ -165,7 +168,7 @@ bool LottieLoader::header()
             p += 4;
             auto e = strstr(p, ",");
             if (!e) e = strstr(p, "}");
-            w = strToFloat(p, nullptr);
+            w = toFloat(p, nullptr);
             p = e;
             continue;
         }
@@ -174,7 +177,7 @@ bool LottieLoader::header()
             p += 4;
             auto e = strstr(p, ",");
             if (!e) e = strstr(p, "}");
-            h = strToFloat(p, nullptr);
+            h = toFloat(p, nullptr);
             p = e;
             continue;
         }
@@ -186,20 +189,19 @@ bool LottieLoader::header()
         return false;
     }
 
-    frameCnt = (endFrame - startFrame);
-    frameDuration = frameCnt / frameRate;
+    segmentEnd = frameCnt = (endFrame - startFrame);
 
-    TVGLOG("LOTTIE", "info: frame rate = %f, duration = %f size = %f x %f", frameRate, frameDuration, w, h);
+    TVGLOG("LOTTIE", "info: frame rate = %f, duration = %f size = %f x %f", frameRate, frameCnt / frameRate, w, h);
 
     return true;
 }
 
 
-bool LottieLoader::open(const char* data, uint32_t size, const std::string& rpath, bool copy, const ColorReplace& colorReplacement)
+bool LottieLoader::open(const char* data, uint32_t size, const char* rpath, bool copy, const ColorReplace& colorReplacement)
 {
     colorReplaceInternal = colorReplacement;
     if (copy) {
-        content = (char*)malloc(size + 1);
+        content = tvg::malloc<char*>(size + 1);
         if (!content) return false;
         memcpy((char*)content, data, size);
         const_cast<char*>(content)[size] = '\0';
@@ -208,17 +210,18 @@ bool LottieLoader::open(const char* data, uint32_t size, const std::string& rpat
     this->size = size;
     this->copy = copy;
 
-    if (rpath.empty()) this->dirName = strdup(".");
-    else this->dirName = strdup(rpath.c_str());
+    if (!rpath) this->dirName = duplicate(".");
+    else this->dirName = duplicate(rpath);
 
     return header();
 }
 
 
-bool LottieLoader::open(const string& path, const ColorReplace& colorReplacement)
+bool LottieLoader::open(const char* path, const ColorReplace& colorReplacement)
 {
+#ifdef THORVG_FILE_IO_SUPPORT
     colorReplaceInternal = colorReplacement;
-    auto f = fopen(path.c_str(), "r");
+    auto f = fopen(path, "r");
     if (!f) return false;
 
     fseek(f, 0, SEEK_END);
@@ -229,22 +232,21 @@ bool LottieLoader::open(const string& path, const ColorReplace& colorReplacement
         return false;
     }
 
-    auto content = (char*)(malloc(sizeof(char) * size + 1));
+    auto content = tvg::malloc<char*>(sizeof(char) * size + 1);
     fseek(f, 0, SEEK_SET);
-    auto ret = fread(content, sizeof(char), size, f);
-    if (ret < size) {
-        fclose(f);
-        return false;
-    }
+    size = fread(content, sizeof(char), size, f);
     content[size] = '\0';
 
     fclose(f);
 
-    this->dirName = strDirname(path.c_str());
+    this->dirName = tvg::dirname(path);
     this->content = content;
     this->copy = true;
 
     return header();
+#else
+    return false;
+#endif
 }
 
 
@@ -258,9 +260,8 @@ bool LottieLoader::resize(Paint* paint, float w, float h)
     paint->transform(m);
 
     //apply the scale to the base clipper
-    const Paint* clipper;
-    paint->mask(&clipper);
-    if (clipper) const_cast<Paint*>(clipper)->transform(m);
+    auto clipper = PAINT(paint)->clipper;
+    if (clipper) clipper->transform(m);
 
     return true;
 }
@@ -289,61 +290,64 @@ Paint* LottieLoader::paint()
 }
 
 
-bool LottieLoader::override(const char* slot)
+bool LottieLoader::override(const char* slots, bool byDefault)
 {
     if (!ready() || comp->slots.count == 0) return false;
 
-    auto success = true;
-
     //override slots
-    if (slot) {
+    if (slots) {
         //Copy the input data because the JSON parser will encode the data immediately.
-        auto temp = strdup(slot);
+        auto temp = byDefault ? slots : duplicate(slots);
 
         //parsing slot json
-        LottieParser parser(temp, dirName, colorReplaceInternal);
+        LottieParser parser(temp, dirName, builder->expressions(), colorReplaceInternal);
         parser.comp = comp;
 
         auto idx = 0;
+        auto succeed = false;
         while (auto sid = parser.sid(idx == 0)) {
-            for (auto s = comp->slots.begin(); s < comp->slots.end(); ++s) {
-                if (strcmp((*s)->sid, sid)) continue;
-                if (!parser.apply(*s)) success = false;
+            auto applied = false;
+            ARRAY_FOREACH(p, comp->slots) {
+                if (strcmp((*p)->sid, sid)) continue;
+                if (parser.apply(*p, byDefault)) succeed = applied = true;
                 break;
             }
+            if (!applied) parser.skip();
             ++idx;
         }
-
-        if (idx < 1) success = false;
-        free(temp);
-        rebuild = overridden = success;
+        tvg::free((char*)temp);
+        rebuild = succeed;
+        overridden |= succeed;
+        return rebuild;
     //reset slots
     } else if (overridden) {
-        for (auto s = comp->slots.begin(); s < comp->slots.end(); ++s) {
-            (*s)->reset();
-        }
+        ARRAY_FOREACH(p, comp->slots) (*p)->reset();
         overridden = false;
         rebuild = true;
     }
-    return success;
+    return true;
+}
+
+
+float LottieLoader::shorten(float frameNo)
+{
+    //This ensures that the target frame number is reached.
+    return nearbyintf((frameNo + startFrame()) * 10000.0f) * 0.0001f;
 }
 
 
 bool LottieLoader::frame(float no)
 {
-    auto frameNo = no + startFrame();
-
-    //This ensures that the target frame number is reached.
-    frameNo *= 10000.0f;
-    frameNo = nearbyintf(frameNo);
-    frameNo *= 0.0001f;
+    no = shorten(no);
 
     //Skip update if frame diff is too small.
-    if (fabsf(this->frameNo - frameNo) <= 0.0009f) return false;
+    if (!builder->tweening() && fabsf(this->frameNo - no) <= 0.0009f) return false;
 
     this->done();
 
-    this->frameNo = frameNo;
+    this->frameNo = no;
+
+    builder->offTween();
 
     TaskScheduler::request(this);
 
@@ -353,13 +357,13 @@ bool LottieLoader::frame(float no)
 
 float LottieLoader::startFrame()
 {
-    return frameCnt * segmentBegin;
+    return segmentBegin;
 }
 
 
 float LottieLoader::totalFrame()
 {
-    return (segmentEnd - segmentBegin) * frameCnt;
+    return segmentEnd - segmentBegin;
 }
 
 
@@ -371,8 +375,7 @@ float LottieLoader::curFrame()
 
 float LottieLoader::duration()
 {
-    if (segmentBegin == 0.0f && segmentEnd == 1.0f) return frameDuration;
-    return frameCnt * (segmentEnd - segmentBegin) / frameRate;
+    return (segmentEnd - segmentBegin) / frameRate;
 }
 
 
@@ -398,14 +401,28 @@ const char* LottieLoader::markers(uint32_t index)
 }
 
 
+Result LottieLoader::segment(float begin, float end)
+{
+    if (begin < 0.0f) begin = 0.0f;
+    if (end > frameCnt) end = frameCnt;
+
+    if (begin > end) return Result::InvalidArguments;
+
+    segmentBegin = begin;
+    segmentEnd = end;
+
+    return Result::Success;
+}
+
+
 bool LottieLoader::segment(const char* marker, float& begin, float& end)
 {
     if (!ready() || comp->markers.count == 0) return false;
 
-    for (auto m = comp->markers.begin(); m < comp->markers.end(); ++m) {
-        if (!strcmp(marker, (*m)->name)) {
-            begin = (*m)->time / frameCnt;
-            end = ((*m)->time + (*m)->duration) / frameCnt;
+    ARRAY_FOREACH(p, comp->markers) {
+        if (!strcmp(marker, (*p)->name)) {
+            begin = (*p)->time;
+            end = (*p)->time + (*p)->duration;
             return true;
         }
     }
@@ -422,4 +439,31 @@ bool LottieLoader::ready()
     done();
     if (comp) return true;
     return false;
+}
+
+
+bool LottieLoader::tween(float from, float to, float progress)
+{
+    //tweening is not necessary
+    if (tvg::zero(progress)) return frame(from);
+    else if (tvg::equal(progress, 1.0f)) return frame(to);
+
+    done();
+
+    frameNo = shorten(from);
+
+    builder->onTween(shorten(to), progress);
+
+    TaskScheduler::request(this);
+
+    return true;
+}
+
+
+bool LottieLoader::assign(const char* layer, uint32_t ix, const char* var, float val)
+{
+    if (!ready() || !comp->expressions) return false;
+    comp->root->assign(layer, ix, var, val);
+
+    return true;
 }

@@ -150,6 +150,9 @@
     <ClInclude Include="dictBuilder\divsufsort.h">
       <Filter>Файлы включений\dictBuilder</Filter>
     </ClInclude>
+    <ClInclude Include="compress\zstd_preSplit.h">
+      <Filter>Файлы включений\compress</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\debug.c">
@@ -238,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="dictBuilder\zdict.c">
       <Filter>Файлы исходного кода\dictBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="compress\zstd_preSplit.c">
+      <Filter>Файлы исходного кода\compress</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

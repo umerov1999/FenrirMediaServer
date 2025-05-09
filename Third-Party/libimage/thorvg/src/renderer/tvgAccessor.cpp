@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2021 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,20 +50,28 @@ static bool accessChildren(Iterator* it, function<bool(const Paint* paint, void*
 /* External Class Implementation                                        */
 /************************************************************************/
 
-Result Accessor::set(const Picture* picture, function<bool(const Paint* paint, void* data)> func, void* data) noexcept
+Result Accessor::set(Paint* paint, function<bool(const Paint* paint, void* data)> func, void* data) noexcept
 {
-    if (!picture || !func) return Result::InvalidArguments;
+    if (!paint || !func) return Result::InvalidArguments;
 
     //Use the Preorder Tree-Search
 
+    paint->ref();
+
     //Root
-    if (!func(picture, data)) return Result::Success;
+    if (!func(paint, data)) {
+        paint->unref();
+        return Result::Success;
+    }
 
     //Children
-    if (auto it = IteratorAccessor::iterator(picture)) {
+    if (auto it = IteratorAccessor::iterator(paint)) {
         accessChildren(it, func, data);
         delete(it);
     }
+
+    paint->unref(false);
+
     return Result::Success;
 }
 
@@ -86,7 +94,7 @@ Accessor::Accessor() : pImpl(nullptr)
 }
 
 
-unique_ptr<Accessor> Accessor::gen() noexcept
+Accessor* Accessor::gen() noexcept
 {
-    return unique_ptr<Accessor>(new Accessor);
+    return new Accessor;
 }

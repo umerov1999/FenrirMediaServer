@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2023 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,6 @@ public:
     uint32_t size = 0;                  //lottie data size
     float frameNo = 0.0f;               //current frame number
     float frameCnt = 0.0f;
-    float frameDuration = 0.0f;
     float frameRate = 0.0f;
 
     LottieBuilder* builder;
@@ -47,18 +46,18 @@ public:
     Key key;
     char* dirName = nullptr;            //base resource directory
     bool copy = false;                  //"content" is owned by this loader
-    bool overridden = false;             //overridden properties with slots
+    bool overridden = false;            //overridden properties with slots
     bool rebuild = false;               //require building the lottie scene
 
     LottieLoader();
     ~LottieLoader();
 
-    bool open(const string& path, const ColorReplace& colorReplacement) override;
-    bool open(const char* data, uint32_t size, const std::string& rpath, bool copy, const ColorReplace& colorReplacement) override;
+    bool open(const char* path, const ColorReplace& colorReplacement) override;
+    bool open(const char* data, uint32_t size, const char* rpath, bool copy, const ColorReplace& colorReplacement) override;
     bool resize(Paint* paint, float w, float h) override;
     bool read() override;
     Paint* paint() override;
-    bool override(const char* slot);
+    bool override(const char* slot, bool byDefault = false);
 
     //Frame Controls
     bool frame(float no) override;
@@ -71,6 +70,11 @@ public:
     uint32_t markersCnt();
     const char* markers(uint32_t index);
     bool segment(const char* marker, float& begin, float& end);
+    Result segment(float begin, float end) override;
+
+    float shorten(float frameNo);  //Reduce the accuracy for performance
+    bool tween(float from, float to, float progress);
+    bool assign(const char* layer, uint32_t ix, const char* var, float val);
 
 private:
     bool ready();

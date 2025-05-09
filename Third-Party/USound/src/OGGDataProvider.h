@@ -7,8 +7,7 @@
 #include <vorbis/vorbisfile.h>
 #include "WaveBlobs.h"
 
-class clOGGDataProvider
-{
+class clOGGDataProvider {
 public:
 	clOGGDataProvider( const std::shared_ptr<clBlob>& Data );
 	~clOGGDataProvider();

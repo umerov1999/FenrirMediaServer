@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,21 @@ namespace tvg
 using RenderData = void*;
 using pixel_t = uint32_t;
 
-enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, Blend = 128, All = 255};
+#define DASH_PATTERN_THRESHOLD 0.001f
+
+enum RenderUpdateFlag : uint16_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, Blend = 128, Clip = 256, All = 0xffff};
+enum CompositionFlag : uint8_t {Invalid = 0, Opacity = 1, Blending = 2, Masking = 4, PostProcessing = 8};  //Composition Purpose
+
+static inline void operator|=(RenderUpdateFlag& a, const RenderUpdateFlag b)
+{
+    a = RenderUpdateFlag(uint16_t(a) | uint16_t(b));
+}
+
+static inline RenderUpdateFlag operator|(const RenderUpdateFlag a, const RenderUpdateFlag b)
+{
+    return RenderUpdateFlag(uint16_t(a) | uint16_t(b));
+}
+
 
 struct RenderSurface
 {
@@ -67,6 +81,11 @@ struct RenderSurface
     }
 };
 
+struct RenderColor
+{
+    uint8_t r, g, b, a;
+};
+
 struct RenderCompositor
 {
     MaskMethod method;
@@ -87,95 +106,92 @@ struct RenderRegion
     }
 };
 
+struct RenderPath
+{
+    Array<PathCommand> cmds;
+    Array<Point> pts;
+
+    void clear()
+    {
+        pts.clear();
+        cmds.clear();
+    }
+
+    bool bounds(Matrix* m, float* x, float* y, float* w, float* h);
+};
+
+struct RenderTrimPath
+{
+    float begin = 0.0f;
+    float end = 1.0f;
+    bool simultaneous = true;
+
+    bool valid()
+    {
+        if (begin != 0.0f || end != 1.0f) return true;
+        return false;
+    }
+
+    bool trim(const RenderPath& in, RenderPath& out) const;
+};
+
 struct RenderStroke
 {
     float width = 0.0f;
-    uint8_t color[4] = {0, 0, 0, 0};
+    RenderColor color{};
     Fill *fill = nullptr;
-    float* dashPattern = nullptr;
-    uint32_t dashCnt = 0;
-    float dashOffset = 0.0f;
+    struct {
+        float* pattern = nullptr;
+        uint32_t count = 0;
+        float offset = 0.0f;
+        float length = 0.0f;
+    } dash;
     float miterlimit = 4.0f;
+    RenderTrimPath trim;
     StrokeCap cap = StrokeCap::Square;
     StrokeJoin join = StrokeJoin::Bevel;
-    bool strokeFirst = false;
-
-    struct {
-        float begin = 0.0f;
-        float end = 1.0f;
-        bool simultaneous = true;
-    } trim;
+    bool first = false;
 
     void operator=(const RenderStroke& rhs)
     {
         width = rhs.width;
-
-        memcpy(color, rhs.color, sizeof(color));
+        color = rhs.color;
 
         delete(fill);
         if (rhs.fill) fill = rhs.fill->duplicate();
         else fill = nullptr;
 
-        free(dashPattern);
-        if (rhs.dashCnt > 0) {
-            dashPattern = static_cast<float*>(malloc(sizeof(float) * rhs.dashCnt));
-            memcpy(dashPattern, rhs.dashPattern, sizeof(float) * rhs.dashCnt);
+        tvg::free(dash.pattern);
+        if (rhs.dash.count > 0) {
+            dash.pattern = tvg::malloc<float*>(sizeof(float) * rhs.dash.count);
+            memcpy(dash.pattern, rhs.dash.pattern, sizeof(float) * rhs.dash.count);
         } else {
-            dashPattern = nullptr;
+            dash.pattern = nullptr;
         }
-        dashCnt = rhs.dashCnt;
+        dash.count = rhs.dash.count;
+        dash.offset = rhs.dash.offset;
+        dash.length = rhs.dash.length;
         miterlimit = rhs.miterlimit;
         cap = rhs.cap;
         join = rhs.join;
-        strokeFirst = rhs.strokeFirst;
+        first = rhs.first;
         trim = rhs.trim;
-    }
-
-    bool strokeTrim(float& begin, float& end) const
-    {
-        begin = trim.begin;
-        end = trim.end;
-
-        if (fabsf(end - begin) >= 1.0f) {
-            begin = 0.0f;
-            end = 1.0f;
-            return false;
-        }
-
-        auto loop = true;
-
-        if (begin > 1.0f && end > 1.0f) loop = false;
-        if (begin < 0.0f && end < 0.0f) loop = false;
-        if (begin >= 0.0f && begin <= 1.0f && end >= 0.0f  && end <= 1.0f) loop = false;
-
-        if (begin > 1.0f) begin -= 1.0f;
-        if (begin < 0.0f) begin += 1.0f;
-        if (end > 1.0f) end -= 1.0f;
-        if (end < 0.0f) end += 1.0f;
-
-        if ((loop && begin < end) || (!loop && begin > end)) std::swap(begin, end);
-        return true;
     }
 
     ~RenderStroke()
     {
-        free(dashPattern);
+        tvg::free(dash.pattern);
         delete(fill);
     }
 };
 
 struct RenderShape
 {
-    struct
-    {
-        Array<PathCommand> cmds;
-        Array<Point> pts;
-    } path;
-
+    RenderPath path;
     Fill *fill = nullptr;
-    uint8_t color[4] = {0, 0, 0, 0};    //r, g, b, a
+    RenderColor color{};
     RenderStroke *stroke = nullptr;
-    FillRule rule = FillRule::Winding;
+    FillRule rule = FillRule::NonZero;
 
     ~RenderShape()
     {
@@ -185,10 +201,21 @@ struct RenderShape
 
     void fillColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
     {
-        if (r) *r = color[0];
-        if (g) *g = color[1];
-        if (b) *b = color[2];
-        if (a) *a = color[3];
+        if (r) *r = color.r;
+        if (g) *g = color.g;
+        if (b) *b = color.b;
+        if (a) *a = color.a;
+    }
+
+    bool trimpath() const
+    {
+        if (!stroke) return false;
+        return stroke->trim.valid();
+    }
+
+    bool strokeFirst() const
+    {
+        return (stroke && stroke->first) ? true : false;
     }
 
     float strokeWidth() const
@@ -197,22 +224,14 @@ struct RenderShape
         return stroke->width;
     }
 
-    bool strokeTrim() const
-    {
-        if (!stroke) return false;
-        if (stroke->trim.begin == 0.0f && stroke->trim.end == 1.0f) return false;
-        if (fabsf(stroke->trim.end - stroke->trim.begin) >= 1.0f) return false;
-        return true;
-    }
-
     bool strokeFill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
     {
         if (!stroke) return false;
 
-        if (r) *r = stroke->color[0];
-        if (g) *g = stroke->color[1];
-        if (b) *b = stroke->color[2];
-        if (a) *a = stroke->color[3];
+        if (r) *r = stroke->color.r;
+        if (g) *g = stroke->color.g;
+        if (b) *b = stroke->color.b;
+        if (a) *a = stroke->color.a;
 
         return true;
     }
@@ -226,9 +245,9 @@ struct RenderShape
     uint32_t strokeDash(const float** dashPattern, float* offset) const
     {
         if (!stroke) return 0;
-        if (dashPattern) *dashPattern = stroke->dashPattern;
-        if (offset) *offset = stroke->dashOffset;
-        return stroke->dashCnt;
+        if (dashPattern) *dashPattern = stroke->dash.pattern;
+        if (offset) *offset = stroke->dash.offset;
+        return stroke->dash.count;
     }
 
     StrokeCap strokeCap() const
@@ -255,12 +274,9 @@ struct RenderEffect
     RenderData rd = nullptr;
     RenderRegion extend = {0, 0, 0, 0};
     SceneEffect type;
-    bool invalid = false;
+    bool valid = false;
 
-    virtual ~RenderEffect()
-    {
-        free(rd);
-    }
+    virtual ~RenderEffect() {}
 };
 
 struct RenderEffectGaussianBlur : RenderEffect
@@ -296,12 +312,72 @@ struct RenderEffectDropShadow : RenderEffect
         inst->color[0] = va_arg(args, int);
         inst->color[1] = va_arg(args, int);
         inst->color[2] = va_arg(args, int);
-        inst->color[3] = std::min(va_arg(args, int), 255);
+        inst->color[3] = va_arg(args, int);
         inst->angle = (float) va_arg(args, double);
         inst->distance = (float) va_arg(args, double);
         inst->sigma = std::max((float) va_arg(args, double), 0.0f);
         inst->quality = std::min(va_arg(args, int), 100);
         inst->type = SceneEffect::DropShadow;
+        return inst;
+    }
+};
+
+struct RenderEffectFill : RenderEffect
+{
+    uint8_t color[4];  //rgba
+
+    static RenderEffectFill* gen(va_list& args)
+    {
+        auto inst = new RenderEffectFill;
+        inst->color[0] = va_arg(args, int);
+        inst->color[1] = va_arg(args, int);
+        inst->color[2] = va_arg(args, int);
+        inst->color[3] = va_arg(args, int);
+        inst->type = SceneEffect::Fill;
+        return inst;
+    }
+};
+
+struct RenderEffectTint : RenderEffect
+{
+    uint8_t black[3];  //rgb
+    uint8_t white[3];  //rgb
+    uint8_t intensity; //0 - 255
+
+    static RenderEffectTint* gen(va_list& args)
+    {
+        auto inst = new RenderEffectTint;
+        inst->black[0] = va_arg(args, int);
+        inst->black[1] = va_arg(args, int);
+        inst->black[2] = va_arg(args, int);
+        inst->white[0] = va_arg(args, int);
+        inst->white[1] = va_arg(args, int);
+        inst->white[2] = va_arg(args, int);
+        inst->intensity = (uint8_t)(va_arg(args, double) * 2.55);
+        inst->type = SceneEffect::Tint;
+        return inst;
+    }
+};
+
+struct RenderEffectTritone : RenderEffect
+{
+    uint8_t shadow[3];       //rgb
+    uint8_t midtone[3];      //rgb
+    uint8_t highlight[3];    //rgb
+
+    static RenderEffectTritone* gen(va_list& args)
+    {
+        auto inst = new RenderEffectTritone;
+        inst->shadow[0] = va_arg(args, int);
+        inst->shadow[1] = va_arg(args, int);
+        inst->shadow[2] = va_arg(args, int);
+        inst->midtone[0] = va_arg(args, int);
+        inst->midtone[1] = va_arg(args, int);
+        inst->midtone[2] = va_arg(args, int);
+        inst->highlight[0] = va_arg(args, int);
+        inst->highlight[1] = va_arg(args, int);
+        inst->highlight[2] = va_arg(args, int);
+        inst->type = SceneEffect::Tritone;
         return inst;
     }
 };
@@ -317,8 +393,10 @@ public:
     uint32_t unref();
 
     virtual ~RenderMethod() {}
+    virtual bool preUpdate() = 0;
     virtual RenderData prepare(const RenderShape& rshape, RenderData data, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags, bool clipper) = 0;
     virtual RenderData prepare(RenderSurface* surface, RenderData data, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags) = 0;
+    virtual bool postUpdate() = 0;
     virtual bool preRender() = 0;
     virtual bool renderShape(RenderData data) = 0;
     virtual bool renderImage(RenderData data) = 0;
@@ -334,12 +412,14 @@ public:
     virtual bool clear() = 0;
     virtual bool sync() = 0;
 
-    virtual RenderCompositor* target(const RenderRegion& region, ColorSpace cs) = 0;
+    virtual RenderCompositor* target(const RenderRegion& region, ColorSpace cs, CompositionFlag flags) = 0;
     virtual bool beginComposite(RenderCompositor* cmp, MaskMethod method, uint8_t opacity) = 0;
     virtual bool endComposite(RenderCompositor* cmp) = 0;
 
-    virtual bool prepare(RenderEffect* effect) = 0;
-    virtual bool effect(RenderCompositor* cmp, const RenderEffect* effect, bool direct) = 0;
+    virtual void prepare(RenderEffect* effect, const Matrix& transform) = 0;
+    virtual bool region(RenderEffect* effect) = 0;
+    virtual bool render(RenderCompositor* cmp, const RenderEffect* effect, bool direct) = 0;
+    virtual void dispose(RenderEffect* effect) = 0;
 };
 
 static inline bool MASK_REGION_MERGING(MaskMethod method)

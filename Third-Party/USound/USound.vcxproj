@@ -7,11 +7,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="libs\id3v2lib\src\frame.cpp" />
-    <ClCompile Include="libs\id3v2lib\src\header.cpp" />
-    <ClCompile Include="libs\id3v2lib\src\id3v2lib.cpp" />
-    <ClCompile Include="libs\id3v2lib\src\types.cpp" />
-    <ClCompile Include="libs\id3v2lib\src\util.cpp" />
     <ClCompile Include="libs\libogg\src\bitwise.c" />
     <ClCompile Include="libs\libogg\src\framing.c" />
     <ClCompile Include="libs\libvorbis\lib\analysis.c" />
@@ -37,19 +32,12 @@
     <ClCompile Include="libs\libvorbis\lib\vorbisenc.c" />
     <ClCompile Include="libs\libvorbis\lib\vorbisfile.c" />
     <ClCompile Include="libs\libvorbis\lib\window.c" />
-    <ClCompile Include="libs\minimp3\minimp3.c" />
     <ClCompile Include="src\MP3DataProvider.cpp" />
     <ClCompile Include="src\OGGDataProvider.cpp" />
     <ClCompile Include="src\USound.cpp" />
     <ClCompile Include="src\WAVDataEncoder.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib.h" />
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\constants.h" />
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\frame.h" />
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\header.h" />
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\types.h" />
-    <ClInclude Include="libs\id3v2lib\include\id3v2lib\util.h" />
     <ClInclude Include="libs\libogg\include\ogg\ogg.h" />
     <ClInclude Include="libs\libogg\include\ogg\os_types.h" />
     <ClInclude Include="libs\libogg\src\crctable.h" />
@@ -98,7 +86,6 @@
     <ClInclude Include="libs\libvorbis\lib\scales.h" />
     <ClInclude Include="libs\libvorbis\lib\smallft.h" />
     <ClInclude Include="libs\libvorbis\lib\window.h" />
-    <ClInclude Include="libs\minimp3\libc.h" />
     <ClInclude Include="libs\minimp3\minimp3.h" />
     <ClInclude Include="src\MP3DataProvider.h" />
     <ClInclude Include="src\OGGDataProvider.h" />

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2022 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,8 @@
  * SOFTWARE.
  */
 
+#include "tvgStr.h"
 #include "tvgSvgCssStyle.h"
-
-#include <cstring>
 
 /************************************************************************/
 /* Internal Class Implementation                                        */
@@ -72,8 +71,8 @@ static void _copyStyle(SvgStyleProperty* to, const SvgStyleProperty* from)
         to->fill.paint.none = from->fill.paint.none;
         to->fill.paint.curColor = from->fill.paint.curColor;
         if (from->fill.paint.url) {
-            if (to->fill.paint.url) free(to->fill.paint.url);
-            to->fill.paint.url = strdup(from->fill.paint.url);
+            if (to->fill.paint.url) tvg::free(to->fill.paint.url);
+            to->fill.paint.url = duplicate(from->fill.paint.url);
         }
         to->fill.flags = (to->fill.flags | SvgFillFlags::Paint);
         to->flags = (to->flags | SvgStyleFlags::Fill);
@@ -106,8 +105,8 @@ static void _copyStyle(SvgStyleProperty* to, const SvgStyleProperty* from)
         to->stroke.paint.none = from->stroke.paint.none;
         to->stroke.paint.curColor = from->stroke.paint.curColor;
         if (from->stroke.paint.url) {
-            if (to->stroke.paint.url) free(to->stroke.paint.url);
-            to->stroke.paint.url = strdup(from->stroke.paint.url);
+            if (to->stroke.paint.url) tvg::free(to->stroke.paint.url);
+            to->stroke.paint.url = duplicate(from->stroke.paint.url);
         }
         to->stroke.flags = (to->stroke.flags | SvgStrokeFlags::Paint);
         to->flags = (to->flags | SvgStyleFlags::Stroke);
@@ -138,8 +137,8 @@ static void _copyStyle(SvgStyleProperty* to, const SvgStyleProperty* from)
         if (from->stroke.dash.array.count > 0) {
             to->stroke.dash.array.clear();
             to->stroke.dash.array.reserve(from->stroke.dash.array.count);
-            for (uint32_t i = 0; i < from->stroke.dash.array.count; ++i) {
-                to->stroke.dash.array.push(from->stroke.dash.array[i]);
+            ARRAY_FOREACH(p, from->stroke.dash.array) {
+                to->stroke.dash.array.push(*p);
             }
             to->stroke.flags = (to->stroke.flags | SvgStrokeFlags::Dash);
             to->flags = (to->flags | SvgStyleFlags::StrokeDashArray);
@@ -187,7 +186,7 @@ void cssCopyStyleAttr(SvgNode* to, const SvgNode* from)
 {
     //Copy matrix attribute
     if (from->transform && !(to->style->flags & SvgStyleFlags::Transform)) {
-        to->transform = (Matrix*)malloc(sizeof(Matrix));
+        to->transform = tvg::malloc<Matrix*>(sizeof(Matrix));
         if (to->transform) {
             *to->transform = *from->transform;
             to->style->flags = (to->style->flags | SvgStyleFlags::Transform);
@@ -197,12 +196,12 @@ void cssCopyStyleAttr(SvgNode* to, const SvgNode* from)
     _copyStyle(to->style, from->style);
 
     if (from->style->clipPath.url) {
-        if (to->style->clipPath.url) free(to->style->clipPath.url);
-        to->style->clipPath.url = strdup(from->style->clipPath.url);
+        if (to->style->clipPath.url) tvg::free(to->style->clipPath.url);
+        to->style->clipPath.url = duplicate(from->style->clipPath.url);
     }
     if (from->style->mask.url) {
-        if (to->style->mask.url) free(to->style->mask.url);
-        to->style->mask.url = strdup(from->style->mask.url);
+        if (to->style->mask.url) tvg::free(to->style->mask.url);
+        to->style->mask.url = duplicate(from->style->mask.url);
     }
 }
 
@@ -211,10 +210,9 @@ SvgNode* cssFindStyleNode(const SvgNode* style, const char* title, SvgNodeType t
 {
     if (!style) return nullptr;
 
-    auto child = style->child.data;
-    for (uint32_t i = 0; i < style->child.count; ++i, ++child) {
-        if ((*child)->type == type) {
-            if ((!title && !(*child)->id) || (title && (*child)->id && !strcmp((*child)->id, title))) return (*child);
+    ARRAY_FOREACH(p, style->child) {
+        if ((*p)->type == type) {
+            if ((!title && !(*p)->id) || (title && (*p)->id && !strcmp((*p)->id, title))) return *p;
         }
     }
     return nullptr;
@@ -225,10 +223,9 @@ SvgNode* cssFindStyleNode(const SvgNode* style, const char* title)
 {
     if (!style || !title) return nullptr;
 
-    auto child = style->child.data;
-    for (uint32_t i = 0; i < style->child.count; ++i, ++child) {
-        if ((*child)->type == SvgNodeType::CssStyle) {
-            if ((*child)->id && !strcmp((*child)->id, title)) return (*child);
+    ARRAY_FOREACH(p, style->child) {
+        if ((*p)->type == SvgNodeType::CssStyle) {
+            if ((*p)->id && !strcmp((*p)->id, title)) return *p;
         }
     }
     return nullptr;
@@ -238,12 +235,11 @@ SvgNode* cssFindStyleNode(const SvgNode* style, const char* title)
 void cssUpdateStyle(SvgNode* doc, SvgNode* style)
 {
     if (doc->child.count > 0) {
-        auto child = doc->child.data;
-        for (uint32_t i = 0; i < doc->child.count; ++i, ++child) {
-            if (auto cssNode = cssFindStyleNode(style, nullptr, (*child)->type)) {
-                cssCopyStyleAttr(*child, cssNode);
+        ARRAY_FOREACH(p, doc->child) {
+            if (auto cssNode = cssFindStyleNode(style, nullptr, (*p)->type)) {
+                cssCopyStyleAttr(*p, cssNode);
             }
-            cssUpdateStyle(*child, style);
+            cssUpdateStyle(*p, style);
         }
     }
 }
@@ -251,9 +247,8 @@ void cssUpdateStyle(SvgNode* doc, SvgNode* style)
 
 void cssApplyStyleToPostponeds(Array<SvgNodeIdPair>& postponeds, SvgNode* style)
 {
-    for (uint32_t i = 0; i < postponeds.count; ++i) {
-        auto nodeIdPair = postponeds[i];
-
+    ARRAY_FOREACH(p, postponeds) {
+        auto nodeIdPair = *p;
         //css styling: tag.name has higher priority than .name
         if (auto cssNode = cssFindStyleNode(style, nodeIdPair.id, nodeIdPair.node->type)) {
             cssCopyStyleAttr(nodeIdPair.node, cssNode);

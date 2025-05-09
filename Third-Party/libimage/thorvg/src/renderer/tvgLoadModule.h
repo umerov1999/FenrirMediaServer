@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
 #ifndef _TVG_LOAD_MODULE_H_
 #define _TVG_LOAD_MODULE_H_
 
+#include <atomic>
+#include "tvgCommon.h"
 #include "tvgRender.h"
 #include "tvgInlist.h"
 
@@ -32,24 +34,34 @@ struct LoadModule
     INLIST_ITEM(LoadModule);
 
     //Use either hashkey(data) or hashpath(path)
-    union {
-        uintptr_t hashkey;
-        char* hashpath = nullptr;
-    };
+    uintptr_t hashkey = 0;
+    char* hashpath = nullptr;
 
     FileType type;                                  //current loader file type
-    uint16_t sharing = 0;                           //reference count
+    atomic<uint16_t> sharing{};                     //reference count
     bool readied = false;                           //read done already.
-    bool pathcache = false;                         //cached by path
+    bool cached = false;                            //cached for sharing
 
     LoadModule(FileType type) : type(type) {}
     virtual ~LoadModule()
     {
-        if (pathcache) free(hashpath);
+        tvg::free(hashpath);
     }
 
-    virtual bool open(const string& path, const ColorReplace &colorReplacement) { return false; }
-    virtual bool open(const char* data, uint32_t size, const string& rpath, bool copy, const ColorReplace &colorReplacement) { return false; }
+    void cache(uintptr_t data)
+    {
+        hashkey = data;
+        cached = true;
+    }
+
+    void cache(char* data)
+    {
+        hashpath = data;
+        cached = true;
+    }
+
+    virtual bool open(const char* path, const ColorReplace &colorReplacement) { return false; }
+    virtual bool open(const char* data, uint32_t size, const char* rpath, bool copy, const ColorReplace &colorReplacement) { return false; }
     virtual bool resize(Paint* paint, float w, float h) { return false; }
     virtual void sync() {};  //finish immediately if any async update jobs.
 
@@ -58,12 +70,6 @@ struct LoadModule
         if (readied) return false;
         readied = true;
         return true;
-    }
-
-    bool cached()
-    {
-        if (hashkey) return true;
-        return false;
     }
 
     virtual bool close()
@@ -77,7 +83,7 @@ struct LoadModule
 
 struct ImageLoader : LoadModule
 {
-    static ColorSpace cs;                           //desired value
+    static atomic<ColorSpace> cs;                   //desired value
 
     float w = 0, h = 0;                             //default image size
     RenderSurface surface;
@@ -95,14 +101,23 @@ struct ImageLoader : LoadModule
 };
 
 
+struct FontMetrics
+{
+    //TODO: add necessary metrics
+    float minw;
+};
+
+
 struct FontLoader : LoadModule
 {
-    float scale = 1.0f;
+    char* name = nullptr;
 
     FontLoader(FileType type) : LoadModule(type) {}
 
-    virtual bool request(Shape* shape, char* text) = 0;
-    virtual bool transform(Paint* paint, float fontSize, bool italic) = 0;
+    using LoadModule::read;
+
+    virtual bool read(Shape* shape, char* text, FontMetrics& out) = 0;
+    virtual float transform(Paint* paint, FontMetrics& mertrics, float fontSize, bool italic) = 0;
 };
 
 #endif //_TVG_LOAD_MODULE_H_

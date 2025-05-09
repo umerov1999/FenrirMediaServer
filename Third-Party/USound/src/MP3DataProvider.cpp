@@ -1,14 +1,12 @@
 ﻿#include <vector>
 #include "MP3DataProvider.h"
-#include "id3v2lib.h"
 
-extern "C"
-{
+#define MINIMP3_IMPLEMENTATION
+extern "C" {
 #include "minimp3.h"
 }
 
-std::shared_ptr<clMP3DataProvider> CreateMp3WaveDataProvider(const void* Buf, int Size)
-{
+std::shared_ptr<clMP3DataProvider> CreateMp3WaveDataProvider(const void* Buf, int Size) {
 	if (Size < 10 || Buf == NULL)
 		return NULL;
 	std::vector<uint8_t> Result(Size);
@@ -20,122 +18,110 @@ std::shared_ptr<clMP3DataProvider> CreateMp3WaveDataProvider(const void* Buf, in
 	return std::make_shared<clMP3DataProvider>(Data);
 }
 
+struct DecoderData {
+	mp3dec_t m_Decoder;
+	mp3dec_frame_info_t m_Info;
+};
+
 clMP3DataProvider::clMP3DataProvider( const std::shared_ptr<clBlob>& Data )
 : m_Data( Data )
 , m_Format()
-, m_DecodingBuffer( MP3_MAX_SAMPLES_PER_FRAME * 16 )
+, m_DecodingBuffer( MINIMP3_MAX_SAMPLES_PER_FRAME * 16 )
 , m_BufferUsed( 0 )
 , m_StreamPos( 0 )
 , m_InitialStreamPos( 0 )
 , m_IsEndOfStream( false )
-, m_MP3Decoder( mp3_create() )
-{
+, m_DecoderData(new DecoderData()) {
+	mp3dec_init(&m_DecoderData->m_Decoder);
+
 	LoadMP3Info();
 
-	m_Format.m_NumChannels      = m_MP3Info.channels;
-	m_Format.m_SamplesPerSecond = m_MP3Info.sample_rate;
+	m_Format.m_NumChannels      = m_DecoderData->m_Info.channels;
+	m_Format.m_SamplesPerSecond = m_DecoderData->m_Info.hz;
 	m_Format.m_BitsPerSample    = 16;
 }
 
-clMP3DataProvider::~clMP3DataProvider()
-{
-	mp3_done( (mp3_decoder_t*)m_MP3Decoder );
+clMP3DataProvider::~clMP3DataProvider() {
+	delete(m_DecoderData);
 }
 
-void clMP3DataProvider::SkipTags()
-{
-	ID3v2_header* ID3TagHeader = get_tag_header_with_buffer(
-		reinterpret_cast<const char*>( m_Data->GetDataPtr() + m_StreamPos ),
-		static_cast<int>( m_Data->GetDataSize() - m_StreamPos )
-	);
+void clMP3DataProvider::LoadMP3Info() {
+	int Samples = 0;
 
-	if ( ID3TagHeader )
-	{
-		m_StreamPos += ID3TagHeader->tag_size;
-		delete_header( ID3TagHeader );
+	do {
+		Samples = mp3dec_decode_frame(
+			&m_DecoderData->m_Decoder,
+			m_Data ? const_cast<uint8_t*>( m_Data->GetDataPtr() + m_StreamPos ) : nullptr,
+			m_Data ? (int)(m_Data->GetDataSize() - m_StreamPos): 0,
+			(signed short*)m_DecodingBuffer.data(),
+			&m_DecoderData->m_Info
+		);
+
+		m_StreamPos += m_DecoderData->m_Info.frame_bytes;
 	}
-}
+	while ( Samples == 0 && m_DecoderData->m_Info.frame_bytes > 0 );
 
-void clMP3DataProvider::LoadMP3Info()
-{
-	SkipTags();
-
-	int byteCount = mp3_decode(
-		(mp3_decoder_t*)m_MP3Decoder,
-		m_Data ? const_cast<uint8_t*>( m_Data->GetDataPtr() + m_StreamPos ) : nullptr,
-		m_Data ? (int)(m_Data->GetDataSize() - m_StreamPos): 0,
-		(signed short*)m_DecodingBuffer.data(),
-		&m_MP3Info
-	);
-
-	m_StreamPos += byteCount;
 	m_InitialStreamPos = m_StreamPos;
 }
 
-const uint8_t* clMP3DataProvider::GetWaveData() const
-{
+const uint8_t* clMP3DataProvider::GetWaveData() const {
 	return m_DecodingBuffer.data();
 }
 
-size_t clMP3DataProvider::GetWaveDataSize() const
-{
+size_t clMP3DataProvider::GetWaveDataSize() const {
 	return m_BufferUsed;
 }
 
-int clMP3DataProvider::DecodeFromFile( size_t BytesRead )
-{
-	if ( m_IsEndOfStream || !m_Data )
-	{
+int clMP3DataProvider::DecodeFromFile( size_t BytesRead ) {
+	if ( m_IsEndOfStream || !m_Data ) {
 		return 0;
 	}
 
-	size_t ByteCount = mp3_decode(
-		(mp3_decoder_t*)m_MP3Decoder,
-		const_cast<uint8_t*>( m_Data->GetDataPtr() + m_StreamPos ),
-		(int)(m_Data->GetDataSize() - m_StreamPos),
-		(signed short*)( m_DecodingBuffer.data() + BytesRead ),
-		&m_MP3Info
-	);
+	int Samples = 0;
 
-	m_Format.m_NumChannels      = m_MP3Info.channels;
-	m_Format.m_SamplesPerSecond = m_MP3Info.sample_rate;
+	do {
+		Samples = mp3dec_decode_frame(
+			&m_DecoderData->m_Decoder,
+			const_cast<uint8_t*>( m_Data->GetDataPtr() + m_StreamPos ),
+			(int)(m_Data->GetDataSize() - m_StreamPos),
+			(signed short*)( m_DecodingBuffer.data() + BytesRead ),
+			&m_DecoderData->m_Info
+		);
+		m_StreamPos += m_DecoderData->m_Info.frame_bytes;
+	}
+	while ( Samples == 0 && m_DecoderData->m_Info.frame_bytes > 0 );
 
-	m_StreamPos += ByteCount;
+	m_Format.m_NumChannels      = m_DecoderData->m_Info.channels;
+	m_Format.m_SamplesPerSecond = m_DecoderData->m_Info.hz;
 
-	if ( m_StreamPos >= m_Data->GetDataSize() || !ByteCount )
-	{
+	if ( m_StreamPos >= m_Data->GetDataSize() || !Samples ) {
 		m_IsEndOfStream = true;
 	}
 
-	return m_MP3Info.audio_bytes;
+	return Samples * m_DecoderData->m_Info.channels * 2;
 }
 
 size_t clMP3DataProvider::StreamWaveData( size_t Size )
 {
-	if ( m_IsEndOfStream )
-	{
+	if ( m_IsEndOfStream ) {
 		return 0;
 	}
 
 	size_t OldSize = m_DecodingBuffer.size();
 
-	if ( Size > OldSize )
-	{
+	if ( Size > OldSize ) {
 		m_DecodingBuffer.resize( Size, 0 );
 	}
 
 	size_t BytesRead = 0;
 
-	while ( BytesRead + MP3_MAX_SAMPLES_PER_FRAME * 2 < Size )
-	{
+	while ( BytesRead + MINIMP3_MAX_SAMPLES_PER_FRAME * 2 < Size ) {
 		int Ret = DecodeFromFile( BytesRead );
 
-		if ( Ret > 0 )
-		{
+		if ( Ret > 0 ) {
 			BytesRead += Ret;
 		}
-		else if ( Ret == 0 )
-		{
+		else if ( Ret == 0 ) {
 			m_IsEndOfStream = true;
 			break;
 		}
@@ -146,10 +132,8 @@ size_t clMP3DataProvider::StreamWaveData( size_t Size )
 	return m_BufferUsed;
 }
 
-void clMP3DataProvider::Seek( float Seconds )
-{
-	mp3_done( (mp3_decoder_t*)m_MP3Decoder );
-	m_MP3Decoder = mp3_create();
+void clMP3DataProvider::Seek( float Seconds ) {
+	mp3dec_init(&m_DecoderData->m_Decoder);
 
 	m_StreamPos = 0;
 	m_IsEndOfStream = false;

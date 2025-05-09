@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2023 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,61 +21,45 @@
  */
 
 #include "tvgCanvas.h"
+#include "tvgTaskScheduler.h"
 
 #ifdef THORVG_WG_RASTER_SUPPORT
     #include "tvgWgRenderer.h"
 #endif
 
-/************************************************************************/
-/* Internal Class Implementation                                        */
-/************************************************************************/
 
-struct WgCanvas::Impl
-{
-};
-
-
-/************************************************************************/
-/* External Class Implementation                                        */
-/************************************************************************/
-
-#ifdef THORVG_WG_RASTER_SUPPORT
-WgCanvas::WgCanvas() : Canvas(WgRenderer::gen()), pImpl(nullptr)
-#else
-WgCanvas::WgCanvas() : Canvas(nullptr), pImpl(nullptr)
-#endif
-{
-}
-
+WgCanvas::WgCanvas() = default;
 
 WgCanvas::~WgCanvas()
 {
 #ifdef THORVG_WG_RASTER_SUPPORT
-    auto renderer = static_cast<WgRenderer*>(Canvas::pImpl->renderer);
-    renderer->target(nullptr, 0, 0);
+    auto renderer = static_cast<WgRenderer*>(pImpl->renderer);
+    renderer->target(nullptr, nullptr, nullptr, 0, 0);
+
+    WgRenderer::term();
 #endif
 }
 
 
-Result WgCanvas::target(void* instance, void* surface, uint32_t w, uint32_t h, void* device) noexcept
+Result WgCanvas::target(void* device, void* instance, void* target, uint32_t w, uint32_t h, ColorSpace cs, int type) noexcept
 {
 #ifdef THORVG_WG_RASTER_SUPPORT
-    if (Canvas::pImpl->status != Status::Damaged && Canvas::pImpl->status != Status::Synced) {
+    if (cs != ColorSpace::ABGR8888S) return Result::NonSupport;
+
+    if (pImpl->status != Status::Damaged && pImpl->status != Status::Synced) {
         return Result::InsufficientCondition;
     }
 
-    if (!instance || !surface || (w == 0) || (h == 0)) return Result::InvalidArguments;
-
     //We know renderer type, avoid dynamic_cast for performance.
-    auto renderer = static_cast<WgRenderer*>(Canvas::pImpl->renderer);
+    auto renderer = static_cast<WgRenderer*>(pImpl->renderer);
     if (!renderer) return Result::MemoryCorruption;
 
-    if (!renderer->target((WGPUInstance)instance, (WGPUSurface)surface, w, h, (WGPUDevice)device)) return Result::Unknown;
-    Canvas::pImpl->vport = {0, 0, (int32_t)w, (int32_t)h};
-    renderer->viewport(Canvas::pImpl->vport);
+    if (!renderer->target((WGPUDevice)device, (WGPUInstance)instance, target, w, h, type)) return Result::Unknown;
+    pImpl->vport = {0, 0, (int32_t)w, (int32_t)h};
+    renderer->viewport(pImpl->vport);
 
     //Paints must be updated again with this new target.
-    Canvas::pImpl->status = Status::Damaged;
+    pImpl->status = Status::Damaged;
 
     return Result::Success;
 #endif
@@ -83,10 +67,16 @@ Result WgCanvas::target(void* instance, void* surface, uint32_t w, uint32_t h, v
 }
 
 
-unique_ptr<WgCanvas> WgCanvas::gen() noexcept
+WgCanvas* WgCanvas::gen() noexcept
 {
 #ifdef THORVG_WG_RASTER_SUPPORT
-    return unique_ptr<WgCanvas>(new WgCanvas);
+    if (engineInit > 0) {
+        auto renderer = WgRenderer::gen(TaskScheduler::threads());
+        renderer->ref();
+        auto ret = new WgCanvas;
+        ret->pImpl->renderer = renderer;
+        return ret;
+    }
 #endif
     return nullptr;
 }

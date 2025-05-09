@@ -1,5 +1,5 @@
 @echo off
-set OPENSSL_VERSION=3.4.0
+set OPENSSL_VERSION=3.5.0
 
 SET CurrentDir=%cd%
 set path=%ProgramFiles%\NASM;%path%
@@ -28,7 +28,7 @@ powershell -Command "(gc Configurations/10-main.conf) -replace '\"-g\"', '\"\"' 
 powershell -Command "(gc Configurations/windows-makefile.tmpl) -replace '\"\$\(PERL\)\" \"\$\(SRCDIR\)\\util\\copy.pl\" ossl_static.pdb \"\$\(libdir\)\"', 'echo \"test\"' | Out-File -Encoding ascii Configurations/windows-makefile.tmpl"
 powershell -Command "(gc Configurations/windows-makefile.tmpl) -replace 'install_runtime\: install_programs', 'install_runtime\: install_runtime_libs' | Out-File -Encoding ascii Configurations/windows-makefile.tmpl"
 
-perl Configure VC-WIN32 --release no-shared no-engine no-module no-crypto-mdebug no-tests no-external-tests no-legacy no-weak-ssl-ciphers --openssldir=%CurrentDir%\openssl-src-win32-VS2022/TargetInstall --prefix=%CurrentDir%\openssl-%OPENSSL_VERSION%-32bit-release-static-VS2022 -D_WIN32_WINNT=0x0600
+perl Configure VC-WIN32 --release no-shared no-engine no-module no-crypto-mdebug no-tests no-external-tests no-legacy no-weak-ssl-ciphers no-egd no-uplink no-quic --openssldir=%CurrentDir%\openssl-src-win32-VS2022/TargetInstall --prefix=%CurrentDir%\openssl-%OPENSSL_VERSION%-32bit-release-static-VS2022 -D_WIN32_WINNT=0x0600
 nmake -f Makefile install
 
 cd ../

@@ -9,8 +9,7 @@ extern "C"
 #include "WaveBlobs.h"
 
 /// MPEG Layer-III decoder
-class clMP3DataProvider
-{
+class clMP3DataProvider {
 public:
 	explicit clMP3DataProvider( const std::shared_ptr<clBlob>& Data );
 	virtual ~clMP3DataProvider();
@@ -28,7 +27,6 @@ public:
 private:
 	int DecodeFromFile( size_t BytesRead );
 	void LoadMP3Info();
-	void SkipTags();
 
 private:
 	std::shared_ptr<clBlob> m_Data;
@@ -42,8 +40,7 @@ private:
 	bool m_IsEndOfStream;
 
 	// minimp3 stuff
-	mp3_decoder_t m_MP3Decoder;
-	mp3_info_t m_MP3Info;
+	struct DecoderData* m_DecoderData;
 };
 
 std::shared_ptr<clMP3DataProvider> CreateMp3WaveDataProvider(const void* Buf, int Size);

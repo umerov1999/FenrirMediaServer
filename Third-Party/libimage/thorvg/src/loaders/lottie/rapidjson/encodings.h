@@ -177,10 +177,10 @@ struct UTF8 {
 
     template <typename InputStream, typename OutputStream>
     static bool Validate(InputStream& is, OutputStream& os) {
-#define RAPIDJSON_COPY() os.Put(c = is.Take())
+#define RAPIDJSON_COPY() if (c != '\0') os.Put(c = is.Take())
 #define RAPIDJSON_TRANS(mask) result &= ((GetRange(static_cast<unsigned char>(c)) & mask) != 0)
 #define RAPIDJSON_TAIL() RAPIDJSON_COPY(); RAPIDJSON_TRANS(0x70)
-        Ch c;
+        Ch c = static_cast<Ch>(-1);
         RAPIDJSON_COPY();
         if (!(c & 0x80))
             return true;
@@ -452,7 +452,7 @@ struct UTF32 {
     }
 };
 
-//! UTF-32 little endian encoding.
+//! UTF-32 little endian enocoding.
 template<typename CharType = unsigned>
 struct UTF32LE : UTF32<CharType> {
     template <typename InputByteStream>
@@ -609,7 +609,7 @@ enum UTFType {
 };
 
 //! Dynamically select encoding according to stream's runtime-specified UTF encoding type.
-/*! \note This class can be used with AutoUTFInputStream and AutoUTFOutputStream, which provides GetType().
+/*! \note This class can be used with AutoUTFInputtStream and AutoUTFOutputStream, which provides GetType().
 */
 template<typename CharType>
 struct AutoUTF {

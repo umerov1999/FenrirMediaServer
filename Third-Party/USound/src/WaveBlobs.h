@@ -3,12 +3,10 @@
 #include <memory>
 #include <vector>
 
-class clBlob
-{
+class clBlob {
 public:
 	explicit clBlob(const std::vector<uint8_t>& Data)
-		: m_Data(Data)
-	{}
+		: m_Data(Data) {}
 
 	const std::vector<uint8_t>& GetData() const { return m_Data; }
 	size_t GetDataSize() const { return m_Data.size(); }
@@ -20,8 +18,7 @@ private:
 	std::vector<uint8_t> m_Data;
 };
 
-class sWaveDataFormat
-{
+class sWaveDataFormat {
 public:
 	sWaveDataFormat()
 		: m_NumChannels(0)

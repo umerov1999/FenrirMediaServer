@@ -24,22 +24,19 @@
 
 #define SHA3_KECCAK_SPONGE_WORDS (200 / sizeof(uint64_t))
 
-class SHA3
-{
+class SHA3 {
 public:
 	SHA3(uint16_t bitSize) {
 		SHA3_Init(bitSize);
 	}
 
-	void SHA3_Init(uint16_t bitSize)
-	{
+	void SHA3_Init(uint16_t bitSize) {
 		memset(&ctx, 0, sizeof(ctx));
 		ctx.digest_length = bitSize;
 		ctx.capacityWords = 2 * bitSize / (8 * sizeof(uint64_t));
 	}
 
-	void SHA3_Update(const void* bufIn, size_t len)
-	{
+	void SHA3_Update(const void* bufIn, size_t len) {
 		size_t old_tail = (8 - ctx.byteIndex) & 7;
 
 		size_t words;
@@ -108,37 +105,13 @@ public:
 		//SHA3_ASSERT(ctx->byteIndex < 8);
 	}
 
-	std::string SHA3_Final()
-	{
-		uint64_t t;
+	std::string SHA3_FinalBinary() {
+		return SHA3_Final();
+	}
 
-		t = (uint64_t)(((uint64_t)(0x02 | (1 << 2))) <<
-			((ctx.byteIndex) * 8));
-
-		ctx.u.s[ctx.wordIndex] ^= ctx.saved ^ t;
-
-		ctx.u.s[SHA3_KECCAK_SPONGE_WORDS - SHA3_CW(ctx.capacityWords) - 1] ^=
-			SHA3_CONST(0x8000000000000000UL);
-		keccakf(ctx.u.s);
-
-		for (size_t i = 0; i < SHA3_KECCAK_SPONGE_WORDS; i++) {
-			const uint32_t t1 = (uint32_t)ctx.u.s[i];
-			const uint32_t t2 =
-				(uint32_t)((ctx.u.s[i] >> 16) >> 16);
-			ctx.u.sb[i * 8 + 0] = (uint8_t)(t1);
-			ctx.u.sb[i * 8 + 1] = (uint8_t)(t1 >> 8);
-			ctx.u.sb[i * 8 + 2] = (uint8_t)(t1 >> 16);
-			ctx.u.sb[i * 8 + 3] = (uint8_t)(t1 >> 24);
-			ctx.u.sb[i * 8 + 4] = (uint8_t)(t2);
-			ctx.u.sb[i * 8 + 5] = (uint8_t)(t2 >> 8);
-			ctx.u.sb[i * 8 + 6] = (uint8_t)(t2 >> 16);
-			ctx.u.sb[i * 8 + 7] = (uint8_t)(t2 >> 24);
-		}
-
-		std::string result = to_hex_bytes(ctx.digest_length / 8, ctx.u.sb);
-
-		SHA3_Init(ctx.digest_length);
-		return result;
+	std::string SHA3_FinalHex() {
+		std::string ret = SHA3_Final();
+		return to_hex_bytes(ret.size(), ret.data());
 	}
 private:
 	static inline const uint64_t keccakf_rndc[24] = {
@@ -175,6 +148,40 @@ private:
 		return result;
 	}
 
+	std::string SHA3_Final() {
+		uint64_t t;
+
+		t = (uint64_t)(((uint64_t)(0x02 | (1 << 2))) <<
+			((ctx.byteIndex) * 8));
+
+		ctx.u.s[ctx.wordIndex] ^= ctx.saved ^ t;
+
+		ctx.u.s[SHA3_KECCAK_SPONGE_WORDS - SHA3_CW(ctx.capacityWords) - 1] ^=
+			SHA3_CONST(0x8000000000000000UL);
+		keccakf(ctx.u.s);
+
+		for (size_t i = 0; i < SHA3_KECCAK_SPONGE_WORDS; i++) {
+			const uint32_t t1 = (uint32_t)ctx.u.s[i];
+			const uint32_t t2 =
+				(uint32_t)((ctx.u.s[i] >> 16) >> 16);
+			ctx.u.sb[i * 8 + 0] = (uint8_t)(t1);
+			ctx.u.sb[i * 8 + 1] = (uint8_t)(t1 >> 8);
+			ctx.u.sb[i * 8 + 2] = (uint8_t)(t1 >> 16);
+			ctx.u.sb[i * 8 + 3] = (uint8_t)(t1 >> 24);
+			ctx.u.sb[i * 8 + 4] = (uint8_t)(t2);
+			ctx.u.sb[i * 8 + 5] = (uint8_t)(t2 >> 8);
+			ctx.u.sb[i * 8 + 6] = (uint8_t)(t2 >> 16);
+			ctx.u.sb[i * 8 + 7] = (uint8_t)(t2 >> 24);
+		}
+
+		std::string result;
+		result.resize(ctx.digest_length / 8);
+		memcpy(result.data(), ctx.u.sb, ctx.digest_length / 8);
+
+		SHA3_Init(ctx.digest_length);
+		return result;
+	}
+
 	static inline const uint32_t keccakf_rotc[24] = {
 	1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14, 27, 41, 56, 8, 25, 43, 62,
 	18, 39, 61, 20, 44
@@ -185,8 +192,7 @@ private:
 		14, 22, 9, 6, 1
 	};
 
-	static void keccakf(uint64_t s[25])
-	{
+	static void keccakf(uint64_t s[25]) {
 		int i, j, round;
 		uint64_t t, bc[5];
 #define KECCAK_ROUNDS 24
@@ -238,8 +244,7 @@ private:
 	SHA3_CTX ctx;
 };
 
-class SHA3_512: public SHA3
-{
+class SHA3_512: public SHA3 {
 public:
 	SHA3_512() : SHA3(512) {
 
@@ -248,7 +253,7 @@ public:
 	static std::string sha3(const void* dat, size_t len) {
 		SHA3_512 hash;
 		hash.SHA3_Update(dat, len);
-		return hash.SHA3_Final();
+		return hash.SHA3_FinalHex();
 	}
 
 	static std::string sha3(const std::string& input) {
@@ -267,9 +272,19 @@ public:
 			uuuu += len;
 		}
 		delete[] buff;
-		return hash.SHA3_Final();
+		return hash.SHA3_FinalHex();
 	}
-
+#if defined(__linux__) || defined(__APPLE__)
+	static std::string sha3_file(const std::string& filename) {
+		FILE* file = fopen(filename.c_str(), "rb");
+		if (!file) {
+			return "error";
+		}
+		std::string res = sha3_file(file);
+		std::fclose(file);
+		return res;
+	}
+#else
 	static std::string sha3_file(const std::wstring& filename) {
 		FILE* file = NULL;
 		if (_wfopen_s(&file, filename.c_str(), L"rb") != 0) {
@@ -282,10 +297,10 @@ public:
 		std::fclose(file);
 		return res;
 	}
+#endif
 };
 
-class SHA3_384 : public SHA3
-{
+class SHA3_384 : public SHA3 {
 public:
 	SHA3_384() : SHA3(384) {
 
@@ -294,7 +309,7 @@ public:
 	static std::string sha3(const void* dat, size_t len) {
 		SHA3_384 hash;
 		hash.SHA3_Update(dat, len);
-		return hash.SHA3_Final();
+		return hash.SHA3_FinalHex();
 	}
 
 	static std::string sha3(const std::string& input) {
@@ -313,9 +328,19 @@ public:
 			uuuu += len;
 		}
 		delete[] buff;
-		return hash.SHA3_Final();
+		return hash.SHA3_FinalHex();
 	}
-
+#if defined(__linux__) || defined(__APPLE__)
+	static std::string sha3_file(const std::string& filename) {
+		FILE* file = fopen(filename.c_str(), "rb");
+		if (!file) {
+			return "error";
+		}
+		std::string res = sha3_file(file);
+		std::fclose(file);
+		return res;
+	}
+#else
 	static std::string sha3_file(const std::wstring& filename) {
 		FILE* file = NULL;
 		if (_wfopen_s(&file, filename.c_str(), L"rb") != 0) {
@@ -328,10 +353,10 @@ public:
 		std::fclose(file);
 		return res;
 	}
+#endif
 };
 
-class SHA3_256 : public SHA3
-{
+class SHA3_256 : public SHA3 {
 public:
 	SHA3_256() : SHA3(256) {
 
@@ -340,7 +365,7 @@ public:
 	static std::string sha3(const void* dat, size_t len) {
 		SHA3_256 hash;
 		hash.SHA3_Update(dat, len);
-		return hash.SHA3_Final();
+		return hash.SHA3_FinalHex();
 	}
 
 	static std::string sha3(const std::string& input) {
@@ -359,9 +384,19 @@ public:
 			uuuu += len;
 		}
 		delete[] buff;
-		return hash.SHA3_Final();
+		return hash.SHA3_FinalHex();
 	}
-
+#if defined(__linux__) || defined(__APPLE__)
+	static std::string sha3_file(const std::string& filename) {
+		FILE* file = fopen(filename.c_str(), "rb");
+		if (!file) {
+			return "error";
+		}
+		std::string res = sha3_file(file);
+		std::fclose(file);
+		return res;
+	}
+#else
 	static std::string sha3_file(const std::wstring& filename) {
 		FILE* file = NULL;
 		if (_wfopen_s(&file, filename.c_str(), L"rb") != 0) {
@@ -374,4 +409,5 @@ public:
 		std::fclose(file);
 		return res;
 	}
+#endif
 };

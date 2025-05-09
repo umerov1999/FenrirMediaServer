@@ -1,15 +1,14 @@
 ﻿#pragma once
 #include <vector>
 
-class clWAVDataEncoder
-{
+class clWAVDataEncoder {
 public:
 	clWAVDataEncoder() {
 		m_DataChunkPos = 0;
 	}
 	bool ResetEncoder( int NumChannels, int NumSamplesPerSec, int BitsPerSample, float Quality );
 	void EncodePCMData( const void* PCMData, size_t PCMDataSizeBytes );
-	LPVOID FinalizeAndGetResource();
+	void* FinalizeAndGetResource();
 	std::vector<uint8_t> FinalizeAndGetMemory();
 
 private:

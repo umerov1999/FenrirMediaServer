@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2023 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,49 +24,37 @@
 #include "tvgText.h"
 
 
-/************************************************************************/
-/* Internal Class Implementation                                        */
-/************************************************************************/
-
-
-
-/************************************************************************/
-/* External Class Implementation                                        */
-/************************************************************************/
-
-
-Text::Text() : pImpl(new Impl(this))
-{
-}
-
-
-Text::~Text()
-{
-    delete(pImpl);
-}
+Text::Text() = default;
 
 
 Result Text::text(const char* text) noexcept
 {
-    return pImpl->text(text);
+    return TEXT(this)->text(text);
 }
 
 
 Result Text::font(const char* name, float size, const char* style) noexcept
 {
-    return pImpl->font(name, size, style);
+    return TEXT(this)->font(name, size, style);
 }
 
 
-Result Text::load(const char* path) noexcept
+Result Text::load(const char* filename) noexcept
 {
+#ifdef THORVG_FILE_IO_SUPPORT
     bool invalid; //invalid path
-    if (!LoaderMgr::loader(path, &invalid, nullptr)) {
+    auto loader = LoaderMgr::loader(filename, &invalid, nullptr);
+    if (loader) {
+        if (loader->sharing > 0) --loader->sharing;   //font loading doesn't mean sharing.
+        return Result::Success;
+    } else {
         if (invalid) return Result::InvalidArguments;
         else return Result::NonSupport;
     }
-
-    return Result::Success;
+#else
+    TVGLOG("RENDERER", "FILE IO is disabled!");
+    return Result::NonSupport;
+#endif
 }
 
 
@@ -76,7 +64,7 @@ Result Text::load(const char* name, const char* data, uint32_t size, const char*
 
     //unload font
     if (!data) {
-        if (LoaderMgr::retrieve(name)) return Result::Success;
+        if (LoaderMgr::retrieve(LoaderMgr::font(name))) return Result::Success;
         return Result::InsufficientCondition;
     }
 
@@ -87,26 +75,31 @@ Result Text::load(const char* name, const char* data, uint32_t size, const char*
 
 Result Text::unload(const char* filename) noexcept
 {
+#ifdef THORVG_FILE_IO_SUPPORT
     if (LoaderMgr::retrieve(filename)) return Result::Success;
     return Result::InsufficientCondition;
+#else
+    TVGLOG("RENDERER", "FILE IO is disabled!");
+    return Result::NonSupport;
+#endif
 }
 
 
 Result Text::fill(uint8_t r, uint8_t g, uint8_t b) noexcept
 {
-    return pImpl->shape->fill(r, g, b);
+    return TEXT(this)->shape->fill(r, g, b);
 }
 
 
-Result Text::fill(unique_ptr<Fill> f) noexcept
+Result Text::fill(Fill* f) noexcept
 {
-    return pImpl->shape->fill(std::move(f));
+    return TEXT(this)->shape->fill(f);
 }
 
 
-unique_ptr<Text> Text::gen() noexcept
+Text* Text::gen() noexcept
 {
-    return unique_ptr<Text>(new Text);
+    return new TextImpl;
 }
 
 

@@ -1,26 +1,20 @@
 ﻿#include <iostream>
 #include <vector>
-#include <Windows.h>
 #include "WAVDataEncoder.h"
 
-static void PatchValue( uint8_t* Ptr, uint64_t Value, size_t Size )
-{
-	for ( ; Size; --Size, Value >>= 8 )
-	{
+static void PatchValue( uint8_t* Ptr, uint64_t Value, size_t Size ) {
+	for ( ; Size; --Size, Value >>= 8 ) {
 		*Ptr++ = static_cast<uint8_t>( Value & 0xFF );
 	}
 }
 
-void clWAVDataEncoder::OutValue( uint64_t Value, size_t Size )
-{
-	for ( ; Size; --Size, Value >>= 8 )
-	{
+void clWAVDataEncoder::OutValue( uint64_t Value, size_t Size ) {
+	for ( ; Size; --Size, Value >>= 8 ) {
 		m_OutputData.push_back( static_cast<uint8_t>( Value & 0xFF ) );
 	}
 }
 
-void clWAVDataEncoder::OutBytes( const void* Bytes, size_t Size )
-{
+void clWAVDataEncoder::OutBytes( const void* Bytes, size_t Size ) {
 	m_OutputData.insert(
 		m_OutputData.end(),
 		reinterpret_cast<const uint8_t*>(Bytes),
@@ -28,13 +22,11 @@ void clWAVDataEncoder::OutBytes( const void* Bytes, size_t Size )
 	);
 }
 
-void clWAVDataEncoder::OutString( const char* Str )
-{
+void clWAVDataEncoder::OutString( const char* Str ) {
 	OutBytes( Str, strlen(Str) );
 }
 
-bool clWAVDataEncoder::ResetEncoder( int NumChannels, int NumSamplesPerSec, int BitsPerSample, float Quality )
-{
+bool clWAVDataEncoder::ResetEncoder( int NumChannels, int NumSamplesPerSec, int BitsPerSample, float Quality ) {
 	m_OutputData.clear();
 	m_OutputData.reserve( 1024*1024 );
 
@@ -56,13 +48,11 @@ bool clWAVDataEncoder::ResetEncoder( int NumChannels, int NumSamplesPerSec, int 
 	return false;
 }
 
-void clWAVDataEncoder::EncodePCMData( const void* PCMData, size_t PCMDataSizeBytes )
-{
+void clWAVDataEncoder::EncodePCMData( const void* PCMData, size_t PCMDataSizeBytes ) {
 	OutBytes(PCMData, PCMDataSizeBytes);
 }
 
-LPVOID clWAVDataEncoder::FinalizeAndGetResource()
-{
+void* clWAVDataEncoder::FinalizeAndGetResource() {
 	const size_t FileLength = m_OutputData.size();
 
 	PatchValue( m_OutputData.data() + m_DataChunkPos + 4, FileLength - m_DataChunkPos + 8, 4 );
@@ -72,8 +62,7 @@ LPVOID clWAVDataEncoder::FinalizeAndGetResource()
 	return data;
 }
 
-std::vector<uint8_t> clWAVDataEncoder::FinalizeAndGetMemory()
-{
+std::vector<uint8_t> clWAVDataEncoder::FinalizeAndGetMemory() {
 	const size_t FileLength = m_OutputData.size();
 
 	PatchValue(m_OutputData.data() + m_DataChunkPos + 4, FileLength - m_DataChunkPos + 8, 4);

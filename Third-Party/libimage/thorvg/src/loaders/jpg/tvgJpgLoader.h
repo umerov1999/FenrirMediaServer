@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 the ThorVG project. All rights reserved.
+ * Copyright (c) 2021 - 2025 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,8 +41,8 @@ public:
     JpgLoader();
     ~JpgLoader();
 
-    bool open(const string& path, const ColorReplace& colorReplacement) override;
-    bool open(const char* data, uint32_t size, const string& rpath, bool copy, const ColorReplace& colorReplacement) override;
+    bool open(const char* path, const ColorReplace& colorReplacement) override;
+    bool open(const char* data, uint32_t size, const char* rpath, bool copy, const ColorReplace& colorReplacement) override;
     bool read() override;
     bool close() override;
 
