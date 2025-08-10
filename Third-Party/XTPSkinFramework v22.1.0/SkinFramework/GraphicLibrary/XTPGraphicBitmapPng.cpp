@@ -22,8 +22,6 @@
 #include "Common/XTPCasting.h"
 
 #include "GraphicLibrary/libpng/png.h"
-#include "GraphicLibrary/libpng/pngpriv.h"
-#include "GraphicLibrary/libpng/pngstruct.h"
 #include "GraphicLibrary/XTPGraphicBitmapPng.h"
 
 #include "Common/Base/Diagnostic/XTPDisableNoisyWarnings.h"
@@ -46,7 +44,7 @@ struct CXTPGraphicBitmapPng::CCallback
 {
 	static void PNGAPI png_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
 	{
-		CFile* pFile = (CFile*)png_ptr->io_ptr;
+		CFile* pFile = (CFile*)png_get_io_ptr(png_ptr);
 
 		png_size_t sizeRead = (png_size_t)pFile->Read(data, (UINT)length);
 
@@ -58,14 +56,14 @@ struct CXTPGraphicBitmapPng::CCallback
 
 	static void PNGAPI png_write_data(png_structp png_ptr, png_bytep data, png_size_t length)
 	{
-		CFile* pFile = (CFile*)png_ptr->io_ptr;
+		CFile* pFile = (CFile*)png_get_io_ptr(png_ptr);
 
 		pFile->Write(data, (UINT)length);
 	}
 
 	static void PNGAPI png_flush(png_structp png_ptr)
 	{
-		CFile* pFile = (CFile*)png_ptr->io_ptr;
+		CFile* pFile = (CFile*)png_get_io_ptr(png_ptr);
 		pFile->Flush();
 	}
 
@@ -408,22 +406,6 @@ BOOL CXTPGraphicBitmapPng::LoadFromFile(CFile* pFile)
 	Attach(hBitmap);
 
 	return TRUE;
-}
-
-_XTP_EXT_CLASS int ZLibCompress(BYTE* dest, ULONG* destLen, const BYTE* source, ULONG sourceLen,
-								XTPZlibCompressionLevel level /*= xtpZLibDefaultCompression*/)
-{
-	return compress2(dest, destLen, source, sourceLen, level);
-}
-
-_XTP_EXT_CLASS ULONG ZLibCompressBound(ULONG sourceLen)
-{
-	return compressBound(sourceLen);
-}
-
-_XTP_EXT_CLASS int ZLibUncompress(BYTE* dest, ULONG* destLen, const BYTE* source, ULONG sourceLen)
-{
-	return uncompress(dest, destLen, source, sourceLen);
 }
 
 #include "Common/Base/Diagnostic/XTPEnableNoisyWarnings.h"

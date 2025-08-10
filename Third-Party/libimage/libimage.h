@@ -85,9 +85,9 @@ namespace LIB_IMAGE {
 		win_image_size get_size() const {
 			return image_size;
 		}
-		win_image& resize(int X, int Y) {
+		win_image& resize(HWND hwnd, int X, int Y) {
 			if (is_has_image()) {
-				hPicture = StretchBitmap(hPicture, X, Y, true);
+				hPicture = StretchBitmap(hwnd, hPicture, X, Y, true);
 				image_size.size_x = X;
 				image_size.size_y = Y;
 			}
@@ -113,7 +113,7 @@ namespace LIB_IMAGE {
 			}
 			return *this;
 		}
-		void clone_to_image(win_image& image) {
+		void clone_to_image(HWND hwnd, win_image& image) {
 			if (is_has_image()) {
 				if (*image.links == 0) {
 					if (image.hPicture) {
@@ -126,25 +126,26 @@ namespace LIB_IMAGE {
 				}
 
 				image.image_size = image_size;
-				image.hPicture = StretchBitmap(hPicture, image_size.size_x, image_size.size_y, false);
+				image.hPicture = StretchBitmap(hwnd, hPicture, image_size.size_x, image_size.size_y, false);
 			}
 		}
-		win_image& make_RGB(HWND hwnd, DWORD Color);
 
 		HBITMAP get_hBitmap(bool tnot_released = false) {
 			if (tnot_released)
 				*links = LONG_MAX;
 			return hPicture;
 		}
+
+		win_image& premultiply_alpha(HWND hwnd, COLORREF color);
 	private:
-		static HBITMAP StretchBitmap(HBITMAP hSRCBitmap, int cxNew, int cyNew, bool clearOrig);
+		static HBITMAP StretchBitmap(HWND hwnd, HBITMAP hSRCBitmap, int cxNew, int cyNew, bool clearOrig);
 		size_t* links;
 		HBITMAP hPicture;
 		win_image_size image_size;
 	};
 
-	inline void swap_rgb(unsigned char* rgb_buffer, int len);
-	inline void swap_rgba(unsigned char* rgba_buffer, int len);
+	inline void swap_rgb(uint8_t* rgb_buffer, int len);
+	inline void swap_rgba(uint8_t* rgba_buffer, int len);
 
 	void registerCustomColorSVG(std::string name, uint32_t value);
 

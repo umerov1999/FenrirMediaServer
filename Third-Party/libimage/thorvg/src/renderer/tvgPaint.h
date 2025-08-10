@@ -54,7 +54,7 @@ namespace tvg
         Paint* paint = nullptr;
         Paint* parent = nullptr;
         Mask* maskData = nullptr;
-        Paint* clipper = nullptr;
+        Shape* clipper = nullptr;
         RenderMethod* renderer = nullptr;
         RenderData rd = nullptr;
 
@@ -79,10 +79,11 @@ namespace tvg
             }
         } tr;
         RenderUpdateFlag renderFlag = RenderUpdateFlag::None;
+        CompositionFlag cmpFlag = CompositionFlag::Invalid;
         BlendMethod blendMethod;
-        uint8_t ctxFlag;
+        uint16_t refCnt = 0;       //reference count
+        uint8_t ctxFlag;           //See enum ContextFlag
         uint8_t opacity;
-        uint8_t refCnt = 0;       //reference count
 
         Impl(Paint* pnt) : paint(pnt)
         {
@@ -105,23 +106,20 @@ namespace tvg
             }
         }
 
-        uint8_t ref()
+        uint16_t ref()
         {
-            if (refCnt == UINT8_MAX) TVGERR("RENDERER", "Reference Count Overflow!");
-            else ++refCnt;
-            return refCnt;
+            return ++refCnt;
         }
 
-        uint8_t unref(bool free = true)
+        uint16_t unref(bool free = true)
         {
             parent = nullptr;
             return unrefx(free);
         }
 
-        uint8_t unrefx(bool free)
+        uint16_t unrefx(bool free)
         {
             if (refCnt > 0) --refCnt;
-            else TVGERR("RENDERER", "Corrupted Reference Count!");
 
             if (free && refCnt == 0) {
                 delete(paint);
@@ -129,6 +127,31 @@ namespace tvg
             }
 
             return refCnt;
+        }
+
+        void damage(const RenderRegion& vport)
+        {
+            if (renderer) renderer->damage(rd, vport);
+        }
+
+        void damage()
+        {
+            if (renderer) renderer->damage(rd, bounds(renderer));
+        }
+
+        void mark(CompositionFlag flag)
+        {
+            cmpFlag = CompositionFlag(uint8_t(cmpFlag) | uint8_t(flag));
+        }
+
+        bool marked(CompositionFlag flag)
+        {
+            return (uint8_t(cmpFlag) & uint8_t(flag)) ? true : false;
+        }
+
+        bool marked(RenderUpdateFlag flag)
+        {
+            return (renderFlag & flag) ? true : false;
         }
 
         void mark(RenderUpdateFlag flag)
@@ -163,7 +186,7 @@ namespace tvg
             return tm;
         }
 
-        Result clip(Paint* clp)
+        Result clip(Shape* clp)
         {
             if (clp && PAINT(clp)->parent) return Result::InsufficientCondition;
             if (clipper) PAINT(clipper)->unref(clipper != clp);
@@ -272,6 +295,7 @@ namespace tvg
             }
         }
 
+        bool intersects(const RenderRegion& region);
         RenderRegion bounds(RenderMethod* renderer) const;
         Iterator* iterator();
         Result bounds(float* x, float* y, float* w, float* h, Matrix* pm, bool stroking);

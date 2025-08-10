@@ -1341,7 +1341,7 @@ static void GetMedia(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 			<< "Server: " << SERVER_NAME << ENDL
 			<< "Date: " << GetTimeGMT(0) << ENDL
 			<< "Content-Type: " << media.getMimeType() << ENDL
-			<< "Content-Disposition: attachment; filename=\"" << media.get_file_name() << "\"" << ENDL;
+			<< "Content-Disposition: inline; filename=\"" << media.get_file_name() << "\"" << ENDL;
 		if (sz > 0)
 			HttpAnswer << "Content-Length: " << off << ENDL;
 		HttpAnswer << "Connection: keep-alive" << ENDL;
@@ -1399,7 +1399,7 @@ static void GetMedia(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 			<< "Server: " << SERVER_NAME << ENDL
 			<< "Date: " << GetTimeGMT(0) << ENDL
 			<< "Content-Type: " << media.getMimeType() << ENDL
-			<< "Content-Disposition: attachment; filename=\"" << media.get_file_name() << "\"" << ENDL;
+			<< "Content-Disposition: inline; filename=\"" << media.get_file_name() << "\"" << ENDL;
 		if (media.get_type() == Media::TYPE::TYPE_PHOTO) {
 			HttpAnswer << "Cache-Control: no-transform,public,max-age=345600,s-maxage=345600" << ENDL
 				<< "X-Cache: HIT" << ENDL;
@@ -1474,7 +1474,7 @@ static void GetCover(RequestParserStruct& Req, CLIENT_CONNECTION* client) {
 		<< "Content-Type: " << "image/jpeg" << ENDL
 		<< "Cache-Control: no-transform,public,max-age=345600,s-maxage=345600" << ENDL
 		<< "X-Cache: HIT" << ENDL
-		<< "Content-Disposition: attachment; filename=\"" << hash + "_cover.jpg" << "\"" << ENDL;
+		<< "Content-Disposition: inline; filename=\"" << hash + "_cover.jpg" << "\"" << ENDL;
 	if (sz > 0)
 		HttpAnswer << "Content-Length: " << sz << ENDL;
 	HttpAnswer << ENDL;

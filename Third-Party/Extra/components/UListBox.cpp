@@ -10,10 +10,12 @@ IMPLEMENT_DYNAMIC(UListBox, CStatic)
 
 typedef void(*CallBackEvent)(LPVOID pClass, int Idx);
 
-struct ColorFragment
-{
-	ColorFragment(DWORD PColor, int PStartOffset, int PEndOffset)
-	{
+static UINT ON_TOUCH_EVENT = RegisterWindowMessageW(L"UListBox::OnTouchEvent");
+static UINT ON_SELECT_EVENT = RegisterWindowMessageW(L"UListBox::OnSelectEvent");
+
+class ColorFragment {
+public:
+	ColorFragment(DWORD PColor, int PStartOffset, int PEndOffset) {
 		Color = PColor;
 		StartOffset = PStartOffset;
 		EndOffset = PEndOffset;
@@ -23,55 +25,48 @@ struct ColorFragment
 	int EndOffset;
 };
 
-class ColorFragmentLine
-{
+class ColorFragmentLine {
 public:
-	ColorFragmentLine(int PLength)
-	{
+	ColorFragmentLine(int PLength) {
 		Length = PLength;
 	}
-	void AddColorFragment(ColorFragment Fragment)
-	{
+	void AddColorFragment(ColorFragment Fragment) {
 		Fragments.push_back(Fragment);
 	}
-	list<ColorFragment> Flush(DWORD Color)
-	{
-		if (Fragments.size() <= 0)
-		{
+	list<ColorFragment> Flush(DWORD Color) {
+		if (Fragments.size() <= 0) {
 			Fragments.push_back(ColorFragment(Color, 0, (Length - 1)));
 			return Fragments;
 		}
 		Fragments.sort(sort_compare);
-		for (auto i = Fragments.begin(); i != Fragments.end(); i++)
-		{
-			if (i == Fragments.begin())
-			{
-				if ((*i).StartOffset > 0)
+		for (auto i = Fragments.begin(); i != Fragments.end(); i++) {
+			if (i == Fragments.begin()) {
+				if ((*i).StartOffset > 0) {
 					Fragments.insert(i, ColorFragment(Color, 0, (*i).StartOffset - 1));
+				}
 				continue;
 			}
-			else
-			{
+			else {
 				auto s = i; s--;
-				if ((*s).EndOffset < (*i).StartOffset - 1)
+				if ((*s).EndOffset < (*i).StartOffset - 1) {
 					Fragments.insert(i, ColorFragment(Color, (*s).EndOffset + 1, (*i).StartOffset - 1));
+				}
 			}
 		}
-		if ((*Fragments.rbegin()).EndOffset < (Length - 1))
+		if ((*Fragments.rbegin()).EndOffset < (Length - 1)) {
 			Fragments.push_back(ColorFragment(Color, (*Fragments.rbegin()).EndOffset + 1, (Length - 1)));
+		}
 		return Fragments;
 	}
 private:
-	static bool sort_compare(const ColorFragment& first, const ColorFragment& second)
-	{
+	static bool sort_compare(const ColorFragment& first, const ColorFragment& second) {
 		return (first.EndOffset < second.EndOffset);
 	}
 	int Length;
 	list<ColorFragment> Fragments;
 };
 
-UListBox::UListBox()
-{
+UListBox::UListBox() {
 	Inited = false;
 	LinesChenged = false;
 	ScrollChenged = false;
@@ -81,8 +76,7 @@ UListBox::UListBox()
 	THREAD_ACCESS_REGISTER_POINTERS(Async, &Lines, &RenderedLines, &BackgroundPicture);
 }
 
-static void SetRange(CScrollBar* pScrollBar, int Min, int Max, int RenderedCount)
-{
+static void SetRange(CScrollBar* pScrollBar, int Min, int Max, int RenderedCount) {
 	pScrollBar->SetScrollRange(Min, Max);
 	SCROLLINFO info;
 	info.cbSize = sizeof(SCROLLINFO);
@@ -92,7 +86,6 @@ static void SetRange(CScrollBar* pScrollBar, int Min, int Max, int RenderedCount
 	info.nMax = Max;
 	info.nMin = Min;
 	pScrollBar->SetScrollInfo(&info);
-
 }
 
 CRect UListBox::getRect() {
@@ -103,10 +96,10 @@ CRect UListBox::getRect() {
 	return backgr;
 }
 
-void UListBox::Init(HBITMAP pBackgroundPicture, URGB pBackgroundColor, CallBackSelectTouch OnSelect, CallBackSelectTouch OnTouch)
-{
-	if (Inited == true)
+void UListBox::Init(HBITMAP pBackgroundPicture, CallBackSelectTouch OnSelect, CallBackSelectTouch OnTouch) {
+	if (Inited) {
 		return;
+	}
 	m_pFont.Attach((HFONT)GetParent()->SendMessageW(WM_GETFONT, 0, 0));
 
 	RECT scrollpos;
@@ -123,7 +116,6 @@ void UListBox::Init(HBITMAP pBackgroundPicture, URGB pBackgroundColor, CallBackS
 	if (pBackgroundPicture != NULL) {
 		BackgroundPicture.Attach(pBackgroundPicture);
 	}
-	BackgroundColor = pBackgroundColor;
 	SetRange(&Scroll, 0, 0, 0);
 	SetRange(&HorizScroll, 0, 0, 0);
 	this->OnSelect = OnSelect;
@@ -133,7 +125,7 @@ void UListBox::Init(HBITMAP pBackgroundPicture, URGB pBackgroundColor, CallBackS
 	LinesChenged = true;
 }
 
-void UListBox::SwitchBackground(HBITMAP pBackgroundPicture, URGB pBackgroundColor) {
+void UListBox::SwitchBackground(HBITMAP pBackgroundPicture) {
 	THREAD_ACCESS_LOCK(Async, &BackgroundPicture);
 	BackgroundPicture.DeleteObject();
 	CRect backgr;
@@ -141,39 +133,37 @@ void UListBox::SwitchBackground(HBITMAP pBackgroundPicture, URGB pBackgroundColo
 	if (pBackgroundPicture != NULL) {
 		BackgroundPicture.Attach(pBackgroundPicture);
 	}
-	BackgroundColor = pBackgroundColor;
 	THREAD_ACCESS_UNLOCK(Async, &BackgroundPicture);
 }
 
-void UListBox::RegisterSpecialPatternOnce(const wstring &Pattern, URGB Color)
-{
+void UListBox::RegisterSpecialPatternOnce(const wstring &Pattern, URGB Color) {
 	THREAD_ACCESS_LOCK(Async, &Lines);
 	OnceSpecials[Pattern] = Color;
 	LinesChenged = true;
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
-void UListBox::UnRegisterSpecialPatternOnce(const wstring& Pattern)
-{
+void UListBox::UnRegisterSpecialPatternOnce(const wstring& Pattern) {
 	THREAD_ACCESS_LOCK(Async, &Lines);
 	OnceSpecials.erase(Pattern);
 	LinesChenged = true;
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
-void UListBox::ClearSpecialPatternOnce()
-{
+void UListBox::ClearSpecialPatternOnce() {
 	THREAD_ACCESS_LOCK(Async, &Lines);
 	OnceSpecials.clear();
 	LinesChenged = true;
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
-UListBox::~UListBox()
-{
+UListBox::~UListBox() {
 	Inited = false;
 	LinesChenged = false;
 	ScrollChenged = false;
@@ -191,45 +181,44 @@ BEGIN_MESSAGE_MAP(UListBox, CStatic)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_MOUSEMOVE()
 	ON_WM_ERASEBKGND()
+	ON_REGISTERED_MESSAGE(ON_TOUCH_EVENT, OnTouchEventMessage)
+	ON_REGISTERED_MESSAGE(ON_SELECT_EVENT, OnSelectEventMessage)
 END_MESSAGE_MAP()
 
-BOOL UListBox::OnEraseBkgnd(CDC* pMsg)
-{
+BOOL UListBox::OnEraseBkgnd(CDC* pMsg) {
 	return TRUE;
 }
 
-void UListBox::AddLine(const std::wstring &Line)
-{
-	if (Inited == false)
+void UListBox::AddLine(const std::wstring &Line) {
+	if (!Inited || Line.length() <= 0) {
 		return;
-	if (Line.length() <= 0)
-		return;
+	}
 	THREAD_ACCESS_LOCK(Async, &Lines);
 	Lines.push_back(Line);
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 }
 
-void UListBox::UpdateLines()
-{
+void UListBox::UpdateLines() {
 	LinesChenged = true;
 	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
-void UListBox::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	if (Inited == false || FontSizePX == -1)
+void UListBox::OnLButtonDown(UINT nFlags, CPoint point) {
+	if (!Inited || FontSizePX == -1) {
 		return CStatic::OnRButtonDown(nFlags, point);
+	}
 	int SelectedIdTemp = 0;
 	THREAD_ACCESS_LOCK(Async, &RenderedLines);
 	SelectedIdTemp = Scroll.GetScrollPos() + min((int)((float)point.y / FontSizePX), (int)RenderedLines.size() - 1);
 	THREAD_ACCESS_UNLOCK(Async, &RenderedLines);
-	if (SelectedIdTemp != SelectedId)
+	if (SelectedIdTemp != SelectedId) {
 		Select(SelectedIdTemp);
+	}
 	return CStatic::OnRButtonDown(nFlags, point);
 }
 
-void UListBox::Clear()
-{
+void UListBox::Clear() {
 	SelectedId = -1;
 	TouchId = -1;
 	THREAD_ACCESS_LOCK(Async, &Lines, &RenderedLines);
@@ -238,38 +227,36 @@ void UListBox::Clear()
 	LinesChenged = true;
 	THREAD_ACCESS_UNLOCK(Async, &Lines, &RenderedLines);
 	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
-void UListBox::Select(int Id)
-{
+void UListBox::Select(int Id) {
 	THREAD_ACCESS_LOCK(Async, &Lines);
-	if (Id < 0 || Id >(int)Lines.size())
+	if (Id < 0 || Id >(int)Lines.size()) {
 		THREAD_ACCESS_VOID_RETURN(Async, &Lines);
+	}
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 	SelectedId = Id;
 	bool SelHasRendered = false;
 	THREAD_ACCESS_LOCK(Async, &RenderedLines);
-	for (auto &i : RenderedLines)
-	{
-		if (i.Id == SelectedId)
-		{
+	for (auto &i : RenderedLines) {
+		if (i.Id == SelectedId) {
 			SelHasRendered = true;
 			break;
 		}
 	}
 	THREAD_ACCESS_UNLOCK(Async, &RenderedLines);
-	if (SelHasRendered == false)
-	{
+	if (!SelHasRendered) {
 		Scroll.SetScrollPos(SelectedId, FALSE);
 		ScrollChenged = true;
 	}
 	InvalidateRect(getRect());
-	if (OnSelect.Unused() == false)
-		((CallBackEvent)OnSelect.Func)(OnSelect.Class, Id);
+	UpdateWindow();
+
+	SendMessageW(ON_SELECT_EVENT, 0, Id);
 }
 
-std::wstring UListBox::GetLine(int Idx)
-{
+std::wstring UListBox::GetLine(int Idx) {
 	std::wstring Ret;
 	THREAD_ACCESS_LOCK(Async, &Lines);
 	Ret = Lines[Idx];
@@ -277,27 +264,25 @@ std::wstring UListBox::GetLine(int Idx)
 	return Ret;
 }
 
-int UListBox::GetCount()
-{
+int UListBox::GetCount() {
 	THREAD_ACCESS_LOCK(Async, &Lines);
 	THREAD_ACCESS_RETURN(Async, (int)Lines.size(), &Lines);
 }
 
-void UListBox::SelectString(int StarIdx, const std::wstring &Line)
-{
+void UListBox::SelectString(int StarIdx, const std::wstring &Line) {
 	THREAD_ACCESS_LOCK(Async, &Lines);
-	for (int i = StarIdx; i < (int)Lines.size(); i++)
-	{
-		if (Lines[i] == Line)
+	for (int i = StarIdx; i < (int)Lines.size(); i++) {
+		if (Lines[i] == Line) {
 			THREAD_ACCESS_RETURN(Async, Select(i), &Lines);
+		}
 	}
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 }
 
-std::wstring UListBox::GetSelectedLine()
-{
-	if (SelectedId == -1)
+std::wstring UListBox::GetSelectedLine() {
+	if (SelectedId == -1) {
 		return L"";
+	}
 	std::wstring Ret;
 	THREAD_ACCESS_LOCK(Async, &Lines);
 	Ret = Lines[SelectedId];
@@ -305,46 +290,47 @@ std::wstring UListBox::GetSelectedLine()
 	return Ret;
 }
 
-void UListBox::OnMouseMove(UINT nFlags, CPoint point)
-{
-	if (Inited == false || FontSizePX == -1)
+void UListBox::OnMouseMove(UINT nFlags, CPoint point) {
+	if (!Inited || FontSizePX == -1) {
 		return CStatic::OnMouseMove(nFlags, point);
+	}
 	int SelectedIdTemp = 0;
 	THREAD_ACCESS_LOCK(Async, &RenderedLines);
 	SelectedIdTemp = Scroll.GetScrollPos() + min((int)((float)point.y / FontSizePX), (int)RenderedLines.size() - 1);
 	THREAD_ACCESS_UNLOCK(Async, &RenderedLines);
-	if (SelectedIdTemp != TouchId)
-	{
+	if (SelectedIdTemp != TouchId) {
 		TouchId = SelectedIdTemp;
 		InvalidateRect(getRect());
-		if (OnTouch.Unused() == false)
-			((CallBackEvent)OnTouch.Func)(OnSelect.Class, TouchId);
+		UpdateWindow();
+
+		SendMessageW(ON_TOUCH_EVENT, 0, TouchId);
 	}
 	return CStatic::OnMouseMove(nFlags, point);
 }
 
-BOOL UListBox::OnMouseWheel(UINT nFlags, short zDelta, CPoint point)
-{
+BOOL UListBox::OnMouseWheel(UINT nFlags, short zDelta, CPoint point) {
 	int yy = 1;
-	if (zDelta < 0)
+	if (zDelta < 0) {
 		yy = -1;
+	}
 	INT MIN, MAX;
 	Scroll.GetScrollRange(&MIN, &MAX);
-	if(Scroll.GetScrollPos() - yy > MAX || Scroll.GetScrollPos() - yy < MIN)
+	if (Scroll.GetScrollPos() - yy > MAX || Scroll.GetScrollPos() - yy < MIN) {
 		return CStatic::OnMouseWheel(nFlags, zDelta, point);
+	}
 	Scroll.SetScrollPos(Scroll.GetScrollPos() - yy);
 	ScrollChenged = true;
 	InvalidateRect(getRect());
+	UpdateWindow();
 	return CStatic::OnMouseWheel(nFlags, zDelta, point);
 }
 
-void UListBox::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
-{
-	if (Inited == false || pScrollBar != &Scroll)
+void UListBox::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
+	if (!Inited || pScrollBar != &Scroll) {
 		return;
+	}
 
-	if (nSBCode == SB_THUMBTRACK || nSBCode == SB_THUMBPOSITION)
-	{
+	if (nSBCode == SB_THUMBTRACK || nSBCode == SB_THUMBPOSITION) {
 		SCROLLINFO info;
 		info.cbSize = sizeof(SCROLLINFO);
 		info.fMask = SIF_TRACKPOS;
@@ -352,33 +338,33 @@ void UListBox::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		nPos = info.nTrackPos;
 		pScrollBar->SetScrollPos(nPos, FALSE);
 	}
-	else if (nSBCode == SB_TOP)
-	{
+	else if (nSBCode == SB_TOP) {
 		INT Minp = 0, Maxp = 0;
 		pScrollBar->GetScrollRange(&Minp, &Maxp);
 		pScrollBar->SetScrollPos(Minp, FALSE);
 	}
-	else if (nSBCode == SB_BOTTOM)
-	{
+	else if (nSBCode == SB_BOTTOM) {
 		INT Minp = 0, Maxp = 0;
 		pScrollBar->GetScrollRange(&Minp, &Maxp);
 		pScrollBar->SetScrollPos(Maxp, FALSE);
 	}
-	else if (nSBCode == SB_LINEUP)
+	else if (nSBCode == SB_LINEUP) {
 		pScrollBar->SetScrollPos(pScrollBar->GetScrollPos() - 1, FALSE);
-	else if (nSBCode == SB_LINEDOWN)
+	}
+	else if (nSBCode == SB_LINEDOWN) {
 		pScrollBar->SetScrollPos(pScrollBar->GetScrollPos() + 1, FALSE);
+	}
 	ScrollChenged = true;
 	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
-void UListBox::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
-{
-	if (Inited == false || pScrollBar != &HorizScroll)
+void UListBox::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
+	if (!Inited || pScrollBar != &HorizScroll) {
 		return;
+	}
 
-	if (nSBCode == SB_THUMBTRACK || nSBCode == SB_THUMBPOSITION)
-	{
+	if (nSBCode == SB_THUMBTRACK || nSBCode == SB_THUMBPOSITION) {
 		SCROLLINFO info;
 		info.cbSize = sizeof(SCROLLINFO);
 		info.fMask = SIF_TRACKPOS;
@@ -386,61 +372,56 @@ void UListBox::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		nPos = info.nTrackPos;
 		pScrollBar->SetScrollPos(nPos, FALSE);
 	}
-	else if (nSBCode == SB_LEFT)
-	{
+	else if (nSBCode == SB_LEFT) {
 		INT Minp = 0, Maxp = 0;
 		pScrollBar->GetScrollRange(&Minp, &Maxp);
 		pScrollBar->SetScrollPos(Minp, FALSE);
 	}
-	else if (nSBCode == SB_RIGHT)
-	{
+	else if (nSBCode == SB_RIGHT) {
 		INT Minp = 0, Maxp = 0;
 		pScrollBar->GetScrollRange(&Minp, &Maxp);
 		pScrollBar->SetScrollPos(Maxp, FALSE);
 	}
-	else if (nSBCode == SB_LINELEFT)
+	else if (nSBCode == SB_LINELEFT) {
 		pScrollBar->SetScrollPos(pScrollBar->GetScrollPos() - 1, FALSE);
-	else if (nSBCode == SB_LINERIGHT)
+	}
+	else if (nSBCode == SB_LINERIGHT) {
 		pScrollBar->SetScrollPos(pScrollBar->GetScrollPos() + 1, FALSE);
+	}
 	ScrollChenged = true;
 	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
-void UListBox::OnPaint()
-{
+void UListBox::OnPaint() {
 	CRect rect;
 	GetClientRect(&rect);
 	rect.bottom -= SCROLL_SIZE;
 	rect.right -= SCROLL_SIZE;
 
 	CPaintDC pDC(this);
-	pDC.SetStretchBltMode(COLORONCOLOR);
-	if (Inited == false)
-	{
-		CBrush brush(RGB(0, 0, 0));
+
+	if (!Inited) {
+		CBrush brush(GetSysColor(COLOR_3DFACE));
 		pDC.FillRect(&rect, &brush);
-		pDC.SetBkMode(TRANSPARENT);
 		return;
 	}
 	CDC dcMem;
 	dcMem.CreateCompatibleDC(&pDC);
 	CBitmap bitmap;
-
+	bitmap.CreateCompatibleBitmap(&pDC, rect.Width(), rect.Height());
 	dcMem.SetMapMode(GetMapMode(pDC));
 	dcMem.SetBkMode(TRANSPARENT);
 
 	THREAD_ACCESS_LOCK(Async, &BackgroundPicture);
-	if (BackgroundPicture.m_hObject == NULL)
-	{
-		bitmap.CreateCompatibleBitmap(&pDC, rect.Width(), rect.Height());
-		dcMem.SelectObject(&bitmap);
-		CBrush brush(RGB(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b));
-		dcMem.FillRect(&rect, &brush);
-	}
-	else
-	{
+	if (BackgroundPicture.m_hObject) {
 		bitmap.Attach((HBITMAP)CopyImage(BackgroundPicture, IMAGE_BITMAP, rect.Width(), rect.Height(), 0));
 		dcMem.SelectObject(&bitmap);
+	}
+	else {
+		dcMem.SelectObject(&bitmap);
+		CBrush brush(GetSysColor(COLOR_3DFACE));
+		dcMem.FillRect(&rect, &brush);
 	}
 	THREAD_ACCESS_UNLOCK(Async, &BackgroundPicture);
 	dcMem.SelectObject(m_pFont);
@@ -448,40 +429,38 @@ void UListBox::OnPaint()
 	dcMem.GetTextMetricsW(&tm);
 	FontSizePX = tm.tmHeight;
 	THREAD_ACCESS_LOCK(Async, &RenderedLines);
-	if (LinesChenged == true || ScrollChenged == true)
-	{
+	if (LinesChenged || ScrollChenged) {
 		THREAD_ACCESS_LOCK(Async, &Lines);
 		RenderedLines.clear();
-		if (ScrollChenged == false)
-		{
-			if (Lines.size() <= 0)
+		if (!ScrollChenged) {
+			if (Lines.size() <= 0) {
 				SetRange(&Scroll, 0, 0, rect.Height() / tm.tmHeight);
-			else
+			}
+			else {
 				SetRange(&Scroll, 0, (int)(Lines.size()), rect.Height() / tm.tmHeight);
+			}
 		}
-		if (Lines.size() > 0)
-		{
-			for (size_t i = 0; i < min((size_t)(rect.Height() / tm.tmHeight), Lines.size() - Scroll.GetScrollPos()); i++)
+		if (Lines.size() > 0) {
+			for (size_t i = 0; i < min((size_t)(rect.Height() / tm.tmHeight), Lines.size() - Scroll.GetScrollPos()); i++) {
 				RenderedLines.push_back(RenderedLine(Lines[(int)i + Scroll.GetScrollPos()], (int)i + Scroll.GetScrollPos()));
+			}
 		}
 		ScrollChenged = false;
 		LinesChenged = false;
 		THREAD_ACCESS_UNLOCK(Async, &Lines);
 	}
 	CRect recttemp = rect;
-	if (RenderedLines.size() <= 0)
+	if (RenderedLines.size() <= 0) {
 		SetRange(&HorizScroll, 0, 0, rect.Width() / tm.tmHeight);
-	for (auto &i : RenderedLines)
-	{
-		if ((int)i.Line.length() <= HorizScroll.GetScrollPos())
-		{
+	}
+	for (auto &i : RenderedLines) {
+		if ((int)i.Line.length() <= HorizScroll.GetScrollPos()) {
 			recttemp.top += tm.tmHeight;
 			continue;
 		}
 		wstring rs = i.Line;
 		DWORD OrignColor = RGB(255, 255, 255);
-		if (SelectedId == i.Id)
-		{
+		if (SelectedId == i.Id) {
 			OrignColor = RGB(255, 0, 0);
 			CPen Poly(PS_SOLID, 1, RGB(255,0,0));
 			dcMem.SelectObject(Poly);
@@ -490,10 +469,8 @@ void UListBox::OnPaint()
 			dcMem.MoveTo(0, recttemp.top + tm.tmHeight);
 			dcMem.LineTo(recttemp.Width(), recttemp.top + tm.tmHeight);
 		}
-		else
-		{
-			if (TouchId == i.Id)
-			{
+		else {
+			if (TouchId == i.Id) {
 				CPen Poly(PS_SOLID, 1, RGB(100, 100, 100));
 				dcMem.SelectObject(Poly);
 				dcMem.MoveTo(0, recttemp.top);
@@ -504,32 +481,30 @@ void UListBox::OnPaint()
 		}
 		INT hMin, hMax;
 		HorizScroll.GetScrollRange(&hMin, &hMax);
-		if (hMax < (int)rs.length())
+		if (hMax < (int)rs.length()) {
 			SetRange(&HorizScroll, 0, (int)rs.length(), rect.Width() / tm.tmHeight);
+		}
 
 		rs = rs.substr(HorizScroll.GetScrollPos());
 		ColorFragmentLine Spec((int)rs.length());
-		for (auto& s : OnceSpecials)
-		{
+		for (auto& s : OnceSpecials) {
 			size_t SpecPos = 0;
-			while (true)
-			{
+			while (true) {
 				SpecPos = rs.find(s.get_key(), SpecPos);
-				if (SpecPos != wstring::npos)
-				{
+				if (SpecPos != wstring::npos) {
 					Spec.AddColorFragment(ColorFragment(s.get_value()(), (int)SpecPos, (int)(SpecPos + s.get_key().length() - 1)));
 					SpecPos += s.get_key().length();
 				}
-				else
+				else {
 					break;
+				}
 			}
 		}
 
 		SIZE textsz;
 		CRect Mod = recttemp;
 		list<ColorFragment> Fragments = Spec.Flush(OrignColor);
-		for (auto& j : Fragments)
-		{
+		for (auto& j : Fragments) {
 			dcMem.SetTextColor(j.Color);
 			wstring TempStr = rs.substr(j.StartOffset, (j.EndOffset - j.StartOffset) + 1);
 			dcMem.DrawTextW(TempStr.c_str(), (int)TempStr.length(), &Mod, DT_LEFT);
@@ -540,4 +515,18 @@ void UListBox::OnPaint()
 	}
 	pDC.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), &dcMem, 0, 0, SRCCOPY);
 	THREAD_ACCESS_UNLOCK(Async, &RenderedLines);
+}
+
+LRESULT UListBox::OnTouchEventMessage(WPARAM wParam, LPARAM lParam) {
+	if (!OnTouch.Unused()) {
+		((CallBackEvent)OnTouch.Func)(OnTouch.Class, (int)lParam);
+	}
+	return 0;
+}
+
+LRESULT UListBox::OnSelectEventMessage(WPARAM wParam, LPARAM lParam) {
+	if (!OnSelect.Unused()) {
+		((CallBackEvent)OnSelect.Func)(OnSelect.Class, (int)lParam);
+	}
+	return 0;
 }

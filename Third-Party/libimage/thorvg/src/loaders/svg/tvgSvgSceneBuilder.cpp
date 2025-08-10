@@ -25,6 +25,7 @@
 #include "tvgCompressor.h"
 #include "tvgFill.h"
 #include "tvgStr.h"
+#include "tvgShape.h"
 #include "tvgSvgLoaderCommon.h"
 #include "tvgSvgSceneBuilder.h"
 #include "tvgSvgPath.h"
@@ -409,7 +410,7 @@ static Paint* _applyProperty(SvgLoaderData& loaderData, SvgNode* node, Shape* vg
         vg->fill(style->fill.paint.color.r, style->fill.paint.color.g, style->fill.paint.color.b, style->fill.opacity);
     }
 
-    vg->fill(style->fill.fillRule);
+    vg->fillRule(style->fill.fillRule);
     vg->order(!style->paintOrder);
     vg->opacity(style->opacity);
 
@@ -454,7 +455,7 @@ static bool _recognizeShape(SvgNode* node, Shape* shape)
     switch (node->type) {
         case SvgNodeType::Path: {
             if (node->node.path.path) {
-                if (!svgPathToShape(node->node.path.path, shape)) {
+                if (!svgPathToShape(node->node.path.path, SHAPE(shape)->rs.path)) {
                     TVGERR("SVG", "Invalid path information.");
                     return false;
                 }

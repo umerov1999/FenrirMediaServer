@@ -78,7 +78,7 @@ BOOL VKApiToolsInputLogin::OnInitDialog()
 	CRect rt;
 	VK_Icon.GetClientRect(rt);
 	std::string Data = GetDataFromResourceUtil(L"PNG", IDB_PNG1);
-	VK_IconBitmap = PrepareImageFromBufferAutoType(VK_Icon.m_hWnd, Data.data(), (int)Data.size()).resize(rt.Width(), rt.Height());
+	VK_IconBitmap = PrepareImageFromBufferAutoType(VK_Icon.m_hWnd, Data.data(), (int)Data.size()).resize(VK_Icon.m_hWnd, rt.Width(), rt.Height());
 	VK_Icon.SetBitmap(VK_IconBitmap.get_hBitmap());
 
 	KateMobilePref.ResetContent();
@@ -131,7 +131,7 @@ void VKApiToolsInputLogin::CheckAccess_TOKEN(std::string Token)
 		VK_Icon.GetClientRect(rt);
 		string Data;
 		DoCurlGet(inf.pAvatarLink, ANDROID_USERAGENT, Data, false);
-		VK_IconBitmap = PrepareImageFromBufferAutoType(VK_Icon.m_hWnd, Data.data(), (int)Data.size()).resize(rt.Width(), rt.Height());
+		VK_IconBitmap = PrepareImageFromBufferAutoType(VK_Icon.m_hWnd, Data.data(), (int)Data.size()).resize(VK_Icon.m_hWnd, rt.Width(), rt.Height());
 		VK_Icon.SetBitmap(VK_IconBitmap.get_hBitmap());
 		UserName.SetWindowTextW((inf.pUserName + L" (id" + to_wstring(inf.user_id) + L")").c_str());
 		return;

@@ -6,14 +6,12 @@
 #include "urgb.h"
 #include "Map.h"
 
-struct ColoredMessage
-{
-	ColoredMessage()
-	{
+class ColoredMessage {
+public:
+	ColoredMessage() {
 		Color = URGB(0, 0, 0);
 	}
-	ColoredMessage(const std::wstring &Tstring, URGB TColor)
-	{
+	ColoredMessage(const std::wstring &Tstring, URGB TColor) {
 		str = Tstring;
 		Color = TColor;
 	}
@@ -21,22 +19,19 @@ struct ColoredMessage
 	URGB Color;
 };
 
-enum class Align
-{
+enum class Align {
 	LEFT_ALIGN,
 	CENTER_ALIGN
 };
 
 #pragma pack(push,1)
-struct TextWrite
-{
-	TextWrite()
-	{
+class TextWrite {
+public:
+	TextWrite() {
 		Color = URGB(0, 0, 0);
 		Length = -1;
 	}
-	TextWrite(URGB PColor, unsigned int PLength)
-	{
+	TextWrite(URGB PColor, unsigned int PLength) {
 		Color = PColor;
 		Length = PLength;
 	}
@@ -45,8 +40,7 @@ struct TextWrite
 };
 #pragma pack(pop)
 
-class ColorEdit : public CStatic
-{
+class ColorEdit : public CStatic {
 	DECLARE_DYNAMIC(ColorEdit)
 
 public:
@@ -59,8 +53,8 @@ public:
 	afx_msg std::vector<ColoredMessage> GetRenderedLines();
 	afx_msg std::wstring GetRenderedText();
 	afx_msg std::wstring GetFullText();
-	afx_msg void Init(Align TextAlign, HBITMAP pBackgroundPicture = NULL, URGB pBackgroundColor = URGB(), bool isFullTextMode = false);
-	afx_msg void SwitchBackground(HBITMAP pBackgroundPicture = NULL, URGB pBackgroundColor = URGB());
+	afx_msg void Init(Align TextAlign, HBITMAP pBackgroundPicture = NULL, bool isFullTextMode = false);
+	afx_msg void SwitchBackground(HBITMAP pBackgroundPicture = NULL);
 	afx_msg void RegisterSpecialPatternOnce(const std::wstring &Pattern, URGB Color);
 	afx_msg void UnRegisterSpecialPatternOnce(const std::wstring& Pattern);
 	afx_msg void ClearSpecialPatternOnce();
@@ -89,7 +83,6 @@ private:
 	bool AutoScroll;
 	bool FullText;
 	CBitmap BackgroundPicture;
-	URGB BackgroundColor;
 	bool Inited;
 	Align TextAlign;
 	THREAD_ACCESS_GUARD Async;

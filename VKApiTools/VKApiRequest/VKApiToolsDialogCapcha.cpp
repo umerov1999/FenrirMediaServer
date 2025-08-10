@@ -76,7 +76,7 @@ BOOL VKApiToolsDialogCapcha::OnInitDialog()
 	HBitmapCapcha.GetClientRect(rt);
 	CapchaBitmap = PrepareImageFromBufferAutoType(HBitmapCapcha.m_hWnd, Data.data(), (int)Data.size(), false);
 	if (CapchaBitmap.is_has_image() && (rt.Width() < CapchaBitmap.get_size().size_x || rt.Height() < CapchaBitmap.get_size().size_y))
-		CapchaBitmap.resize(rt.Width(), rt.Height());
+		CapchaBitmap.resize(HBitmapCapcha.m_hWnd, rt.Width(), rt.Height());
 	if (!CapchaBitmap.is_has_image()) {
 		std::string DataPic = GetDataFromResourceUtil(L"SVG", IDR_SVG2);
 		CapchaBitmap = PrepareImageFromSVG(HBitmapCapcha.m_hWnd, rt.Width(), rt.Height(), DataPic.data(), (int)DataPic.size());

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <functional>
 #include <list>
+#include <cstdarg>
 
 #ifdef TVG_API
     #undef TVG_API
@@ -67,6 +68,7 @@ namespace tvg
 
 class RenderMethod;
 class Animation;
+class Shape;
 
 /**
  * @defgroup ThorVG ThorVG
@@ -175,8 +177,8 @@ enum class MaskMethod : uint8_t
     None = 0,       ///< No Masking is applied.
     Alpha,          ///< Alpha Masking using the masking target's pixels as an alpha value.
     InvAlpha,       ///< Alpha Masking using the complement to the masking target's pixels as an alpha value.
-    Luma,           ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the masking target's pixels. @since 0.9
-    InvLuma,        ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the complement to the masking target's pixels. @since 0.11
+    Luma,           ///< Alpha Masking using the grayscale (0.2126R + 0.7152G + 0.0722*B) of the masking target's pixels. @since 0.9
+    InvLuma,        ///< Alpha Masking using the grayscale (0.2126R + 0.7152G + 0.0722*B) of the complement to the masking target's pixels. @since 0.11
     Add,            ///< Combines the target and source objects pixels using target alpha. (T * TA) + (S * (255 - TA)) (Experimental API)
     Subtract,       ///< Subtracts the source color from the target color while considering their respective target alpha. (T * TA) - (S * (255 - TA)) (Experimental API)
     Intersect,      ///< Computes the result by taking the minimum value between the target alpha and the source alpha and multiplies it with the target color. (T * min(TA, SA)) (Experimental API)
@@ -200,21 +202,21 @@ enum class BlendMethod : uint8_t
     Normal = 0,        ///< Perform the alpha blending(default). S if (Sa == 255), otherwise (Sa * S) + (255 - Sa) * D
     Multiply,          ///< Takes the RGB channel values from 0 to 255 of each pixel in the top layer and multiples them with the values for the corresponding pixel from the bottom layer. (S * D)
     Screen,            ///< The values of the pixels in the two layers are inverted, multiplied, and then inverted again. (S + D) - (S * D)
-    Overlay,           ///< Combines Multiply and Screen blend modes. (2 * S * D) if (2 * D < Da), otherwise (Sa * Da) - 2 * (Da - S) * (Sa - D)
+    Overlay,           ///< Combines Multiply and Screen blend modes. (2 * S * D) if (D < 128), otherwise 255 - 2 * (255 - S) * (255 - D)
     Darken,            ///< Creates a pixel that retains the smallest components of the top and bottom layer pixels. min(S, D)
     Lighten,           ///< Only has the opposite action of Darken Only. max(S, D)
     ColorDodge,        ///< Divides the bottom layer by the inverted top layer. D / (255 - S)
     ColorBurn,         ///< Divides the inverted bottom layer by the top layer, and then inverts the result. 255 - (255 - D) / S
-    HardLight,         ///< The same as Overlay but with the color roles reversed. (2 * S * D) if (S < Sa), otherwise (Sa * Da) - 2 * (Da - S) * (Sa - D)
-    SoftLight,         ///< The same as Overlay but with applying pure black or white does not result in pure black or white. (1 - 2 * S) * (D ^ 2) + (2 * S * D)
+    HardLight,         ///< The same as Overlay but with the color roles reversed. (2 * S * D) if (S < 128), otherwise 255 - 2 * (255 - S) * (255 - D)
+    SoftLight,         ///< The same as Overlay but with applying pure black or white does not result in pure black or white. (255 - 2 * S) * (D * D) + (2 * S * D)
     Difference,        ///< Subtracts the bottom layer from the top layer or the other way around, to always get a non-negative value. (S - D) if (S > D), otherwise (D - S)
-    Exclusion,         ///< The result is twice the product of the top and bottom layers, subtracted from their sum. s + d - (2 * s * d)
-    Hue,               ///< Reserved. Not supported.
-    Saturation,        ///< Reserved. Not supported.
-    Color,             ///< Reserved. Not supported.
-    Luminosity,        ///< Reserved. Not supported.
+    Exclusion,         ///< The result is twice the product of the top and bottom layers, subtracted from their sum. S + D - (2 * S * D)
+    Hue,               ///< Combine with HSL(Sh + Ds + Dl) then convert it to RGB. @since 1.0
+    Saturation,        ///< Combine with HSL(Dh + Ss + Dl) then convert it to RGB. @since 1.0
+    Color,             ///< Combine with HSL(Sh + Ss + Dl) then convert it to RGB. @since 1.0
+    Luminosity,        ///< Combine with HSL(Dh + Ds + Sl) then convert it to RGB. @since 1.0
     Add,               ///< Simply adds pixel values of one layer with the other. (S + D)
-    HardMix            ///< Reserved. Not supported.
+    Composition = 255  ///< Used for intermediate composition. Only valid when applied to a Scene. @since 1.0
 };
 
 
@@ -231,11 +233,11 @@ enum class BlendMethod : uint8_t
 enum class SceneEffect : uint8_t
 {
     ClearAll = 0,      ///< Reset all previously applied scene effects, restoring the scene to its original state.
-    GaussianBlur,      ///< Apply a blur effect with a Gaussian filter. Param(3) = {sigma(float)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
+    GaussianBlur,      ///< Apply a blur effect with a Gaussian filter. Param(4) = {sigma(double)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
     DropShadow,        ///< Apply a drop shadow effect with a Gaussian Blur filter. Param(8) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255], angle(double)[0 - 360], distance(double), blur_sigma(double)[> 0], quality(int)[0 - 100]}
-    Fill,              ///< Override the scene content color with a given fill information (Experimental API). Param(5) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
-    Tint,              ///< Tinting the current scene color with a given black, white color paramters (Experimental API). Param(7) = {black_R(int)[0 - 255], black_G(int)[0 - 255], black_B(int)[0 - 255], white_R(int)[0 - 255], white_G(int)[0 - 255], white_B(int)[0 - 255], intensity(float)[0 - 100]}
-    Tritone            ///< Apply a tritone color effect to the scene using three color parameters for shadows, midtones, and highlights (Experimental API). Param(9) = {Shadow_R(int)[0 - 255], Shadow_G(int)[0 - 255], Shadow_B(int)[0 - 255], Midtone_R(int)[0 - 255], Midtone_G(int)[0 - 255], Midtone_B(int)[0 - 255], Highlight_R(int)[0 - 255], Highlight_G(int)[0 - 255], Highlight_B(int)[0 - 255]}
+    Fill,              ///< Override the scene content color with a given fill information. Param(4) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
+    Tint,              ///< Tinting the current scene color with a given black, white color parameters. Param(7) = {black_R(int)[0 - 255], black_G(int)[0 - 255], black_B(int)[0 - 255], white_R(int)[0 - 255], white_G(int)[0 - 255], white_B(int)[0 - 255], intensity(double)[0 - 100]}
+    Tritone            ///< Apply a tritone color effect to the scene using three color parameters for shadows, midtones, and highlights. A blending factor determines the mix between the original color and the tritone colors. Param(9) = {Shadow_R(int)[0 - 255], Shadow_G(int)[0 - 255], Shadow_B(int)[0 - 255], Midtone_R(int)[0 - 255], Midtone_G(int)[0 - 255], Midtone_B(int)[0 - 255], Highlight_R(int)[0 - 255], Highlight_G(int)[0 - 255], Highlight_B(int)[0 - 255], Blend(int)[0 - 255]}
 };
 
 
@@ -263,10 +265,14 @@ enum class Type : uint8_t
 
 /**
  * @brief A data structure representing a point in two-dimensional space.
+ *
+ * This structure defines a single point using Cartesian coordinates.
+ * It is typically used for specifying positions or coordinates in 2D graphics.
  */
 struct Point
 {
-    float x, y;
+    float x;  ///< The x-coordinate of the point.
+    float y;  ///< The y-coordinate of the point.
 };
 
 
@@ -398,13 +404,13 @@ public:
      *
      * @param[in] clipper The shape object as the clipper.
      *
-     * @retval Result::NonSupport If the @p clipper type is not Shape.
-     * @retval Result::InsufficientCondition if the target has already belonged to another paint.
+     * @retval Result::InsufficientCondition if the @p clipper has already belonged to another paint.
      *
-     * @note @p clipper only supports the Shape type.
+     * @see Paint::clip()
+     *
      * @since 1.0
      */
-    Result clip(Paint* clipper) noexcept;
+    Result clip(Shape* clipper) noexcept;
 
     /**
      * @brief Sets the blending method for the paint object.
@@ -454,6 +460,32 @@ public:
     Result bounds(float* x, float* y, float* w, float* h) const noexcept;
 
     /**
+     * @brief Checks whether a given region intersects the filled area of the paint.
+     *
+     * This function determines whether the specified rectangular region—defined by (`x`, `y`, `w`, `h`)—
+     * intersects the geometric fill region of the paint object.
+     *
+     * This is useful for hit-testing purposes, such as detecting whether a user interaction (e.g., touch or click)
+     * occurs within a visible painted region.
+     *
+     * The paint must be updated in a Canvas beforehand—typically after the Canvas has been
+     * drawn and synchronized.
+     *
+     * @param[in] x The x-coordinate of the top-left corner of the test region.
+     * @param[in] y The y-coordinate of the top-left corner of the test region.
+     * @param[in] w The width of the region to test. Must be greater than 0; defaults to 1.
+     * @param[in] h The height of the region to test. Must be greater than 0; defaults to 1.
+     *
+     * @return @c true if any part of the region intersects the filled area; otherwise, @c false.
+     *
+     * @note To test a single point, set the region size to w = 1, h = 1.
+     * @note For efficiency, an AABB (axis-aligned bounding box) test is performed internally before precise hit detection.
+     * @note This test does not take into account the results of blending or masking.
+     * @note Experimental API.
+     */
+    bool intersects(int32_t x, int32_t y, int32_t w = 1, int32_t h = 1) noexcept;
+
+    /**
      * @brief Duplicates the object.
      *
      * Creates a new object and sets its all properties as in the original object.
@@ -481,6 +513,19 @@ public:
     MaskMethod mask(const Paint** target) const noexcept;
 
     /**
+     * @brief Get the clipper shape of the paint object.
+     *
+     * This function returns the clipper that has been previously set to this paint object.
+     *
+     * @return The shape object used as the clipper, or @c nullptr if no clipper is set.
+     *
+     * @see Paint::clip(Shape* clipper)
+     *
+     * @since 1.0
+     */
+    Shape* clip() const noexcept;
+
+    /**
      * @brief Increment the reference count for the Paint instance.
      *
      * This method increases the reference count of the Paint object, allowing shared ownership and control over its lifetime.
@@ -494,7 +539,7 @@ public:
      *
      * @since 1.0
      */
-    uint8_t ref() noexcept;
+    uint16_t ref() noexcept;
 
     /**
      * @brief Decrement the reference count for the Paint instance.
@@ -511,7 +556,7 @@ public:
      *
      * @since 1.0
      */
-    uint8_t unref(bool free = true) noexcept;
+    uint16_t unref(bool free = true) noexcept;
 
     /**
      * @brief Retrieve the current reference count of the Paint instance.
@@ -525,7 +570,7 @@ public:
      *
      * @since 1.0
      */
-    uint8_t refCnt() const noexcept;
+    uint16_t refCnt() const noexcept;
 
     /**
      * @brief Returns the ID value of this class.
@@ -534,7 +579,7 @@ public:
      *
      * @return The class type ID of the Paint instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     virtual Type type() const noexcept = 0;
 
@@ -543,7 +588,7 @@ public:
      *
      * This is reserved to specify an paint instance in a scene.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     uint32_t id = 0;
 
@@ -644,7 +689,7 @@ public:
      *
      * @return The class type ID of the Fill instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     virtual Type type() const noexcept = 0;
 
@@ -721,16 +766,12 @@ public:
     Result remove(Paint* paint = nullptr) noexcept;
 
     /**
-     * @brief Request the canvas to update the paint objects.
+     * @brief Requests the canvas to update the paint for up-to-date render preparation.
      *
-     * If a @c nullptr is passed all paint objects retained by the Canvas are updated,
-     * otherwise only the paint to which the given @p paint points.
-     *
-     * @param[in] paint A pointer to the Paint object or @c nullptr.
-     *
-     * @note The Update behavior can be asynchronous if the assigned thread number is greater than zero.
+     * @note Only modified paint instances will undergo the internal update process.
+     * @note The update operation may be asynchronous if the assigned thread count is greater than zero.
      */
-    Result update(Paint* paint = nullptr) noexcept;
+    Result update() noexcept;
 
     /**
      * @brief Requests the canvas to render Paint objects.
@@ -842,7 +883,7 @@ public:
      *
      * @return The class type ID of the LinearGradient instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -878,6 +919,8 @@ public:
      * @retval Result::InvalidArguments in case the radius @p r or @p fr value is negative.
      *
      * @note In case the radius @p r is zero, an object is filled with a single color using the last color specified in the colorStops().
+     * @note In case the focal point (@p fx and @p fy) lies outside the end circle, it is projected onto the edge of the end circle.
+     * @note If the start circle doesn't fully fit inside the end circle (after possible repositioning), the @p fr is reduced accordingly.
      * @note By manipulating the position and size of the focal point, a wide range of visual effects can be achieved, such as directing
      * the gradient focus towards a specific edge or enhancing the depth and complexity of shading patterns.
      * If a focal effect is not desired, simply align the focal point (@p fx and @p fy) with the center of the end circle (@p cx and @p cy)
@@ -913,7 +956,7 @@ public:
      *
      * @return The class type ID of the LinearGradient instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1085,14 +1128,17 @@ public:
     /**
      * @brief Sets the dash pattern of the stroke.
      *
-     * @param[in] dashPattern The array of consecutive pair values of the dash length and the gap length.
+     * @param[in] dashPattern An array of alternating dash and gap lengths.
      * @param[in] cnt The length of the @p dashPattern array.
-     * @param[in] offset The shift of the starting point within the repeating dash pattern from which the path's dashing begins.
+     * @param[in] offset The shift of the starting point within the repeating dash pattern, from which the pattern begins to be applied.
      *
-     * @retval Result::InvalidArguments In case @p dashPattern is @c nullptr and @p cnt > 0, @p cnt is zero, any of the dash pattern values is zero or less.
+     * @retval Result::InvalidArguments In case @p dashPattern is @c nullptr and @p cnt > 0 or @p dashPattern is not @c nullptr and @p cnt is zero.
      *
      * @note To reset the stroke dash pattern, pass @c nullptr to @p dashPattern and zero to @p cnt.
-     * @warning @p cnt must be greater than 1 if the dash pattern is valid.
+     * @note Values of @p dashPattern less than zero are treated as zero.
+     * @note If all values in the @p dashPattern are equal to or less than 0, the dash is ignored.
+     * @note If the @p dashPattern contains an odd number of elements, the sequence is repeated in the same
+     * order to form an even-length pattern, preserving the alternation of dashes and gaps.
      *
      * @since 1.0
      */
@@ -1167,11 +1213,14 @@ public:
     Result fill(Fill* f) noexcept;
 
     /**
-     * @brief Sets the fill rule for the Shape object.
+     * @brief Sets the fill rule for the shape.
      *
-     * @param[in] r The fill rule value. The default value is @c FillRule::NonZero.
+     * Specifies how the interior of the shape is determined when its path intersects itself.
+     * The default fill rule is @c FillRule::NonZero.
+     *
+     * @param[in] r The fill rule to apply to the shape.
      */
-    Result fill(FillRule r) noexcept;
+    Result fillRule(FillRule r) noexcept;
 
     /**
      * @brief Sets the rendering order of the stroke and the fill.
@@ -1218,9 +1267,13 @@ public:
     Result fill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a = nullptr) const noexcept;
 
     /**
-     * @brief Gets the fill rule value.
+     * @brief Retrieves the current fill rule used by the shape.
      *
-     * @return The fill rule value of the shape.
+     * This function returns the fill rule, which determines how the interior 
+     * regions of the shape are calculated when it overlaps itself.
+     *
+     * @see Shape::fillRule(FillRule r)
+     * @return The current FillRule value of the shape.
      */
     FillRule fillRule() const noexcept;
 
@@ -1298,7 +1351,7 @@ public:
      *
      * @return The class type ID of the Shape instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1428,7 +1481,7 @@ public:
      *
      * @return The class type ID of the Picture instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1507,12 +1560,13 @@ public:
     /**
      * @brief Apply a post-processing effect to the scene.
      *
-     * This function adds a specified scene effect, such as clearing all effects or applying a Gaussian blur,
-     * to the scene after it has been rendered. Multiple effects can be applied in sequence.
+     * This function adds a specified effect—such as clearing all effects, applying a Gaussian blur,
+     * or adding a drop shadow—to the scene after rendering. Multiple effects can be applied in sequence
+     * by calling this function multiple times.
      *
      * @param[in] effect The scene effect to apply. Options are defined in the SceneEffect enum.
      *                   For example, use SceneEffect::GaussianBlur to apply a blur with specific parameters.
-     * @param[in] ... Additional variadic parameters required for certain effects (e.g., sigma and direction for GaussianBlur).
+     * @param[in] ...    Additional variadic parameters required for certain effects (e.g., sigma and direction for GaussianBlur).
      *
      * @since 1.0
      */
@@ -1532,7 +1586,7 @@ public:
      *
      * @return The class type ID of the Scene instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1559,6 +1613,7 @@ public:
      * It sets the font name, size and optionally the style.
      *
      * @param[in] name The name of the font. This should correspond to a font available in the canvas.
+     *                 If set to @c nullptr, ThorVG will attempt to select a fallback font available on the system.
      * @param[in] size The size of the font in points. This determines how large the text will appear.
      * @param[in] style The style of the font. It can be used to set the font to 'italic'.
      *                  If not specified, the default style is used. Only 'italic' style is supported currently.
@@ -1567,6 +1622,13 @@ public:
      *
      * @note If the @p name is not specified, ThorVG will select any available font candidate.
      * @since 1.0
+     *
+     * @code
+     * // Tip for fallback support to use any available font.
+     * if (text->font("Arial", 24) != tvg::Result::Success) {
+     *     text->font(nullptr, 24);
+     * }
+     * @endcode
      */
     Result font(const char* name, float size, const char* style = nullptr) noexcept;
 
@@ -1686,7 +1748,7 @@ public:
      *
      * @return The class type ID of the Text instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1840,20 +1902,24 @@ class TVG_API Initializer final
 {
 public:
     /**
-     * @brief Initializes the ThorVG engine.
+     * @brief Initializes the ThorVG engine runtime.
      *
-     * ThorVG requires an active runtime environment to operate.
-     * Internally, it utilizes a task scheduler to efficiently parallelize rendering operations.
-     * You can specify the number of worker threads using the @p threads parameter.
-     * During initialization, ThorVG will spawn the specified number of threads.
+     * ThorVG requires an active runtime environment for rendering operations.
+     * This function sets up an internal task scheduler and creates a specified number
+     * of worker threads to enable parallel rendering.
      *
-     * @param[in] threads The number of worker threads to create. A value of zero indicates that only the main thread will be used.
+     * @param[in] threads The number of worker threads to launch.
+     *                    A value of 0 indicates that only the main thread will be used.
      *
-     * @note The initializer uses internal reference counting to track multiple calls.
-     *       The number of threads is fixed on the first call to init() and cannot be changed in subsequent calls.
+     * @return Result indicating success or failure of initialization.
+     *
+     * @note This function uses internal reference counting to allow multiple init() calls.
+     *       However, the number of threads is fixed during the first successful initialization
+     *       and cannot be changed in subsequent calls.
+     *
      * @see Initializer::term()
      */
-    static Result init(uint32_t threads) noexcept;
+    static Result init(uint32_t threads = 0) noexcept;
 
     /**
      * @brief Terminates the ThorVG engine.

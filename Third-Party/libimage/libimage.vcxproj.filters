@@ -585,6 +585,9 @@
     <ClCompile Include="webp\src\utils\utils.c">
       <Filter>Файлы исходного кода\webp\utils</Filter>
     </ClCompile>
+    <ClCompile Include="thorvg\src\common\tvgColor.cpp">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="./jpeg/cderror.h">
@@ -949,6 +952,12 @@
     </ClInclude>
     <ClInclude Include="thorvg\inc\colorreplace.h">
       <Filter>Файлы исходного кода\thorvg\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="lancir.h">
+      <Filter>Файлы включений</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgColor.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

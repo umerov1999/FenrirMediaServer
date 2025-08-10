@@ -6,10 +6,9 @@
 #include "urgb.h"
 #include "Map.h"
 
-struct RenderedLine
-{
-	RenderedLine(const std::wstring &Line, int Id)
-	{
+class RenderedLine {
+public:
+	RenderedLine(const std::wstring &Line, int Id) {
 		this->Line = Line;
 		this->Id = Id;
 	}
@@ -17,33 +16,28 @@ struct RenderedLine
 	int Id;
 };
 
-struct CallBackSelectTouch
-{
-	CallBackSelectTouch(LPVOID Func, LPVOID Class)
-	{
+class CallBackSelectTouch {
+public:
+	CallBackSelectTouch(LPVOID Func, LPVOID Class) {
 		this->Func = Func;
 		this->Class = Class;
 	}
-	CallBackSelectTouch(LPVOID)
-	{
+	CallBackSelectTouch(LPVOID) {
 		Func = NULL;
 		Class = NULL;
 	}
-	CallBackSelectTouch()
-	{
+	CallBackSelectTouch() {
 		Func = NULL;
 		Class = NULL;
 	}
-	bool Unused() const
-	{
+	bool Unused() const {
 		return Func == NULL;
 	}
 	LPVOID Func;
 	LPVOID Class;
 };
 
-class UListBox : public CStatic
-{
+class UListBox : public CStatic {
 	DECLARE_DYNAMIC(UListBox)
 
 public:
@@ -52,8 +46,8 @@ public:
 
 	afx_msg void AddLine(const std::wstring &Line);
 	afx_msg void UpdateLines();
-	afx_msg void Init(HBITMAP pBackgroundPicture = NULL, URGB pBackgroundColor = URGB(), CallBackSelectTouch OnSelect = NULL, CallBackSelectTouch OnTouch = NULL);
-	afx_msg void SwitchBackground(HBITMAP pBackgroundPicture = NULL, URGB pBackgroundColor = URGB());
+	afx_msg void Init(HBITMAP pBackgroundPicture = NULL, CallBackSelectTouch OnSelect = NULL, CallBackSelectTouch OnTouch = NULL);
+	afx_msg void SwitchBackground(HBITMAP pBackgroundPicture = NULL);
 	afx_msg void RegisterSpecialPatternOnce(const std::wstring &Pattern, URGB Color);
 	afx_msg void UnRegisterSpecialPatternOnce(const std::wstring& Pattern);
 	afx_msg void ClearSpecialPatternOnce();
@@ -75,6 +69,9 @@ protected:
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg BOOL OnEraseBkgnd(CDC* pMsg);
+
+	afx_msg LRESULT OnTouchEventMessage(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnSelectEventMessage(WPARAM wParam, LPARAM lParam);
 private:
 	std::vector<std::wstring> Lines;
 	std::vector<RenderedLine> RenderedLines;
@@ -89,7 +86,6 @@ private:
 	int TouchId;
 	int FontSizePX;
 	CBitmap BackgroundPicture;
-	URGB BackgroundColor;
 	THREAD_ACCESS_GUARD Async;
 
 	CallBackSelectTouch OnSelect;

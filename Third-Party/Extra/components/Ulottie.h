@@ -5,10 +5,8 @@
 #include <thread>
 #include <thorvg.h>
 #include "win_api_utils.h"
-#include "urgb.h"
 
-class Ulottie : public CStatic
-{
+class Ulottie : public CStatic {
 	DECLARE_DYNAMIC(Ulottie)
 
 public:
@@ -16,31 +14,28 @@ public:
 	~Ulottie();
 
 	afx_msg void Clear();
-	afx_msg void load_animation(URGB background, const void* json_data, size_t size, tvg::ColorReplace* colorReplacement = nullptr);
+	afx_msg void load_animation(const void* json_data, size_t size, tvg::ColorReplace* colorReplacement = nullptr);
 protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pMsg);
-	afx_msg void CreateBitmap();
 	afx_msg void renderAnimation(UINT frameNum);
 	afx_msg void OnTimer(UINT_PTR uid);
 
 	afx_msg bool setAnimation(const std::string& json_data, tvg::ColorReplace *colorReplacement);
 	afx_msg void renderRLottieAnimation(uint32_t frameNum);
-	afx_msg void setAnimationColor(int r, int g, int b);
 	afx_msg int getTotalFrame();
 	afx_msg bool isAnimNULL();
+	afx_msg CRect getRect();
 private:
 	bool inited;
-	bool canvas_pushed;
+	tvg::Shape *backgroundShape;
 	tvg::Animation *anim;
 	tvg::SwCanvas *canvas;
 
-	std::vector<uint32_t> buffer;
 	size_t animWidth, animHeight;
 	size_t bytesPerLine;
 	int curFrame;
 	CBitmap target_anim;
-	URGB backColor;
 	THREAD_ACCESS_GUARD Async;
 };

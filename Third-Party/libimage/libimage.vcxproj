@@ -73,6 +73,7 @@
     <ClCompile Include="png\pngwrite.c" />
     <ClCompile Include="png\pngwtran.c" />
     <ClCompile Include="png\pngwutil.c" />
+    <ClCompile Include="thorvg\src\common\tvgColor.cpp" />
     <ClCompile Include="thorvg\src\common\tvgCompressor.cpp" />
     <ClCompile Include="thorvg\src\common\tvgMath.cpp" />
     <ClCompile Include="thorvg\src\common\tvgStr.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="./jpeg/jpeglib.h" />
     <ClInclude Include="./jpeg/jversion.h" />
     <ClInclude Include="./jpeg/transupp.h" />
+    <ClInclude Include="lancir.h" />
     <ClInclude Include="libimage.h" />
     <ClInclude Include="png\png.h" />
     <ClInclude Include="png\pngconf.h" />
@@ -204,6 +206,7 @@
     <ClInclude Include="thorvg\inc\colorreplace.h" />
     <ClInclude Include="thorvg\inc\thorvg.h" />
     <ClInclude Include="thorvg\src\common\tvgArray.h" />
+    <ClInclude Include="thorvg\src\common\tvgColor.h" />
     <ClInclude Include="thorvg\src\common\tvgCompressor.h" />
     <ClInclude Include="thorvg\src\common\tvgInlist.h" />
     <ClInclude Include="thorvg\src\common\tvgMath.h" />

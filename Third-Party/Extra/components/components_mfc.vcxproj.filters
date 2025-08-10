@@ -20,6 +20,9 @@
     <ClCompile Include="Ulottie.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="CImage.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorEdit.h">
@@ -32,6 +35,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Ulottie.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="CImage.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

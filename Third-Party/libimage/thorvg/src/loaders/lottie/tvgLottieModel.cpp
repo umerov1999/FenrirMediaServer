@@ -80,36 +80,47 @@ float LottieTextFollowPath::prepare(LottieMask* mask, float frameNo, float scale
 
 Point LottieTextFollowPath::position(float lenSearched, float& angle)
 {
+    //position before the start of the curve
+    if (lenSearched <= 0.0f) {
+        //shape is closed -> wrapping
+        if (path.cmds.last() == PathCommand::Close) {
+            while (lenSearched < 0.0f) lenSearched += totalLen;
+            pts = path.pts.data;
+            cmds = path.cmds.data;
+            cmdsCnt = path.cmds.count;
+            currentLen = 0.0f;
+        //linear interpolation
+        } else {
+            if (cmds >= path.cmds.data + path.cmds.count - 1) return *start;
+            switch (*(cmds + 1)) {
+                case PathCommand::LineTo: {
+                    auto dp = *(pts + 1) - *pts;
+                    angle = tvg::atan2(dp.y, dp.x);
+                    return {pts->x + lenSearched * cos(angle), pts->y + lenSearched * sin(angle)};
+                }
+                case PathCommand::CubicTo: {
+                    angle = deg2rad(Bezier{*pts, *(pts + 1), *(pts + 2), *(pts + 3)}.angle(0.0001f));
+                    return {pts->x + lenSearched * cos(angle), pts->y + lenSearched * sin(angle)};
+                }
+                default:
+                    angle = 0.0f;
+                return *start;
+            }
+        }
+    }
+
     auto shift = [&]() -> void {
         switch (*cmds) {
-            case PathCommand::MoveTo:
-                start = pts;
-                ++pts;
-                break;
-            case PathCommand::LineTo:
-                ++pts;
-                break;
-            case PathCommand::CubicTo:
-                pts += 3;
-                break;
-            case PathCommand::Close:
-                break;
+            case PathCommand::MoveTo: start = pts; ++pts; break;
+            case PathCommand::LineTo: ++pts; break;
+            case PathCommand::CubicTo: pts += 3; break;
+            case PathCommand::Close: break;
         }
         ++cmds;
         --cmdsCnt;
     };
 
-    auto length = [&]() -> float {
-        switch (*cmds) {
-            case PathCommand::MoveTo: return 0.0f;
-            case PathCommand::LineTo: return tvg::length(pts - 1, pts);
-            case PathCommand::CubicTo: return Bezier{*(pts - 1), *pts, *(pts + 1), *(pts + 2)}.length();
-            case PathCommand::Close: return tvg::length(pts - 1, start);
-        }
-        return 0.0f;
-    };
-
-    //beyond the curve
+    //position beyond the end of the curve
     if (lenSearched >= totalLen) {
         //shape is closed -> wrapping
         if (path.cmds.last() == PathCommand::Close) {
@@ -145,6 +156,24 @@ Point LottieTextFollowPath::position(float lenSearched, float& angle)
             }
         }
     }
+
+    //reset required if text partially crosses curve start
+    if (lenSearched < currentLen) {
+        pts = path.pts.data;
+        cmds = path.cmds.data;
+        cmdsCnt = path.cmds.count;
+        currentLen = 0.0f;
+    }
+
+    auto length = [&]() -> float {
+        switch (*cmds) {
+            case PathCommand::MoveTo: return 0.0f;
+            case PathCommand::LineTo: return tvg::length(pts - 1, pts);
+            case PathCommand::CubicTo: return Bezier{*(pts - 1), *pts, *(pts + 1), *(pts + 2)}.length();
+            case PathCommand::Close: return tvg::length(pts - 1, start);
+            default: return 0.0f;
+        }
+    };
 
     while (cmdsCnt > 0) {
         auto dLen = length();
@@ -200,7 +229,7 @@ void LottieSlot::assign(LottieObject* target, bool byDefault, ColorReplace* colo
             }
             case LottieProperty::Type::Color: {
                 auto color = static_cast<LottieSolid*>(pair->obj)->color;
-                colorReplacement->getCustomColorLottie32(color.value.rgb[0], color.value.rgb[1], color.value.rgb[2]);
+                colorReplacement->getCustomColorLottie32(color.value.r, color.value.g, color.value.b);
                 if (copy) pair->prop = new LottieColor(color);
                 pair->obj->override(&color, shallow, !copy);
                 break;
@@ -495,7 +524,6 @@ Fill* LottieGradient::fill(float frameNo, uint8_t opacity, Tween& tween, LottieE
         if (tvg::zero(progress)) {
             static_cast<RadialGradient*>(fill)->radial(s.x, s.y, r, s.x, s.y, 0.0f);
         } else {
-            if (tvg::equal(progress, 1.0f)) progress = 0.99f;
             auto startAngle = rad2deg(tvg::atan2(e.y - s.y, e.x - s.x));
             auto angle = deg2rad((startAngle + this->angle(frameNo, tween, exps)));
             auto fx = s.x + cos(angle) * progress * r;
@@ -637,7 +665,7 @@ LottieProperty* LottieLayer::property(uint16_t ix)
 }
 
 
-void LottieLayer::prepare(RGB24* color)
+void LottieLayer::prepare(RGB32* color)
 {
     /* if layer is hidden, only useful data is its transform matrix.
        so force it to be a Null Layer and release all resource. */
@@ -658,7 +686,7 @@ void LottieLayer::prepare(RGB24* color)
     } else if (color && type == LottieLayer::Solid) {
         auto solidFill = Shape::gen();
         solidFill->appendRect(0, 0, static_cast<float>(w), static_cast<float>(h));
-        solidFill->fill(color->rgb[0], color->rgb[1], color->rgb[2]);
+        solidFill->fill(color->r, color->g, color->b);
         solidFill->ref();
         statical.pooler.push(solidFill);
     }
@@ -669,7 +697,7 @@ void LottieLayer::prepare(RGB24* color)
 
 float LottieLayer::remap(LottieComposition* comp, float frameNo, LottieExpressions* exp)
 {
-    if (timeRemap.frames || timeRemap.value) {
+    if (timeRemap.frames || timeRemap.value >= 0.0f) {
         frameNo = comp->frameAtTime(timeRemap(frameNo, exp));
     } else {
         frameNo -= startFrame;

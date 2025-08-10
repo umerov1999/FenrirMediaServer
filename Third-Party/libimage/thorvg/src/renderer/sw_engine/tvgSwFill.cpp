@@ -245,11 +245,7 @@ bool _prepareRadial(SwFill* fill, const RadialGradient* radial, const Matrix& pT
 {
     float cx, cy, r, fx, fy, fr;
     radial->radial(&cx, &cy, &r, &fx, &fy, &fr);
-
-    if (tvg::zero(r)) {
-        fill->solid = true;
-        return true;
-    }
+    if ((fill->solid = !CONST_RADIAL(radial)->correct(fx, fy, fr))) return true;
 
     fill->radial.dr = r - fr;
     fill->radial.dx = cx - fx;
@@ -258,26 +254,9 @@ bool _prepareRadial(SwFill* fill, const RadialGradient* radial, const Matrix& pT
     fill->radial.fx = fx;
     fill->radial.fy = fy;
     fill->radial.a = fill->radial.dr * fill->radial.dr - fill->radial.dx * fill->radial.dx - fill->radial.dy * fill->radial.dy;
-
-    //This condition fulfills the SVG 1.1 std:
-    //the focal point, if outside the end circle, is moved to be on the end circle
-    //See: the SVG 2 std requirements: https://www.w3.org/TR/SVG2/pservers.html#RadialGradientNotes
-    if (fill->radial.a < 0) {
-        auto dist = sqrtf(fill->radial.dx * fill->radial.dx + fill->radial.dy * fill->radial.dy);
-        fill->radial.fx = cx + r * (fx - cx) / dist;
-        fill->radial.fy = cy + r * (fy - cy) / dist;
-        fill->radial.dx = cx - fill->radial.fx;
-        fill->radial.dy = cy - fill->radial.fy;
-        // Prevent loss of precision on Apple Silicon when dr=dy and dx=0 due to FMA
-        // https://github.com/thorvg/thorvg/issues/2014
-        auto dr2 = fill->radial.dr * fill->radial.dr;
-        auto dx2 = fill->radial.dx * fill->radial.dx;
-        auto dy2 = fill->radial.dy * fill->radial.dy;
-
-        fill->radial.a = dr2 - dx2 - dy2;
-    }
-
-    if (fill->radial.a > 0) fill->radial.invA = 1.0f / fill->radial.a;
+    constexpr float precision = 0.01f;
+    if (fill->radial.a < precision) fill->radial.a = precision;
+    fill->radial.invA = 1.0f / fill->radial.a;
 
     const auto& transform = pTransform * radial->transform();
 
@@ -385,7 +364,7 @@ void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
 }
 
 
-void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlender op, uint8_t a)
+void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlenderA op, uint8_t a)
 {
     if (fill->radial.a < RADIAL_A_THRESHOLD) {
         auto radial = &fill->radial;
@@ -469,7 +448,7 @@ void fillRadial(const SwFill* fill, uint8_t* dst, uint32_t y, uint32_t x, uint32
 }
 
 
-void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlender op, SwBlender op2, uint8_t a)
+void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlenderA op, SwBlender op2, uint8_t a)
 {
     if (fill->radial.a < RADIAL_A_THRESHOLD) {
         auto radial = &fill->radial;
@@ -480,7 +459,7 @@ void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
             for (uint32_t i = 0; i < len; ++i, ++dst) {
                 auto x0 = 0.5f * (rx * rx + ry * ry - radial->fr * radial->fr) / (radial->dr * radial->fr + rx * radial->dx + ry * radial->dy);
                 auto tmp = op(_pixel(fill, x0), *dst, 255);
-                *dst = op2(tmp, *dst, 255);
+                *dst = op2(tmp, *dst);
                 rx += radial->a11;
                 ry += radial->a21;
             }
@@ -488,7 +467,7 @@ void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
             for (uint32_t i = 0; i < len; ++i, ++dst) {
                 auto x0 = 0.5f * (rx * rx + ry * ry - radial->fr * radial->fr) / (radial->dr * radial->fr + rx * radial->dx + ry * radial->dy);
                 auto tmp = op(_pixel(fill, x0), *dst, 255);
-                auto tmp2 = op2(tmp, *dst, 255);
+                auto tmp2 = op2(tmp, *dst);
                 *dst = INTERPOLATE(tmp2, *dst, a);
                 rx += radial->a11;
                 ry += radial->a21;
@@ -500,7 +479,7 @@ void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
         if (a == 255) {
             for (uint32_t i = 0 ; i < len ; ++i, ++dst) {
                 auto tmp = op(_pixel(fill, sqrtf(det) - b), *dst, 255);
-                *dst = op2(tmp, *dst, 255);
+                *dst = op2(tmp, *dst);
                 det += deltaDet;
                 deltaDet += deltaDeltaDet;
                 b += deltaB;
@@ -508,7 +487,7 @@ void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
         } else {
             for (uint32_t i = 0 ; i < len ; ++i, ++dst) {
                 auto tmp = op(_pixel(fill, sqrtf(det) - b), *dst, 255);
-                auto tmp2 = op2(tmp, *dst, 255);
+                auto tmp2 = op2(tmp, *dst);
                 *dst = INTERPOLATE(tmp2, *dst, a);
                 det += deltaDet;
                 deltaDet += deltaDeltaDet;
@@ -682,7 +661,7 @@ void fillLinear(const SwFill* fill, uint8_t* dst, uint32_t y, uint32_t x, uint32
 }
 
 
-void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlender op, uint8_t a)
+void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlenderA op, uint8_t a)
 {
     //Rotation
     float rx = x + 0.5f;
@@ -722,7 +701,7 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
 }
 
 
-void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlender op, SwBlender op2, uint8_t a)
+void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlenderA op, SwBlender op2, uint8_t a)
 {
     //Rotation
     float rx = x + 0.5f;
@@ -735,12 +714,12 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
         if (a == 255) {
             for (uint32_t i = 0; i < len; ++i, ++dst) {
                 auto tmp = op(color, *dst, a);
-                *dst = op2(tmp, *dst, 255);
+                *dst = op2(tmp, *dst);
             }
         } else {
             for (uint32_t i = 0; i < len; ++i, ++dst) {
                 auto tmp = op(color, *dst, a);
-                auto tmp2 = op2(tmp, *dst, 255);
+                auto tmp2 = op2(tmp, *dst);
                 *dst = INTERPOLATE(tmp2, *dst, a);
             }
         }
@@ -758,7 +737,7 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
             auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
             for (uint32_t j = 0; j < len; ++j, ++dst) {
                 auto tmp = op(_fixedPixel(fill, t2), *dst, 255);
-                *dst = op2(tmp, *dst, 255);
+                *dst = op2(tmp, *dst);
                 t2 += inc2;
             }
         //we have to fallback to float math
@@ -766,7 +745,7 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
             uint32_t counter = 0;
             while (counter++ < len) {
                 auto tmp = op(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, 255);
-                *dst = op2(tmp, *dst, 255);
+                *dst = op2(tmp, *dst);
                 ++dst;
                 t += inc;
             }
@@ -778,7 +757,7 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
             auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
             for (uint32_t j = 0; j < len; ++j, ++dst) {
                 auto tmp = op(_fixedPixel(fill, t2), *dst, 255);
-                auto tmp2 = op2(tmp, *dst, 255);
+                auto tmp2 = op2(tmp, *dst);
                 *dst = INTERPOLATE(tmp2, *dst, a);
                 t2 += inc2;
             }
@@ -787,7 +766,7 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
             uint32_t counter = 0;
             while (counter++ < len) {
                 auto tmp = op(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, 255);
-                auto tmp2 = op2(tmp, *dst, 255);
+                auto tmp2 = op2(tmp, *dst);
                 *dst = INTERPOLATE(tmp2, *dst, a);
                 ++dst;
                 t += inc;

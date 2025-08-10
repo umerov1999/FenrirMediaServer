@@ -34,7 +34,6 @@ struct ShapeImpl : Shape
 {
     Paint::Impl impl;
     RenderShape rs;
-    uint8_t compFlag = CompositionFlag::Invalid;
     uint8_t opacity;    //for composition
 
     ShapeImpl() : impl(Paint::Impl(this))
@@ -49,8 +48,8 @@ struct ShapeImpl : Shape
 
         renderer->blend(impl.blendMethod);
 
-        if (compFlag) {
-            cmp = renderer->target(bounds(renderer), renderer->colorSpace(), static_cast<CompositionFlag>(compFlag));
+        if (impl.cmpFlag) {
+            cmp = renderer->target(bounds(renderer), renderer->colorSpace(), impl.cmpFlag);
             renderer->beginComposite(cmp, MaskMethod::None, opacity);
         }
 
@@ -61,8 +60,6 @@ struct ShapeImpl : Shape
 
     bool needComposition(uint8_t opacity)
     {
-        compFlag = CompositionFlag::Invalid;
-
         if (opacity == 0) return false;
 
         //Shape composition is only necessary when stroking & fill are valid.
@@ -71,7 +68,7 @@ struct ShapeImpl : Shape
 
         //translucent fill & stroke
         if (opacity < 255) {
-            compFlag = CompositionFlag::Opacity;
+            impl.mark(CompositionFlag::Opacity);
             return true;
         }
 
@@ -93,14 +90,18 @@ struct ShapeImpl : Shape
             }
         }
 
-        compFlag = CompositionFlag::Masking;
+        impl.mark(CompositionFlag::Masking);
         return true;
     }
 
-    RenderData update(RenderMethod* renderer, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper)
+    bool skip(RenderUpdateFlag flag)
     {
-        if ((pFlag | impl.renderFlag) == RenderUpdateFlag::None) return impl.rd;
+        if (flag == RenderUpdateFlag::None) return true;
+        return false;
+    }
 
+    bool update(RenderMethod* renderer, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flag, bool clipper)
+    {
         if (needComposition(opacity)) {
             /* Overriding opacity value. If this scene is half-translucent,
                It must do intermediate composition with that opacity value. */ 
@@ -108,13 +109,12 @@ struct ShapeImpl : Shape
             opacity = 255;
         }
 
-        impl.rd = renderer->prepare(rs, impl.rd, transform, clips, opacity, (pFlag | impl.renderFlag), clipper);
-        return impl.rd;
+        impl.rd = renderer->prepare(rs, impl.rd, transform, clips, opacity, flag, clipper);
+        return true;
     }
 
     RenderRegion bounds(RenderMethod* renderer)
     {
-        if (!impl.rd) return {0, 0, 0, 0};
         return renderer->region(impl.rd);
     }
 
@@ -125,10 +125,15 @@ struct ShapeImpl : Shape
 
         //Stroke feathering
         if (stroking && rs.stroke) {
-            x -= rs.stroke->width * 0.5f;
-            y -= rs.stroke->width * 0.5f;
-            w += rs.stroke->width;
-            h += rs.stroke->width;
+            //Use geometric mean for feathering.
+            //Join, Cap wouldn't be considered. Generate stroke outline and compute bbox for accurate size?
+            auto sx = sqrt(m.e11 * m.e11 + m.e21 * m.e21);
+            auto sy = sqrt(m.e12 * m.e12 + m.e22 * m.e22);
+            auto feather = rs.stroke->width * sqrt(sx * sy);
+            x -= feather * 0.5f;
+            y -= feather * 0.5f;
+            w += feather;
+            h += feather;
         }
 
         pt4[0] = {x, y};
@@ -168,37 +173,6 @@ struct ShapeImpl : Shape
         memcpy(rs.path.pts.end(), pts, sizeof(Point) * ptsCnt);
         rs.path.cmds.count += cmdCnt;
         rs.path.pts.count += ptsCnt;
-    }
-
-    void moveTo(float x, float y)
-    {
-        rs.path.cmds.push(PathCommand::MoveTo);
-        rs.path.pts.push({x, y});
-    }
-
-    void lineTo(float x, float y)
-    {
-        rs.path.cmds.push(PathCommand::LineTo);
-        rs.path.pts.push({x, y});
-        impl.mark(RenderUpdateFlag::Path);
-    }
-
-    void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y)
-    {
-        rs.path.cmds.push(PathCommand::CubicTo);
-        rs.path.pts.push({cx1, cy1});
-        rs.path.pts.push({cx2, cy2});
-        rs.path.pts.push({x, y});
-
-        impl.mark(RenderUpdateFlag::Path);
-    }
-
-    void close()
-    {
-        //Don't close multiple times.
-        if (rs.path.cmds.count > 0 && rs.path.cmds.last() == PathCommand::Close) return;
-        rs.path.cmds.push(PathCommand::Close);
-        impl.mark(RenderUpdateFlag::Path);
     }
 
     void strokeWidth(float width)
@@ -260,6 +234,12 @@ struct ShapeImpl : Shape
         return Result::Success;
     }
 
+    bool intersects(const RenderRegion& region)
+    {
+        if (!impl.rd || !impl.renderer) return false;
+        return impl.renderer->intersectsShape(impl.rd, region);
+    }
+
     void strokeFill(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
         if (!rs.stroke) rs.stroke = new RenderStroke();
@@ -290,7 +270,7 @@ struct ShapeImpl : Shape
 
     Result strokeDash(const float* pattern, uint32_t cnt, float offset)
     {
-        if ((cnt == 1) || (!pattern && cnt > 0) || (pattern && cnt == 0)) return Result::InvalidArguments;
+        if ((!pattern && cnt > 0) || (pattern && cnt == 0)) return Result::InvalidArguments;
         if (!rs.stroke) rs.stroke = new RenderStroke;
         //Reset dash
         auto& dash = rs.stroke->dash;
@@ -302,11 +282,7 @@ struct ShapeImpl : Shape
             if (!dash.pattern) dash.pattern = tvg::malloc<float*>(sizeof(float) * cnt);
             dash.length = 0.0f;
             for (uint32_t i = 0; i < cnt; ++i) {
-                if (pattern[i] < DASH_PATTERN_THRESHOLD) {
-                    dash.count = 0;
-                    return Result::InvalidArguments;
-                }
-                dash.pattern[i] = pattern[i];
+                dash.pattern[i] = pattern[i] < 0.0f ? 0.0f : pattern[i];
                 dash.length += dash.pattern[i];
             }
         }

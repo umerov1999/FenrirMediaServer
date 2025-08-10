@@ -92,9 +92,9 @@ MaskMethod LottieParser::getMaskMethod(bool inversed)
 }
 
 
-RGB24 LottieParser::getColor(const char *str)
+RGB32 LottieParser::getColor(const char *str)
 {
-    RGB24 color = {0, 0, 0};
+    RGB32 color = {0, 0, 0};
 
     if (!str) return color;
 
@@ -106,17 +106,17 @@ RGB24 LottieParser::getColor(const char *str)
     char tmp[3] = {'\0', '\0', '\0'};
     tmp[0] = str[1];
     tmp[1] = str[2];
-    color.rgb[0] = uint8_t(strtol(tmp, nullptr, 16));
+    color.r = uint8_t(strtol(tmp, nullptr, 16));
 
     tmp[0] = str[3];
     tmp[1] = str[4];
-    color.rgb[1] = uint8_t(strtol(tmp, nullptr, 16));
+    color.g = uint8_t(strtol(tmp, nullptr, 16));
 
     tmp[0] = str[5];
     tmp[1] = str[6];
-    color.rgb[2] = uint8_t(strtol(tmp, nullptr, 16));
+    color.b = uint8_t(strtol(tmp, nullptr, 16));
 
-    colorReplaceInternal.getCustomColorLottie32(color.rgb[0], color.rgb[1], color.rgb[2]);
+    colorReplaceInternal.getCustomColorLottie32(color.r, color.g, color.b);
 
     return color;
 }
@@ -183,44 +183,36 @@ bool LottieParser::getValue(PathSet& path)
     auto pt = pts.begin();
 
     //Store manipulated results
-    Array<Point> outPts;
-    Array<PathCommand> outCmds;
+    RenderPath temp;
 
     //Reuse the buffers
-    outPts.data = path.pts;
-    outPts.reserved = path.ptsCnt;
-    outCmds.data = path.cmds;
-    outCmds.reserved = path.cmdsCnt;
+    temp.pts.data = path.pts;
+    temp.pts.reserved = path.ptsCnt;
+    temp.cmds.data = path.cmds;
+    temp.cmds.reserved = path.cmdsCnt;
 
     size_t extra = closed ? 3 : 0;
-    outPts.reserve(pts.count * 3 + 1 + extra);
-    outCmds.reserve(pts.count + 2);
+    temp.pts.reserve(pts.count * 3 + 1 + extra);
+    temp.cmds.reserve(pts.count + 2);
 
-    outCmds.push(PathCommand::MoveTo);
-    outPts.push(*pt);
+    temp.moveTo(*pt);
 
     for (++pt, ++out, ++in; pt < pts.end(); ++pt, ++out, ++in) {
-        outCmds.push(PathCommand::CubicTo);
-        outPts.push(*(pt - 1) + *(out - 1));
-        outPts.push(*pt + *in);
-        outPts.push(*pt);
+        temp.cubicTo(*(pt - 1) + *(out - 1), *pt + *in, *pt);
     }
 
     if (closed) {
-        outPts.push(pts.last() + outs.last());
-        outPts.push(pts.first() + ins.first());
-        outPts.push(pts.first());
-        outCmds.push(PathCommand::CubicTo);
-        outCmds.push(PathCommand::Close);
+        temp.cubicTo(pts.last() + outs.last(), pts.first() + ins.first(), pts.first());
+        temp.close();
     }
 
-    path.pts = outPts.data;
-    path.cmds = outCmds.data;
-    path.ptsCnt = outPts.count;
-    path.cmdsCnt = outCmds.count;
+    path.pts = temp.pts.data;
+    path.cmds = temp.cmds.data;
+    path.ptsCnt = temp.pts.count;
+    path.cmdsCnt = temp.cmds.count;
 
-    outPts.data = nullptr;
-    outCmds.data = nullptr;
+    temp.pts.data = nullptr;
+    temp.cmds.data = nullptr;
 
     return false;
 }
@@ -315,19 +307,19 @@ bool LottieParser::getValue(Point& pt)
 }
 
 
-bool LottieParser::getValue(RGB24& color)
+bool LottieParser::getValue(RGB32& color)
 {
     if (peekType() == kArrayType) {
         enterArray();
         if (!nextArrayValue()) return false;
     }
 
-    color.rgb[0] = REMAP255(getFloat());
-    color.rgb[1] = REMAP255(getFloat());
-    color.rgb[2] = REMAP255(getFloat());
+    color.r = REMAP255(getFloat());
+    color.g = REMAP255(getFloat());
+    color.b = REMAP255(getFloat());
 
     while (nextArrayValue()) getFloat(); //drop
-    colorReplaceInternal.getCustomColorLottie32(color.rgb[0], color.rgb[1], color.rgb[2]);
+    colorReplaceInternal.getCustomColorLottie32(color.r, color.g, color.b);
 
     //TODO: color filter?
 
@@ -1082,6 +1074,8 @@ LottieObject* LottieParser::parseGroup()
         else if (KEY_AS("it")) {
             enterArray();
             while (nextArrayValue()) parseObject(group->children);
+        } else if (KEY_AS("bm")) {
+            group->blendMethod = (BlendMethod) getInt();
         } else skip();
     }
     group->prepare();
@@ -1283,7 +1277,7 @@ bool LottieParser::parseEffect(LottieEffect* effect, void(LottieParser::*func)(L
                         if (KEY_AS("k")) (this->*func)(effect, idx++);
                         else skip();
                     }
-                } else skip();
+                } else (this->*func)(effect, idx++);
             }
             else if (property && KEY_AS("nm")) property->nm = djb2Encode(getString());
             else if (property && KEY_AS("mn")) property->mn = djb2Encode(getString());
@@ -1298,6 +1292,7 @@ void LottieParser::parseCustom(LottieEffect* effect, int idx)
 {
     if ((uint32_t)idx >= static_cast<LottieFxCustom*>(effect)->props.count) {
         TVGERR("LOTTIE", "Parsing error in Custom effect!");
+        skip();
         return;
     }
 
@@ -1316,7 +1311,10 @@ void LottieParser::parseCustom(LottieEffect* effect, int idx)
         case LottieProperty::Type::Color: {
             parsePropertyInternal(*static_cast<LottieColor*>(prop)); break;
         }
-        default: TVGLOG("LOTTIE", "Missing Property Type? = %d", (int) prop->type); break;
+        default: {
+            TVGLOG("LOTTIE", "Missing Property Type? = %d", (int) prop->type);
+            skip();
+        }
     }
 }
 
@@ -1339,6 +1337,7 @@ void LottieParser::parseTritone(LottieEffect* effect, int idx)
     if (idx == 0) parsePropertyInternal(tritone->bright);
     else if (idx == 1) parsePropertyInternal(tritone->midtone);
     else if (idx == 2) parsePropertyInternal(tritone->dark);
+    else if (idx == 3) parsePropertyInternal(tritone->blend);
     else skip();
 }
 
@@ -1446,7 +1445,7 @@ LottieLayer* LottieParser::parseLayer(LottieLayer* precomp)
     context.layer = layer;
 
     auto ddd = false;
-    RGB24 color;
+    RGB32 color;
 
     enterObject();
 

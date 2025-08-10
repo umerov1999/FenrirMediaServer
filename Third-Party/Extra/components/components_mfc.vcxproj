@@ -20,6 +20,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -61,11 +62,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CImage.cpp" />
     <ClCompile Include="ColorEdit.cpp" />
     <ClCompile Include="UListBox.cpp" />
     <ClCompile Include="Ulottie.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CImage.h" />
     <ClInclude Include="ColorEdit.h" />
     <ClInclude Include="UListBox.h" />
     <ClInclude Include="Ulottie.h" />

@@ -95,6 +95,24 @@ struct Array
         return data[idx];
     }
 
+    void operator=(const Array& rhs)
+    {
+        reserve(rhs.count);
+        if (rhs.count > 0) memcpy(data, rhs.data, sizeof(T) * rhs.count);
+        count = rhs.count;
+    }
+
+    void move(Array& to)
+    {
+        to.reset();
+        to.data = data;
+        to.count = count;
+        to.reserved = reserved;
+
+        data = nullptr;
+        count = reserved = 0;
+    }
+
     const T* begin() const
     {
         return data;
@@ -130,6 +148,12 @@ struct Array
         return data[count - 1];
     }
 
+    T& next()
+    {
+        if (full()) grow(count + 1);
+        return data[count++];
+    }
+
     T& first()
     {
         return data[0];
@@ -157,48 +181,14 @@ struct Array
         return count == 0;
     }
 
-    template<class COMPARE>
-    void sort()
+    bool full()
     {
-        qsort<COMPARE>(data, 0, static_cast<int32_t>(count) - 1);
-    }
-
-    void operator=(const Array& rhs)
-    {
-        reserve(rhs.count);
-        if (rhs.count > 0) memcpy(data, rhs.data, sizeof(T) * rhs.count);
-        count = rhs.count;
+        return count == reserved;
     }
 
     ~Array()
     {
         tvg::free(data);
-    }
-
-private:
-    template<class COMPARE>
-    void qsort(T* arr, int32_t low, int32_t high)
-    {
-        if (low < high) {
-            int32_t i = low;
-            int32_t j = high;
-            T tmp = arr[low];
-            while (i < j) {
-                while (i < j && !COMPARE{}(arr[j], tmp)) --j;
-                if (i < j) {
-                    arr[i] = arr[j];
-                    ++i;
-                }
-                while (i < j && COMPARE{}(arr[i], tmp)) ++i;
-                if (i < j) {
-                    arr[j] = arr[i];
-                    --j;
-                }
-            }
-            arr[i] = tmp;
-            qsort<COMPARE>(arr, low, i - 1);
-            qsort<COMPARE>(arr, i + 1, high);
-        }
     }
 };
 

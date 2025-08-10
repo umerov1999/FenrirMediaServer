@@ -270,7 +270,7 @@ DWORD WINAPI RunMeth(LPVOID param)
 			fclose(fl);
 		}
 	}
-	dlgS.Anim.load_animation(URGB(0, 0, 0), LOADING_ANIMATION_DATA, LOADING_ANIMATION_SIZE);
+	dlgS.Anim.load_animation(LOADING_ANIMATION_DATA, LOADING_ANIMATION_SIZE);
 
 	PrintMessage("=====================", URGB(0, 170, 100));
 	PrintMessage((const char*)u8"Запуск функции...", URGB(0, 170, 100));
@@ -283,7 +283,7 @@ DWORD WINAPI RunMeth(LPVOID param)
 	PrintMessage("=====================", URGB(255, 0, 0));
 	dlgS.Exec.EnableWindow(TRUE);
 	dlgS.FFunc.EnableWindow(TRUE);
-	dlgS.Anim.load_animation(URGB(0, 0, 0), SUCCESS_ANIMATION_DATA, SUCCESS_ANIMATION_SIZE);
+	dlgS.Anim.load_animation(SUCCESS_ANIMATION_DATA, SUCCESS_ANIMATION_SIZE);
 	return 0;
 }
 
@@ -295,11 +295,11 @@ BOOL VKApiToolsDialog::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
 
-	Anim.load_animation(URGB(0, 0, 0), FLAME_ANIMATION_DATA, FLAME_ANIMATION_SIZE);
+	Anim.load_animation(FLAME_ANIMATION_DATA, FLAME_ANIMATION_SIZE);
 
 	std::string DataPic = GetDataFromResourceUtil(L"SVG", IDB_SVG1);
 	auto mk = Edk.getRect();
-	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size()).get_hBitmap(true));
+	Edk.Init(Align::LEFT_ALIGN, PrepareImageFromSVG(Edk.m_hWnd, mk.Width(), mk.Height(), DataPic.data(), (int)DataPic.size(), GetSysColor(COLOR_3DFACE)).get_hBitmap(true));
 	EDownload.RegisterSpecialPatternOnce(L"[w]", URGB(255, 0, 0));
 	EDownload.RegisterSpecialPatternOnce(L"[z]", URGB(255, 200, 0));
 
@@ -377,7 +377,7 @@ void VKApiToolsDialog::OnExecute()
 	CString Tkn;
 	NewToken.GetWindowTextW(Tkn);
 	if (!Validate(m_hWnd, wchar_to_UTF8(Tkn.GetString()))) {
-		Anim.load_animation(URGB(0, 0, 0), ERROR_ANIMATION_DATA, ERROR_ANIMATION_SIZE);
+		Anim.load_animation(ERROR_ANIMATION_DATA, ERROR_ANIMATION_SIZE);
 		return;
 	}
 	Edk.RemoveAllLines();

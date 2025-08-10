@@ -82,10 +82,13 @@ public:
 class PHasher {
 public:
 	PHasher(const wstring& path, const list<wstring> &ignore_dirs) {
-		this->ignore_dirs = ignore_dirs;
 		this->path = FixSlashs(path);
 		while (this->path.back() == L'\\') {
 			this->path.pop_back();
+		}
+		this->ignore_dirs = ignore_dirs;
+		for (auto& i : this->ignore_dirs) {
+			i = this->path + L"\\" + FixSlashs(i);
 		}
 	}
 	json makeHashs() {
@@ -109,13 +112,19 @@ private:
 		}
 		return ret;
 	}
+	bool check_dir_ignore(const wstring& lpFolder) {
+		for (auto& i : ignore_dirs) {
+			if (wsearch(lpFolder, i) == 0) {
+				cout << "Info: Ignore dir: " << wchar_to_UTF8(lpFolder) << " " << wchar_to_UTF8(i) << endl;
+				return false;
+			}
+		}
+		return true;
+	}
 	void listdir(const wstring& lpFolder)
 	{
-		for (auto& i : ignore_dirs) {
-			if (wsearch(lpFolder, i) != wstring::npos) {
-				cout << "Info: Ignore dir: " << wchar_to_UTF8(lpFolder) << " " << wchar_to_UTF8(i) << endl;
-				return;
-			}
+		if (!check_dir_ignore(lpFolder)) {
+			return;
 		}
 		WIN32_FIND_DATAW FindFileData;
 		HANDLE hFindFile;
@@ -124,6 +133,9 @@ private:
 		{
 			do
 			{
+				if (!check_dir_ignore(lpFolder + L"\\" + FindFileData.cFileName)) {
+					continue;
+				}
 				if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 				{
 					if (wcscmp(FindFileData.cFileName, L".") != 0 && wcscmp(FindFileData.cFileName, L"..") != 0) {

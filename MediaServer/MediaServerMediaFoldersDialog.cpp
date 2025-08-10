@@ -70,10 +70,10 @@ BOOL MediaServerMediaFoldersDialog::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	XTPSkinMgr()->AlphaEnableWindow(m_hWnd, 220);
 
-	ListAudios.Init(NULL, URGB(), CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectEraseAudios, this));
-	ListVideos.Init(NULL, URGB(), CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectEraseVideos, this));
-	ListDiscography.Init(NULL, URGB(), CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectEraseDiscography, this));
-	ListPhotoVideos.Init(NULL, URGB(), CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectErasePhotoVideos, this));
+	ListAudios.Init(NULL, CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectEraseAudios, this));
+	ListVideos.Init(NULL, CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectEraseVideos, this));
+	ListDiscography.Init(NULL, CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectEraseDiscography, this));
+	ListPhotoVideos.Init(NULL, CallBackSelectTouch(MediaServerMediaFoldersDialog::OnSelectErasePhotoVideos, this));
 
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON1);
 	m_hCursor = AfxGetApp()->LoadCursor(MAKEINTRESOURCEW(IDC_CURSOR1));
