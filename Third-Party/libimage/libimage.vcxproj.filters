@@ -7,9 +7,6 @@
     <Filter Include="Файлы включений">
       <UniqueIdentifier>{34052ca4-8756-471c-8449-91dfe4066b48}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\jpeg">
-      <UniqueIdentifier>{cb3c3885-6e6b-4ad9-ac0d-cc6ca15b4d2b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы исходного кода\png">
       <UniqueIdentifier>{f84d4372-7758-424f-8719-a12bbb689e14}</UniqueIdentifier>
     </Filter>
@@ -46,9 +43,6 @@
     <Filter Include="Файлы исходного кода\thorvg\loaders\lottie">
       <UniqueIdentifier>{1bff548a-d4c8-4a88-b282-f13b2b552ac4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\thorvg\loaders\jpg">
-      <UniqueIdentifier>{68d83dc8-960f-451d-b6fd-9f8643f73425}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы исходного кода\thorvg\loaders\external_webp">
       <UniqueIdentifier>{a9155b7e-8571-4820-9e4d-a740ede578a0}</UniqueIdentifier>
     </Filter>
@@ -67,149 +61,23 @@
     <Filter Include="Файлы исходного кода\webp\webp">
       <UniqueIdentifier>{7a0aeaf0-d1a0-455f-bc0c-339342dd4d3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\libjpeg-turbo">
+      <UniqueIdentifier>{73fa1d20-2d83-4ef8-b555-638716da75c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libjpeg-turbo\simd">
+      <UniqueIdentifier>{a967cd4a-2a93-4fc2-92b3-86ccdac452c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libjpeg-turbo\simd\nasm">
+      <UniqueIdentifier>{3b3022ea-33d4-4504-8202-1817809a620e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libjpeg-turbo\simd\x86_64">
+      <UniqueIdentifier>{0cd05dc8-fae1-4d46-b9a4-4a3583e0b4bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\external_jpg">
+      <UniqueIdentifier>{f9f7f366-0219-483d-947f-3b415dfa46d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="./jpeg/cdjpeg.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jaricom.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcapistd.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcapimin.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcarith.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jccoefct.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jccolor.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcdctmgr.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jchuff.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcinit.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcmainct.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcmarker.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcmaster.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcomapi.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcparam.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcprepct.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jcsample.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jctrans.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdapimin.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdapistd.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdarith.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdatadst.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdatasrc.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdcoefct.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdcolor.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jddctmgr.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdhuff.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdinput.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdmainct.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdmarker.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdmaster.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdmerge.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdpostct.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdsample.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jdtrans.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jfdctflt.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jfdctfst.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jfdctint.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jidctflt.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jidctfst.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jidctint.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jmemmgr.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jmemnobs.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jquant1.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jquant2.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/jutils.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="./jpeg/transupp.c">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClCompile>
     <ClCompile Include="libimage.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
@@ -302,9 +170,6 @@
     </ClCompile>
     <ClCompile Include="zlib\crc32.c">
       <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="jpeg\jerror.cpp">
-      <Filter>Файлы исходного кода\jpeg</Filter>
     </ClCompile>
     <ClCompile Include="thorvg\src\loaders\svg\tvgSvgCssStyle.cpp">
       <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
@@ -453,12 +318,6 @@
     <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieParserHandler.cpp">
       <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\loaders\jpg\tvgJpgd.cpp">
-      <Filter>Файлы исходного кода\thorvg\loaders\jpg</Filter>
-    </ClCompile>
-    <ClCompile Include="thorvg\src\loaders\jpg\tvgJpgLoader.cpp">
-      <Filter>Файлы исходного кода\thorvg\loaders\jpg</Filter>
-    </ClCompile>
     <ClCompile Include="thorvg\src\loaders\external_webp\tvgWebpLoader.cpp">
       <Filter>Файлы исходного кода\thorvg\loaders\external_webp</Filter>
     </ClCompile>
@@ -588,44 +447,218 @@
     <ClCompile Include="thorvg\src\common\tvgColor.cpp">
       <Filter>Файлы исходного кода\thorvg\common</Filter>
     </ClCompile>
+    <ClCompile Include="libjpeg-turbo\cdjpeg.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jaricom.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcapimin.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcapistd.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcarith.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jccoefct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jccolor.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcdctmgr.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcdiffct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jchuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcicc.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcinit.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jclhuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jclossls.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcmainct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcmarker.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcmaster.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcomapi.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcparam.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcphuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcprepct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcsample.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jctrans.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdapimin.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdapistd.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdarith.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdatadst.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdatadst-tj.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdatasrc.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdatasrc-tj.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdcoefct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdcolor.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jddctmgr.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jddiffct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdhuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdicc.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdinput.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdlhuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdlossls.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdmainct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdmarker.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdmaster.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdmerge.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdphuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdpostct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdsample.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdtrans.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jerror.cpp">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jfdctflt.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jfdctfst.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jfdctint.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jidctflt.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jidctfst.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jidctint.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jidctred.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jmemmgr.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jmemnobs.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jpeg_nbits.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jquant1.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jquant2.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jutils.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\tjutil.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\transupp.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\turbojpeg.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\simd\x86_64\jsimd.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\external_jpg\tvgJpgLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_jpg</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\wrbmp.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\wrppm.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\rdppm.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\rdbmp.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="./jpeg/cderror.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/cdjpeg.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/jconfig.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/jdct.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/jerror.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/jinclude.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/jmemsys.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/jmorecfg.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/jpegint.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/jpeglib.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/jversion.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="./jpeg/transupp.h">
-      <Filter>Файлы исходного кода\jpeg</Filter>
-    </ClInclude>
     <ClInclude Include="libimage.h">
       <Filter>Файлы включений</Filter>
     </ClInclude>
@@ -833,12 +866,6 @@
     <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieRenderPooler.h">
       <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
     </ClInclude>
-    <ClInclude Include="thorvg\src\loaders\jpg\tvgJpgd.h">
-      <Filter>Файлы исходного кода\thorvg\loaders\jpg</Filter>
-    </ClInclude>
-    <ClInclude Include="thorvg\src\loaders\jpg\tvgJpgLoader.h">
-      <Filter>Файлы исходного кода\thorvg\loaders\jpg</Filter>
-    </ClInclude>
     <ClInclude Include="thorvg\src\loaders\external_webp\tvgWebpLoader.h">
       <Filter>Файлы исходного кода\thorvg\loaders\external_webp</Filter>
     </ClInclude>
@@ -959,5 +986,201 @@
     <ClInclude Include="thorvg\src\common\tvgColor.h">
       <Filter>Файлы исходного кода\thorvg\common</Filter>
     </ClInclude>
+    <ClInclude Include="libjpeg-turbo\cderror.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\cdjpeg.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\cmyk.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jchuff.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jcmaster.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jconfig.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jconfigint.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdcoefct.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdct.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdhuff.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdmainct.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdmaster.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdmerge.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdsample.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jerror.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jinclude.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jlossls.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jmemsys.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jmorecfg.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jpeg_nbits.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jpegapicomp.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jpegint.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jpeglib.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jsamplecomp.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jsimd.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jsimddct.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jversion.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\tjutil.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\transupp.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\turbojpeg.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\simd\jsimd.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\simd\nasm\jsimdcfg.inc.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\external_jpg\tvgJpgLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_jpg</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libjpeg-turbo\simd\nasm\jsimdcfg.inc">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </None>
+    <None Include="libjpeg-turbo\simd\nasm\jsimdext.inc">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </None>
+    <None Include="libjpeg-turbo\simd\nasm\jcolsamp.inc">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </None>
+    <None Include="libjpeg-turbo\simd\nasm\jdct.inc">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jsimdcpu.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jccolor-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jccolor-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcgray-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcgray-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jchuff-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcphuff-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcsample-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcsample-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdcolor-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdcolor-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdmerge-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdmerge-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdsample-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdsample-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctflt-sse.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctfst-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctint-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctint-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctflt-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctfst-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctint-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctint-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctred-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquantf-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquanti-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquanti-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
   </ItemGroup>
 </Project>

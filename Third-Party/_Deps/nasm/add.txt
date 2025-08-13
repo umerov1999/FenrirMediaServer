@@ -1,0 +1,9 @@
+<Import Project="nasm.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+---------------------------------------------------------
+
+<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="nasm.targets" />
+  </ImportGroup>

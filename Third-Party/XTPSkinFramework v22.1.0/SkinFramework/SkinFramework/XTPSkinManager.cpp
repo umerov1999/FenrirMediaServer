@@ -737,11 +737,6 @@ BOOL CXTPSkinManager::SkinSwitchSchema(LPCTSTR lpszIniFileName)
 	}
 }
 
-void CXTPSkinManager::ExitProgramm()
-{
-	_exit(0);
-}
-
 void CXTPSkinManager::AlphaChengeWindow(HWND hwnd, BYTE Alpha)
 {
 	if (SkinEnableDefault == false)

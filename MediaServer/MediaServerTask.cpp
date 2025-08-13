@@ -1813,7 +1813,7 @@ void ServerMethods::Execute(const string& UTF8Path, RequestParserStruct& Req, vo
 						fclose(fll);
 					}
 				}
-				XTPSkinMgr()->ExitProgramm();
+				_exit(0);
 				return;
 			}
 			else {
@@ -1836,7 +1836,7 @@ void ServerMethods::Execute(const string& UTF8Path, RequestParserStruct& Req, vo
 					fclose(fll);
 				}
 			}
-			XTPSkinMgr()->ExitProgramm();
+			_exit(0);
 			return;
 		}
 		else {

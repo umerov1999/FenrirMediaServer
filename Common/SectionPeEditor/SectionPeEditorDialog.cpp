@@ -1068,7 +1068,7 @@ void SectionPeEditorDialog::Select_Section()
 
 void SectionPeEditorDialog::OnClose()
 {
-	XTPSkinMgr()->ExitProgramm();
+	_exit(0);
 }
 
 BOOL SectionPeEditorDialog::PreTranslateMessage(MSG* pMsg)

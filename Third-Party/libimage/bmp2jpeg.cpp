@@ -430,8 +430,8 @@ JDIMENSION preload_image(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 void start_input_bmp(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 {
     bmp_source_ptr source = (bmp_source_ptr)sinfo;
-    U_CHAR bmpfileheader[14];
-    U_CHAR bmpinfoheader[64];
+    UCHAR bmpfileheader[14];
+    UCHAR bmpinfoheader[64];
 #define GET_2B(array,offset)  ((unsigned int) UCH(array[offset]) + \
 			       (((unsigned int) UCH(array[offset+1])) << 8))
 #define GET_4B(array,offset)  ((INT32) UCH(array[offset]) + \
@@ -648,7 +648,7 @@ cjpeg_source_ptr jinit_read_bmp(j_compress_ptr cinfo)
     /* Create module interface object */
     source = (bmp_source_ptr)
         (*cinfo->mem->alloc_small) ((j_common_ptr)cinfo, JPOOL_IMAGE,
-            SIZEOF(bmp_source_struct));
+            sizeof(bmp_source_struct));
     source->cinfo = cinfo;	/* make back link for subroutines */
     /* Fill in method ptrs, except get_pixel_rows which start_input sets */
     source->pub.start_input = start_input_bmp;
@@ -818,7 +818,7 @@ bool LIB_IMAGE::bmp2jpeg(HBITMAP hBmp, HDC hDC, int quality, BYTE*& buf_jpeg, si
     jpeg_set_quality(&cinfo, quality, FALSE);
 
     // Write the compressed JPEG to memory: bug_jpeg
-    jpeg_mem_dest(&cinfo, &buf_jpeg, &buf_jpeg_size);
+    jpeg_mem_dest(&cinfo, &buf_jpeg, (unsigned long*) & buf_jpeg_size);
 
     /* Start compressor */
     jpeg_start_compress(&cinfo, TRUE);

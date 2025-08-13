@@ -123,6 +123,9 @@ void UListBox::Init(HBITMAP pBackgroundPicture, CallBackSelectTouch OnSelect, Ca
 
 	Inited = true;
 	LinesChenged = true;
+
+	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
 void UListBox::SwitchBackground(HBITMAP pBackgroundPicture) {
@@ -134,6 +137,8 @@ void UListBox::SwitchBackground(HBITMAP pBackgroundPicture) {
 		BackgroundPicture.Attach(pBackgroundPicture);
 	}
 	THREAD_ACCESS_UNLOCK(Async, &BackgroundPicture);
+	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
 void UListBox::RegisterSpecialPatternOnce(const wstring &Pattern, URGB Color) {

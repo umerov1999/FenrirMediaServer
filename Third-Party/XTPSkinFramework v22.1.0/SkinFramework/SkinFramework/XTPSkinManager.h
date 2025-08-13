@@ -604,8 +604,6 @@ public:
 	void AlphaDisableWindow(HWND hwnd);
 	void AlphaChengeWindow(HWND hwnd, BYTE Alpha);
 
-	void ExitProgramm();
-
 	CString GetCommandLineTool();
 
 	//-----------------------------------------------------------------------

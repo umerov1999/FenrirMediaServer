@@ -7,57 +7,78 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="./jpeg/cdjpeg.c" />
-    <ClCompile Include="./jpeg/jaricom.c" />
-    <ClCompile Include="./jpeg/jcapimin.c" />
-    <ClCompile Include="./jpeg/jcapistd.c" />
-    <ClCompile Include="./jpeg/jcarith.c" />
-    <ClCompile Include="./jpeg/jccoefct.c" />
-    <ClCompile Include="./jpeg/jccolor.c" />
-    <ClCompile Include="./jpeg/jcdctmgr.c" />
-    <ClCompile Include="./jpeg/jchuff.c" />
-    <ClCompile Include="./jpeg/jcinit.c" />
-    <ClCompile Include="./jpeg/jcmainct.c" />
-    <ClCompile Include="./jpeg/jcmarker.c" />
-    <ClCompile Include="./jpeg/jcmaster.c" />
-    <ClCompile Include="./jpeg/jcomapi.c" />
-    <ClCompile Include="./jpeg/jcparam.c" />
-    <ClCompile Include="./jpeg/jcprepct.c" />
-    <ClCompile Include="./jpeg/jcsample.c" />
-    <ClCompile Include="./jpeg/jctrans.c" />
-    <ClCompile Include="./jpeg/jdapimin.c" />
-    <ClCompile Include="./jpeg/jdapistd.c" />
-    <ClCompile Include="./jpeg/jdarith.c" />
-    <ClCompile Include="./jpeg/jdatadst.c" />
-    <ClCompile Include="./jpeg/jdatasrc.c" />
-    <ClCompile Include="./jpeg/jdcoefct.c" />
-    <ClCompile Include="./jpeg/jdcolor.c" />
-    <ClCompile Include="./jpeg/jddctmgr.c" />
-    <ClCompile Include="./jpeg/jdhuff.c" />
-    <ClCompile Include="./jpeg/jdinput.c" />
-    <ClCompile Include="./jpeg/jdmainct.c" />
-    <ClCompile Include="./jpeg/jdmarker.c" />
-    <ClCompile Include="./jpeg/jdmaster.c" />
-    <ClCompile Include="./jpeg/jdmerge.c" />
-    <ClCompile Include="./jpeg/jdpostct.c" />
-    <ClCompile Include="./jpeg/jdsample.c" />
-    <ClCompile Include="./jpeg/jdtrans.c" />
     <ClCompile Include="bmp2jpeg.cpp" />
     <ClCompile Include="bmp2png.cpp" />
-    <ClCompile Include="jpeg\jerror.cpp" />
-    <ClCompile Include="./jpeg/jfdctflt.c" />
-    <ClCompile Include="./jpeg/jfdctfst.c" />
-    <ClCompile Include="./jpeg/jfdctint.c" />
-    <ClCompile Include="./jpeg/jidctflt.c" />
-    <ClCompile Include="./jpeg/jidctfst.c" />
-    <ClCompile Include="./jpeg/jidctint.c" />
-    <ClCompile Include="./jpeg/jmemmgr.c" />
-    <ClCompile Include="./jpeg/jmemnobs.c" />
-    <ClCompile Include="./jpeg/jquant1.c" />
-    <ClCompile Include="./jpeg/jquant2.c" />
-    <ClCompile Include="./jpeg/jutils.c" />
-    <ClCompile Include="./jpeg/transupp.c" />
     <ClCompile Include="libimage.cpp" />
+    <ClCompile Include="libjpeg-turbo\cdjpeg.c" />
+    <ClCompile Include="libjpeg-turbo\jaricom.c" />
+    <ClCompile Include="libjpeg-turbo\jcapimin.c" />
+    <ClCompile Include="libjpeg-turbo\jcapistd.c" />
+    <ClCompile Include="libjpeg-turbo\jcarith.c" />
+    <ClCompile Include="libjpeg-turbo\jccoefct.c" />
+    <ClCompile Include="libjpeg-turbo\jccolor.c" />
+    <ClCompile Include="libjpeg-turbo\jcdctmgr.c" />
+    <ClCompile Include="libjpeg-turbo\jcdiffct.c" />
+    <ClCompile Include="libjpeg-turbo\jchuff.c" />
+    <ClCompile Include="libjpeg-turbo\jcicc.c" />
+    <ClCompile Include="libjpeg-turbo\jcinit.c" />
+    <ClCompile Include="libjpeg-turbo\jclhuff.c" />
+    <ClCompile Include="libjpeg-turbo\jclossls.c" />
+    <ClCompile Include="libjpeg-turbo\jcmainct.c" />
+    <ClCompile Include="libjpeg-turbo\jcmarker.c" />
+    <ClCompile Include="libjpeg-turbo\jcmaster.c" />
+    <ClCompile Include="libjpeg-turbo\jcomapi.c" />
+    <ClCompile Include="libjpeg-turbo\jcparam.c" />
+    <ClCompile Include="libjpeg-turbo\jcphuff.c" />
+    <ClCompile Include="libjpeg-turbo\jcprepct.c" />
+    <ClCompile Include="libjpeg-turbo\jcsample.c" />
+    <ClCompile Include="libjpeg-turbo\jctrans.c" />
+    <ClCompile Include="libjpeg-turbo\jdapimin.c" />
+    <ClCompile Include="libjpeg-turbo\jdapistd.c" />
+    <ClCompile Include="libjpeg-turbo\jdarith.c" />
+    <ClCompile Include="libjpeg-turbo\jdatadst-tj.c" />
+    <ClCompile Include="libjpeg-turbo\jdatadst.c" />
+    <ClCompile Include="libjpeg-turbo\jdatasrc-tj.c" />
+    <ClCompile Include="libjpeg-turbo\jdatasrc.c" />
+    <ClCompile Include="libjpeg-turbo\jdcoefct.c" />
+    <ClCompile Include="libjpeg-turbo\jdcolor.c" />
+    <ClCompile Include="libjpeg-turbo\jddctmgr.c" />
+    <ClCompile Include="libjpeg-turbo\jddiffct.c" />
+    <ClCompile Include="libjpeg-turbo\jdhuff.c" />
+    <ClCompile Include="libjpeg-turbo\jdicc.c" />
+    <ClCompile Include="libjpeg-turbo\jdinput.c" />
+    <ClCompile Include="libjpeg-turbo\jdlhuff.c" />
+    <ClCompile Include="libjpeg-turbo\jdlossls.c" />
+    <ClCompile Include="libjpeg-turbo\jdmainct.c" />
+    <ClCompile Include="libjpeg-turbo\jdmarker.c" />
+    <ClCompile Include="libjpeg-turbo\jdmaster.c" />
+    <ClCompile Include="libjpeg-turbo\jdmerge.c" />
+    <ClCompile Include="libjpeg-turbo\jdphuff.c" />
+    <ClCompile Include="libjpeg-turbo\jdpostct.c" />
+    <ClCompile Include="libjpeg-turbo\jdsample.c" />
+    <ClCompile Include="libjpeg-turbo\jdtrans.c" />
+    <ClCompile Include="libjpeg-turbo\jerror.cpp" />
+    <ClCompile Include="libjpeg-turbo\jfdctflt.c" />
+    <ClCompile Include="libjpeg-turbo\jfdctfst.c" />
+    <ClCompile Include="libjpeg-turbo\jfdctint.c" />
+    <ClCompile Include="libjpeg-turbo\jidctflt.c" />
+    <ClCompile Include="libjpeg-turbo\jidctfst.c" />
+    <ClCompile Include="libjpeg-turbo\jidctint.c" />
+    <ClCompile Include="libjpeg-turbo\jidctred.c" />
+    <ClCompile Include="libjpeg-turbo\jmemmgr.c" />
+    <ClCompile Include="libjpeg-turbo\jmemnobs.c" />
+    <ClCompile Include="libjpeg-turbo\jpeg_nbits.c" />
+    <ClCompile Include="libjpeg-turbo\jquant1.c" />
+    <ClCompile Include="libjpeg-turbo\jquant2.c" />
+    <ClCompile Include="libjpeg-turbo\jutils.c" />
+    <ClCompile Include="libjpeg-turbo\rdbmp.c" />
+    <ClCompile Include="libjpeg-turbo\rdppm.c" />
+    <ClCompile Include="libjpeg-turbo\simd\x86_64\jsimd.c" />
+    <ClCompile Include="libjpeg-turbo\tjutil.c" />
+    <ClCompile Include="libjpeg-turbo\transupp.c" />
+    <ClCompile Include="libjpeg-turbo\turbojpeg.c" />
+    <ClCompile Include="libjpeg-turbo\wrbmp.c" />
+    <ClCompile Include="libjpeg-turbo\wrppm.c" />
     <ClCompile Include="png\png.c" />
     <ClCompile Include="png\pngerror.c" />
     <ClCompile Include="png\pngget.c" />
@@ -77,10 +98,9 @@
     <ClCompile Include="thorvg\src\common\tvgCompressor.cpp" />
     <ClCompile Include="thorvg\src\common\tvgMath.cpp" />
     <ClCompile Include="thorvg\src\common\tvgStr.cpp" />
+    <ClCompile Include="thorvg\src\loaders\external_jpg\tvgJpgLoader.cpp" />
     <ClCompile Include="thorvg\src\loaders\external_png\tvgPngLoader.cpp" />
     <ClCompile Include="thorvg\src\loaders\external_webp\tvgWebpLoader.cpp" />
-    <ClCompile Include="thorvg\src\loaders\jpg\tvgJpgd.cpp" />
-    <ClCompile Include="thorvg\src\loaders\jpg\tvgJpgLoader.cpp" />
     <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieAnimation.cpp" />
     <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieBuilder.cpp" />
     <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieExpressions.cpp" />
@@ -182,20 +202,40 @@
     <ClCompile Include="zlib\zutil.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="./jpeg/cderror.h" />
-    <ClInclude Include="./jpeg/cdjpeg.h" />
-    <ClInclude Include="./jpeg/jconfig.h" />
-    <ClInclude Include="./jpeg/jdct.h" />
-    <ClInclude Include="./jpeg/jerror.h" />
-    <ClInclude Include="./jpeg/jinclude.h" />
-    <ClInclude Include="./jpeg/jmemsys.h" />
-    <ClInclude Include="./jpeg/jmorecfg.h" />
-    <ClInclude Include="./jpeg/jpegint.h" />
-    <ClInclude Include="./jpeg/jpeglib.h" />
-    <ClInclude Include="./jpeg/jversion.h" />
-    <ClInclude Include="./jpeg/transupp.h" />
     <ClInclude Include="lancir.h" />
     <ClInclude Include="libimage.h" />
+    <ClInclude Include="libjpeg-turbo\cderror.h" />
+    <ClInclude Include="libjpeg-turbo\cdjpeg.h" />
+    <ClInclude Include="libjpeg-turbo\cmyk.h" />
+    <ClInclude Include="libjpeg-turbo\jchuff.h" />
+    <ClInclude Include="libjpeg-turbo\jcmaster.h" />
+    <ClInclude Include="libjpeg-turbo\jconfig.h" />
+    <ClInclude Include="libjpeg-turbo\jconfigint.h" />
+    <ClInclude Include="libjpeg-turbo\jdcoefct.h" />
+    <ClInclude Include="libjpeg-turbo\jdct.h" />
+    <ClInclude Include="libjpeg-turbo\jdhuff.h" />
+    <ClInclude Include="libjpeg-turbo\jdmainct.h" />
+    <ClInclude Include="libjpeg-turbo\jdmaster.h" />
+    <ClInclude Include="libjpeg-turbo\jdmerge.h" />
+    <ClInclude Include="libjpeg-turbo\jdsample.h" />
+    <ClInclude Include="libjpeg-turbo\jerror.h" />
+    <ClInclude Include="libjpeg-turbo\jinclude.h" />
+    <ClInclude Include="libjpeg-turbo\jlossls.h" />
+    <ClInclude Include="libjpeg-turbo\jmemsys.h" />
+    <ClInclude Include="libjpeg-turbo\jmorecfg.h" />
+    <ClInclude Include="libjpeg-turbo\jpegapicomp.h" />
+    <ClInclude Include="libjpeg-turbo\jpegint.h" />
+    <ClInclude Include="libjpeg-turbo\jpeglib.h" />
+    <ClInclude Include="libjpeg-turbo\jpeg_nbits.h" />
+    <ClInclude Include="libjpeg-turbo\jsamplecomp.h" />
+    <ClInclude Include="libjpeg-turbo\jsimd.h" />
+    <ClInclude Include="libjpeg-turbo\jsimddct.h" />
+    <ClInclude Include="libjpeg-turbo\jversion.h" />
+    <ClInclude Include="libjpeg-turbo\simd\jsimd.h" />
+    <ClInclude Include="libjpeg-turbo\simd\nasm\jsimdcfg.inc.h" />
+    <ClInclude Include="libjpeg-turbo\tjutil.h" />
+    <ClInclude Include="libjpeg-turbo\transupp.h" />
+    <ClInclude Include="libjpeg-turbo\turbojpeg.h" />
     <ClInclude Include="png\png.h" />
     <ClInclude Include="png\pngconf.h" />
     <ClInclude Include="png\pngdebug.h" />
@@ -211,10 +251,9 @@
     <ClInclude Include="thorvg\src\common\tvgInlist.h" />
     <ClInclude Include="thorvg\src\common\tvgMath.h" />
     <ClInclude Include="thorvg\src\common\tvgStr.h" />
+    <ClInclude Include="thorvg\src\loaders\external_jpg\tvgJpgLoader.h" />
     <ClInclude Include="thorvg\src\loaders\external_png\tvgPngLoader.h" />
     <ClInclude Include="thorvg\src\loaders\external_webp\tvgWebpLoader.h" />
-    <ClInclude Include="thorvg\src\loaders\jpg\tvgJpgd.h" />
-    <ClInclude Include="thorvg\src\loaders\jpg\tvgJpgLoader.h" />
     <ClInclude Include="thorvg\src\loaders\lottie\thorvg_lottie.h" />
     <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieBuilder.h" />
     <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieCommon.h" />
@@ -306,6 +345,49 @@
     <ClInclude Include="zlib\zlib.h" />
     <ClInclude Include="zlib\zutil.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="libjpeg-turbo\simd\nasm\jcolsamp.inc" />
+    <None Include="libjpeg-turbo\simd\nasm\jdct.inc" />
+    <None Include="libjpeg-turbo\simd\nasm\jsimdcfg.inc" />
+    <None Include="libjpeg-turbo\simd\nasm\jsimdext.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jccolor-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jccolor-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcgray-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcgray-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jchuff-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcphuff-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcsample-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcsample-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdcolor-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdcolor-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdmerge-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdmerge-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdsample-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdsample-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctflt-sse.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctfst-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctint-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctint-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctflt-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctfst-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctint-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctint-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctred-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquantf-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquanti-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquanti-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jsimdcpu.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libjpeg-turbo\libjpeg-turbo-12.vcxproj">
+      <Project>{8970db45-4dec-4683-9d08-c8fc911d0cd2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libjpeg-turbo\libjpeg-turbo-16.vcxproj">
+      <Project>{ca98ccc0-175a-45b6-955d-6ef88a5c0ff8}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D6973076-9317-4EF2-A0B8-B7A18AC0713E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -321,6 +403,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="../Extra/nasm.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
@@ -337,8 +420,8 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0600;TVG_STATIC;WEBP_USE_THREAD;WEBP_USE_SSE2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>./jpeg;./png;./zlib;./webp/;./webp/src/;./webp/src/dec;./webp/src/dsp;./webp/src/utils;./webp/src/webp;./thorvg/inc;./thorvg/src/renderer;./thorvg/src/renderer/sw_engine;./thorvg/src/common;./thorvg/src/loaders/svg;./thorvg/src/loaders/raw;./thorvg/src/loaders/jpg;./thorvg/src/loaders/external_png;./thorvg/src/loaders/lottie;./thorvg/src/loaders/external_webp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0600;TVG_STATIC;WEBP_USE_THREAD;WEBP_USE_SSE2;PPM_SUPPORTED;BMP_SUPPORTED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./libjpeg-turbo;./libjpeg-turbo/simd;./libjpeg-turbo/simd/nasm;./png;./zlib;./webp/;./webp/src/;./webp/src/dec;./webp/src/dsp;./webp/src/utils;./webp/src/webp;./thorvg/inc;./thorvg/src/renderer;./thorvg/src/renderer/sw_engine;./thorvg/src/common;./thorvg/src/loaders/lottie;./thorvg/src/loaders/svg;./thorvg/src/loaders/raw;./thorvg/src/loaders/external_jpg;./thorvg/src/loaders/external_png;./thorvg/src/loaders/external_webp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -356,8 +439,13 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib />
+    <NASM>
+      <IncludePaths>$(ProjectDir)\libjpeg-turbo\simd;$(ProjectDir)\libjpeg-turbo\simd\nasm;$(ProjectDir)\libjpeg-turbo\simd\x86_64</IncludePaths>
+      <PreprocessorDefinitions>WIN64;MSVC;__x86_64__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </NASM>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="../Extra/nasm.targets" />
   </ImportGroup>
 </Project>

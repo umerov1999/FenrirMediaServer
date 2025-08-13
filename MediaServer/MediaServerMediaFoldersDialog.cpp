@@ -177,6 +177,11 @@ void MediaServerMediaFoldersDialog::ReloadContent()
 		ListDiscography.AddLine(i.c_str());
 	for (auto& i : Photo_Video_Dirs)
 		ListPhotoVideos.AddLine(i.c_str());
+
+	ListAudios.UpdateLines();
+	ListVideos.UpdateLines();
+	ListDiscography.UpdateLines();
+	ListPhotoVideos.UpdateLines();
 }
 
 static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)

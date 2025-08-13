@@ -491,7 +491,7 @@ HCURSOR SSLRequestDialog::OnQueryDragIcon()
 
 void SSLRequestDialog::OnClose()
 {
-	XTPSkinMgr()->ExitProgramm();
+	_exit(0);
 }
 
 BOOL SSLRequestDialog::PreTranslateMessage(MSG* pMsg)

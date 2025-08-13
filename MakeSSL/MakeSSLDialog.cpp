@@ -198,7 +198,7 @@ HCURSOR MakeSSLDialog::OnQueryDragIcon()
 
 void MakeSSLDialog::OnClose()
 {
-	XTPSkinMgr()->ExitProgramm();
+	_exit(0);
 }
 
 BOOL MakeSSLDialog::PreTranslateMessage(MSG* pMsg)

@@ -432,5 +432,5 @@ void VKApiToolsDialog::OnAccount()
 
 void VKApiToolsDialog::OnClose()
 {
-	XTPSkinMgr()->ExitProgramm();
+	_exit(0);
 }

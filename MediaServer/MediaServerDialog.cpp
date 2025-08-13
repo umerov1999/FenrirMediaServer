@@ -1006,7 +1006,7 @@ void MediaServerDialog::OnClose()
 		shutdown(HTTPSserver_sock, SD_BOTH);
 		closesocket(HTTPSserver_sock);
 	}
-	XTPSkinMgr()->ExitProgramm();
+	_exit(0);
 }
 
 BOOL MediaServerDialog::PreTranslateMessage(MSG* pMsg)

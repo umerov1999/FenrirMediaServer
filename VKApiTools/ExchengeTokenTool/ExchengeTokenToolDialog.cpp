@@ -265,7 +265,7 @@ void ExchengeTokenToolDialog::OnClose()
 	SERIALIZE_CONTROL(pSettings, UseDeviceId);
 	pSettings.SerializeSettings();
 
-	XTPSkinMgr()->ExitProgramm();
+	_exit(0);
 }
 
 bool VK_APIMETHOD::VK_APIMETHOD_doCapcha(const std::string& captcha_img, const std::string& user_agent, std::string& code) {

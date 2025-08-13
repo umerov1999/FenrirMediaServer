@@ -121,7 +121,7 @@ HCURSOR LottieViewerDialog::OnQueryDragIcon()
 
 void LottieViewerDialog::OnClose()
 {
-	XTPSkinMgr()->ExitProgramm();
+	_exit(0);
 }
 
 BOOL LottieViewerDialog::PreTranslateMessage(MSG* pMsg)

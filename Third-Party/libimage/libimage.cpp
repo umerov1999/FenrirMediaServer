@@ -970,20 +970,19 @@ void LIB_IMAGE::CreateBMPFile(LPCTSTR pszFile, HBITMAP hBMP) {
 
 inline void LIB_IMAGE::swap_rgb(uint8_t* rgb_buffer, int len) {
 	uint8_t tmp = 0;
-	int i = 0;
 
 	const __m128i swapRB = _mm_setr_epi8(2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 15);
 
 	while (len >= 16) {
-		__m128i rgba = _mm_loadu_si128((const __m128i*) rgb_buffer);
+		__m128i rgba = _mm_load_si128((const __m128i*) rgb_buffer);
 		__m128i bgra = _mm_shuffle_epi8(rgba, swapRB);
-		_mm_storeu_si128((__m128i*) rgb_buffer, bgra);
+		_mm_store_si128((__m128i*) rgb_buffer, bgra);
 
 		rgb_buffer += 15;
 		len -= 15;
 	}
 
-	for (; i < len; i += 3) {
+	for (int i = 0; i < len; i += 3) {
 		tmp = *(rgb_buffer + i);
 		*(rgb_buffer + i) = *(rgb_buffer + i + 2);
 		*(rgb_buffer + i + 2) = tmp;
@@ -992,41 +991,142 @@ inline void LIB_IMAGE::swap_rgb(uint8_t* rgb_buffer, int len) {
 
 inline void LIB_IMAGE::swap_rgba(uint8_t* rgba_buffer, int len) {
 	uint8_t tmp = 0;
-	int i = 0;
 
 	const __m128i swapRB = _mm_setr_epi8(2, 1, 0, 3, 6, 5, 4, 7, 10, 9, 8, 11, 14, 13, 12, 15);
 
 	while (len >= 16) {
-		__m128i rgba = _mm_loadu_si128((const __m128i*) rgba_buffer);
+		__m128i rgba = _mm_load_si128((const __m128i*) rgba_buffer);
 		__m128i bgra = _mm_shuffle_epi8(rgba, swapRB);
-		_mm_storeu_si128((__m128i*) rgba_buffer, bgra);
+		_mm_store_si128((__m128i*) rgba_buffer, bgra);
 
 		rgba_buffer += 16;
 		len -= 16;
 	}
 
-	for (; i < len; i += 4) {
+	for (int i = 0; i < len; i += 4) {
 		tmp = *(rgba_buffer + i);
 		*(rgba_buffer + i) = *(rgba_buffer + i + 2);
 		*(rgba_buffer + i + 2) = tmp;
 	}
 }
 
-static void Convert32BitTo24BitBitmap(
-	uint8_t* src, uint8_t* dst, int width, uint32_t color) {
+static inline __m128i muldiv_epi16_255(__m128i a, __m128i b) {
+	__m128i sign_a = _mm_srai_epi16(a, 15);
+	__m128i sign_b = _mm_srai_epi16(b, 15);
+
+	__m128i a_lo = _mm_unpacklo_epi16(a, sign_a);
+	__m128i a_hi = _mm_unpackhi_epi16(a, sign_a);
+	__m128i b_lo = _mm_unpacklo_epi16(b, sign_b);
+	__m128i b_hi = _mm_unpackhi_epi16(b, sign_b);
+
+	a_lo = _mm_mullo_epi32(a_lo, b_lo);
+	a_hi = _mm_mullo_epi32(a_hi, b_hi);
+
+	// Divide by 255: adjust for trunc toward zero
+	__m128i adj_lo = _mm_srai_epi32(a_lo, 31);
+	__m128i adj_hi = _mm_srai_epi32(a_hi, 31);
+
+	a_lo = _mm_add_epi32(a_lo, adj_lo);
+	a_hi = _mm_add_epi32(a_hi, adj_hi);
+
+	const __m128i mul_const = _mm_set1_epi32(257);
+	a_lo = _mm_mullo_epi32(a_lo, mul_const);
+	a_hi = _mm_mullo_epi32(a_hi, mul_const);
+
+	a_lo = _mm_srai_epi32(a_lo, 16);
+	a_hi = _mm_srai_epi32(a_hi, 16);
+
+	return _mm_packs_epi32(a_lo, a_hi);
+}
+
+static void rbga32_to_rgb24_ssse3(uint8_t* src, uint8_t* dst, int width, uint32_t color) {
+	__m128i* d = (__m128i*)dst;
+	const __m128i* s = (const __m128i*)src;
+
+	uint8_t* srcPointer = src;
+	uint8_t* dstPointer = dst;
+
+	__m128i rgbMask = _mm_setr_epi8(0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, -1, -1, -1, -1);
+	__m128i alphaMask = _mm_setr_epi8(3, 3, 3, 7, 7, 7, 11, 11, 11, 15, 15, 15, -1, -1, -1, -1);
+
+	__m128i resColor = _mm_set_epi8(0, 0, 0, 0, GetRValue(color), GetGValue(color), GetBValue(color), GetRValue(color), GetGValue(color), GetBValue(color), GetRValue(color), GetGValue(color), GetBValue(color), GetRValue(color), GetGValue(color), GetBValue(color));
+	__m128i resColorLo = _mm_unpacklo_epi8(resColor, _mm_setzero_si128());
+	__m128i resColorHi = _mm_unpackhi_epi8(resColor, _mm_setzero_si128());
+
+	while (width >= 16) {
+		__m128i sa = _mm_shuffle_epi8(_mm_load_si128(s), rgbMask);
+		__m128i sb = _mm_shuffle_epi8(_mm_load_si128(s + 1), rgbMask);
+		__m128i sc = _mm_shuffle_epi8(_mm_load_si128(s + 2), rgbMask);
+		__m128i sd = _mm_shuffle_epi8(_mm_load_si128(s + 3), rgbMask);
+
+		__m128i aa = _mm_shuffle_epi8(_mm_load_si128(s), alphaMask);
+		__m128i ab = _mm_shuffle_epi8(_mm_load_si128(s + 1), alphaMask);
+		__m128i ac = _mm_shuffle_epi8(_mm_load_si128(s + 2), alphaMask);
+		__m128i ad = _mm_shuffle_epi8(_mm_load_si128(s + 3), alphaMask);
+		///////////
+		__m128i sa_lo = _mm_unpacklo_epi8(sa, _mm_setzero_si128());
+		__m128i sa_hi = _mm_unpackhi_epi8(sa, _mm_setzero_si128());
+		__m128i aa_lo = _mm_unpacklo_epi8(aa, _mm_setzero_si128());
+		__m128i aa_hi = _mm_unpackhi_epi8(aa, _mm_setzero_si128());
+		__m128i res_sa_lo = _mm_add_epi16(resColorLo, muldiv_epi16_255(_mm_sub_epi16(sa_lo, resColorLo), aa_lo));
+		__m128i res_sa_hi = _mm_add_epi16(resColorHi, muldiv_epi16_255(_mm_sub_epi16(sa_hi, resColorHi), aa_hi));
+
+		sa = _mm_packus_epi16(res_sa_lo, res_sa_hi);
+		///////////
+
+		///////////
+		__m128i sb_lo = _mm_unpacklo_epi8(sb, _mm_setzero_si128());
+		__m128i sb_hi = _mm_unpackhi_epi8(sb, _mm_setzero_si128());
+		__m128i ab_lo = _mm_unpacklo_epi8(ab, _mm_setzero_si128());
+		__m128i ab_hi = _mm_unpackhi_epi8(ab, _mm_setzero_si128());
+		__m128i res_sb_lo = _mm_add_epi16(resColorLo, muldiv_epi16_255(_mm_sub_epi16(sb_lo, resColorLo), ab_lo));
+		__m128i res_sb_hi = _mm_add_epi16(resColorHi, muldiv_epi16_255(_mm_sub_epi16(sb_hi, resColorHi), ab_hi));
+		sb = _mm_packus_epi16(res_sb_lo, res_sb_hi);
+		///////////
+
+		///////////
+		__m128i sc_lo = _mm_unpacklo_epi8(sc, _mm_setzero_si128());
+		__m128i sc_hi = _mm_unpackhi_epi8(sc, _mm_setzero_si128());
+		__m128i ac_lo = _mm_unpacklo_epi8(ac, _mm_setzero_si128());
+		__m128i ac_hi = _mm_unpackhi_epi8(ac, _mm_setzero_si128());
+		__m128i res_sc_lo = _mm_add_epi16(resColorLo, muldiv_epi16_255(_mm_sub_epi16(sc_lo, resColorLo), ac_lo));
+		__m128i res_sc_hi = _mm_add_epi16(resColorHi, muldiv_epi16_255(_mm_sub_epi16(sc_hi, resColorHi), ac_hi));
+		sc = _mm_packus_epi16(res_sc_lo, res_sc_hi);
+		///////////
+
+		///////////
+		__m128i sd_lo = _mm_unpacklo_epi8(sd, _mm_setzero_si128());
+		__m128i sd_hi = _mm_unpackhi_epi8(sd, _mm_setzero_si128());
+		__m128i ad_lo = _mm_unpacklo_epi8(ad, _mm_setzero_si128());
+		__m128i ad_hi = _mm_unpackhi_epi8(ad, _mm_setzero_si128());
+		__m128i res_sd_lo = _mm_add_epi16(resColorLo, muldiv_epi16_255(_mm_sub_epi16(sd_lo, resColorLo), ad_lo));
+		__m128i res_sd_hi = _mm_add_epi16(resColorHi, muldiv_epi16_255(_mm_sub_epi16(sd_hi, resColorHi), ad_hi));
+		sd = _mm_packus_epi16(res_sd_lo, res_sd_hi);
+		///////////
+
+		_mm_store_si128(d, _mm_or_si128(sa, _mm_slli_si128(sb, 12)));
+		_mm_store_si128(d + 1, _mm_or_si128(_mm_srli_si128(sb, 4), _mm_slli_si128(sc, 8)));
+		_mm_store_si128(d + 2, _mm_or_si128(_mm_srli_si128(sc, 8), _mm_slli_si128(sd, 4)));
+		s += 4;
+		d += 3;
+		width -= 16;
+
+		srcPointer += 64;
+		dstPointer += 48;
+	}
+
 	uint8_t rC = GetRValue(color);
 	uint8_t gC = GetGValue(color);
 	uint8_t bC = GetBValue(color);
+	for (int i = 0; i < width; i++) {
+		uint8_t b = srcPointer[i * 4 + 0];
+		uint8_t g = srcPointer[i * 4 + 1];
+		uint8_t r = srcPointer[i * 4 + 2];
+		uint8_t a = srcPointer[i * 4 + 3];
 
-	for (int x = 0; x < width; x++) {
-		uint8_t b = src[x * 4 + 0];
-		uint8_t g = src[x * 4 + 1];
-		uint8_t r = src[x * 4 + 2];
-		uint8_t a = src[x * 4 + 3];
-
-		dst[x * 3 + 0] = bC + ((b - bC) * a) / 255;
-		dst[x * 3 + 1] = gC + ((g - gC) * a) / 255;
-		dst[x * 3 + 2] = rC + ((r - rC) * a) / 255;
+		dstPointer[i * 3 + 0] = bC + ((b - bC) * a) / 255;
+		dstPointer[i * 3 + 1] = gC + ((g - gC) * a) / 255;
+		dstPointer[i * 3 + 2] = rC + ((r - rC) * a) / 255;
 	}
 }
 
@@ -1041,8 +1141,9 @@ win_image& win_image::premultiply_alpha(HWND hwnd, COLORREF color) {
 				uint8_t* target = (uint8_t*)tmpBmpInfo.bmBits;
 
 				for (int nY = 0; nY < tmpBmpInfo.bmHeight; nY++) {
-					Convert32BitTo24BitBitmap(&src[nY * BitmapWidth(bmpInfo.bmWidth, bmpInfo.bmBitsPixel)], &target[nY * BitmapWidth(tmpBmpInfo.bmWidth, tmpBmpInfo.bmBitsPixel)], tmpBmpInfo.bmWidth, color);
+					rbga32_to_rgb24_ssse3(&src[nY * BitmapWidth(bmpInfo.bmWidth, bmpInfo.bmBitsPixel)], &target[nY * BitmapWidth(tmpBmpInfo.bmWidth, tmpBmpInfo.bmBitsPixel)], tmpBmpInfo.bmWidth, color);
 				}
+
 				DeleteObject(hPicture);
 				hPicture = hTmp;
 			}

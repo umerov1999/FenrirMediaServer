@@ -127,6 +127,9 @@ void ColorEdit::Init(Align TextAlign, HBITMAP pBackgroundPicture, bool isFullTex
 	SetRange(&HorizScroll, 0, 0, 0);
 	Inited = true;
 	LinesChenged = true;
+
+	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
 void ColorEdit::SwitchBackground(HBITMAP pBackgroundPicture) {
@@ -138,6 +141,8 @@ void ColorEdit::SwitchBackground(HBITMAP pBackgroundPicture) {
 		BackgroundPicture.Attach(pBackgroundPicture);
 	}
 	THREAD_ACCESS_UNLOCK(Async, &BackgroundPicture);
+	InvalidateRect(getRect());
+	UpdateWindow();
 }
 
 void ColorEdit::RegisterSpecialPatternOnce(const wstring &Pattern, URGB Color) {

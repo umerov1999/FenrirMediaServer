@@ -258,7 +258,7 @@ void UStyleViewerDialog::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollB
 
 void UStyleViewerDialog::OnClose()
 {
-	XTPSkinMgr()->ExitProgramm();
+	_exit(0);
 }
 
 BOOL UStyleViewerDialog::PreTranslateMessage(MSG* pMsg)
