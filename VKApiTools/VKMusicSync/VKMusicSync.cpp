@@ -23,8 +23,8 @@ using namespace CTar;
 
 extern string DEFAULT_USER_AGENT;
 
-#define AVATAR_USER_DEFAULT "https://vk.com/images/camera_200.png?ava=1"
-#define AVATAR_CHAT_DEFAULT "https://vk.com/images/icons/im_multichat_200.png"
+#define AVATAR_USER_DEFAULT "https://vk.ru/images/camera_200.png?ava=1"
+#define AVATAR_CHAT_DEFAULT "https://vk.ru/images/icons/im_multichat_200.png"
 
 #define UTF8START "\xef\xbb\xbf"
 #define to ,
@@ -224,7 +224,7 @@ public:
 		TempParams.push_back(VK("access_token", TempToken));
 		TempParams.push_back(VK("v", VKAPI_VERSION_FOR_AUDIO));
 
-		string ResultLink = string("https://api.vk.com/method") + "/" + Method;
+		string ResultLink = string("https://api.vk.ru/method") + "/" + Method;
 		string PostParam;
 		bool FirstParam = true;
 		for (auto& i : TempParams)

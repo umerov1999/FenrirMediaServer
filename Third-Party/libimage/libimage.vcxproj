@@ -131,7 +131,6 @@
     <ClCompile Include="thorvg\src\renderer\tvgAnimation.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgCanvas.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgFill.cpp" />
-    <ClCompile Include="thorvg\src\renderer\tvgGlCanvas.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgInitializer.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgLoader.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgPaint.cpp" />
@@ -140,10 +139,8 @@
     <ClCompile Include="thorvg\src\renderer\tvgSaver.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgScene.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgShape.cpp" />
-    <ClCompile Include="thorvg\src\renderer\tvgSwCanvas.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgTaskScheduler.cpp" />
     <ClCompile Include="thorvg\src\renderer\tvgText.cpp" />
-    <ClCompile Include="thorvg\src\renderer\tvgWgCanvas.cpp" />
     <ClCompile Include="webp\src\dec\alpha_dec.c" />
     <ClCompile Include="webp\src\dec\buffer_dec.c" />
     <ClCompile Include="webp\src\dec\frame_dec.c" />

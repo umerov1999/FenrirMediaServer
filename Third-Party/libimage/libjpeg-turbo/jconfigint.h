@@ -1,5 +1,5 @@
 /* libjpeg-turbo build number */
-#define BUILD  "20250812"
+#define BUILD  "20250912"
 
 /* How to hide global symbols. */
 #define HIDDEN  
@@ -17,7 +17,7 @@
 #define PACKAGE_NAME  "libjpeg-turbo"
 
 /* Version number of package */
-#define VERSION  "3.1.1"
+#define VERSION  "3.1.2"
 
 /* The size of `size_t', as computed by sizeof. */
 #define SIZEOF_SIZE_T  8

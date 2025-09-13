@@ -47,6 +47,7 @@ public:
     bool postRender() override;
     void dispose(RenderData data) override;
     RenderRegion region(RenderData data) override;
+    bool bounds(RenderData data, Point* pt4, const Matrix& m) override;
     bool blend(BlendMethod method) override;
     ColorSpace colorSpace() override;
     const RenderSurface* mainSurface() override;
@@ -73,7 +74,7 @@ public:
     void damage(RenderData rd, const RenderRegion& region) override;
     bool partial(bool disable) override;
 
-    static SwRenderer* gen(uint32_t threads);
+    SwRenderer(uint32_t threads, EngineOption op);
     static bool term();
 
 private:
@@ -85,7 +86,6 @@ private:
     bool                 sharedMpool;                 //memory-pool behavior policy
     bool                 fulldraw = true;             //buffer is cleared (need to redraw full screen)
 
-    SwRenderer();
     ~SwRenderer();
 
     RenderData prepareCommon(SwTask* task, const Matrix& transform, const Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags);

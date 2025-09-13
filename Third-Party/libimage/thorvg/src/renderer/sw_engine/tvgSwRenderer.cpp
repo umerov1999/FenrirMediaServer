@@ -40,16 +40,18 @@ struct SwTask : Task
 {
     SwSurface* surface = nullptr;
     SwMpool* mpool = nullptr;
-    RenderRegion curBox = {};  //current rendering region
-    RenderRegion prvBox = {};  //previous rendering region
+    RenderRegion clipBox;      //clipping region applied to the task, may differ from curBox which is the actual rendering region
+    RenderRegion curBox{};     //current rendering region
+    RenderRegion prvBox{};     //previous rendering region
     Matrix transform;
     Array<RenderData> clips;
     RenderDirtyRegion* dirtyRegion;
-    RenderUpdateFlag flags = RenderUpdateFlag::None;
+    RenderUpdateFlag flags[2] = {RenderUpdateFlag::None, RenderUpdateFlag::None};  //cur&prv
     uint8_t opacity;
     bool pushed : 1;                  //Pushed into task list?
     bool disposed : 1;                //Disposed task?
     bool nodirty : 1;                 //target for partial rendering?
+    bool valid : 1;
 
     SwTask() : pushed(false), disposed(false) {}
 
@@ -63,6 +65,19 @@ struct SwTask : Task
     {
         curBox.reset();
         if (!nodirty) dirtyRegion->add(prvBox, curBox);
+    }
+
+    bool ready(bool condition)
+    {
+        //invisible
+        if (condition) {
+            if (flags[0] & RenderUpdateFlag::Color) invisible();
+            flags[1] = flags[0]; //backup
+            return true;
+        }
+        flags[0] |= flags[1];  //applied the previous flags if it's skipped before
+        flags[1] = RenderUpdateFlag::None;  //reset
+        return false;
     }
 
     virtual void dispose() = 0;
@@ -88,15 +103,10 @@ struct SwShapeTask : SwTask
 
     float validStrokeWidth(bool clipper)
     {
-        if (!rshape->stroke) return 0.0f;
-
-        auto width = rshape->stroke->width;
-        if (tvg::zero(width)) return 0.0f;
-
-        if (!clipper && (!rshape->stroke->fill && (MULTIPLY(rshape->stroke->color.a, opacity) == 0))) return 0.0f;
+        if (!rshape->stroke || tvg::zero(rshape->stroke->width)) return 0.0f;
+        if (!clipper && (!rshape->stroke->fill && (rshape->stroke->color.a == 0))) return 0.0f;
         if (tvg::zero(rshape->stroke->trim.begin - rshape->stroke->trim.end)) return 0.0f;
-
-        return (width * sqrt(transform.e11 * transform.e11 + transform.e12 * transform.e12));
+        return (rshape->stroke->width * sqrt(transform.e11 * transform.e11 + transform.e12 * transform.e12));
     }
 
     bool clip(SwRle* target) override
@@ -109,55 +119,49 @@ struct SwShapeTask : SwTask
 
     void run(unsigned tid) override
     {
-        //invisible
-        if (opacity == 0 && !clipper) {
-            if (flags & RenderUpdateFlag::Color) invisible();
-            return;
-        }
+        if (ready(opacity == 0 && !clipper)) return;
 
         auto strokeWidth = validStrokeWidth(clipper);
-        RenderRegion renderBox{};
-        auto updateShape = flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Transform | RenderUpdateFlag::Clip);
-        auto updateFill = false;
+        auto updateShape = flags[0] & (RenderUpdateFlag::Path | RenderUpdateFlag::Transform | RenderUpdateFlag::Clip);
+        auto updateFill = (flags[0] & (RenderUpdateFlag::Color | RenderUpdateFlag::Gradient));
 
         //Shape
-        if (updateShape || flags & (RenderUpdateFlag::Color | RenderUpdateFlag::Gradient)) {
-            updateFill = (MULTIPLY(rshape->color.a, opacity) || rshape->fill);
-            if (updateShape) shapeReset(&shape);
-            if (updateFill || clipper) {
-                if (shapePrepare(&shape, rshape, transform, curBox, renderBox, mpool, tid, clips.count > 0 ? true : false)) {
-                    if (!shapeGenRle(&shape, rshape, antialiasing(strokeWidth))) goto err;
+        if (updateShape) {
+            shapeReset(shape);
+            if (rshape->fill || rshape->color.a > 0 || clipper) {
+                if (shapePrepare(shape, rshape, transform, clipBox, curBox, mpool, tid, clips.count > 0 ? true : false)) {
+                    if (!shapeGenRle(shape, curBox, mpool, tid, antialiasing(strokeWidth))) goto err;
                 } else {
                     updateFill = false;
-                    renderBox.reset();
+                    curBox.reset();
                 }
             }
         }
         //Fill
         if (updateFill) {
             if (auto fill = rshape->fill) {
-                auto ctable = (flags & RenderUpdateFlag::Gradient) ? true : false;
-                if (ctable) shapeResetFill(&shape);
-                if (!shapeGenFillColors(&shape, fill, transform, surface, opacity, ctable)) goto err;
+                auto ctable = (flags[0] & RenderUpdateFlag::Gradient) ? true : false;
+                if (ctable) shapeResetFill(shape);
+                if (!shapeGenFillColors(shape, fill, transform, surface, opacity, ctable)) goto err;
             }
         }
         //Stroke
-        if (updateShape || flags & RenderUpdateFlag::Stroke) {
+        if (updateShape || flags[0] & RenderUpdateFlag::Stroke) {
             if (strokeWidth > 0.0f) {
-                shapeResetStroke(&shape, rshape, transform);
-                if (!shapeGenStrokeRle(&shape, rshape, transform, curBox, renderBox, mpool, tid)) goto err;
+                shapeResetStroke(shape, rshape, transform, mpool, tid);
+                if (!shapeGenStrokeRle(shape, rshape, transform, clipBox, curBox, mpool, tid)) goto err;
                 if (auto fill = rshape->strokeFill()) {
-                    auto ctable = (flags & RenderUpdateFlag::GradientStroke) ? true : false;
-                    if (ctable) shapeResetStrokeFill(&shape);
-                    if (!shapeGenStrokeFillColors(&shape, fill, transform, surface, opacity, ctable)) goto err;
+                    auto ctable = (flags[0] & RenderUpdateFlag::GradientStroke) ? true : false;
+                    if (ctable) shapeResetStrokeFill(shape);
+                    if (!shapeGenStrokeFillColors(shape, fill, transform, surface, opacity, ctable)) goto err;
                 }
             } else {
-                shapeDelStroke(&shape);
+                shapeDelStroke(shape);
             }
         }
 
         //Clear current task memorypool here if the clippers would use the same memory pool
-        shapeDelOutline(&shape, mpool, tid);
+        shapeDelOutline(shape, mpool, tid);
 
         //Clip Path
         ARRAY_FOREACH(p, clips) {
@@ -167,20 +171,20 @@ struct SwShapeTask : SwTask
             if (!clipShapeRle && !clipStrokeRle) goto err;
         }
 
-        curBox = renderBox; //sync
+        valid = true;
         if (!nodirty) dirtyRegion->add(prvBox, curBox);
         return;
 
     err:
-        shapeReset(&shape);
+        shapeReset(shape);
         rleReset(shape.strokeRle);
-        shapeDelOutline(&shape, mpool, tid);
+        shapeDelOutline(shape, mpool, tid);
         invisible();
     }
 
     void dispose() override
     {
-       shapeFree(&shape);
+       shapeFree(shape);
     }
 };
 
@@ -198,13 +202,7 @@ struct SwImageTask : SwTask
 
     void run(unsigned tid) override
     {
-        //invisible
-        if (opacity == 0) {
-            if (flags & RenderUpdateFlag::Color) invisible();
-            return;
-        }
-
-        auto clipBox = curBox;
+        if (ready(opacity == 0)) return;
 
         //Convert colorspace if it's not aligned.
         rasterConvertCS(source, surface->cs);
@@ -216,16 +214,20 @@ struct SwImageTask : SwTask
         image.stride = source->stride;
         image.channelSize = source->channelSize;
 
+        auto updateImage = flags[0] & (RenderUpdateFlag::Image | RenderUpdateFlag::Clip | RenderUpdateFlag::Transform);
+        auto updateColor = flags[0] & (RenderUpdateFlag::Color);
+
         //Invisible shape turned to visible by alpha.
-        if ((flags & (RenderUpdateFlag::Image | RenderUpdateFlag::Transform | RenderUpdateFlag::Color)) && (opacity > 0)) {
-            imageReset(&image);
-            if (!image.data || image.w == 0 || image.h == 0) goto end;
-            if (!imagePrepare(&image, transform, clipBox, curBox, mpool, tid)) goto end;
+        if ((updateImage || updateColor) && (opacity > 0)) {
+            if (updateImage) imageReset(image);
+            if (!image.data || image.w == 0 || image.h == 0) goto err;
+            if (!imagePrepare(image, transform, clipBox, curBox, mpool, tid)) goto err;
+            valid = true;
             if (clips.count > 0) {
-                if (!imageGenRle(&image, curBox, false)) goto end;
+                if (!imageGenRle(image, curBox, mpool, tid, false)) goto err;
                 if (image.rle) {
                     //Clear current task memorypool here if the clippers would use the same memory pool
-                    imageDelOutline(&image, mpool, tid);
+                    imageDelOutline(image, mpool, tid);
                     ARRAY_FOREACH(p, clips) {
                         auto clipper = static_cast<SwTask*>(*p);
                         if (!clipper->clip(image.rle)) goto err;
@@ -240,13 +242,13 @@ struct SwImageTask : SwTask
         curBox.reset();
         rleReset(image.rle);
     end:
-        imageDelOutline(&image, mpool, tid);
+        imageDelOutline(image, mpool, tid);
         if (!nodirty) dirtyRegion->add(prvBox, curBox);
     }
 
     void dispose() override
     {
-       imageFree(&image);
+       imageFree(image);
     }
 };
 
@@ -254,21 +256,6 @@ struct SwImageTask : SwTask
 /************************************************************************/
 /* External Class Implementation                                        */
 /************************************************************************/
-
-SwRenderer::SwRenderer()
-{
-    if (TaskScheduler::onthread()) {
-        TVGLOG("SW_RENDERER", "Running on a non-dominant thread!, Renderer(%p)", this);
-        mpool = mpoolInit(threadsCnt);
-        sharedMpool = false;
-    } else {
-        mpool = globalMpool;
-        sharedMpool = true;
-    }
-
-    ++rendererCnt;
-}
-
 
 SwRenderer::~SwRenderer()
 {
@@ -407,53 +394,52 @@ bool SwRenderer::partial(bool disable)
 bool SwRenderer::renderImage(RenderData data)
 {
     auto task = static_cast<SwImageTask*>(data);
+    if (!task) return false;
     task->done();
 
-    if (task->opacity == 0) return true;
+    if (task->valid) {
+        auto raster = [&](SwSurface* surface, const SwImage& image, const Matrix& transform, const RenderRegion& bbox, uint8_t opacity) {
+            if (bbox.invalid() || bbox.x() >= surface->w || bbox.y() >= surface->h) return true;
 
-    auto raster = [&](SwSurface* surface, const SwImage& image, const Matrix& transform, const RenderRegion& bbox, uint8_t opacity) {
-        if (bbox.invalid() || bbox.x() >= surface->w || bbox.y() >= surface->h) return true;
-
-        //RLE Image
-        if (image.rle) {
-            if (image.direct) return rasterDirectRleImage(surface, image, bbox, opacity);
-            else if (image.scaled) return rasterScaledRleImage(surface, image, transform, bbox, opacity);
-            else {
-                //create a intermediate buffer for rle clipping
-                auto cmp = request(sizeof(pixel_t), false);
-                cmp->compositor->method = MaskMethod::None;
-                cmp->compositor->valid = true;
-                cmp->compositor->image.rle = image.rle;
-                rasterClear(cmp, bbox.x(), bbox.y(), bbox.w(), bbox.h());
-                rasterTexmapPolygon(cmp, image, transform, bbox, 255);
-                return rasterDirectRleImage(surface, cmp->compositor->image, bbox, opacity);
+            //RLE Image
+            if (image.rle && image.rle->valid()) {
+                if (image.direct) return rasterDirectRleImage(surface, image, bbox, opacity);
+                else if (image.scaled) return rasterScaledRleImage(surface, image, transform, bbox, opacity);
+                else {
+                    //create a intermediate buffer for rle clipping
+                    auto cmp = request(sizeof(pixel_t), false);
+                    cmp->compositor->method = MaskMethod::None;
+                    cmp->compositor->valid = true;
+                    cmp->compositor->image.rle = image.rle;
+                    rasterClear(cmp, bbox.x(), bbox.y(), bbox.w(), bbox.h());
+                    rasterTexmapPolygon(cmp, image, transform, bbox, 255);
+                    return rasterDirectRleImage(surface, cmp->compositor->image, bbox, opacity);
+                }
+            //Whole Image
+            } else {
+                if (image.direct) return rasterDirectImage(surface, image, bbox, opacity);
+                else if (image.scaled) return rasterScaledImage(surface, image, transform, bbox, opacity);
+                else return rasterTexmapPolygon(surface, image, transform, bbox, opacity);
             }
-        //Whole Image
-        } else {
-            if (image.direct) return rasterDirectImage(surface, image, bbox, opacity);
-            else if (image.scaled) return rasterScaledImage(surface, image, transform, bbox, opacity);
-            else return rasterTexmapPolygon(surface, image, transform, bbox, opacity);
-        }
-    };
+        };
 
-    //full scene or partial rendering
-    if (fulldraw || task->nodirty || task->pushed || dirtyRegion.deactivated()) {
-        raster(surface, task->image, task->transform, task->curBox, task->opacity);
-    } else {
-        for (int idx = 0; idx < RenderDirtyRegion::PARTITIONING; ++idx) {
-            if (!dirtyRegion.partition(idx).intersected(task->curBox)) continue;
-            ARRAY_FOREACH(p, dirtyRegion.get(idx)) {
-                if (task->curBox.min.x >= p->max.x) break;  //dirtyRegion is sorted in x order
-                if (task->curBox.intersected(*p)) {
-                    auto bbox = RenderRegion::intersect(task->curBox, *p);
-                    raster(surface, task->image, task->transform, bbox, task->opacity);
+        //full scene or partial rendering
+        if (fulldraw || task->nodirty || task->pushed || dirtyRegion.deactivated()) {
+            raster(surface, task->image, task->transform, task->curBox, task->opacity);
+        } else if (task->curBox.valid()) {
+            for (int idx = 0; idx < RenderDirtyRegion::PARTITIONING; ++idx) {
+                if (!dirtyRegion.partition(idx).intersected(task->curBox)) continue;
+                ARRAY_FOREACH(p, dirtyRegion.get(idx)) {
+                    if (task->curBox.max.x <= p->min.x) break;   //dirtyRegion is sorted in x order
+                    if (task->curBox.intersected(*p)) {
+                        auto bbox = RenderRegion::intersect(task->curBox, *p);
+                        raster(surface, task->image, task->transform, bbox, task->opacity);
+                    }
                 }
             }
         }
     }
-
     task->prvBox = task->curBox;
-
     return true;
 }
 
@@ -462,61 +448,58 @@ bool SwRenderer::renderShape(RenderData data)
 {
     auto task = static_cast<SwShapeTask*>(data);
     if (!task) return false;
-
     task->done();
 
-    if (task->opacity == 0) return true;
-
-    auto fill = [](SwShapeTask* task, SwSurface* surface, const RenderRegion& bbox) {
-        if (auto fill = task->rshape->fill) {
-            rasterGradientShape(surface, &task->shape, bbox, fill, task->opacity);
-        } else {
-            RenderColor c;
-            task->rshape->fillColor(&c.r, &c.g, &c.b, &c.a);
-            c.a = MULTIPLY(task->opacity, c.a);
-            if (c.a > 0) rasterShape(surface, &task->shape, bbox, c);
-        }
-    };
-
-    auto stroke = [](SwShapeTask* task, SwSurface* surface, const RenderRegion& bbox) {
-        if (auto strokeFill = task->rshape->strokeFill()) {
-            rasterGradientStroke(surface, &task->shape, bbox, strokeFill, task->opacity);
-        } else {
-            RenderColor c;
-            if (task->rshape->strokeFill(&c.r, &c.g, &c.b, &c.a)) {
+    if (task->valid) {
+        auto fill = [](SwShapeTask* task, SwSurface* surface, const RenderRegion& bbox) {
+            if (auto fill = task->rshape->fill) {
+                rasterGradientShape(surface, &task->shape, bbox, fill, task->opacity);
+            } else {
+                RenderColor c;
+                task->rshape->fillColor(&c.r, &c.g, &c.b, &c.a);
                 c.a = MULTIPLY(task->opacity, c.a);
-                if (c.a > 0) rasterStroke(surface, &task->shape, bbox, c);
+                if (c.a > 0) rasterShape(surface, &task->shape, bbox, c);
             }
-        }
-    };
+        };
 
-    //full scene or partial rendering
-    if (fulldraw || task->nodirty || task->pushed || dirtyRegion.deactivated()) {
-        if (task->rshape->strokeFirst()) {
-            stroke(task, surface, task->curBox);
-            fill(task, surface, task->shape.bbox);
-        } else {
-            fill(task, surface, task->shape.bbox);
-            stroke(task, surface, task->curBox);
-        }
-    } else {
-        for (int idx = 0; idx < RenderDirtyRegion::PARTITIONING; ++idx) {
-            if (!dirtyRegion.partition(idx).intersected(task->curBox)) continue;
-            ARRAY_FOREACH(p, dirtyRegion.get(idx)) {
-                if (task->curBox.min.x >= p->max.x) break;   //dirtyRegion is sorted in x order
-                if (task->rshape->strokeFirst()) {
-                    if (task->rshape->stroke && task->curBox.intersected(*p)) stroke(task, surface, RenderRegion::intersect(task->curBox, *p));
-                    if (task->shape.bbox.intersected(*p)) fill(task, surface, RenderRegion::intersect(task->shape.bbox, *p));
-                } else {
-                    if (task->shape.bbox.intersected(*p)) fill(task, surface, RenderRegion::intersect(task->shape.bbox, *p));
-                    if (task->rshape->stroke && task->curBox.intersected(*p)) stroke(task, surface, RenderRegion::intersect(task->curBox, *p));
+        auto stroke = [](SwShapeTask* task, SwSurface* surface, const RenderRegion& bbox) {
+            if (auto strokeFill = task->rshape->strokeFill()) {
+                rasterGradientStroke(surface, &task->shape, bbox, strokeFill, task->opacity);
+            } else {
+                RenderColor c;
+                if (task->rshape->strokeFill(&c.r, &c.g, &c.b, &c.a)) {
+                    c.a = MULTIPLY(task->opacity, c.a);
+                    if (c.a > 0) rasterStroke(surface, &task->shape, bbox, c);
+                }
+            }
+        };
+
+        //full scene or partial rendering
+        if (fulldraw || task->nodirty || task->pushed || dirtyRegion.deactivated()) {
+            if (task->rshape->strokeFirst()) {
+                stroke(task, surface, task->curBox);
+                fill(task, surface, task->shape.bbox);
+            } else {
+                fill(task, surface, task->shape.bbox);
+                stroke(task, surface, task->curBox);
+            }
+        } else if (task->curBox.valid()) {
+            for (int idx = 0; idx < RenderDirtyRegion::PARTITIONING; ++idx) {
+                if (!dirtyRegion.partition(idx).intersected(task->curBox)) continue;
+                ARRAY_FOREACH(p, dirtyRegion.get(idx)) {
+                    if (task->curBox.max.x <= p->min.x) break;   //dirtyRegion is sorted in x order
+                    if (task->rshape->strokeFirst()) {
+                        if (task->rshape->stroke && task->curBox.intersected(*p)) stroke(task, surface, RenderRegion::intersect(task->curBox, *p));
+                        if (task->shape.bbox.intersected(*p)) fill(task, surface, RenderRegion::intersect(task->shape.bbox, *p));
+                    } else {
+                        if (task->shape.bbox.intersected(*p)) fill(task, surface, RenderRegion::intersect(task->shape.bbox, *p));
+                        if (task->rshape->stroke && task->curBox.intersected(*p)) stroke(task, surface, RenderRegion::intersect(task->curBox, *p));
+                    }
                 }
             }
         }
     }
-
     task->prvBox = task->curBox;
-
     return true;
 }
 
@@ -719,12 +702,23 @@ void SwRenderer::prepare(RenderEffect* effect, const Matrix& transform)
 }
 
 
+bool SwRenderer::bounds(RenderData data, Point* pt4, const Matrix& m)
+{
+    if (!data) return false;
+
+    auto task = static_cast<SwShapeTask*>(data);
+    task->done();
+
+    return shapeStrokeBBox(task->shape, task->rshape, pt4, m, task->mpool);
+}
+
+
 bool SwRenderer::intersectsShape(RenderData data, const RenderRegion& region)
 {
     auto task = static_cast<SwShapeTask*>(data);
     task->done();
 
-    if (!task->bounds().intersected(region)) return false;
+    if (!task->valid || !task->bounds().intersected(region)) return false;
     if (rleIntersect(task->shape.strokeRle, region)) return true;
     return task->shape.rle ? rleIntersect(task->shape.rle, region): task->shape.fastTrack;
 }
@@ -735,7 +729,7 @@ bool SwRenderer::intersectsImage(RenderData data, const RenderRegion& region)
     auto task = static_cast<SwImageTask*>(data);
     task->done();
 
-    if (!task->bounds().intersected(region)) return false;
+    if (!task->valid || !task->bounds().intersected(region)) return false;
 
     //aabb & obb transformed image intersection
     auto rad = tvg::radian(task->transform);
@@ -847,17 +841,16 @@ void SwRenderer::dispose(RenderData data)
 
 void* SwRenderer::prepareCommon(SwTask* task, const Matrix& transform, const Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags)
 {
-    if (!surface || (transform.e11 == 0.0f && transform.e12 == 0.0f) || (transform.e21 == 0.0f && transform.e22 == 0.0f)) return task;  //invalid
-
     task->surface = surface;
     task->mpool = mpool;
-    task->curBox = RenderRegion::intersect(vport, {{0, 0}, {int32_t(surface->w), int32_t(surface->h)}});
+    task->clipBox = RenderRegion::intersect(vport, {{0, 0}, {int32_t(surface->w), int32_t(surface->h)}});
     task->transform = transform;
     task->clips = clips;
     task->dirtyRegion = &dirtyRegion;
     task->opacity = opacity;
     task->nodirty = dirtyRegion.deactivated();
-    task->flags = flags;
+    task->flags[0] = flags;
+    task->valid = false;
 
     if (!task->pushed) {
         task->pushed = true;
@@ -867,10 +860,8 @@ void* SwRenderer::prepareCommon(SwTask* task, const Matrix& transform, const Arr
     //TODO: Failed threading them. It would be better if it's possible.
     //See: https://github.com/thorvg/thorvg/issues/1409
     //Guarantee composition targets get ready.
-    if (flags & RenderUpdateFlag::Clip) {
-        ARRAY_FOREACH(p, clips) {
-            static_cast<SwTask*>(*p)->done();
-        }
+    ARRAY_FOREACH(p, clips) {
+        static_cast<SwTask*>(*p)->done();
     }
 
     if (flags) TaskScheduler::request(task);
@@ -919,7 +910,7 @@ bool SwRenderer::term()
 }
 
 
-SwRenderer* SwRenderer::gen(uint32_t threads)
+SwRenderer::SwRenderer(uint32_t threads, EngineOption op)
 {
     //initialize engine
     if (rendererCnt == -1) {
@@ -932,5 +923,16 @@ SwRenderer* SwRenderer::gen(uint32_t threads)
         rendererCnt = 0;
     }
 
-    return new SwRenderer;
+    if (TaskScheduler::onthread()) {
+        TVGLOG("SW_RENDERER", "Running on a non-dominant thread!, Renderer(%p)", this);
+        mpool = mpoolInit(threadsCnt);
+        sharedMpool = false;
+    } else {
+        mpool = globalMpool;
+        sharedMpool = true;
+    }
+
+    if (op == EngineOption::None) dirtyRegion.support = false;
+
+    ++rendererCnt;
 }

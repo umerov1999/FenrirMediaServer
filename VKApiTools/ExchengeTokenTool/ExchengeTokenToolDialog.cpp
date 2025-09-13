@@ -376,7 +376,7 @@ void ExchengeTokenToolDialog::OnExchenge2Token()
 	string userAgent = useDeviceName ? ANDROID_USERAGENT_DEVICED(deviceName) : ANDROID_USERAGENT;
 
 	stringstream Link;
-	Link << "https://oauth.vk.com/auth_by_exchange_token?initiator=expired_token&client_id=" << "2274003" << "&api_id=" << "2274003" << "&client_secret=" << "hHbZxrka2uZ6jB1inYsH" << "&scope=all&v=" << VKAPI_VERSION << "&lang=ru" << "&exchange_token=" << exchengeToken;
+	Link << "https://oauth.vk.ru/auth_by_exchange_token?initiator=expired_token&client_id=" << "2274003" << "&api_id=" << "2274003" << "&client_secret=" << "hHbZxrka2uZ6jB1inYsH" << "&scope=all&v=" << VKAPI_VERSION << "&lang=ru" << "&exchange_token=" << exchengeToken;
 	if (useDeviceId) {
 		Link << "&device_id=" << deviceId;
 	}

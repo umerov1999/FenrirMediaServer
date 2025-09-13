@@ -49,7 +49,7 @@ struct ShapeImpl : Shape
         renderer->blend(impl.blendMethod);
 
         if (impl.cmpFlag) {
-            cmp = renderer->target(bounds(renderer), renderer->colorSpace(), impl.cmpFlag);
+            cmp = renderer->target(bounds(), renderer->colorSpace(), impl.cmpFlag);
             renderer->beginComposite(cmp, MaskMethod::None, opacity);
         }
 
@@ -113,33 +113,40 @@ struct ShapeImpl : Shape
         return true;
     }
 
-    RenderRegion bounds(RenderMethod* renderer)
+    RenderRegion bounds()
     {
-        return renderer->region(impl.rd);
+        return impl.renderer->region(impl.rd);
     }
 
-    Result bounds(Point* pt4, Matrix& m, bool obb, bool stroking)
+    bool bounds(Point* pt4, const Matrix& m, bool obb)
     {
-        float x, y, w, h;
-        if (!rs.path.bounds(obb ? nullptr : &m, &x, &y, &w, &h)) return Result::InsufficientCondition;
+        auto fallback = true;  //TODO: remove this when all backend engines suppport bounds()
 
-        //Stroke feathering
-        if (stroking && rs.stroke) {
-            //Use geometric mean for feathering.
-            //Join, Cap wouldn't be considered. Generate stroke outline and compute bbox for accurate size?
-            auto sx = sqrt(m.e11 * m.e11 + m.e21 * m.e21);
-            auto sy = sqrt(m.e12 * m.e12 + m.e22 * m.e22);
-            auto feather = rs.stroke->width * sqrt(sx * sy);
-            x -= feather * 0.5f;
-            y -= feather * 0.5f;
-            w += feather;
-            h += feather;
+        if (impl.renderer && rs.strokeWidth() > 0.0f) {
+            if (impl.renderer->bounds(impl.rd, pt4, obb ? tvg::identity() : m)) {
+                fallback = false;
+            }
         }
-
-        pt4[0] = {x, y};
-        pt4[1] = {x + w, y};
-        pt4[2] = {x + w, y + h};
-        pt4[3] = {x, y + h};
+        //Keep this for legacy. loaders still depend on this logic, remove it if possible.
+        if (fallback) {
+            BBox box = {{FLT_MAX, FLT_MAX}, {-FLT_MAX, -FLT_MAX}};
+            if (!rs.path.bounds(obb ? nullptr : &m, box)) return false;
+            if (rs.stroke) {
+                //Use geometric mean for feathering.
+                //Join, Cap wouldn't be considered. Generate stroke outline and compute bbox for accurate size?
+                auto sx = sqrt(m.e11 * m.e11 + m.e21 * m.e21);
+                auto sy = sqrt(m.e12 * m.e12 + m.e22 * m.e22);
+                auto feather = rs.stroke->width * sqrt(sx * sy);
+                box.min.x -= feather * 0.5f;
+                box.min.y -= feather * 0.5f;
+                box.max.x += feather * 0.5f;
+                box.max.y += feather * 0.5f;
+            }
+            pt4[0] = box.min;
+            pt4[1] = {box.max.x, box.min.y};
+            pt4[2] = box.max;
+            pt4[3] = {box.min.x, box.max.y};
+        }
 
         if (obb) {
             pt4[0] *= m;
@@ -148,7 +155,7 @@ struct ShapeImpl : Shape
             pt4[3] *= m;
         }
 
-        return Result::Success;
+        return true;
     }
 
     void reserveCmd(uint32_t cmdCnt)
@@ -461,20 +468,18 @@ struct ShapeImpl : Shape
     Paint* duplicate(Paint* ret)
     {
         auto shape = static_cast<Shape*>(ret);
-        if (shape) shape->reset();
-        else shape = Shape::gen();
-
+        if (!shape) shape = Shape::gen();
         auto dup = SHAPE(shape);
-        delete(dup->rs.fill);
-
-        //Default Properties
-        dup->impl.mark(RenderUpdateFlag::All);
-        dup->rs.rule = rs.rule;
-        dup->rs.color = rs.color;
 
         //Path
+        dup->rs.path.clear();
         dup->rs.path.cmds.push(rs.path.cmds);
         dup->rs.path.pts.push(rs.path.pts);
+
+        //Fill
+        delete(dup->rs.fill);
+        if (rs.fill) dup->rs.fill = rs.fill->duplicate();
+        else dup->rs.fill = nullptr;
 
         //Stroke
         if (rs.stroke) {
@@ -485,9 +490,8 @@ struct ShapeImpl : Shape
             dup->rs.stroke = nullptr;
         }
 
-        //Fill
-        if (rs.fill) dup->rs.fill = rs.fill->duplicate();
-        else dup->rs.fill = nullptr;
+        dup->rs.color = rs.color;
+        dup->rs.rule = rs.rule;
 
         return shape;
     }

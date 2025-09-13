@@ -29,6 +29,7 @@
 #include "tvgArray.h"
 #include "tvgLock.h"
 #include "tvgColor.h"
+#include "tvgMath.h"
 
 namespace tvg
 {
@@ -159,6 +160,7 @@ struct RenderRegion
     {
     public:
         static constexpr const int PARTITIONING = 16;   //must be N*N
+        bool support = true;
 
         void init(uint32_t w, uint32_t h);
         void commit();
@@ -174,7 +176,7 @@ struct RenderRegion
 
         bool deactivated()
         {
-            return disabled;
+            return (!support || disabled);
         }
 
         const RenderRegion& partition(int idx)
@@ -205,6 +207,7 @@ struct RenderRegion
     struct RenderDirtyRegion
     {
         static constexpr const int PARTITIONING = 16;   //must be N*N
+        bool support = true;
 
         void init(uint32_t w, uint32_t h) {}
         void commit() {}
@@ -262,7 +265,7 @@ struct RenderPath
         cmds.push(PathCommand::CubicTo);
     }
 
-    bool bounds(Matrix* m, float* x, float* y, float* w, float* h);
+    bool bounds(const Matrix* m, BBox& box);
 };
 
 struct RenderTrimPath
@@ -307,20 +310,17 @@ struct RenderStroke
         else fill = nullptr;
 
         tvg::free(dash.pattern);
+        dash = rhs.dash;
         if (rhs.dash.count > 0) {
             dash.pattern = tvg::malloc<float*>(sizeof(float) * rhs.dash.count);
             memcpy(dash.pattern, rhs.dash.pattern, sizeof(float) * rhs.dash.count);
-        } else {
-            dash.pattern = nullptr;
         }
-        dash.count = rhs.dash.count;
-        dash.offset = rhs.dash.offset;
-        dash.length = rhs.dash.length;
+
         miterlimit = rhs.miterlimit;
+        trim = rhs.trim;
         cap = rhs.cap;
         join = rhs.join;
         first = rhs.first;
-        trim = rhs.trim;
     }
 
     ~RenderStroke()
@@ -559,6 +559,7 @@ public:
     virtual bool postRender() = 0;
     virtual void dispose(RenderData data) = 0;
     virtual RenderRegion region(RenderData data) = 0;
+    virtual bool bounds(RenderData data, Point* pt4, const Matrix& m) = 0;
     virtual bool blend(BlendMethod method) = 0;
     virtual ColorSpace colorSpace() = 0;
     virtual const RenderSurface* mainSurface() = 0;

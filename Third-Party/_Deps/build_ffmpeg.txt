@@ -3,7 +3,7 @@
 
 git clone https://git.ffmpeg.org/ffmpeg.git
 cd ffmpeg
-git checkout release/7.1
+git checkout release/8.0
 rm -r -f ".git"
 
 

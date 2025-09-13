@@ -20,8 +20,8 @@ using namespace std;
 using namespace nlohmann;
 using namespace WSTRUtils;
 
-#define AVATAR_USER_DEFAULT "https://vk.com/images/camera_200.png?ava=1"
-#define AVATAR_CHAT_DEFAULT "https://vk.com/images/icons/im_multichat_200.png"
+#define AVATAR_USER_DEFAULT "https://vk.ru/images/camera_200.png?ava=1"
+#define AVATAR_CHAT_DEFAULT "https://vk.ru/images/icons/im_multichat_200.png"
 #define UTF8START "\xef\xbb\xbf"
 #define MAX_HTML_MESSAGES_COUNT 1000
 #define MAX_EXECUTE_VK_METHODS 25
@@ -245,7 +245,7 @@ public:
 	{
 		Token = Access_Token;
 		UserAgent = IUserAgent;
-		Request = "https://api.vk.com/method/" + IRequest;
+		Request = "https://api.vk.ru/method/" + IRequest;
 	}
 
 	VKAPI_ANSWER operator()()
@@ -712,7 +712,7 @@ void ParseAttachment(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<int6
 				}
 				if (DocType == "album") {
 					Work_Message->SetHasAttachment(HTML_ATTACHMENT_FLAG_ALBUM);
-					string original_photo = "https://vk.com/album";
+					string original_photo = "https://vk.ru/album";
 					atta = atta.at(DocType).get<json>();
 					string vid = "";
 					int64_t vownerid = 0;
@@ -905,9 +905,9 @@ void BuildHTML_MESSAGE(VK_APIMETHOD& VkReq, const string& UserAgent, Map::Map<in
 
 	string idlink;
 	if (from_id < 0)
-		idlink = ("https://vk.com/club" + to_string(abs(from_id)));
+		idlink = ("https://vk.ru/club" + to_string(abs(from_id)));
 	else
-		idlink = "https://vk.com/id" + to_string(from_id);
+		idlink = "https://vk.ru/id" + to_string(from_id);
 	if (!page->exist_avatar(from_id))
 		page->add_user_avatar(from_id, user_info_at_message, DownloadAvatar);
 	Work_Message->set_message(_isOut, message_text, idlink, from_id, wchar_to_UTF8(user_info_at_message.pUserName), wchar_to_UTF8(GetTimeAT(message_time)) + " [" + to_string(message_id) + "]");
@@ -982,7 +982,7 @@ void BuildHTMLDialog(const wstring& HTMLParh, time_t Sync, const wstring& RootDi
 		dialog_content = dialog_content.at(dialog_content.at("type").get<string>()).get<json>();
 	}
 	catch (json::exception e) {
-		page->add_page_info(Usnm, DownloadAvatar, wchar_to_UTF8(Usnm.pUserName + (Dialog.IsChat == false ? L" (Диалог)" : L" (Беседа)")), "https://vk.com/" + idlink, Usnm.pPhoneNumber, Usnm.pInstagram, Usnm.pSite, PartNum);
+		page->add_page_info(Usnm, DownloadAvatar, wchar_to_UTF8(Usnm.pUserName + (Dialog.IsChat == false ? L" (Диалог)" : L" (Беседа)")), "https://vk.ru/" + idlink, Usnm.pPhoneNumber, Usnm.pInstagram, Usnm.pSite, PartNum);
 		page->add_message(e.what());
 		WriteHTML(HTMLParh, Sync, RootDir, page->build_html(), PartNum, SnapTime);
 		delete page;
@@ -990,7 +990,7 @@ void BuildHTMLDialog(const wstring& HTMLParh, time_t Sync, const wstring& RootDi
 	}
 	if (dialog_content.size() > MAX_HTML_MESSAGES_COUNT)
 		PartNum++;
-	page->add_page_info(Usnm, DownloadAvatar, wchar_to_UTF8(Usnm.pUserName + (Dialog.IsChat == false ? L" (Диалог)" : L" (Беседа)")), "https://vk.com/" + idlink, Usnm.pPhoneNumber, Usnm.pInstagram, Usnm.pSite, PartNum);
+	page->add_page_info(Usnm, DownloadAvatar, wchar_to_UTF8(Usnm.pUserName + (Dialog.IsChat == false ? L" (Диалог)" : L" (Беседа)")), "https://vk.ru/" + idlink, Usnm.pPhoneNumber, Usnm.pInstagram, Usnm.pSite, PartNum);
 
 	list<DocDownloader> VideoDownloads;
 	for (json::iterator messages_it = dialog_content.begin(); messages_it != dialog_content.end(); ++messages_it)
@@ -1113,7 +1113,7 @@ void BuildHTMLDialog(const wstring& HTMLParh, time_t Sync, const wstring& RootDi
 			delete page;
 			PartNum++;
 			page = new HTML_PAGE(UserAgent);
-			page->add_page_info(Usnm, DownloadAvatar, wchar_to_UTF8(Usnm.pUserName + (Dialog.IsChat == false ? L" (Диалог)" : L" (Беседа)")), "https://vk.com/" + idlink, Usnm.pPhoneNumber, Usnm.pInstagram, Usnm.pSite, PartNum);
+			page->add_page_info(Usnm, DownloadAvatar, wchar_to_UTF8(Usnm.pUserName + (Dialog.IsChat == false ? L" (Диалог)" : L" (Беседа)")), "https://vk.ru/" + idlink, Usnm.pPhoneNumber, Usnm.pInstagram, Usnm.pSite, PartNum);
 		}
 		try {
 			json message = messages_it.value();

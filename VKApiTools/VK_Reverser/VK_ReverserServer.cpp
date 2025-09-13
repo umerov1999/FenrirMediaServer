@@ -529,7 +529,7 @@ void Root(RequestParserStruct& Req, SSL* ssl)
 		return;
 	}
 
-	string ResultLink = string(Req.http_request["Path"] == L"token" ? "https://oauth.vk.com/" : "https://api.vk.com/") + Req.http_request.get_utf8("OPath");
+	string ResultLink = string(Req.http_request["Path"] == L"token" ? "https://oauth.vk.ru/" : "https://api.vk.ru/") + Req.http_request.get_utf8("OPath");
 	string PostParam;
 	bool FirstParam = true;
 	for (auto& i : Req.http_post_param.paramsdata)

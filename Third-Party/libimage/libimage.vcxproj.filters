@@ -237,9 +237,6 @@
     <ClCompile Include="thorvg\src\renderer\tvgFill.cpp">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\renderer\tvgGlCanvas.cpp">
-      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
-    </ClCompile>
     <ClCompile Include="thorvg\src\renderer\tvgInitializer.cpp">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClCompile>
@@ -264,9 +261,6 @@
     <ClCompile Include="thorvg\src\renderer\tvgShape.cpp">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="thorvg\src\renderer\tvgSwCanvas.cpp">
-      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
-    </ClCompile>
     <ClCompile Include="thorvg\src\renderer\tvgTaskScheduler.cpp">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClCompile>
@@ -278,9 +272,6 @@
     </ClCompile>
     <ClCompile Include="thorvg\src\common\tvgStr.cpp">
       <Filter>Файлы исходного кода\thorvg\common</Filter>
-    </ClCompile>
-    <ClCompile Include="thorvg\src\renderer\tvgWgCanvas.cpp">
-      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
     </ClCompile>
     <ClCompile Include="thorvg\src\renderer\tvgText.cpp">
       <Filter>Файлы исходного кода\thorvg\renderer</Filter>

@@ -1,5 +1,5 @@
 @echo off
-set OPENSSL_VERSION=3.5.1
+set OPENSSL_VERSION=3.5.2
 
 SET CurrentDir=%cd%
 set path=%ProgramFiles%\NASM;%path%

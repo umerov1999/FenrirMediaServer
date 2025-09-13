@@ -17,8 +17,8 @@ using namespace std;
 using namespace nlohmann;
 using namespace WSTRUtils;
 
-#define AVATAR_USER_DEFAULT "https://vk.com/images/camera_200.png?ava=1"
-#define AVATAR_CHAT_DEFAULT "https://vk.com/images/icons/im_multichat_200.png"
+#define AVATAR_USER_DEFAULT "https://vk.ru/images/camera_200.png?ava=1"
+#define AVATAR_CHAT_DEFAULT "https://vk.ru/images/icons/im_multichat_200.png"
 #define UTF8START "\xef\xbb\xbf"
 
 ////VKAPITOOLSDIALOGINTERFACE
@@ -240,10 +240,10 @@ public:
 		Token = Access_Token;
 		UserAgent = IUserAgent;
 		if (!IRequest.empty() && IRequest[0] == '#') {
-			Request = "https://oauth.vk.com/" + IRequest.substr(1);
+			Request = "https://oauth.vk.ru/" + IRequest.substr(1);
 		}
 		else {
-			Request = "https://api.vk.com/method/" + IRequest;
+			Request = "https://api.vk.ru/method/" + IRequest;
 		}
 	}
 

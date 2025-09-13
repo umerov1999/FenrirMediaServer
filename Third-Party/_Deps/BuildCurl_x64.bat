@@ -1,5 +1,8 @@
 @echo off
 
+set VS2022_AMD64="%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+CALL %VS2022_AMD64%
+
 SET CMAKE_EXE="C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
 SET CurrentDir=%cd%
 

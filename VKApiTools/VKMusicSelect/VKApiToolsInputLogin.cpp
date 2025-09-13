@@ -342,8 +342,8 @@ void VKApiToolsInputLogin::OnLogin()
 
 	string DeviceID = generateRandomIntString(16);
 
-	//Link << "https://oauth.vk.com/token?grant_type=password&client_id=" << "2274003" << "&client_secret=" << "hHbZxrka2uZ6jB1inYsH" << "&2fa_supported=1&scope=nohttps,all&v=" << VKAPI_VERSION_AUTH << "&username=" << url_encode(wchar_to_UTF8(Login.GetString())) << "&password=" << url_encode(wchar_to_UTF8(Password.GetString())) << "&lang=ru&device_id=" << DeviceID;
-	Link << "https://oauth.vk.com/token?grant_type=password&client_id=" << "2274003" << "&client_secret=" << "hHbZxrka2uZ6jB1inYsH" << "&2fa_supported=1&scope=all&v=" << VKAPI_VERSION_AUTH << "&username=" << url_encode(wchar_to_UTF8(Login.GetString())) << "&password=" << url_encode(wchar_to_UTF8(Password.GetString())) << "&lang=ru&device_id=" << DeviceID;
+	//Link << "https://oauth.vk.ru/token?grant_type=password&client_id=" << "2274003" << "&client_secret=" << "hHbZxrka2uZ6jB1inYsH" << "&2fa_supported=1&scope=nohttps,all&v=" << VKAPI_VERSION_AUTH << "&username=" << url_encode(wchar_to_UTF8(Login.GetString())) << "&password=" << url_encode(wchar_to_UTF8(Password.GetString())) << "&lang=ru&device_id=" << DeviceID;
+	Link << "https://oauth.vk.ru/token?grant_type=password&client_id=" << "2274003" << "&client_secret=" << "hHbZxrka2uZ6jB1inYsH" << "&2fa_supported=1&scope=all&v=" << VKAPI_VERSION_AUTH << "&username=" << url_encode(wchar_to_UTF8(Login.GetString())) << "&password=" << url_encode(wchar_to_UTF8(Password.GetString())) << "&lang=ru&device_id=" << DeviceID;
 	bool hasSMS = false;
 	if (SMS.GetWindowTextLengthW() > 0)
 	{
@@ -375,7 +375,7 @@ void VKApiToolsInputLogin::OnLogin()
 				else
 					PhoneMask = (const char*)u8"Введите код, отправленный на" + jres.at("phone_mask").get<string>();
 				if (jres.find("validation_sid") != jres.end())
-					DoCurlGet(string("https://api.vk.com/method/auth.validatePhone?client_id=") + "2274003" + "&api_id=" + "2274003" + "&client_secret=" + "hHbZxrka2uZ6jB1inYsH" + "&sid=" + jres.at("validation_sid").get<string>() + "&v=" + VKAPI_VERSION_AUTH, ANDROID_USERAGENT, AnswerVK, true);
+					DoCurlGet(string("https://api.vk.ru/method/auth.validatePhone?client_id=") + "2274003" + "&api_id=" + "2274003" + "&client_secret=" + "hHbZxrka2uZ6jB1inYsH" + "&sid=" + jres.at("validation_sid").get<string>() + "&v=" + VKAPI_VERSION_AUTH, ANDROID_USERAGENT, AnswerVK, true);
 				SMS.EnableWindow(TRUE);
 				(win_message().message_type(MSG_TYPE::TYPE_WARNING) << L"Валидация: " << PhoneMask).show();
 			}

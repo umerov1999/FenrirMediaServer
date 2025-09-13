@@ -21,8 +21,8 @@ using namespace std;
 using namespace nlohmann;
 using namespace WSTRUtils;
 
-#define AVATAR_USER_DEFAULT "https://vk.com/images/camera_200.png?ava=1"
-#define AVATAR_CHAT_DEFAULT "https://vk.com/images/icons/im_multichat_200.png"
+#define AVATAR_USER_DEFAULT "https://vk.ru/images/camera_200.png?ava=1"
+#define AVATAR_CHAT_DEFAULT "https://vk.ru/images/icons/im_multichat_200.png"
 #define UTF8START "\xef\xbb\xbf"
 
 ////VKAPITOOLSDIALOGINTERFACE
@@ -279,7 +279,7 @@ struct Repost
 		OwnerId = towner_id;
 		Id = tid;
 		Object = string("wall") + to_string(towner_id) + "_" + to_string(tid);
-		PRINT(TypeColor::TYPE_NORMAL) << It << L") Найден репост с музыкой: https://vk.com/" << Object << FLUSH;
+		PRINT(TypeColor::TYPE_NORMAL) << It << L") Найден репост с музыкой: https://vk.ru/" << Object << FLUSH;
 	}
 	Repost()
 	{

@@ -166,7 +166,7 @@ public:
 		TempParams.push_back(VK("lang", "ru"));
 		TempParams.push_back(VK("v", VKAPI_VERSION));
 
-		std::string ResultLink = std::string("https://api.vk.com/method") + "/" + Method;
+		std::string ResultLink = std::string("https://api.vk.ru/method") + "/" + Method;
 		std::string PostParam;
 		bool FirstParam = true;
 		for (auto& i : TempParams)
