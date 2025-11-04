@@ -32,24 +32,16 @@
 #define TEXT(A) static_cast<TextImpl*>(A)
 #define CONST_TEXT(A) static_cast<const TextImpl*>(A)
 
-struct TextBox {
-    Point size;
-};
-
-
 struct TextImpl : Text
 {
     Paint::Impl impl;
     Shape* shape;   //text shape
     FontLoader* loader = nullptr;
-    FontMetrics metrics;
+    FontMetrics fm;
     char* utf8 = nullptr;
-    float fontSize;
     float outlineWidth = 0.0f;
     float italicShear = 0.0f;
-    Point align{};
-
-    TextBox* box = nullptr;
+    bool updated = false;
 
     TextImpl() : impl(Paint::Impl(this)), shape(Shape::gen())
     {
@@ -59,9 +51,11 @@ struct TextImpl : Text
     ~TextImpl()
     {
         tvg::free(utf8);
-        tvg::free(box);
-        LoaderMgr::retrieve(loader);
-        delete(shape);
+        if (loader) {
+            loader->release(fm);
+            LoaderMgr::retrieve(loader);
+        }
+        Paint::rel(shape);
     }
 
     Result text(const char* utf8)
@@ -69,15 +63,14 @@ struct TextImpl : Text
         tvg::free(this->utf8);
         if (utf8) this->utf8 = tvg::duplicate(utf8);
         else this->utf8 = nullptr;
-
-        impl.mark(RenderUpdateFlag::Path);
+        updated = true;
 
         return Result::Success;
     }
 
     Result font(const char* name)
     {
-        auto loader = name ? LoaderMgr::font(name) : LoaderMgr::anyfont();
+        auto loader = static_cast<FontLoader*>(name ? LoaderMgr::font(name) : LoaderMgr::anyfont());
         if (!loader) return Result::InsufficientCondition;
 
         //Same resource has been loaded.
@@ -85,13 +78,25 @@ struct TextImpl : Text
             this->loader->sharing--;  //make it sure the reference counting.
             return Result::Success;
         } else if (this->loader) {
+            this->loader->release(fm);
             LoaderMgr::retrieve(this->loader);
         }
-        this->loader = static_cast<FontLoader*>(loader);
-
-        impl.mark(RenderUpdateFlag::Path);
+        this->loader = loader;
+        updated = true;
 
         return Result::Success;
+    }
+
+    Result size(float fontSize)
+    {
+        if (fontSize > 0.0f) {
+            if (fm.fontSize != fontSize) {
+                fm.fontSize = fontSize;
+                updated = true;
+            }
+            return Result::Success;
+        }
+        return Result::InvalidArguments;
     }
 
     RenderRegion bounds()
@@ -106,14 +111,15 @@ struct TextImpl : Text
         return PAINT(shape)->render(renderer);
     }
 
-    float load()
+    bool load()
     {
-        if (!loader) return 0.0f;
-
-        //reload
-        if (impl.marked(RenderUpdateFlag::Path)) loader->read(shape, utf8, metrics);
-
-        return loader->transform(shape, metrics, fontSize, italicShear);
+        if (!loader) return false;
+        if (updated) {
+            loader->get(fm, utf8, SHAPE(shape)->rs.path);
+            loader->transform(shape, fm, italicShear);
+            updated = false;
+        }
+        return true;
     }
 
     bool skip(RenderUpdateFlag flag)
@@ -122,32 +128,25 @@ struct TextImpl : Text
         return false;
     }
 
-    void arrange(Matrix& m, float scale)
+    void wrapping(TextWrap mode)
     {
-        //alignment
-        m.e13 -= (metrics.width / scale) * align.x;
-        m.e23 -= ((metrics.ascent - metrics.descent) / scale) * align.y;
-
-        //layouting
-        if (box) {
-            m.e13 += box->size.x * align.x;
-            m.e23 += box->size.y * align.y;
-        }
+        if (fm.wrap == mode) return;
+        fm.wrap = mode;
+        impl.mark(RenderUpdateFlag::Path);
     }
 
     void layout(float w, float h)
     {
-        if (!box) box = tvg::calloc<TextBox*>(1, sizeof(TextBox));
-        box->size = {w, h};
-        impl.mark(RenderUpdateFlag::Transform);
+        fm.box = {w, h};
+        updated = true;
     }
 
     bool update(RenderMethod* renderer, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flag, TVG_UNUSED bool clipper)
     {
-        auto scale = 1.0f / load();
-        if (tvg::zero(scale)) return false;
+        if (!load()) return true;
 
-        arrange(const_cast<Matrix&>(shape->transform()), scale);
+        auto scale = fm.scale;
+        if (tvg::zero(scale)) return false;
 
         //transform the gradient coordinates based on the final scaled font.
         auto fill = SHAPE(shape)->rs.fill;
@@ -171,15 +170,13 @@ struct TextImpl : Text
 
     bool intersects(const RenderRegion& region)
     {
-        if (load() == 0.0f) return false;
+        if (!load()) return false;
         return SHAPE(shape)->intersects(region);
     }
 
     bool bounds(Point* pt4, const Matrix& m, bool obb)
     {
-        auto scale = 1.0f / load();
-        if (tvg::zero(scale)) return false;
-        arrange(const_cast<Matrix&>(m), scale);
+        if (!load()) return true;
         return PAINT(shape)->bounds(pt4, &const_cast<Matrix&>(m), obb);
     }
 
@@ -197,16 +194,13 @@ struct TextImpl : Text
         if (loader) {
             dup->loader = loader;
             ++dup->loader->sharing;
+            loader->copy(fm, dup->fm);
         }
 
-        dup->metrics = metrics;
         dup->utf8 = tvg::duplicate(utf8);
-        dup->fontSize = fontSize;
         dup->italicShear = italicShear;
         dup->outlineWidth = outlineWidth;
-        dup->align = align;
-
-        if (box) dup->layout(box->size.x, box->size.y);
+        dup->updated = true;
 
         return text;
     }

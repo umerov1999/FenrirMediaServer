@@ -663,24 +663,69 @@ win_image LIB_IMAGE::PrepareImageFromBufferAutoType(HWND hwnd, const void* pData
 	return makeErrorBitmap(hwnd, size, show_error_bitmap);
 }
 
-std::string win_image::decompress_gzip(const std::string& str) {
-	z_stream zs;                        // z_stream is zlib's control structure
+std::string win_image::compress_gzip(const std::string& str, int compressionlevel) {
+	z_stream zs;
 	memset(&zs, 0, sizeof(zs));
 	const int MOD_GZIP_ZLIB_WINDOWSIZE = 15;
-	if (inflateInit2(&zs, MOD_GZIP_ZLIB_WINDOWSIZE + 16) != Z_OK)
-		throw(std::runtime_error("inflateInit failed while decompressing."));
+	const int MOD_GZIP_ZLIB_CFACTOR = 9;
+	if (deflateInit2(&zs,
+		compressionlevel,
+		Z_DEFLATED,
+		MOD_GZIP_ZLIB_WINDOWSIZE + 16,
+		MOD_GZIP_ZLIB_CFACTOR,
+		Z_DEFAULT_STRATEGY) != Z_OK
+		) {
+		throw(std::runtime_error("deflateInit2 failed while compressing."));
+	}
 
 	zs.next_in = (Bytef*)str.data();
-	zs.avail_in = str.size();
+	zs.avail_in = (uInt)str.size();
 
 	int ret;
 	std::vector<char> outbuffer(32768);
 	std::string outstring;
 
-	// get the decompressed bytes blockwise using repeated calls to inflate
 	do {
 		zs.next_out = reinterpret_cast<Bytef*>(outbuffer.data());
-		zs.avail_out = sizeof(outbuffer);
+		zs.avail_out = (uInt)outbuffer.size();
+
+		ret = deflate(&zs, Z_FINISH);
+
+		if (outstring.size() < zs.total_out) {
+			outstring.append(outbuffer.data(),
+				zs.total_out - outstring.size());
+		}
+	} while (ret == Z_OK);
+
+	deflateEnd(&zs);
+
+	if (ret != Z_STREAM_END) {
+		std::ostringstream oss;
+		oss << "Exception during zlib compression: (" << ret << ") " << zs.msg;
+		throw(std::runtime_error(oss.str()));
+	}
+
+	return outstring;
+}
+
+std::string win_image::decompress_gzip(const std::string& str) {
+	z_stream zs;
+	memset(&zs, 0, sizeof(zs));
+	const int MOD_GZIP_ZLIB_WINDOWSIZE = 15;
+	if (inflateInit2(&zs, MOD_GZIP_ZLIB_WINDOWSIZE + 16) != Z_OK) {
+		throw(std::runtime_error("inflateInit failed while decompressing."));
+	}
+
+	zs.next_in = (Bytef*)str.data();
+	zs.avail_in = (uInt)str.size();
+
+	int ret;
+	std::vector<char> outbuffer(32768);
+	std::string outstring;
+
+	do {
+		zs.next_out = reinterpret_cast<Bytef*>(outbuffer.data());
+		zs.avail_out = (uInt)outbuffer.size();
 
 		ret = inflate(&zs, 0);
 
@@ -693,7 +738,7 @@ std::string win_image::decompress_gzip(const std::string& str) {
 
 	inflateEnd(&zs);
 
-	if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
+	if (ret != Z_STREAM_END) {
 		std::ostringstream oss;
 		oss << "Exception during zlib decompression: (" << ret << ") "
 			<< zs.msg;
@@ -735,7 +780,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	tvg::Result result = picture->load((const char*)pDataBuffer, nBufferSize, "svg");
 	if (result != tvg::Result::Success) {
 		delete canvas;
-		delete picture;
+		tvg::Paint::rel(picture);
 		return makeErrorBitmap(hwnd, size, true);
 	}
 	if (targetWidth == 0 || targetHeight == 0) {
@@ -779,7 +824,7 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	HBITMAP hOutputImage = (HBITMAP)CreateDIB(hwnd, targetWidth, targetHeight, 32);
 	if (hOutputImage == NULL) {
 		delete canvas;
-		delete picture;
+		tvg::Paint::rel(picture);
 		return makeErrorBitmap(hwnd, size, true);
 	}
 
@@ -790,31 +835,36 @@ win_image LIB_IMAGE::PrepareImageFromSVG(HWND hwnd, int targetWidth, int targetH
 	if (canvas->target((uint32_t*)pImageBuffer, targetWidth, targetWidth, targetHeight, tvg::ColorSpace::ARGB8888) != tvg::Result::Success) {
 		DeleteObject(hOutputImage);
 		delete canvas;
-		delete picture;
+		tvg::Paint::rel(picture);
 		return makeErrorBitmap(hwnd, size, true);
 	}
-	tvg::Shape* shape = nullptr;
+
 	//Background color if needed
 	if (bgColor != 0xffffffff) {
 		uint8_t r = (uint8_t)((bgColor & 0xff0000) >> 16);
 		uint8_t g = (uint8_t)((bgColor & 0x00ff00) >> 8);
 		uint8_t b = (uint8_t)((bgColor & 0x0000ff));
 
-		shape = tvg::Shape::gen();
-		shape->appendRect(0, 0, targetWidth, targetHeight, 0, 0);
-		shape->fill(r, g, b, 255);
+		auto backgroundShape = tvg::Shape::gen();
+		backgroundShape->appendRect(0, 0, targetWidth, targetHeight, 0, 0);
+		backgroundShape->fill(r, g, b, 255);
 
-		if (canvas->push(shape) != tvg::Result::Success) {
+		if (canvas->push(backgroundShape) != tvg::Result::Success) {
 			delete canvas;
-			delete picture;
-			delete shape;
+			tvg::Paint::rel(picture);
+			tvg::Paint::rel(backgroundShape);
 			DeleteObject(hOutputImage);
 			return makeErrorBitmap(hwnd, size, true);
 		}
 	}
 
 	//Drawing
-	canvas->push(picture);
+	if (canvas->push(picture) != tvg::Result::Success) {
+		delete canvas;
+		tvg::Paint::rel(picture);
+		DeleteObject(hOutputImage);
+		return makeErrorBitmap(hwnd, size, true);
+	}
 	if (canvas->draw() == tvg::Result::Success) {
 		canvas->sync();
 	}

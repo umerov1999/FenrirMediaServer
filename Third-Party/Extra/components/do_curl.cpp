@@ -4,6 +4,7 @@
 #include <thread>
 #endif
 #include "curl/curl.h"
+#include "MimeTypes.hpp"
 #include "do_curl.h"
 using namespace std;
 
@@ -68,7 +69,7 @@ static int seek_callback(void* arg, curl_off_t offset, int origin)
 	return result ? CURL_SEEKFUNC_OK : CURL_SEEKFUNC_FAIL;
 }
 
-int DoCurlDownload(const string &Link, const string &UserAgent, string& ReciveData, bool IsJSON)
+int DoCurlDownload(const string &Link, const string &UserAgent, string& ReciveData, bool IsJSON, int wait)
 {
 	ReciveData.clear();
 	CURL_WR wrt;
@@ -83,8 +84,8 @@ int DoCurlDownload(const string &Link, const string &UserAgent, string& ReciveDa
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriter);
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &wrt);
 		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
-		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 20);
-		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 20);
+		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, wait);
 		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
 		CURLcode res = curl_easy_perform(curl_handle);
 		int retry = 0;
@@ -119,7 +120,7 @@ int DoCurlDownload(const string &Link, const string &UserAgent, string& ReciveDa
 	return -1;
 }
 
-int DoCurlCapcha(const string& Link, const string& UserAgent, string& ReciveData, bool IsJSON)
+int DoCurlCapcha(const string& Link, const string& UserAgent, string& ReciveData, bool IsJSON, int wait)
 {
 	ReciveData.clear();
 	CURL_WR wrt;
@@ -134,8 +135,8 @@ int DoCurlCapcha(const string& Link, const string& UserAgent, string& ReciveData
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriter);
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &wrt);
 		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
-		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 2);
-		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 2);
+		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, wait);
 		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
 		CURLcode res = curl_easy_perform(curl_handle);
 		long long Code = 0;
@@ -149,7 +150,7 @@ int DoCurlCapcha(const string& Link, const string& UserAgent, string& ReciveData
 	return -1;
 }
 
-int DoCurlGet(const string& Link, const string& UserAgent, string& ReciveData, bool IsJSON, int wait)
+int DoCurlGet(const string& Link, const string& UserAgent, string& ReciveData, bool IsJSON, int wait, const list<string>& HeaderParams)
 {
 	ReciveData.clear();
 	CURL_WR wrt;
@@ -158,6 +159,13 @@ int DoCurlGet(const string& Link, const string& UserAgent, string& ReciveData, b
 	wrt.curl_handle = curl_handle;
 	if (curl_handle)
 	{
+		if (!HeaderParams.empty()) {
+			struct curl_slist* headers = NULL;
+			for (auto& i : HeaderParams) {
+				headers = curl_slist_append(headers, i.c_str());
+			}
+			curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
+		}
 		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_easy_setopt(curl_handle, CURLOPT_URL, Link.c_str());
 		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UserAgent.c_str());
@@ -188,11 +196,6 @@ int DoCurlGet(const string& Link, const string& UserAgent, string& ReciveData, b
 			ReciveData.clear();
 	}
 	return -1;
-}
-
-int DoCurlGet(const string& Link, const string& UserAgent, string& ReciveData, bool IsJSON)
-{
-	return DoCurlGet(Link, UserAgent, ReciveData, IsJSON, 20);
 }
 
 int DoCurlGetWithContentType(const string& Link, const string& UserAgent, string& ReciveData, string& Content_Type, bool IsJSON, int wait)
@@ -240,12 +243,7 @@ int DoCurlGetWithContentType(const string& Link, const string& UserAgent, string
 	return -1;
 }
 
-int DoCurlGetWithContentType(const string& Link, const string& UserAgent, string& ReciveData, string& Content_Type, bool IsJSON)
-{
-	return DoCurlGetWithContentType(Link, UserAgent, ReciveData, Content_Type, IsJSON, 20);
-}
-
-int DoCurlPost(const string& Link, const string& PostParams, const string& UserAgent, string& ReciveData, bool IsJSON)
+int DoCurlPost(const string& Link, const string& PostParams, const string& UserAgent, string& ReciveData, bool IsJSON, int wait, const list<string>& HeaderParams)
 {
 	ReciveData.clear();
 	CURL_WR wrt;
@@ -254,6 +252,13 @@ int DoCurlPost(const string& Link, const string& PostParams, const string& UserA
 	wrt.curl_handle = curl_handle;
 	if (curl_handle)
 	{
+		if (!HeaderParams.empty()) {
+			struct curl_slist* headers = NULL;
+			for (auto& i : HeaderParams) {
+				headers = curl_slist_append(headers, i.c_str());
+			}
+			curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
+		}
 		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_easy_setopt(curl_handle, CURLOPT_URL, Link.c_str());
 		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UserAgent.c_str());
@@ -262,8 +267,8 @@ int DoCurlPost(const string& Link, const string& PostParams, const string& UserA
 		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
 		curl_easy_setopt(curl_handle, CURLOPT_POST, 1);
 		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, PostParams.c_str());
-		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 20);
-		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 20);
+		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, wait);
 		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
 		CURLcode res = curl_easy_perform(curl_handle);
 		int retry = 0;
@@ -288,7 +293,7 @@ int DoCurlPost(const string& Link, const string& PostParams, const string& UserA
 	return -1;
 }
 
-int DoCurlPostJsonAuth(const string& Link, const string& PostJson, const string& UserAgent, const string& login, const string& password, string& ReciveData)
+int DoCurlPostJsonAuth(const string& Link, const string& PostJson, const string& UserAgent, const string& login, const string& password, string& ReciveData, int wait)
 {
 	ReciveData.clear();
 	CURL_WR wrt;
@@ -320,8 +325,8 @@ int DoCurlPostJsonAuth(const string& Link, const string& PostJson, const string&
 			curl_easy_setopt(curl_handle, CURLOPT_POST, 1);
 			curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, PostJson.c_str());
 		}
-		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 20);
-		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 20);
+		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, wait);
 		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
 		CURLcode res = curl_easy_perform(curl_handle);
 		int retry = 0;
@@ -347,7 +352,81 @@ int DoCurlPostJsonAuth(const string& Link, const string& PostJson, const string&
 	return -1;
 }
 
-int DoCurlMultipart(const std::string& Link, const std::wstring& filePath, const std::string& partName, const std::string& fileName, const std::string& UserAgent, std::string& ReciveData, bool IsJSON) {
+int DoCurlMultipartAuth(const std::string& Link, const std::wstring& filePath, const std::string& partName, const std::string& fileName, const std::string& UserAgent, const string& login, const string& password, std::string& ReciveData, bool IsJSON, int wait) {
+	ReciveData.clear();
+	CURL_WR wrt;
+	wrt.Data = &ReciveData;
+	CURL* curl_handle = curl_easy_init();
+	wrt.curl_handle = curl_handle;
+	FILE* fl = NULL;
+	if (curl_handle)
+	{
+		if (_wfopen_s(&fl, filePath.c_str(), L"rb") != 0) {
+			curl_easy_cleanup(curl_handle);
+			return -1;
+		}
+		if (!fl) {
+			curl_easy_cleanup(curl_handle);
+			return -1;
+		}
+		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0);
+
+		if (!login.empty()) {
+			curl_easy_setopt(curl_handle, CURLOPT_USERPWD, (login + ":" + password).c_str());
+		}
+
+		curl_easy_setopt(curl_handle, CURLOPT_URL, Link.c_str());
+		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UserAgent.c_str());
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriter);
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &wrt);
+		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
+		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
+		curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST, "POST");
+
+		_fseeki64(fl, 0, SEEK_END);
+		long long sz = _ftelli64(fl);
+		_fseeki64(fl, 0, SEEK_SET);
+
+		curl_mime* multipart;
+		curl_mimepart* part;
+
+		multipart = curl_mime_init(curl_handle);
+		part = curl_mime_addpart(multipart);
+
+		curl_mime_name(part, partName.c_str());
+		curl_mime_filename(part, fileName.c_str());
+		try {
+			curl_mime_type(part, MimeType::MimeTypes::getType(fileName).c_str());
+		}
+		catch (...) {
+			curl_mime_type(part, "*/*");
+		}
+		curl_mime_data_cb(part, sz, CurlFileReader, seek_callback, NULL, fl);
+		curl_easy_setopt(curl_handle, CURLOPT_MIMEPOST, multipart);
+
+		struct curl_slist* headers = NULL;
+		headers = curl_slist_append(headers, "Accept: application/json");
+		curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
+
+		CURLcode res = curl_easy_perform(curl_handle);
+		long long Code = 0;
+		curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &Code);
+		curl_easy_cleanup(curl_handle);
+		curl_mime_free(multipart);
+		curl_slist_free_all(headers);
+		fclose(fl);
+		if (res == CURLE_OK && (IsJSON == true || Code == 200))
+			return wrt.WritePos;
+		else
+			ReciveData.clear();
+	}
+	return -1;
+}
+
+int DoCurlMultipart(const std::string& Link, const std::wstring& filePath, const std::string& partName, const std::string& fileName, const std::string& UserAgent, std::string& ReciveData, bool IsJSON, int wait) {
 	ReciveData.clear();
 	CURL_WR wrt;
 	wrt.Data = &ReciveData;
@@ -370,8 +449,8 @@ int DoCurlMultipart(const std::string& Link, const std::wstring& filePath, const
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriter);
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &wrt);
 		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
-		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 90);
-		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 90);
+		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, wait);
 		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
 		curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST, "POST");
 
@@ -465,7 +544,7 @@ int DoCurlGetAndReturnUrl(const string& Link, const string& UserAgent, string& R
 	return 2;
 }
 
-int DoCurlPostJsonAuthCustomRequest(const string& Link, const string& PostJson, const string& UserAgent, const string& login, const string& password, string& ReciveData, const string &request)
+int DoCurlPostJsonAuthCustomRequest(const string& Link, const string& PostJson, const string& UserAgent, const string& login, const string& password, string& ReciveData, const string &request, int wait)
 {
 	ReciveData.clear();
 	CURL_WR wrt;
@@ -496,8 +575,8 @@ int DoCurlPostJsonAuthCustomRequest(const string& Link, const string& PostJson, 
 			curl_easy_setopt(curl_handle, CURLOPT_POST, 1);
 			curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, PostJson.c_str());
 		}
-		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 20);
-		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 20);
+		curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, wait);
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, wait);
 		curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 120000L);
 		CURLcode res = curl_easy_perform(curl_handle);
 		int retry = 0;

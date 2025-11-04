@@ -43,7 +43,7 @@
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../../Third-Party/XTPSkinFramework v22.1.0/SkinFramework;../../Third-Party/openssl/include;../../Third-Party/libcurl/include;./;../../Third-Party/Extra;../../Third-Party/libimage;..\..\Third-Party\Extra\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Third-Party/XTPSkinFramework v22.1.0/SkinFramework;..\..\Third-Party/openssl/include;..\..\Third-Party/libcurl/include;.\;..\..\Third-Party/Extra;..\..\Third-Party/libimage;..\..\Third-Party\Extra\components;..\..\Third-Party\libzstd;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -110,6 +110,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Third-Party\libimage\libimage.vcxproj">
       <Project>{d6973076-9317-4ef2-a0b8-b7a18ac0713e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Third-Party\libzstd\libzstd.vcxproj">
+      <Project>{7954752c-4bef-4a9a-bf1e-b34245bd4e80}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\Third-Party\XTPSkinFramework v22.1.0\SkinFrameworkStatic.vcxproj">
       <Project>{44399486-2259-2815-3336-338422327369}</Project>

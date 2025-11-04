@@ -367,8 +367,8 @@ static char* _idFromUrl(const char* url)
     ++open;
     --close;
 
-    //trim the rest of the spaces if any
-    while (open < close && *close == ' ') --close;
+    //trim the rest of the spaces and the quote marks if any
+    while (open < close && (*close == ' ' || *close == '\'' || *close == '\"')) --close;
 
     //quick verification
     for (auto id = open; id < close; id++) {
@@ -3828,8 +3828,10 @@ void SvgLoader::clear(bool all)
 
     if (copy) tvg::free((char*)content);
 
-    delete(root);
-    root = nullptr;
+    if (root) {
+        root->unref();
+        root = nullptr;
+    }
 
     size = 0;
     content = nullptr;
@@ -3859,43 +3861,42 @@ void SvgLoader::run(unsigned tid)
     if ((viewFlag & SvgViewFlag::Viewbox) && (fabsf(vbox.w) <= FLOAT_EPSILON || fabsf(vbox.h) <= FLOAT_EPSILON)) {
         TVGLOG("SVG", "The <viewBox> width and/or height set to 0 - rendering disabled.");
         root = Scene::gen();
-        return;
-    }
+    } else {
+        if (xmlParse(content, size, true, _svgLoaderParser, &(loaderData))) {
+            if (loaderData.doc) {
+                auto defs = loaderData.doc->node.doc.defs;
 
-    if (!xmlParse(content, size, true, _svgLoaderParser, &(loaderData))) return;
+                if (loaderData.nodesToStyle.count > 0) cssApplyStyleToPostponeds(loaderData.nodesToStyle, loaderData.cssStyle);
+                if (loaderData.cssStyle) cssUpdateStyle(loaderData.doc, loaderData.cssStyle);
 
-    if (loaderData.doc) {
-        auto defs = loaderData.doc->node.doc.defs;
+                if (!loaderData.cloneNodes.empty()) _clonePostponedNodes(&loaderData.cloneNodes, loaderData.doc);
 
-        if (loaderData.nodesToStyle.count > 0) cssApplyStyleToPostponeds(loaderData.nodesToStyle, loaderData.cssStyle);
-        if (loaderData.cssStyle) cssUpdateStyle(loaderData.doc, loaderData.cssStyle);
+                _updateComposite(loaderData.doc, loaderData.doc);
+                if (defs) _updateComposite(loaderData.doc, defs);
 
-        if (!loaderData.cloneNodes.empty()) _clonePostponedNodes(&loaderData.cloneNodes, loaderData.doc);
+                _updateFilter(loaderData.doc, loaderData.doc);
+                if (defs) _updateFilter(loaderData.doc, defs);
 
-        _updateComposite(loaderData.doc, loaderData.doc);
-        if (defs) _updateComposite(loaderData.doc, defs);
+                _updateStyle(loaderData.doc, nullptr);
+                if (defs) _updateStyle(defs, nullptr);
 
-        _updateFilter(loaderData.doc, loaderData.doc);
-        if (defs) _updateFilter(loaderData.doc, defs);
+                if (loaderData.gradients.count > 0) _updateGradient(&loaderData, loaderData.doc, &loaderData.gradients);
+                if (defs) _updateGradient(&loaderData, loaderData.doc, &defs->node.defs.gradients);
 
-        _updateStyle(loaderData.doc, nullptr);
-        if (defs) _updateStyle(defs, nullptr);
+                root = svgSceneBuild(loaderData, vbox, w, h, align, meetOrSlice, svgPath, viewFlag);
 
-        if (loaderData.gradients.count > 0) _updateGradient(&loaderData, loaderData.doc, &loaderData.gradients);
-        if (defs) _updateGradient(&loaderData, loaderData.doc, &defs->node.defs.gradients);
-
-        root = svgSceneBuild(loaderData, vbox, w, h, align, meetOrSlice, svgPath, viewFlag);
-
-        //In case no viewbox and width/height data is provided the completion of loading
-        //has to be forced, in order to establish this data based on the whole picture.
-        if (!(viewFlag & SvgViewFlag::Viewbox)) {
-            //Override viewbox & size again after svg loading.
-            vbox = loaderData.doc->node.doc.vbox;
-            w = loaderData.doc->node.doc.w;
-            h = loaderData.doc->node.doc.h;
+                //In case no viewbox and width/height data is provided the completion of loading
+                //has to be forced, in order to establish this data based on the whole picture.
+                if (!(viewFlag & SvgViewFlag::Viewbox)) {
+                    //Override viewbox & size again after svg loading.
+                    vbox = loaderData.doc->node.doc.vbox;
+                    w = loaderData.doc->node.doc.w;
+                    h = loaderData.doc->node.doc.h;
+                }
+            }
         }
     }
-
+    root->ref();
     clear(false);
 }
 
@@ -3972,8 +3973,6 @@ bool SvgLoader::header()
 
 bool SvgLoader::open(const char* data, uint32_t size, TVG_UNUSED const char* rpath, bool copy, const ColorReplace& colorReplacement)
 {
-    clear();
-
     if (copy) {
         content = tvg::malloc<char*>(size + 1);
         if (!content) return false;
@@ -3991,26 +3990,12 @@ bool SvgLoader::open(const char* data, uint32_t size, TVG_UNUSED const char* rpa
 bool SvgLoader::open(const char* path, const ColorReplace& colorReplacement)
 {
 #ifdef THORVG_FILE_IO_SUPPORT
-    clear();
-
-    ifstream f;
-    f.open(path);
-
-    if (!f.is_open()) return false;
-
-    svgPath = path;
-    getline(f, filePath, '\0');
-    f.close();
-
-    if (filePath.empty()) return false;
-
-    content = (char*)filePath.c_str();
-    size = filePath.size();
-
-    return header();
-#else
-    return false;
+    if ((content = LoadModule::open(path, size, true))) {
+        copy = true;
+        return header();
+    }
 #endif
+    return false;
 }
 
 
@@ -4031,8 +4016,7 @@ bool SvgLoader::read()
 {
     if (!content || size == 0) return false;
 
-    //the loading has been already completed in header()
-    if (root || !LoadModule::read()) return true;
+    if (!LoadModule::read() || root) return true;
 
     TaskScheduler::request(this);
 
@@ -4052,7 +4036,10 @@ bool SvgLoader::close()
 Paint* SvgLoader::paint()
 {
     this->done();
-    auto ret = root;
-    root = nullptr;
-    return ret;
+    if (root) {
+        //Primary usage: sharing the svg
+        if (root->refCnt() == 1) return root;
+        return root->duplicate();
+    }
+    return nullptr;
 }

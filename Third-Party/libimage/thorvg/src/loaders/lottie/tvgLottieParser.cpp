@@ -42,7 +42,7 @@ static unsigned long _int2str(int num)
 }
 
 
-LottieExpression* LottieParser::getExpression(char* code, LottieComposition* comp, LottieLayer* layer, LottieObject* object, LottieProperty* property)
+void LottieParser::getExpression(char* code, LottieComposition* comp, LottieLayer* layer, LottieObject* object, LottieProperty* property)
 {
     if (!comp->expressions) comp->expressions = true;
 
@@ -53,7 +53,7 @@ LottieExpression* LottieParser::getExpression(char* code, LottieComposition* com
     inst->object = object;
     inst->property = property;
 
-    return inst;
+    property->exp = inst;
 }
 
 
@@ -82,9 +82,18 @@ MaskMethod LottieParser::getMaskMethod(bool inversed)
             if (inversed) return MaskMethod::InvAlpha;
             else return MaskMethod::Add;
         }
-        case 's': return MaskMethod::Subtract;
-        case 'i': return MaskMethod::Intersect;
-        case 'f': return MaskMethod::Difference;
+        case 's': {
+            if (inversed) return MaskMethod::Intersect;
+            return MaskMethod::Subtract;
+        }
+        case 'i': {
+            if (inversed) return MaskMethod::Difference;
+            return MaskMethod::Intersect;
+        }
+        case 'f': {
+            if (inversed) return MaskMethod::Intersect;
+            return MaskMethod::Difference;
+        }
         case 'l': return MaskMethod::Lighten;
         case 'd': return MaskMethod::Darken;
         default: return MaskMethod::None;
@@ -479,7 +488,7 @@ void LottieParser::parseProperty(T& prop, LottieObject* obj)
     while (auto key = nextObjectKey()) {
         if (KEY_AS("k")) parsePropertyInternal(prop);
         else if (obj && KEY_AS("sid")) registerSlot(obj, getString(), prop.type);
-        else if (KEY_AS("x") && expressions) prop.exp = getExpression(getStringCopy(), comp, context.layer, context.parent, &prop);
+        else if (KEY_AS("x") && expressions) getExpression(getStringCopy(), comp, context.layer, context.parent, &prop);
         else if (KEY_AS("ix")) prop.ix = getInt();
         else skip();
     }
@@ -567,7 +576,7 @@ LottieTransform* LottieParser::parseTransform(bool ddd)
                 {
                     //check separateCoord to figure out whether "x(expression)" / "x(coord)"
                     if (peekType() == kStringType) {
-                        if (expressions) transform->position.exp = getExpression(getStringCopy(), comp, context.layer, context.parent, &transform->position);
+                        if (expressions) getExpression(getStringCopy(), comp, context.layer, context.parent, &transform->position);
                         else skip();
                     } else parseProperty(transform->separateCoord()->x);
                 }
@@ -653,16 +662,17 @@ void LottieParser::getPathSet(LottiePathSet& path)
 {
     enterObject();
     while (auto key = nextObjectKey()) {
-        if (KEY_AS("k")) {
+        if (KEY_AS("k"))
+        {
             if (peekType() == kArrayType) {
                 enterArray();
                 while (nextArrayValue()) parseKeyFrame(path);
             } else {
                 getValue(path.value);
             }
-        } else if (KEY_AS("x") && expressions) {
-            path.exp = getExpression(getStringCopy(), comp, context.layer, context.parent, &path);
-        } else skip();
+        }
+        else if (KEY_AS("x") && expressions) getExpression(getStringCopy(), comp, context.layer, context.parent, &path);
+        else skip();
     }
     path.type = LottieProperty::Type::PathSet;
 }
@@ -1000,13 +1010,22 @@ LottieObject* LottieParser::parseAsset()
 void LottieParser::parseFontData(LottieFont* font, const char* data)
 {
     if (!data) return;
-    if (strncmp(data, "data:font/ttf;base64,", sizeof("data:font/ttf;base64,") - 1) != 0) {
-        TVGLOG("LOTTIE", "Unsupported embeded font data format");
-        return;
-    }
 
-    auto ttf = data + sizeof("data:font/ttf;base64,") - 1;
-    font->data.size = b64Decode(ttf, strlen(ttf), &font->data.b64src);
+    //handle base64 font data
+    if (!strncmp(data, "data:font/", sizeof("data:font/") - 1)) {
+        data += sizeof("data:font/") - 1;
+        if (!strncmp(data, "ttf", 3)) {
+            data += 3;
+        } else {
+            TVGLOG("LOTTIE", "TODO: Support a new font type!");
+            return;
+        }
+        data += sizeof(";base64,") - 1;
+        font->size = b64Decode(data, strlen(data), &font->b64src);
+    //external font resource
+    } else {
+        font->path = duplicate(data);
+    }
 }
 
 

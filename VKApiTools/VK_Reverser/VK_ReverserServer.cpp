@@ -23,6 +23,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include "sha3.hpp"
+#include "zstd.h"
 #include "json.hpp"
 #include "libimage.h"
 #include "WSTRUtils.h"
@@ -564,12 +565,17 @@ void Root(RequestParserStruct& Req, SSL* ssl)
 		return;
 	}
 */
-
+	list<string> HeaderParams;
+	if (Req.http_request.exist("Authorization")) {
+		HeaderParams.push_back("Authorization: " + Req.http_request.get_utf8("Authorization"));
+	} else if (Req.http_request.exist("authorization")) {
+		HeaderParams.push_back("Authorization: " + Req.http_request.get_utf8("authorization"));
+	}
 	if (Req.http_post_param.paramsdata.size() > 0) {
-		DoCurlPost(ResultLink, PostParam, Req.http_request.get_utf8("User-Agent"), ansv, true);
+		DoCurlPost(ResultLink, PostParam, Req.http_request.get_utf8("User-Agent"), ansv, true, 20, HeaderParams);
 	}
 	else {
-		DoCurlGet(ResultLink, Req.http_request.get_utf8("User-Agent"), ansv, true);
+		DoCurlGet(ResultLink, Req.http_request.get_utf8("User-Agent"), ansv, true, 20, HeaderParams);
 	}
 	
 	PrintMessage(L"[" + Req.http_request["Path"] + L"] {");
@@ -729,6 +735,35 @@ int parse_post_url_encoded_multipart(SSL* ssl, const string& RequestHTTP, int co
 #endif
 }
 
+static std::string decompress_zstd(const std::string& from) {
+	std::unique_ptr<ZSTD_DCtx, decltype(&ZSTD_freeDCtx)> ctx{ ZSTD_createDCtx(),
+															 &ZSTD_freeDCtx };
+	std::string frame_buffer(ZSTD_DStreamOutSize(), 0);
+	std::string decompressed;
+
+	ZSTD_inBuffer in_ref = { .src = from.data(), .size = from.size(), .pos = 0 };
+	std::size_t decompression_result = 0;
+	while (in_ref.pos != in_ref.size) {
+		ZSTD_outBuffer out_ref = {
+			.dst = frame_buffer.data(), .size = frame_buffer.size(), .pos = 0 };
+		decompression_result = ZSTD_decompressStream(ctx.get(), &out_ref, &in_ref);
+		if (ZSTD_isError(decompression_result)) {
+			throw(std::runtime_error("ZSTD_decompressStream failed while decompressing."));
+		}
+		decompressed.append(frame_buffer.data(), out_ref.pos);
+	}
+	while (decompression_result) {
+		ZSTD_outBuffer out_ref = {
+			.dst = frame_buffer.data(), .size = frame_buffer.size(), .pos = 0 };
+		decompression_result = ZSTD_decompressStream(ctx.get(), &out_ref, &in_ref);
+		if (ZSTD_isError(decompression_result)) {
+			throw(std::runtime_error("ZSTD_decompressStream failed while decompressing."));
+		}
+		decompressed.append(frame_buffer.data(), out_ref.pos);
+	}
+	return decompressed;
+}
+
 void HTTPParse(const string& HttpHeader, RequestParserStruct& hdr, const string& Connection, const multipart& mpart, string& PostUrlEncoded)
 {
 	string HttpHdr = HttpHeader;
@@ -778,6 +813,9 @@ void HTTPParse(const string& HttpHeader, RequestParserStruct& hdr, const string&
 	if (hdr.http_request.exist("Content-Encoding")) {
 		if (hdr.http_request["Content-Encoding"] == L"gzip") {
 			PostUrlEncoded = LIB_IMAGE::win_image::decompress_gzip(PostUrlEncoded);
+			hdr.http_request.add("Content-Length", to_string(PostUrlEncoded.size()));
+		} else if (hdr.http_request["Content-Encoding"] == L"zstd") {
+			PostUrlEncoded = decompress_zstd(PostUrlEncoded);
 			hdr.http_request.add("Content-Length", to_string(PostUrlEncoded.size()));
 		}
 	}

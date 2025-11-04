@@ -346,9 +346,9 @@ float LottieTextRange::factor(float frameNo, float totalLen, float idx)
 
 void LottieFont::prepare()
 {
-    if (!data.b64src || !name) return;
+    if (!b64src) return;
 
-    Text::load(name, data.b64src, data.size, "ttf", false);
+    Text::load(name, b64src, size, "ttf", false);
 }
 
 
@@ -356,27 +356,13 @@ void LottieImage::prepare()
 {
     LottieObject::type = LottieObject::Image;
 
+    //Prepare the Picture image
     auto picture = Picture::gen();
-
-    //force to load a picture on the same thread
-    if (data.size > 0) picture->load((const char*)data.b64Data, data.size, data.mimeType);
-    else picture->load(data.path);
-
+    auto result = (data.size > 0) ? picture->load((const char*)data.b64Data, data.size, data.mimeType) : picture->load(data.path);
+    if (result == Result::Success) resolved = true;
     picture->size(data.width, data.height);
+    data.picture = picture;
     picture->ref();
-
-    pooler.push(picture);
-}
-
-
-void LottieImage::update()
-{
-    //Update the picture data
-    ARRAY_FOREACH(p, pooler) {
-        if (data.size > 0) (*p)->load((const char*)data.b64Data, data.size, data.mimeType);
-        else (*p)->load(data.path);
-        (*p)->size(data.width, data.height);
-    }
 }
 
 
@@ -719,7 +705,7 @@ bool LottieLayer::assign(const char* layer, uint32_t ix, const char* var, float 
 
 LottieComposition::~LottieComposition()
 {
-    if (!initiated && root) delete(root->scene);
+    if (!initiated && root) Paint::rel(root->scene);
 
     delete(root);
     tvg::free(version);

@@ -235,12 +235,12 @@ struct SwImageTask : SwTask
                     if (!nodirty) dirtyRegion->add(prvBox, curBox);
                     return;
                 }
-            }
+            } else imageFree(image);
         }
         goto end;
     err:
         curBox.reset();
-        rleReset(image.rle);
+        imageReset(image);
     end:
         imageDelOutline(image, mpool, tid);
         if (!nodirty) dirtyRegion->add(prvBox, curBox);
@@ -402,7 +402,8 @@ bool SwRenderer::renderImage(RenderData data)
             if (bbox.invalid() || bbox.x() >= surface->w || bbox.y() >= surface->h) return true;
 
             //RLE Image
-            if (image.rle && image.rle->valid()) {
+            if (image.rle) {
+                if (image.rle->invalid()) return true;
                 if (image.direct) return rasterDirectRleImage(surface, image, bbox, opacity);
                 else if (image.scaled) return rasterScaledRleImage(surface, image, transform, bbox, opacity);
                 else {
@@ -786,6 +787,9 @@ bool SwRenderer::render(RenderCompositor* cmp, const RenderEffect* effect, bool 
         TVGERR("SW_ENGINE", "Not supported grayscale Gaussian Blur!");
         return false;
     }
+
+    //TODO: Support grayscale effects.
+    if (p->recoverSfc->channelSize != sizeof(uint32_t)) direct = false;
     
     switch (effect->type) {
         case SceneEffect::GaussianBlur: {
@@ -793,7 +797,7 @@ bool SwRenderer::render(RenderCompositor* cmp, const RenderEffect* effect, bool 
         }
         case SceneEffect::DropShadow: {
             auto cmp1 = request(surface->channelSize, true);
-            cmp1->compositor->valid = false;
+            cmp1->compositor->valid = false;   //prevent a conflict with cmp2 request.
             auto cmp2 = request(surface->channelSize, true);
             SwSurface* surfaces[] = {cmp1, cmp2};
             auto ret = effectDropShadow(p, surfaces, static_cast<const RenderEffectDropShadow*>(effect), direct);

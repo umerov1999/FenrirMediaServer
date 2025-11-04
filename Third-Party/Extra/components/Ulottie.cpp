@@ -20,10 +20,10 @@ Ulottie::Ulottie() {
 
 	canvas = nullptr;
 	anim = nullptr;
-	backgroundShape = nullptr;
 }
 
 Ulottie::~Ulottie() {
+	KillTimer(TIMER_PLAY_ANIM);
 	if (canvas) {
 		delete canvas;
 		canvas = nullptr;
@@ -110,7 +110,7 @@ bool Ulottie::setAnimation(const string &json_data, tvg::ColorReplace* colorRepl
 		anim = nullptr;
 	}
 
-	backgroundShape = tvg::Shape::gen();
+	auto backgroundShape = tvg::Shape::gen();
 	CRect rect = getRect();
 	backgroundShape->appendRect(0, 0, (float)rect.Width(), (float)rect.Height());
 	COLORREF cl = GetSysColor(COLOR_3DFACE);
@@ -120,7 +120,7 @@ bool Ulottie::setAnimation(const string &json_data, tvg::ColorReplace* colorRepl
 	if (anim->picture()->load(json_data.c_str(), (uint32_t)json_data.size(), "lottie", nullptr, true, colorReplacement) != tvg::Result::Success) {
 		delete anim;
 		anim = nullptr;
-		delete backgroundShape;
+		tvg::Paint::rel(backgroundShape);
 		backgroundShape = nullptr;
 		return false;
 	}
@@ -132,7 +132,7 @@ bool Ulottie::setAnimation(const string &json_data, tvg::ColorReplace* colorRepl
 	if (!canvas) {
 		delete anim;
 		anim = nullptr;
-		delete backgroundShape;
+		tvg::Paint::rel(backgroundShape);
 		backgroundShape = nullptr;
 		return false;
 	}
@@ -178,7 +178,7 @@ bool Ulottie::setAnimation(const string &json_data, tvg::ColorReplace* colorRepl
 		canvas = nullptr;
 		delete anim;
 		anim = nullptr;
-		delete backgroundShape;
+		tvg::Paint::rel(backgroundShape);
 		backgroundShape = nullptr;
 		return false;
 	}
@@ -188,12 +188,26 @@ bool Ulottie::setAnimation(const string &json_data, tvg::ColorReplace* colorRepl
 		canvas = nullptr;
 		delete anim;
 		anim = nullptr;
-		delete backgroundShape;
+		tvg::Paint::rel(backgroundShape);
 		backgroundShape = nullptr;
 		return false;
 	}
-	canvas->push(backgroundShape);
-	canvas->push(anim->picture());
+	if (canvas->push(backgroundShape) != tvg::Result::Success) {
+		delete canvas;
+		canvas = nullptr;
+		delete anim;
+		anim = nullptr;
+		tvg::Paint::rel(backgroundShape);
+		backgroundShape = nullptr;
+		return false;
+	}
+	if (canvas->push(anim->picture()) != tvg::Result::Success) {
+		delete canvas;
+		canvas = nullptr;
+		delete anim;
+		anim = nullptr;
+		return false;
+	}
 	return true;
 }
 

@@ -24,6 +24,7 @@
 #include "tvgCommon.h"
 #include "tvgMath.h"
 #include "tvgScene.h"
+#include "tvgLoadModule.h"
 #include "tvgLottieModel.h"
 #include "tvgLottieBuilder.h"
 #include "tvgLottieExpressions.h"
@@ -415,7 +416,7 @@ void LottieBuilder::appendRect(Shape* shape, Point& pos, Point& size, float r, b
 
     if (ctx->offset) {
         ctx->offset->modifyRect(SHAPE(temp)->rs.path, SHAPE(shape)->rs.path);
-        delete(temp);
+        Paint::rel(temp);
     }
 }
 
@@ -768,11 +769,10 @@ void LottieBuilder::updateTrimpath(TVG_UNUSED LottieGroup* parent, LottieObject*
     trimpath->segment(frameNo, begin, end, tween, exps);
 
     if (SHAPE(ctx->propagator)->rs.stroke) {
-        auto pbegin = SHAPE(ctx->propagator)->rs.stroke->trim.begin;
-        auto pend = SHAPE(ctx->propagator)->rs.stroke->trim.end;
-        auto length = fabsf(pend - pbegin);
-        begin = (length * begin) + pbegin;
-        end = (length * end) + pbegin;
+        auto length = fabsf(begin - end);
+        auto tmp = begin;
+        begin = (length * SHAPE(ctx->propagator)->rs.stroke->trim.begin) + tmp;
+        end = (length * SHAPE(ctx->propagator)->rs.stroke->trim.end) + tmp;
     }
 
     ctx->propagator->trimpath(begin, end, trimpath->type == LottieTrimpath::Type::Simultaneous);
@@ -899,12 +899,22 @@ void LottieBuilder::updateSolid(LottieLayer* layer)
 void LottieBuilder::updateImage(LottieGroup* layer)
 {
     auto image = static_cast<LottieImage*>(layer->children.first());
-    layer->scene->push(image->pooling(true));
+    auto picture = image->data.picture;
+
+    //resolve an image asset if need
+    if (resolver && !image->resolved) {
+        resolver->func(picture, image->data.path, resolver->data);
+        picture->size(image->data.width, image->data.height);
+        image->resolved = true;
+    }
+
+    //LottieImage can be shared among other layers
+    layer->scene->push(picture->refCnt() == 1 ? picture : picture->duplicate());
 }
 
 
 //TODO: unify with the updateText() building logic
-static void _fontText(TextDocument& doc, Scene* scene)
+static void _fontText(LottieFont* font, TextDocument& doc, Scene* scene, const AssetResolver* resolver)
 {
     auto delim = "\r\n\3";
     auto size = doc.size * 75.0f; //1 pt = 1/72; 1 in = 96 px; -> 72/96 = 0.75
@@ -917,9 +927,10 @@ static void _fontText(TextDocument& doc, Scene* scene)
     auto cnt = 0;
     while (token) {
         auto txt = Text::gen();
-        if (txt->font(doc.name) != Result::Success) {
-            txt->font(nullptr);  //fallback to any available font
-        }
+        if (txt->font(doc.name) == Result::Success) {}
+        else if (resolver && resolver->func(txt, font->path, resolver->data)) {}
+        else txt->font(nullptr);  //fallback to any available font
+
         txt->size(size);
         txt->text(token);
         txt->fill(doc.color.r, doc.color.g, doc.color.b);
@@ -943,7 +954,7 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
     if (!p || !text->font) return;
 
     if (text->font->origin != LottieFont::Origin::Local || text->font->chars.empty()) {
-        _fontText(doc, layer->scene);
+        _fontText(text->font, doc, layer->scene, resolver);
         return;
     }
 
@@ -1173,8 +1184,8 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
         }
     }
 
-    delete(scene);
-    delete(textGroup);
+    Paint::rel(scene);
+    Paint::rel(textGroup);
 }
 
 
@@ -1207,7 +1218,7 @@ void LottieBuilder::updateMasks(LottieLayer* layer, float frameNo)
             SHAPE(pShape)->reset();
             auto compMethod = (method == MaskMethod::Subtract || method == MaskMethod::InvAlpha) ? MaskMethod::InvAlpha : MaskMethod::Alpha;
             //Cheaper. Replace the masking with a clipper
-            if (layer->masks.count == 1 && compMethod == MaskMethod::Alpha) {
+            if (layer->effects.empty() && layer->masks.count == 1 && compMethod == MaskMethod::Alpha) {
                 layer->scene->opacity(MULTIPLY(layer->scene->opacity(), opacity));
                 layer->scene->clip(pShape);
             } else {
@@ -1250,7 +1261,7 @@ bool LottieBuilder::updateMatte(LottieComposition* comp, float frameNo, Scene* s
         layer->scene->mask(target->scene, layer->matteType);
     } else if (layer->matteType == MaskMethod::Alpha || layer->matteType == MaskMethod::Luma) {
         //matte target is not exist. alpha blending definitely bring an invisible result
-        delete(layer->scene);
+        Paint::rel(layer->scene);
         layer->scene = nullptr;
         return false;
     }
@@ -1311,9 +1322,8 @@ void LottieBuilder::updateStrokeEffect(LottieLayer* layer, LottieFxStroke* effec
 }
 
 
-void LottieBuilder::updateEffect(LottieLayer* layer, float frameNo)
+void LottieBuilder::updateEffect(LottieLayer* layer, float frameNo, uint8_t quality)
 {
-    constexpr int QUALITY = 35;
     constexpr float BLUR_TO_SIGMA = 0.3f;
 
     if (layer->effects.count == 0) return;
@@ -1351,12 +1361,12 @@ void LottieBuilder::updateEffect(LottieLayer* layer, float frameNo)
                 auto effect = static_cast<LottieFxDropShadow*>(*p);
                 auto color = effect->color(frameNo);
                 //seems the opacity range in dropshadow is 0 ~ 256
-                layer->scene->push(SceneEffect::DropShadow, color.r, color.g, color.b, std::min(255, (int)effect->opacity(frameNo)), (double)effect->angle(frameNo), double(effect->distance(frameNo) * 0.5f), (double)(effect->blurness(frameNo) * BLUR_TO_SIGMA), QUALITY);
+                layer->scene->push(SceneEffect::DropShadow, color.r, color.g, color.b, std::min(255, (int)effect->opacity(frameNo)), (double)effect->angle(frameNo), double(effect->distance(frameNo)), (double)(effect->blurness(frameNo) * BLUR_TO_SIGMA), quality);
                 break;
             }
             case LottieEffect::GaussianBlur: {
                 auto effect = static_cast<LottieFxGaussianBlur*>(*p);
-                layer->scene->push(SceneEffect::GaussianBlur, (double)(effect->blurness(frameNo) * BLUR_TO_SIGMA), effect->direction(frameNo) - 1, effect->wrap(frameNo), QUALITY);
+                layer->scene->push(SceneEffect::GaussianBlur, (double)(effect->blurness(frameNo) * BLUR_TO_SIGMA), effect->direction(frameNo) - 1, effect->wrap(frameNo), quality);
                 break;
             }
             default: break;
@@ -1421,7 +1431,7 @@ void LottieBuilder::updateLayer(LottieComposition* comp, Scene* scene, LottieLay
 
     layer->scene->blend(layer->blendMethod);
 
-    updateEffect(layer, frameNo);
+    updateEffect(layer, frameNo, comp->quality);
 
     if (!layer->matteSrc) scene->push(layer->scene);
 }
@@ -1562,8 +1572,6 @@ void LottieBuilder::build(LottieComposition* comp)
     comp->root->scene = Scene::gen();
 
     _buildComposition(comp, comp->root);
-
-    if (!update(comp, 0)) return;
 
     //viewport clip
     auto clip = Shape::gen();

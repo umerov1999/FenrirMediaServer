@@ -70,7 +70,7 @@ public:
     char* dirName = nullptr;            //base resource directory
 
     bool copy = false;                  //"content" is owned by this loader
-    bool rebuild = false;               //require building the lottie scene
+    bool build = true;                  //require building the lottie scene
 
     LottieLoader();
     ~LottieLoader();
@@ -102,6 +102,8 @@ public:
     float shorten(float frameNo);  //Reduce the accuracy for performance
     bool tween(float from, float to, float progress);
     bool assign(const char* layer, uint32_t ix, const char* var, float val);
+    bool quality(uint8_t value);
+    void set(const AssetResolver* resolver) override;
 
 private:
     bool ready();
@@ -110,6 +112,7 @@ private:
     float startFrame();
     void run(unsigned tid) override;
     void release();
+    bool prepare();
 };
 
 

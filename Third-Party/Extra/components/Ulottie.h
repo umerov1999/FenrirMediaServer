@@ -29,7 +29,6 @@ protected:
 	afx_msg CRect getRect();
 private:
 	bool inited;
-	tvg::Shape *backgroundShape;
 	tvg::Animation *anim;
 	tvg::SwCanvas *canvas;
 

@@ -300,6 +300,12 @@ Paint :: Paint() = default;
 Paint :: ~Paint() = default;
 
 
+void Paint::rel(Paint* paint) noexcept
+{
+    if (paint && paint->refCnt() <= 0) delete(paint);
+}
+
+
 Result Paint::rotate(float degree) noexcept
 {
     if (pImpl->rotate(degree)) return Result::Success;
@@ -336,7 +342,7 @@ Matrix& Paint::transform() noexcept
 
 Result Paint::bounds(float* x, float* y, float* w, float* h) noexcept
 {
-    Point pt4[4];
+    Point pt4[4] = {};
     const auto pm = pImpl->ptransform();
     if (pImpl->bounds(pt4, &pm, false)) {
         BBox box = {{FLT_MAX, FLT_MAX}, {-FLT_MAX, -FLT_MAX}};
@@ -421,7 +427,7 @@ uint8_t Paint::opacity() const noexcept
 
 Result Paint::blend(BlendMethod method) noexcept
 {
-    if (method <= tvg::BlendMethod::Composition) {
+    if (method <= BlendMethod::Add || method == BlendMethod::Composition) {
         pImpl->blend(method);
         return Result::Success;
     }

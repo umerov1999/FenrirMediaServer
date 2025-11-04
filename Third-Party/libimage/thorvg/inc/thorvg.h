@@ -54,6 +54,11 @@ protected: \
 public: \
     Impl* pImpl
 
+#define _TVG_DECLARE_PRIVATE_DERIVE(A) \
+    _TVG_DECLARE_PRIVATE(A); \
+protected: \
+    ~A() {}
+
 #define _TVG_DISABLE_CTOR(A) \
     A() = delete; \
     ~A() = delete
@@ -264,6 +269,27 @@ enum class SceneEffect : uint8_t
 
 
 /**
+ * @brief Enumeration that defines methods used for wrapping text.
+ *
+ * This enum provides options to control how text is wrapped when it exceeds the available space.
+ * Wrapping affects the layout and flow of text in the rendering area.
+ *
+ * @see Text::wrap(TextWrap mode)
+ *
+ * @note Experimental API
+ */
+enum class TextWrap : uint8_t
+{
+    None = 0,      ///< Do not wrap text. Text is rendered on a single line and may overflow the bounding area.
+    Character,     ///< Wrap at the character level. If a word cannot fit, it is broken into individual characters to fit the line.
+    Word,          ///< Wrap at the word level. Words that do not fit are moved to the next line.
+    Smart,         ///< Smart choose wrapping method: word wrap first, falling back to character wrap if a word does not fit.
+    Ellipsis,      ///< Truncate overflowing text and append an ellipsis ("...") at the end. Typically used for single-line labels.
+    Hyphenation    ///< Reserved. No Support.
+};
+
+
+/**
  * @brief Enumeration specifying the ThorVG class type value.
  *
  * ThorVG's drawing objects can return class type values, allowing you to identify the specific class of each object.
@@ -324,9 +350,10 @@ struct Matrix
  */
 class TVG_API Paint
 {
-public:
+protected:
     virtual ~Paint();
 
+public:
     /**
      * @brief Retrieves the parent paint object.
      *
@@ -655,6 +682,18 @@ public:
      * @note Experimental API
      */
     uint32_t id = 0;
+
+    /**
+     * @brief Safely releases a Paint object.
+     *
+     * This is the counterpart to the `gen()` API, and releases the given Paint object safely, 
+     * handling @c nullptr and managing ownership properly.
+     *
+     * @param[in] paint A Paint object to release.
+     *
+     * @since 1.0
+     */
+    static void rel(Paint* paint) noexcept;
 
     _TVG_DECLARE_PRIVATE_BASE(Paint);
 };
@@ -1444,7 +1483,12 @@ public:
     /**
      * @brief Creates a new Shape object.
      *
-     * @return A new Shape object.
+     * This function allocates and returns a new Shape instance.
+     * To properly destroy the Shape object, use @ref Paint::rel().
+     *
+     * @return A pointer to the newly created Shape object.
+     *
+     * @see Paint::rel()
      */
     static Shape* gen() noexcept;
 
@@ -1459,7 +1503,7 @@ public:
      */
     Type type() const noexcept override;
 
-    _TVG_DECLARE_PRIVATE(Shape);
+    _TVG_DECLARE_PRIVATE_DERIVE(Shape);
 };
 
 
@@ -1601,6 +1645,28 @@ public:
     Result load(const uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy = false) noexcept;
 
     /**
+     * @brief Sets the asset resolver callback for handling external resources (e.g., images and fonts).
+     *
+     * This callback is invoked when an external asset reference (such as an image source or file path)
+     * is encountered in a Picture object. It allows the user to provide a custom mechanism for loading
+     * or substituting assets, such as loading from an external source or a virtual filesystem.
+     *
+     * @param[in] func A user-defined function that handles the resolution of asset paths.
+     *                 @p resolver can return @c true if the asset was successfully resolved by the user, or @c false if it was not.
+     * @param[in] data A pointer to user-defined data that will be passed to the callback each time it is invoked.
+     *                 This can be used to maintain context or access external resources.
+     *
+     * @retval Result::InsufficientCondition If the picture is already loaded.
+     * 
+     * @note This function must be called before @ref Picture::load()
+     *       Setting the resolver after loading will have no effect on asset resolution for that asset.
+     * @note If @c false is returned by @p func, ThorVG will attempt to resolve the resource using its internal resolution mechanism as a fallback.
+     * @note To unset the resolver, pass @c nullptr as the @p func parameter.
+     * @note Experimental API
+     */
+    Result resolver(std::function<bool(Paint* paint, const char* src, void* data)> func, void* data) noexcept;
+
+    /**
      * @brief Retrieve a paint object from the Picture scene by its Unique ID.
      *
      * This function searches for a paint object within the Picture scene that matches the provided @p id.
@@ -1618,7 +1684,12 @@ public:
     /**
      * @brief Creates a new Picture object.
      *
-     * @return A new Picture object.
+     * This function allocates and returns a new Picture instance.
+     * To properly destroy the Picture object, use @ref Paint::rel().
+     *
+     * @return A pointer to the newly created Picture object.
+     *
+     * @see Paint::rel()
      */
     static Picture* gen() noexcept;
 
@@ -1634,7 +1705,7 @@ public:
     Type type() const noexcept override;
 
     _TVG_DECLARE_ACCESSOR(Animation);
-    _TVG_DECLARE_PRIVATE(Picture);
+    _TVG_DECLARE_PRIVATE_DERIVE(Picture);
 };
 
 
@@ -1723,7 +1794,12 @@ public:
     /**
      * @brief Creates a new Scene object.
      *
-     * @return A new Scene object.
+     * This function allocates and returns a new Scene instance.
+     * To properly destroy the Scene object, use @ref Paint::rel().
+     *
+     * @return A pointer to the newly created Scene object.
+     *
+     * @see Paint::rel()
      */
     static Scene* gen() noexcept;
 
@@ -1738,7 +1814,7 @@ public:
      */
     Type type() const noexcept override;
 
-    _TVG_DECLARE_PRIVATE(Scene);
+    _TVG_DECLARE_PRIVATE_DERIVE(Scene);
 };
 
 
@@ -1838,6 +1914,20 @@ public:
      * @see align()
      */
     Result layout(float w, float h) noexcept;
+
+    /**
+     * @brief Sets the text wrapping mode for this text object.
+     *
+     * This method controls how the text is laid out when it exceeds the available space.
+     * The wrapping mode determines whether text is truncated, wrapped by character or word,
+     * or adjusted automatically. An ellipsis mode is also available for truncation with "...".
+     *
+     * @param[in] mode The wrapping strategy to apply. Default is @c TextWrap::None
+     *
+     * @see TextWrap
+     * @note Experimental API
+     */
+    Result wrap(TextWrap mode) noexcept;
 
     /**
      * @brief Apply an italic (slant) transformation to the text.
@@ -1971,7 +2061,12 @@ public:
     /**
      * @brief Creates a new Text object.
      *
-     * @return A new Text object.
+     * This function allocates and returns a new Text instance.
+     * To properly destroy the Text object, use @ref Paint::rel().
+     *
+     * @return A pointer to the newly created Text object.
+     *
+     * @see Paint::rel()
      *
      * @since 0.15
      */
@@ -1988,7 +2083,7 @@ public:
      */
     Type type() const noexcept override;
 
-    _TVG_DECLARE_PRIVATE(Text);
+    _TVG_DECLARE_PRIVATE_DERIVE(Text);
 };
 
 

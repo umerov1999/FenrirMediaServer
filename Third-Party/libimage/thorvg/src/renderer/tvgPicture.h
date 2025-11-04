@@ -63,6 +63,7 @@ struct PictureImpl : Picture
     ImageLoader* loader = nullptr;
     Paint* vector = nullptr;          //vector picture uses
     RenderSurface* bitmap = nullptr;  //bitmap picture uses
+    AssetResolver* resolver = nullptr;
     Point origin = {};
     float w = 0, h = 0;
     bool resizing = false;
@@ -74,7 +75,8 @@ struct PictureImpl : Picture
     ~PictureImpl()
     {
         LoaderMgr::retrieve(loader);
-        delete(vector);
+        tvg::free(resolver);
+        if (vector) vector->unref();
     }
 
     bool skip(RenderUpdateFlag flag)
@@ -175,6 +177,21 @@ struct PictureImpl : Picture
         return load(loader);
     }
 
+    Result set(std::function<bool(Paint* paint, const char* src, void* data)> resolver, void* data)
+    {
+        if (loader) return Result::InsufficientCondition;
+
+        if (!resolver) {
+            tvg::free(this->resolver);
+            this->resolver = nullptr;
+            return Result::Success;
+        }
+
+        if (!this->resolver) this->resolver = tvg::calloc<AssetResolver*>(1, sizeof(AssetResolver));
+        *(this->resolver) = {resolver, data};
+        return Result::Success;
+    }
+
     Paint* duplicate(Paint* ret)
     {
         if (ret) TVGERR("RENDERER", "TODO: duplicate()");
@@ -232,6 +249,7 @@ struct PictureImpl : Picture
             if (vector) {
                 loader->sync();
             } else if ((vector = loader->paint())) {
+                vector->ref();
                 PAINT(vector)->parent = this;
                 if (w != loader->w || h != loader->h) {
                     if (!resizing) {
@@ -297,7 +315,7 @@ struct PictureImpl : Picture
         }
 
         this->loader = loader;
-
+        loader->set(resolver);
         if (!loader->read()) return Result::Unknown;
 
         this->w = loader->w;
