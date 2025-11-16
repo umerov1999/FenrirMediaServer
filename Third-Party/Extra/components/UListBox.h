@@ -45,6 +45,7 @@ public:
 	virtual ~UListBox();
 
 	afx_msg void AddLine(const std::wstring &Line);
+	afx_msg void AddLines(const std::list<std::wstring>& listLines);
 	afx_msg void UpdateLines();
 	afx_msg void Init(HBITMAP pBackgroundPicture = NULL, CallBackSelectTouch OnSelect = NULL, CallBackSelectTouch OnTouch = NULL);
 	afx_msg void SwitchBackground(HBITMAP pBackgroundPicture = NULL);

@@ -71,7 +71,7 @@ void PrintMessage(const string &Msg, URGB Color)
 	if (Msg.length() <= 0)
 		return;
 	WaitForSingleObject(hMessageMutex, INFINITE);
-	TextWrite LineData(Color, (unsigned short)Msg.length());
+	TextWrite LineData(Color, (uint32_t)Msg.length());
 	dlgS.Edk.AddLines(base91::encode(tw_tostring(LineData)) + " " + Msg);
 	ReleaseMutex(hMessageMutex);
 }

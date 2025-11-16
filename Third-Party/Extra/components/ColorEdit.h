@@ -31,12 +31,12 @@ public:
 		Color = URGB(0, 0, 0);
 		Length = -1;
 	}
-	TextWrite(URGB PColor, unsigned int PLength) {
+	TextWrite(URGB PColor, uint32_t PLength) {
 		Color = PColor;
 		Length = PLength;
 	}
 	URGB Color;
-	unsigned int Length;
+	uint32_t Length;
 };
 #pragma pack(pop)
 
@@ -47,7 +47,7 @@ public:
 	ColorEdit();
 	virtual ~ColorEdit();
 
-	afx_msg void AddLines(std::string Text);
+	afx_msg void AddLines(const std::string &Text, bool stripNewLines = false);
 	afx_msg void RemoveLastLine();
 	afx_msg void RemoveAllLines();
 	afx_msg std::vector<ColoredMessage> GetRenderedLines();

@@ -197,24 +197,26 @@ BOOL ColorEdit::OnEraseBkgnd(CDC* pMsg) {
 
 static TextWrite Base91Decode(const string &str) {
 	TextWrite Ret;
-	std::string hh = base91::decode(str.substr(0, 9));
+	string hh = base91::decode(str.substr(0, 9));
 	memcpy(&Ret, hh.data(), sizeof(TextWrite));
 	return Ret;
 }
 
-void ColorEdit::AddLines(std::string Text) {
+void ColorEdit::AddLines(const string &Text, bool stripNewLines) {
 	if (!Inited) {
 		return;
 	}
-	std::string Txt = Text;
-	size_t found = string::npos;
-	do{
-		found = Txt.find('\r');
-		if (found == string::npos)
-			found = Txt.find('\n');
-		if(found != string::npos)
-			Txt.erase(found, 1);
-	} while (found != string::npos);
+	string Txt = Text;
+	if (stripNewLines) {
+		size_t found = string::npos;
+		do {
+			found = Txt.find('\r');
+			if (found == string::npos)
+				found = Txt.find('\n');
+			if (found != string::npos)
+				Txt.erase(found, 1);
+		} while (found != string::npos);
+	}
 	while (Txt.length() > 0) {
 		TextWrite info = Base91Decode(Txt);
 		string Line = Txt.substr(10, info.Length);
@@ -225,7 +227,30 @@ void ColorEdit::AddLines(std::string Text) {
 			Txt = Txt.substr(10 + info.Length);
 		}
 		THREAD_ACCESS_LOCK(Async, &Lines);
-		Lines.push_back(ColoredMessage(UTF8_to_wchar(Line), info.Color));
+
+		if (!stripNewLines) {
+			string flushh;
+			for (auto& i : Line)
+			{
+				if (i == '\r') {
+					continue;
+				}
+				if (i == '\n') {
+					Lines.push_back(ColoredMessage(UTF8_to_wchar(flushh), info.Color));
+					flushh = "";
+				}
+				else {
+					flushh.push_back(i);
+				}
+			}
+			if (flushh.length() > 0) {
+				Lines.push_back(ColoredMessage(UTF8_to_wchar(flushh), info.Color));
+			}
+		}
+		else {
+			Lines.push_back(ColoredMessage(UTF8_to_wchar(Line), info.Color));
+		}
+
 		THREAD_ACCESS_UNLOCK(Async, &Lines);
 	}
 	LinesChenged = true;

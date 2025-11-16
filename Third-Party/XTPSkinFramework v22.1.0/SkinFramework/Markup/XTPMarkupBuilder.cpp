@@ -902,7 +902,7 @@ void CXTPMarkupBuilder::LoadMarkupObjectAttributes(CXTPMarkupObject* pObject,
 
 	XTPXML::IXMLDOMNamedNodeMapPtr pAttributes = pElement->attributes;
 	XTPXML::IXMLDOMNodePtr pAttrNode;
-	while (pAttrNode = pAttributes->nextNode())
+	while ((pAttrNode = pAttributes->nextNode()))
 	{
 		// Find attribute property object.
 		_bstr_t attrName	 = pAttrNode->nodeName;
@@ -968,7 +968,7 @@ BOOL CXTPMarkupBuilder::NeedPreserveXmlNodeWhitespaces(XTPXML::IXMLDOMNode* pNod
 	// Traversing gives better performance on avarage then getNamedItem
 	XTPXML::IXMLDOMNamedNodeMapPtr pAttributes = pNode->attributes;
 	XTPXML::IXMLDOMNodePtr pAttribute;
-	while (pAttribute = pAttributes->nextNode())
+	while ((pAttribute = pAttributes->nextNode()))
 	{
 		if (0 == wcscmp(pAttribute->nodeName, L"xml:space"))
 		{
@@ -1101,7 +1101,7 @@ CXTPMarkupObject* CXTPMarkupBuilder::LoadXmlElement(CXTPMarkupObject* pParent,
 
 			XTPXML::IXMLDOMNodeListPtr pChildNodes = pElement->childNodes;
 			XTPXML::IXMLDOMNodePtr pChildNode;
-			while (pChildNode = pChildNodes->nextNode())
+			while ((pChildNode = pChildNodes->nextNode()))
 			{
 				XTPXML::DOMNodeType nodeType = pChildNode->nodeType;
 				switch (nodeType)

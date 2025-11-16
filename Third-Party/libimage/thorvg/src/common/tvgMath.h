@@ -255,10 +255,10 @@ static inline bool zero(const Point& p)
 }
 
 
-static inline float length(const Point* a, const Point* b)
+static inline float length(const Point& a, const Point& b)
 {
-    auto x = b->x - a->x;
-    auto y = b->y - a->y;
+    auto x = b.x - a.x;
+    auto y = b.y - a.y;
 
     if (x < 0) x = -x;
     if (y < 0) y = -y;
@@ -328,6 +328,13 @@ static inline Point operator*(const Point& lhs, const Point& rhs)
 }
 
 
+static inline void operator*=(Point& lhs, const Point& rhs)
+{
+    lhs.x *= rhs.x;
+    lhs.y *= rhs.y;
+}
+
+
 static inline Point operator*(const Point& lhs, const float rhs)
 {
     return {lhs.x * rhs, lhs.y * rhs};
@@ -383,6 +390,14 @@ static inline Orientation orientation(const Point& p1, const Point& p2, const Po
 static inline void log(const Point& pt)
 {
     TVGLOG("COMMON", "Point: [%f %f]", pt.x, pt.y);
+}
+
+
+static inline bool closed(const Point& lhs, const Point& rhs, float tolerance)
+{
+    float dx = lhs.x - rhs.x;
+    float dy = lhs.y - rhs.y;
+    return (dx * dx + dy * dy) < (tolerance * tolerance);
 }
 
 

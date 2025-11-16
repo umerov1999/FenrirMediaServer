@@ -203,6 +203,20 @@ void UListBox::AddLine(const std::wstring &Line) {
 	THREAD_ACCESS_UNLOCK(Async, &Lines);
 }
 
+void UListBox::AddLines(const std::list<std::wstring>& listLines) {
+	if (!Inited || listLines.size() <= 0) {
+		return;
+	}
+	THREAD_ACCESS_LOCK(Async, &Lines);
+	for (auto& i : listLines) {
+		if (i.empty()) {
+			continue;
+		}
+		Lines.push_back(i);
+	}
+	THREAD_ACCESS_UNLOCK(Async, &Lines);
+}
+
 void UListBox::UpdateLines() {
 	LinesChenged = true;
 	InvalidateRect(getRect());

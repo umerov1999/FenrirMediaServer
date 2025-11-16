@@ -487,9 +487,7 @@ void LottieParser::parseProperty(T& prop, LottieObject* obj)
     enterObject();
     while (auto key = nextObjectKey()) {
         if (KEY_AS("k")) parsePropertyInternal(prop);
-        else if (obj && KEY_AS("sid")) registerSlot(obj, getString(), prop.type);
-        else if (KEY_AS("x") && expressions) getExpression(getStringCopy(), comp, context.layer, context.parent, &prop);
-        else if (KEY_AS("ix")) prop.ix = getInt();
+        else if (parseCommon(obj, prop, key)) continue;
         else skip();
     }
 }
@@ -502,6 +500,21 @@ bool LottieParser::parseCommon(LottieObject* obj, const char* key)
         return true;
     } else if (KEY_AS("hd")) {
         obj->hidden = getBool();
+        return true;
+    } else return false;
+}
+
+
+bool LottieParser::parseCommon(LottieObject* obj, LottieProperty& prop, const char* key)
+{
+    if (KEY_AS("ix")) {
+        prop.ix = getInt();
+        return true;
+    } else if (KEY_AS("x") && expressions) {
+        getExpression(getStringCopy(), comp, context.layer, context.parent, &prop);
+        return true;
+    } else if (KEY_AS("sid")) {
+        registerSlot(obj, getString(), prop.type);
         return true;
     } else return false;
 }
@@ -572,7 +585,7 @@ LottieTransform* LottieParser::parseTransform(bool ddd)
             enterObject();
             while (auto key = nextObjectKey()) {
                 if (KEY_AS("k")) parsePropertyInternal(transform->position);
-                else if (KEY_AS("x"))
+                else if (KEY_AS("x")) //must be prior to parseCommon()
                 {
                     //check separateCoord to figure out whether "x(expression)" / "x(coord)"
                     if (peekType() == kStringType) {
@@ -581,8 +594,7 @@ LottieTransform* LottieParser::parseTransform(bool ddd)
                     } else parseProperty(transform->separateCoord()->x);
                 }
                 else if (KEY_AS("y")) parseProperty(transform->separateCoord()->y);
-                else if (KEY_AS("sid")) registerSlot(transform, getString(), LottieProperty::Type::Vector);
-                else if (KEY_AS("ix")) transform->position.ix = getInt();
+                else if (parseCommon(transform, transform->position, key)) continue;
                 else skip();
             }
         }
@@ -658,7 +670,7 @@ LottieSolidStroke* LottieParser::parseSolidStroke()
 }
 
 
-void LottieParser::getPathSet(LottiePathSet& path)
+void LottieParser::getPathSet(LottiePath* obj, LottiePathSet& path)
 {
     enterObject();
     while (auto key = nextObjectKey()) {
@@ -671,10 +683,9 @@ void LottieParser::getPathSet(LottiePathSet& path)
                 getValue(path.value);
             }
         }
-        else if (KEY_AS("x") && expressions) getExpression(getStringCopy(), comp, context.layer, context.parent, &path);
+        else if (parseCommon(obj, path, key)) continue;
         else skip();
     }
-    path.type = LottieProperty::Type::PathSet;
 }
 
 
@@ -684,7 +695,7 @@ LottiePath* LottieParser::parsePath()
 
     while (auto key = nextObjectKey()) {
         if (parseCommon(path, key)) continue;
-        else if (KEY_AS("ks")) getPathSet(path->pathset);
+        else if (KEY_AS("ks")) getPathSet(path, path->pathset);
         else if (parseDirection(path, key)) continue;
         else skip();
     }
@@ -736,7 +747,7 @@ void LottieParser::parseColorStop(LottieGradient* gradient)
     while (auto key = nextObjectKey()) {
         if (KEY_AS("p")) gradient->colorStops.count = getInt();
         else if (KEY_AS("k")) parseProperty(gradient->colorStops, gradient);
-        else if (KEY_AS("sid")) registerSlot(gradient, getString(), LottieProperty::Type::ColorStop);
+        else if (parseCommon(gradient, gradient->colorStops, key)) continue;
         else skip();
     }
 }
@@ -1160,8 +1171,8 @@ void LottieParser::parseTextAlignmentOption(LottieText* text)
 {
     enterObject();
     while (auto key = nextObjectKey()) {
-        if (KEY_AS("g")) text->alignOption.grouping = (LottieText::AlignOption::Group) getInt();
-        else if (KEY_AS("a")) parseProperty(text->alignOption.anchor);
+        if (KEY_AS("g")) text->alignOp.group = (LottieText::AlignOption::Group) getInt();
+        else if (KEY_AS("a")) parseProperty(text->alignOp.anchor);
         else skip();
     }
 }
@@ -1200,8 +1211,8 @@ void LottieParser::parseTextRange(LottieText* text)
             } else if (KEY_AS("a")) { // text style
                 enterObject();
                 while (auto key = nextObjectKey()) {
-                    if (KEY_AS("t")) parseProperty(selector->style.letterSpacing);
-                    else if (KEY_AS("ls")) parseProperty(selector->style.lineSpacing);
+                    if (KEY_AS("t")) parseProperty(selector->style.letterSpace);
+                    else if (KEY_AS("ls")) parseProperty(selector->style.lineSpace);
                     else if (KEY_AS("fc"))
                     {
                         parseProperty(selector->style.fillColor);
@@ -1238,10 +1249,10 @@ void LottieParser::parseTextFollowPath(LottieText* text)
     enterObject();
     auto key = nextObjectKey();
     if (!key) return;
-    if (!text->followPath) text->followPath = new LottieTextFollowPath;
+    if (!text->follow) text->follow = new LottieTextFollowPath;
     do {
-        if (KEY_AS("m")) text->followPath->maskIdx = getInt();
-        else if (KEY_AS("f")) parseProperty(text->followPath->firstMargin);
+        if (KEY_AS("m")) text->follow->maskIdx = getInt();
+        else if (KEY_AS("f")) parseProperty(text->follow->firstMargin);
         else skip();
     } while ((key = nextObjectKey()));
 }
@@ -1283,7 +1294,7 @@ LottieMask* LottieParser::parseMask()
     while (auto key = nextObjectKey()) {
         if (KEY_AS("inv")) mask->inverse = getBool();
         else if (KEY_AS("mode")) mask->method = getMaskMethod(mask->inverse);
-        else if (KEY_AS("pt")) getPathSet(mask->pathset);
+        else if (KEY_AS("pt")) getPathSet(nullptr, mask->pathset);
         else if (KEY_AS("o")) parseProperty(mask->opacity);
         else if (KEY_AS("x")) parseProperty(mask->expand);
         else skip();

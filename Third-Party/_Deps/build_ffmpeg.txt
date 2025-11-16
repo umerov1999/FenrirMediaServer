@@ -16,7 +16,7 @@ Add:
 Replace:
 #include "lame.h"
 
-CALL "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+CALL "C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 
 cd /d "C:/msys64"
 msys2_shell.cmd -full-path

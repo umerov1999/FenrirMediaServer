@@ -377,20 +377,5 @@ void VKAPI_TOOLS_Request(const string &Token, const string &APIMethod, const str
 
 
 	VK_APIMETHODCUSTOM t(Token, ANDROID_USERAGENT, APIMethod + Tparams);
-	string ret = t().Object.dump(4);
-	string flushh;
-	for (auto& i : ret)
-	{
-		if (i == '\r')
-			continue;
-		if (i == '\n')
-		{
-			PRINT(TypeColor::TYPE_NORMAL) << flushh << FLUSH;
-			flushh = "";
-		}
-		else
-			flushh.push_back(i);
-	}
-	if(flushh.length() > 0)
-		PRINT(TypeColor::TYPE_NORMAL) << flushh << FLUSH;
+	PRINT(TypeColor::TYPE_NORMAL) << t().Object.dump(4) << FLUSH;
 }

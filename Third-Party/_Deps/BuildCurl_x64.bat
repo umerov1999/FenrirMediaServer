@@ -1,14 +1,14 @@
 @echo off
 
-set VS2022_AMD64="%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-CALL %VS2022_AMD64%
+set VS2026_AMD64="%ProgramFiles%\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+CALL %VS2026_AMD64%
 
-SET CMAKE_EXE="C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
+SET CMAKE_EXE="C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
 SET CurrentDir=%cd%
 
 mkdir build
 cd build
-%CMAKE_EXE% ../  -G "Visual Studio 17 2022" -A x64 -DCURL_TARGET_WINDOWS_VERSION=0x0600 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON ^
+%CMAKE_EXE% ../  -G "Visual Studio 18 2026" -A x64 -DCURL_TARGET_WINDOWS_VERSION=0x0600 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON ^
 -DBUILD_STATIC_CURL=ON -DCURL_STATIC_CRT=ON -DUSE_LIBIDN2=OFF -DENABLE_IPV6=ON -DUSE_MSH3=OFF -DUSE_NGHTTP2=OFF ^
 -DCURL_DISABLE_OPENSSL_AUTO_LOAD_CONFIG=OFF -DCURL_USE_SCHANNEL=OFF -DCURL_WINDOWS_SSPI=OFF -DENABLE_UNICODE=ON ^
 -DENABLE_ARES=OFF -DCURL_USE_MBEDTLS=OFF -DCURL_USE_LIBSSH=OFF -DCURL_USE_LIBSSH2=OFF -DCURL_USE_OPENSSL=ON ^
