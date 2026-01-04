@@ -393,7 +393,7 @@ LottieInterpolator* LottieParser::getInterpolator(const char* key, Point& in, Po
 
     //new interpolator
     if (!interpolator) {
-        interpolator = tvg::malloc<LottieInterpolator*>(sizeof(LottieInterpolator));
+        interpolator = tvg::malloc<LottieInterpolator>(sizeof(LottieInterpolator));
         interpolator->set(key, in, out);
         comp->interpolators.push(interpolator);
     }
@@ -957,20 +957,20 @@ void LottieParser::parseImage(LottieImage* image, const char* data, const char* 
         //figure out the mimetype
         auto mimeType = data + 11;
         auto needle = strstr(mimeType, ";");
-        image->data.mimeType = duplicate(mimeType, needle - mimeType);
+        image->bitmap.mimeType = duplicate(mimeType, needle - mimeType);
         //b64 data
         auto b64Data = strstr(data, ",") + 1;
         size_t length = strlen(data) - (b64Data - data);
-        image->data.size = b64Decode(b64Data, length, &image->data.b64Data);
+        image->bitmap.size = b64Decode(b64Data, length, &image->bitmap.data);
     //external image resource
     } else {
         auto len = strlen(dirName) + strlen(subPath) + strlen(data) + 2;
-        image->data.path = tvg::malloc<char*>(len);
-        snprintf(image->data.path, len, "%s/%s%s", dirName, subPath, data);
+        image->bitmap.path = tvg::malloc<char>(len);
+        snprintf(image->bitmap.path, len, "%s/%s%s", dirName, subPath, data);
     }
 
-    image->data.width = width;
-    image->data.height = height;
+    image->bitmap.width = width;
+    image->bitmap.height = height;
     image->prepare();
 }
 
@@ -1194,7 +1194,7 @@ void LottieParser::parseTextRange(LottieText* text)
                     else if (KEY_AS("xe"))
                     {
                         parseProperty(selector->maxEase);
-                        selector->interpolator = tvg::malloc<LottieInterpolator*>(sizeof(LottieInterpolator));
+                        selector->interpolator = tvg::malloc<LottieInterpolator>(sizeof(LottieInterpolator));
                     }
                     else if (KEY_AS("ne")) parseProperty(selector->minEase);
                     else if (KEY_AS("a")) parseProperty(selector->maxAmount);
@@ -1655,7 +1655,7 @@ LottieProperty* LottieParser::parse(LottieSlot* slot)
                 else skip();
             }
             if (!obj) return nullptr;
-            prop = new LottieBitmap(static_cast<LottieImage*>(obj)->data);
+            prop = new LottieBitmap(static_cast<LottieImage*>(obj)->bitmap);
             delete(obj);
             break;
         }
@@ -1697,7 +1697,7 @@ void LottieParser::captureSlots(const char* key)
 
     //composite '{' + slots + '}'
     auto len = (end - begin + 2);
-    slots = tvg::malloc<char*>(sizeof(char) * len + 1);
+    slots = tvg::malloc<char>(sizeof(char) * len + 1);
     slots[0] = '{';
     memcpy(slots + 1, begin, len);
     slots[len] = '\0';

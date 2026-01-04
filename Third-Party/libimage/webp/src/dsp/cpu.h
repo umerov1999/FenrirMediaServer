@@ -76,6 +76,24 @@
 #define WEBP_HAVE_SSE2
 #endif
 
+#if (defined(__SSE4_1__) || defined(WEBP_MSC_SSE41)) && \
+    (!defined(HAVE_CONFIG_H) || defined(WEBP_HAVE_SSE41))
+#define WEBP_USE_SSE41
+#endif
+
+#if defined(WEBP_USE_SSE41) && !defined(WEBP_HAVE_SSE41)
+#define WEBP_HAVE_SSE41
+#endif
+
+#if (defined(__AVX2__) || defined(WEBP_MSC_AVX2)) && \
+    (!defined(HAVE_CONFIG_H) || defined(WEBP_HAVE_AVX2))
+#define WEBP_USE_AVX2
+#endif
+
+#if defined(WEBP_USE_AVX2) && !defined(WEBP_HAVE_AVX2)
+#define WEBP_HAVE_AVX2
+#endif
+
 #undef WEBP_MSC_AVX2
 #undef WEBP_MSC_SSE41
 #undef WEBP_MSC_SSE2

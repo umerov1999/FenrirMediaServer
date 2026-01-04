@@ -43,7 +43,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
-      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0600;TVG_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0A00;TVG_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\Third-Party\XTPSkinFramework v22.1.0\SkinFramework;..\..\Third-Party\libimage;..\..\Third-Party\Extra;..\..\Third-Party\Extra\components;..\..\Third-Party\libimage\thorvg\inc</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>

@@ -695,7 +695,7 @@ void SectionPeEditorDialog::OnSelect()
 #else
 	DWORD dwFlags = OFN_OVERWRITEPROMPT;
 #endif
-	CFileDialog fileDialog(TRUE, NULL, NULL, dwFlags, L"PE File|*.exe|");
+	CFileDialog fileDialog(TRUE, NULL, NULL, dwFlags, L"Исполняемый файл|*.exe;*.dll;*.com;*.sys;*.efi|");
 	int result = (int)fileDialog.DoModal();
 	if (result != 1)
 	{

@@ -15,7 +15,7 @@
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 
 /* Generate a compiler error if there is an old png.h in the search path. */
-typedef png_libpng_version_1_6_50 Your_png_h_is_not_version_1_6_50;
+typedef png_libpng_version_1_6_53 Your_png_h_is_not_version_1_6_53;
 
 /* Sanity check the chunks definitions - PNG_KNOWN_CHUNKS from pngpriv.h and the
  * corresponding macro definitions.  This causes a compile time failure if
@@ -110,10 +110,16 @@ png_zalloc,(voidpf png_ptr, uInt items, uInt size),PNG_ALLOCATED)
    if (png_ptr == NULL)
       return NULL;
 
-   if (items >= (~(png_alloc_size_t)0)/size)
+   /* This check against overflow is vestigial, dating back from
+    * the old times when png_zalloc used to be an exported function.
+    * We're still keeping it here for now, as an extra-cautious
+    * prevention against programming errors inside zlib, although it
+    * should rather be a debug-time assertion instead.
+    */
+   if (size != 0 && items >= (~(png_alloc_size_t)0) / size)
    {
-      png_warning (png_voidcast(png_structrp, png_ptr),
-          "Potential overflow in png_zalloc()");
+      png_warning(png_voidcast(png_structrp, png_ptr),
+                  "Potential overflow in png_zalloc()");
       return NULL;
    }
 
@@ -135,7 +141,7 @@ void /* PRIVATE */
 png_reset_crc(png_structrp png_ptr)
 {
    /* The cast is safe because the crc is a 32-bit value. */
-   png_ptr->crc = (png_uint_32)crc32(0, Z_NULL, 0);
+   png_ptr->crc = (png_uint_32)zng_crc32(0, Z_NULL, 0);
 }
 
 /* Calculate the CRC over a section of data.  We can only pass as
@@ -178,7 +184,7 @@ png_calculate_crc(png_structrp png_ptr, png_const_bytep ptr, size_t length)
             safe_length = (uInt)-1; /* evil, but safe */
 #endif
 
-         crc = crc32(crc, ptr, safe_length);
+         crc = zng_crc32(crc, ptr, safe_length);
 
          /* The following should never issue compiler warnings; if they do the
           * target system has characteristics that will probably violate other
@@ -238,10 +244,6 @@ png_user_version_check(png_structrp png_ptr, png_const_charp user_png_ver)
       PNG_UNUSED(pos)
 
       png_warning(png_ptr, m);
-#endif
-
-#ifdef PNG_ERROR_NUMBERS_SUPPORTED
-      png_ptr->flags = 0;
 #endif
 
       return 0;
@@ -817,7 +819,7 @@ png_get_copyright(png_const_structrp png_ptr)
    return PNG_STRING_COPYRIGHT
 #else
    return PNG_STRING_NEWLINE \
-      "libpng version 1.6.50" PNG_STRING_NEWLINE \
+      "libpng version 1.6.53" PNG_STRING_NEWLINE \
       "Copyright (c) 2018-2025 Cosmin Truta" PNG_STRING_NEWLINE \
       "Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson" \
       PNG_STRING_NEWLINE \
@@ -979,7 +981,7 @@ png_reset_zstream(png_structrp png_ptr)
       return Z_STREAM_ERROR;
 
    /* WARNING: this resets the window bits to the maximum! */
-   return inflateReset(&png_ptr->zstream);
+   return zng_inflateReset(&png_ptr->zstream);
 }
 #endif /* READ */
 

@@ -212,7 +212,7 @@ bool LottieLoader::open(const char* data, uint32_t size, const char* rpath, bool
 {
     colorReplaceInternal = colorReplacement;
     if (copy) {
-        content = tvg::malloc<char*>(size + 1);
+        content = tvg::malloc<char>(size + 1);
         if (!content) return false;
         memcpy((char*)content, data, size);
         const_cast<char*>(content)[size] = '\0';

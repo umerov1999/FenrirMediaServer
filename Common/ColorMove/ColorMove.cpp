@@ -4,7 +4,6 @@
 #include <map>
 #include <list>
 #include <iomanip>
-#include <tchar.h>
 using namespace std;
 
 #define MAKE_RGB( r, g, b )		( ( ( 255 ) << 24 ) | ( ( b ) << 16 ) | ( ( g ) << 8 ) | ( r ) )
@@ -17,21 +16,21 @@ template <typename I> std::string n2hexstr(I w, size_t hex_len = sizeof(I) << 1)
 	return rc;
 }
 
-static int parseColor(string colorString) {
+static int32_t parseColor(string colorString) {
 	if (colorString[0] == '#') {
 		long color = stol(colorString.substr(1), nullptr, 16);
-		return (int)color;
+		return (int32_t)color;
 	}
 	throw runtime_error("Unknown color");
 }
 
-inline unsigned char clamp(float v)
+inline uint8_t clamp(float v)
 {
 	if (v < 0.f)
 		return 0;
 	if (v > 255.f)
 		return 255;
-	return (unsigned char)v;
+	return (uint8_t)v;
 }
 
 inline float clampf(float v)
@@ -74,9 +73,9 @@ public:
 #endif
 	}
 	rgb_model(float fR, float fG, float fB) {
-		r = (unsigned char)(fR * 255) & 0xff;
-		g = (unsigned char)(fG * 255) & 0xff;
-		b = (unsigned char)(fB * 255) & 0xff;
+		r = (uint8_t)(fR * 255) & 0xff;
+		g = (uint8_t)(fG * 255) & 0xff;
+		b = (uint8_t)(fB * 255) & 0xff;
 	}
 	void toFloat(float &fR, float &fG, float &fB) const {
 		fR = (float)r / 255.0f;
@@ -90,9 +89,9 @@ public:
 		return (int32_t)(r | (g << 8) | (b << 16));
 #endif
 	}
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
 };
 
 hsv_model rgb2hsv(const rgb_model& color)
@@ -205,30 +204,48 @@ void material() {
 
 		list<ColorsRef> refs;
 
-		refs.push_back(ColorsRef("Day Primary", rgb2hsv(rgb_model(parseColor("#6750A4"))), rgb2hsv(rgb_model(parseColor(colorPrimary))), {
-			{"colorOnPrimary", "#FFFFFF"},
-			{"colorPrimaryInverse", "#D0BCFF"},
-			{"colorPrimaryContainer", "#EADDFF"},
-			{"colorOnPrimaryContainer", "#21005D"}
+		refs.push_back(ColorsRef("Day Primary", rgb2hsv(rgb_model(parseColor("#6750a4"))), rgb2hsv(rgb_model(parseColor(colorPrimary))), {
+			{"colorOnPrimary", "#ffffff"},
+			{"colorPrimaryContainer", "#eaddff"},
+			{"colorOnPrimaryContainer", "#21005d"},
+			{"colorOnPrimaryContainer35", "#4f378b"},
+			{"colorPrimaryInverse", "#d0bcff"},
+			{"colorPrimaryFixed", "#eaddff"},
+			{"colorPrimaryFixedDim", "#d0bcff"},
+			{"colorOnPrimaryFixed", "#21005d"},
+			{"colorOnPrimaryFixedVariant", "#4f378b"}
 			}));
 
-		refs.push_back(ColorsRef("Day Secondary", rgb2hsv(rgb_model(parseColor("#625B71"))), rgb2hsv(rgb_model(parseColor(colorSecondary))), {
-			{"colorOnSecondary", "#FFFFFF"},
-			{"colorSecondaryContainer", "#E8DEF8"},
-			{"colorOnSecondaryContainer", "#1D192B"}
+		refs.push_back(ColorsRef("Day Secondary", rgb2hsv(rgb_model(parseColor("#625b71"))), rgb2hsv(rgb_model(parseColor(colorSecondary))), {
+			{"colorOnSecondary", "#ffffff"},
+			{"colorSecondaryContainer", "#e8def8"},
+			{"colorOnSecondaryContainer", "#1d192b"},
+			{"colorOnSecondaryContainer35", "#4a4458"},
+			{"colorSecondaryFixed", "#e8def8"},
+			{"colorSecondaryFixedDim", "#ccc2dc"},
+			{"colorOnSecondaryFixed", "#1d192b"},
+			{"colorOnSecondaryFixedVariant", "#4a4458"}
 			}));
 
-		refs.push_back(ColorsRef("Night Primary", rgb2hsv(rgb_model(parseColor("#D0BCFF"))), rgb2hsv(rgb_model(parseColor(colorPrimary))), {
-			{"colorOnPrimary", "#381E72"},
-			{"colorPrimaryInverse", "#6750A4"},
-			{"colorPrimaryContainer", "#4F378B"},
-			{"colorOnPrimaryContainer", "#EADDFF"}
+		refs.push_back(ColorsRef("Night Primary", rgb2hsv(rgb_model(parseColor("#d0bcff"))), rgb2hsv(rgb_model(parseColor(colorPrimary))), {
+			{"colorOnPrimary", "#381e72"},
+			{"colorPrimaryContainer", "#4f378b"},
+			{"colorOnPrimaryContainer", "#eaddff"},
+			{"colorPrimaryInverse", "#6750a4"},
+			{"colorPrimaryFixed", "#eaddff"},
+			{"colorPrimaryFixedDim", "#d0bcff"},
+			{"colorOnPrimaryFixed", "#21005d"},
+			{"colorOnPrimaryFixedVariant", "#4f378b"}
 			}));
 
-		refs.push_back(ColorsRef("Night Secondary", rgb2hsv(rgb_model(parseColor("#CCC2DC"))), rgb2hsv(rgb_model(parseColor(colorSecondary))), {
-			{"colorOnSecondary", "#332D41"},
-			{"colorSecondaryContainer", "#4A4458"},
-			{"colorOnSecondaryContainer", "#E8DEF8"}
+		refs.push_back(ColorsRef("Night Secondary", rgb2hsv(rgb_model(parseColor("#ccc2dc"))), rgb2hsv(rgb_model(parseColor(colorSecondary))), {
+			{"colorOnSecondary", "#332d41"},
+			{"colorSecondaryContainer", "#4a4458"},
+			{"colorOnSecondaryContainer", "#e8def8"},
+			{"colorSecondaryFixed", "#e8def8"},
+			{"colorSecondaryFixedDim", "#ccc2dc"},
+			{"colorOnSecondaryFixed", "#1d192b"},
+			{"colorOnSecondaryFixedVariant", "#4a4458"}
 			}));
 
 		for (auto& i : refs) {
@@ -244,7 +261,7 @@ void material() {
 	}
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
 	locale::global(locale("ru_RU.UTF-8"));
 	cout << "ColorMove:" << endl;

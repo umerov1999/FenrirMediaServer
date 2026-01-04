@@ -41,7 +41,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>
       </SDLCheck>
-      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;CURL_STATICLIB;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0600;NO_MFC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;CURL_STATICLIB;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0A00;NO_MFC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>..\..\libcurl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

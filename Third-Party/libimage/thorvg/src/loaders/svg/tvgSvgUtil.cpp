@@ -38,6 +38,34 @@ static uint8_t _hexCharToDec(const char c)
 /* External Class Implementation                                        */
 /************************************************************************/
 
+
+const char* svgUtilSkipWhiteSpace(const char* itr, const char* itrEnd)
+{
+    while ((itrEnd && itr < itrEnd) || (!itrEnd && *itr != '\0')) {
+        if (!isspace((unsigned char)*itr)) break;
+        itr++;
+    }
+    return itr;
+}
+
+
+const char* svgUtilUnskipWhiteSpace(const char* itr, const char* itrStart)
+{
+    for (itr--; itr > itrStart; itr--) {
+        if (!isspace((unsigned char)*itr)) break;
+    }
+    return itr + 1;
+}
+
+
+const char* svgUtilSkipWhiteSpaceAndComma(const char* content)
+{
+    content = svgUtilSkipWhiteSpace(content, nullptr);
+    if (*content == ',') return content + 1;
+    return content;
+}
+
+
 size_t svgUtilURLDecode(const char *src, char** dst)
 {
     if (!src) return 0;
@@ -45,7 +73,7 @@ size_t svgUtilURLDecode(const char *src, char** dst)
     auto length = strlen(src);
     if (length == 0) return 0;
 
-    char* decoded = tvg::malloc<char*>(sizeof(char) * length + 1);
+    char* decoded = tvg::malloc<char>(sizeof(char) * length + 1);
 
     char a, b;
     int idx =0;

@@ -988,7 +988,7 @@ png_write_destroy(png_structrp png_ptr)
 
    /* Free any memory zlib uses */
    if ((png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) != 0)
-      deflateEnd(&png_ptr->zstream);
+       zng_deflateEnd(&png_ptr->zstream);
 
    /* Free our memory.  png_free checks NULL for us. */
    png_free_buffer_list(png_ptr, &png_ptr->zbuffer_list);
@@ -2173,8 +2173,7 @@ png_image_write_main(png_voidp argument)
     * before it is written.  This only applies when the input is 16-bit and
     * either there is an alpha channel or it is converted to 8-bit.
     */
-   if ((linear != 0 && alpha != 0 ) ||
-       (colormap == 0 && display->convert_to_8bit != 0))
+   if (linear != 0 && (alpha != 0 || display->convert_to_8bit != 0))
    {
       png_bytep row = png_voidcast(png_bytep, png_malloc(png_ptr,
           png_get_rowbytes(png_ptr, info_ptr)));

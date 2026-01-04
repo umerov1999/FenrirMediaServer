@@ -76,6 +76,18 @@
     <Filter Include="Файлы исходного кода\thorvg\loaders\external_jpg">
       <UniqueIdentifier>{f9f7f366-0219-483d-947f-3b415dfa46d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\png\intel">
+      <UniqueIdentifier>{5621d0d5-dd59-46c6-9574-c6a507755be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\zlib\arch">
+      <UniqueIdentifier>{44be0e0e-4fbb-478b-a065-a0b454fdea7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\zlib\arch\generic">
+      <UniqueIdentifier>{10702c15-43f1-4098-aea0-38883a9f03cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\zlib\arch\x86">
+      <UniqueIdentifier>{d3ff11df-a6a8-4560-8698-827fdbaf209e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="libimage.cpp">
@@ -125,51 +137,6 @@
     </ClCompile>
     <ClCompile Include="png\pngmem.c">
       <Filter>Файлы исходного кода\png</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\deflate.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\gzclose.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\gzlib.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\gzread.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\gzwrite.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\infback.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\inffast.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\inflate.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\inftrees.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\trees.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\uncompr.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\zutil.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\adler32.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\compress.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\crc32.c">
-      <Filter>Файлы исходного кода\zlib</Filter>
     </ClCompile>
     <ClCompile Include="thorvg\src\loaders\svg\tvgSvgCssStyle.cpp">
       <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
@@ -648,6 +615,177 @@
     <ClCompile Include="libjpeg-turbo\rdbmp.c">
       <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
     </ClCompile>
+    <ClCompile Include="png\intel\filter_sse2_intrinsics.c">
+      <Filter>Файлы исходного кода\png\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="png\intel\intel_init.c">
+      <Filter>Файлы исходного кода\png\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\alpha_processing_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\dec_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\lossless_avx2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\lossless_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\upsampling_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\yuv_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\adler32.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\compress.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\cpu_features.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\crc32.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\crc32_braid_comb.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_fast.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_huff.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_medium.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_quick.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_rle.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_slow.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_stored.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\functable.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzlib.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzread.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzwrite.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\infback.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inflate.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inftrees.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\insert_string.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\trees.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\uncompr.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\zutil.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\adler32_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\chunkset_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\compare256_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\crc32_braid_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\crc32_chorba_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\slide_hash_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_avx2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_avx512.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_avx512_vnni.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_sse42.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_ssse3.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chorba_sse2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chorba_sse41.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chunkset_avx2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chunkset_avx512.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chunkset_sse2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chunkset_ssse3.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\compare256_avx2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\compare256_avx512.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\compare256_sse2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\crc32_pclmulqdq.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\crc32_vpclmulqdq.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\slide_hash_avx2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\slide_hash_sse2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\x86_features.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libimage.h">
@@ -673,39 +811,6 @@
     </ClInclude>
     <ClInclude Include="png\pngdebug.h">
       <Filter>Файлы исходного кода\png</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\deflate.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\gzguts.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\inffast.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\inffixed.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\inflate.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\inftrees.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\trees.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\zconf.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\zlib.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\zutil.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\crc32.h">
-      <Filter>Файлы исходного кода\zlib</Filter>
     </ClInclude>
     <ClInclude Include="thorvg\inc\thorvg.h">
       <Filter>Файлы исходного кода\thorvg\inc</Filter>
@@ -893,9 +998,6 @@
     <ClInclude Include="webp\src\dsp\lossless_common.h">
       <Filter>Файлы исходного кода\webp\dsp</Filter>
     </ClInclude>
-    <ClInclude Include="webp\src\dsp\neon.h">
-      <Filter>Файлы исходного кода\webp\dsp</Filter>
-    </ClInclude>
     <ClInclude Include="webp\src\dsp\quant.h">
       <Filter>Файлы исходного кода\webp\dsp</Filter>
     </ClInclude>
@@ -1075,6 +1177,144 @@
     </ClInclude>
     <ClInclude Include="thorvg\src\loaders\external_jpg\tvgJpgLoader.h">
       <Filter>Файлы исходного кода\thorvg\loaders\external_jpg</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\common_sse41.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\adler32_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch_functions.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\chunkset_tpl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\compare256_rle.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\cpu_features.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32_braid_comb_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32_braid_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32_braid_tbl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\deflate.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\deflate_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\fallback_builtins.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\functable.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\gzguts.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inffast_tpl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inffixed_tbl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inflate.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inflate_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inftrees.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\insert_string_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\insert_string_tpl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\match_tpl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\trees.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\trees_emit.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\trees_tbl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zbuild.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zconf-ng.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zendian.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zlib_name_mangling-ng.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zlib-ng.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zmemory.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zutil.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zutil_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\chunk_128bit_perm_idx_lut.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\chunk_256bit_perm_idx_lut.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\chunk_permute_table.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\compare256_p.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\generic_functions.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\adler32_avx2_p.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\adler32_avx512_p.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\adler32_ssse3_p.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\crc32_pclmulqdq_tpl.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\x86_features.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\x86_functions.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\x86_intrins.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

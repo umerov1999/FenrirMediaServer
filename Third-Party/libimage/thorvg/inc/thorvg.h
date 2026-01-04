@@ -127,7 +127,7 @@ enum struct ColorSpace : uint8_t
  *       resulting in decreased performance compared to the default rendering mode. Thus, it is recommended to benchmark
  *       both modes in your specific use case to determine the optimal setting.
  *
- * @note Experimental API
+ * @since 1.0
  */
 enum struct EngineOption : uint8_t
 {
@@ -206,12 +206,12 @@ enum struct MaskMethod : uint8_t
     InvAlpha,       ///< Alpha Masking using the complement to the masking target's pixels as an alpha value.
     Luma,           ///< Alpha Masking using the grayscale (0.2126R + 0.7152G + 0.0722*B) of the masking target's pixels. @since 0.9
     InvLuma,        ///< Alpha Masking using the grayscale (0.2126R + 0.7152G + 0.0722*B) of the complement to the masking target's pixels. @since 0.11
-    Add,            ///< Combines the target and source objects pixels using target alpha. (T * TA) + (S * (255 - TA)) (Experimental API)
-    Subtract,       ///< Subtracts the source color from the target color while considering their respective target alpha. (T * TA) - (S * (255 - TA)) (Experimental API)
-    Intersect,      ///< Computes the result by taking the minimum value between the target alpha and the source alpha and multiplies it with the target color. (T * min(TA, SA)) (Experimental API)
-    Difference,     ///< Calculates the absolute difference between the target color and the source color multiplied by the complement of the target alpha. abs(T - S * (255 - TA)) (Experimental API)
-    Lighten,        ///< Where multiple masks intersect, the highest transparency value is used. (Experimental API)
-    Darken          ///< Where multiple masks intersect, the lowest transparency value is used. (Experimental API)
+    Add,            ///< Combines the target and source objects pixels using target alpha. (T * TA) + (S * (255 - TA)) @since 1.0
+    Subtract,       ///< Subtracts the source color from the target color while considering their respective target alpha. (T * TA) - (S * (255 - TA)) @since 1.0
+    Intersect,      ///< Computes the result by taking the minimum value between the target alpha and the source alpha and multiplies it with the target color. (T * min(TA, SA)) @since 1.0
+    Difference,     ///< Calculates the absolute difference between the target color and the source color multiplied by the complement of the target alpha. abs(T - S * (255 - TA)) @since 1.0
+    Lighten,        ///< Where multiple masks intersect, the highest transparency value is used. @since 1.0
+    Darken          ///< Where multiple masks intersect, the lowest transparency value is used. @since 1.0
 };
 
 
@@ -276,7 +276,7 @@ enum struct SceneEffect : uint8_t
  *
  * @see Text::wrap(TextWrap mode)
  *
- * @note Experimental API
+ * @since 1.0
  */
 enum struct TextWrap : uint8_t
 {
@@ -284,8 +284,7 @@ enum struct TextWrap : uint8_t
     Character,     ///< Wrap at the character level. If a word cannot fit, it is broken into individual characters to fit the line.
     Word,          ///< Wrap at the word level. Words that do not fit are moved to the next line.
     Smart,         ///< Smart choose wrapping method: word wrap first, falling back to character wrap if a word does not fit.
-    Ellipsis,      ///< Truncate overflowing text and append an ellipsis ("...") at the end. Typically used for single-line labels.
-    Hyphenation    ///< Reserved. No Support.
+    Ellipsis       ///< Truncate overflowing text and append an ellipsis ("...") at the end. Typically used for single-line labels.
 };
 
 
@@ -460,6 +459,7 @@ struct TVG_API Paint
      * @param[in] method The method used to mask the source object with the target.
      *
      * @retval Result::InsufficientCondition if the target has already belonged to another paint.
+     * @retval Result::InvalidArguments @p method equals @c MaskMethod::None and @p target is not @c nullptr.
      */
     Result mask(Paint* target, MaskMethod method) noexcept;
 
@@ -556,7 +556,7 @@ struct TVG_API Paint
      * @note For efficiency, an AABB (axis-aligned bounding box) test is performed internally before precise hit detection.
      * @note This test does not take into account the results of blending or masking.
      * @note This test does take into account the the hidden paints as well. @see Paint::visible()
-     * @note Experimental API
+     * @since 1.0
      */
     bool intersects(int32_t x, int32_t y, int32_t w = 1, int32_t h = 1) noexcept;
 
@@ -666,7 +666,7 @@ struct TVG_API Paint
      *
      * @return The class type ID of the Paint instance.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     virtual Type type() const noexcept = 0;
 
@@ -675,7 +675,7 @@ struct TVG_API Paint
      *
      * This is reserved to specify an paint instance in a scene.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     uint32_t id = 0;
 
@@ -790,7 +790,7 @@ struct TVG_API Fill
      *
      * @return The class type ID of the Fill instance.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     virtual Type type() const noexcept = 0;
 
@@ -1001,7 +1001,7 @@ struct TVG_API LinearGradient : Fill
      *
      * @return The class type ID of the LinearGradient instance.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Type type() const noexcept override;
 
@@ -1073,7 +1073,7 @@ struct TVG_API RadialGradient : Fill
      *
      * @return The class type ID of the LinearGradient instance.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Type type() const noexcept override;
 
@@ -1493,7 +1493,7 @@ struct TVG_API Shape : Paint
      *
      * @return The class type ID of the Shape instance.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Type type() const noexcept override;
 
@@ -1693,7 +1693,7 @@ struct TVG_API Picture : Paint
      *
      * @return The class type ID of the Picture instance.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Type type() const noexcept override;
 
@@ -1802,7 +1802,7 @@ struct TVG_API Scene : Paint
      *
      * @return The class type ID of the Scene instance.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Type type() const noexcept override;
 
@@ -1883,7 +1883,7 @@ struct TVG_API Text : Paint
      * @param[in] x Horizontal alignment/anchor in [0..1]: 0=left/start, 0.5=center, 1=right/end. (Default is 0)
      * @param[in] y Vertical alignment/anchor in [0..1]: 0=top, 0.5=middle, 1=bottom. (Default is 0)
      *
-     * @note Experimental API
+     * @since 1.0
      *
      * @see layout()
      */
@@ -1900,9 +1900,10 @@ struct TVG_API Text : Paint
      * @param[in] h Layout height in user space. Use 0 for no vertical constraint. (Default is 0)
      *
      * @note This defines constraints only; alignment/anchoring is controlled by @ref align().
-     * @note Experimental API
+     * @since 1.0
      *
      * @see align()
+     * @see spacing()
      */
     Result layout(float w, float h) noexcept;
 
@@ -1916,7 +1917,7 @@ struct TVG_API Text : Paint
      * @param[in] mode The wrapping strategy to apply. Default is @c TextWrap::None
      *
      * @see TextWrap
-     * @note Experimental API
+     * @since 1.0
      */
     Result wrap(TextWrap mode) noexcept;
 
@@ -1987,6 +1988,28 @@ struct TVG_API Text : Paint
      * @since 0.15
      */
     Result fill(Fill* f) noexcept;
+
+    /**
+     * @brief Set the spacing scale factors for text layout.
+     *
+     * This function adjusts the letter spacing (horizontal space between glyphs) and
+     * line spacing (vertical space between lines of text) using scale factors.
+     *
+     * Both values are relative to the font's default metrics:
+     * - The letter spacing is applied as a scale factor to the glyph's advance width.
+     * - The line spacing is applied as a scale factor to the glyph's advance height.
+     *
+     * @param[in] letter The scale factor for letter spacing.
+     *                   Values > 1.0 increase spacing, values < 1.0 decrease it.
+     *                   Must be greater than or equal to 0.0. (default: 1.0)
+     *
+     * @param[in] line The scale factor for line spacing.
+     *                 Values > 1.0 increase line spacing, values < 1.0 decrease it.
+     *                 Must be greater than or equal to 0.0. (default: 1.0)
+     *
+     * @since 1.0
+     */
+    Result spacing(float letter, float line) noexcept;
 
     /**
      * @brief Loads a scalable font data (ttf) from a file.
@@ -2070,7 +2093,7 @@ struct TVG_API Text : Paint
      *
      * @return The class type ID of the Text instance.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Type type() const noexcept override;
 
@@ -2156,7 +2179,7 @@ struct TVG_API GlCanvas final : Canvas
      * @see Canvas::viewport()
      * @see Canvas::sync()
      *
-     * @note Experimental API
+     * @since 1.0
     */
     Result target(void* context, int32_t id, uint32_t w, uint32_t h, ColorSpace cs) noexcept;
 
@@ -2200,7 +2223,7 @@ struct TVG_API WgCanvas final : Canvas
      * @retval Result::InsufficientCondition if the canvas is performing rendering. Please ensure the canvas is synced.
      * @retval Result::NonSupport In case the wg engine is not supported.
      *
-     * @note Experimental API
+     * @since 1.0
      *
      * @see Canvas::viewport()
      * @see Canvas::sync()
@@ -2425,7 +2448,7 @@ struct TVG_API Saver final
      *
      * @param[in] paint The paint to be drawn as the background image for the saving paint.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result background(Paint* paint) noexcept;
 
@@ -2470,7 +2493,7 @@ struct TVG_API Saver final
      *
      * @see Saver::sync()
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result save(Animation* animation, const char* filename, uint32_t quality = 100, uint32_t fps = 0) noexcept;
 
@@ -2525,7 +2548,7 @@ struct TVG_API Accessor final
      *
      * @note The bitmap based picture might not have the scene-tree.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result set(Paint* paint, std::function<bool(const Paint* paint, void* data)> func, void* data) noexcept;
 
@@ -2541,7 +2564,7 @@ struct TVG_API Accessor final
      *
      * @see Paint::id
      *
-     * @note Experimental API
+     * @since 1.0
      */
     static uint32_t id(const char* name) noexcept;
 

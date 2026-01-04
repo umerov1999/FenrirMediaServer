@@ -30,6 +30,8 @@
 
 using SvgColor = tvg::RGB;
 
+#define STR_AS(A, B) !strcmp((A), (B))
+
 struct Box
 {
     float x, y, w, h;
@@ -107,14 +109,19 @@ enum class SvgFillFlags
     ClipPath = 0x16
 };
 
-constexpr bool operator &(SvgFillFlags a, SvgFillFlags b)
+constexpr bool operator&(SvgFillFlags a, SvgFillFlags b)
 {
     return int(a) & int(b);
 }
 
-constexpr SvgFillFlags operator |(SvgFillFlags a, SvgFillFlags b)
+constexpr SvgFillFlags operator|(SvgFillFlags a, SvgFillFlags b)
 {
     return SvgFillFlags(int(a) | int(b));
+}
+
+constexpr void operator|=(SvgFillFlags& a, const SvgFillFlags b)
+{
+    a = SvgFillFlags(int(a) | int(b));
 }
 
 enum class SvgStrokeFlags
@@ -131,16 +138,20 @@ enum class SvgStrokeFlags
     DashOffset = 0x200
 };
 
-constexpr bool operator &(SvgStrokeFlags a, SvgStrokeFlags b)
+constexpr bool operator&(SvgStrokeFlags a, SvgStrokeFlags b)
 {
     return int(a) & int(b);
 }
 
-constexpr SvgStrokeFlags operator |(SvgStrokeFlags a, SvgStrokeFlags b)
+constexpr SvgStrokeFlags operator|(SvgStrokeFlags a, SvgStrokeFlags b)
 {
     return SvgStrokeFlags(int(a) | int(b));
 }
 
+constexpr void operator|=(SvgStrokeFlags& a, const SvgStrokeFlags b)
+{
+    a = SvgStrokeFlags(int(a) | int(b));
+}
 
 enum class SvgGradientType
 {
@@ -172,14 +183,19 @@ enum class SvgStyleFlags
     Filter = 0x80000
 };
 
-constexpr bool operator &(SvgStyleFlags a, SvgStyleFlags b)
+constexpr bool operator&(SvgStyleFlags a, SvgStyleFlags b)
 {
     return int(a) & int(b);
 }
 
-constexpr SvgStyleFlags operator |(SvgStyleFlags a, SvgStyleFlags b)
+constexpr SvgStyleFlags operator|(SvgStyleFlags a, SvgStyleFlags b)
 {
     return SvgStyleFlags(int(a) | int(b));
+}
+
+constexpr void operator|=(SvgStyleFlags& a, const SvgStyleFlags b)
+{
+    a = SvgStyleFlags(int(a) | int(b));
 }
 
 enum class SvgStopStyleFlags
@@ -189,12 +205,12 @@ enum class SvgStopStyleFlags
     StopColor = 0x02
 };
 
-constexpr bool operator &(SvgStopStyleFlags a, SvgStopStyleFlags b)
+constexpr bool operator&(SvgStopStyleFlags a, SvgStopStyleFlags b)
 {
     return int(a) & int(b);
 }
 
-constexpr SvgStopStyleFlags operator |(SvgStopStyleFlags a, SvgStopStyleFlags b)
+constexpr SvgStopStyleFlags operator|(SvgStopStyleFlags a, SvgStopStyleFlags b)
 {
     return SvgStopStyleFlags(int(a) | int(b));
 }
@@ -230,6 +246,13 @@ enum class SvgMaskType
 {
     Luminance = 0,
     Alpha
+};
+
+enum class SvgXmlSpace
+{
+    None,
+    Default,
+    Preserve
 };
 
 //Length type to recalculate %, pt, pc, mm, cm etc
@@ -544,6 +567,7 @@ struct SvgNode
         SvgFilterNode filter;
         SvgGaussianBlurNode gaussianBlur;
     } node;
+    SvgXmlSpace xmlSpace = SvgXmlSpace::None;
     ~SvgNode();
 };
 

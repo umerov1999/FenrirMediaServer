@@ -446,7 +446,6 @@ png_inflate_claim(png_structrp png_ptr, png_uint_32 owner)
     */
    {
       int ret; /* zlib return code */
-#if ZLIB_VERNUM >= 0x1240
       int window_bits = 0;
 
 # if defined(PNG_SET_OPTION_SUPPORTED) && defined(PNG_MAXIMUM_INFLATE_WINDOW)
@@ -463,7 +462,6 @@ png_inflate_claim(png_structrp png_ptr, png_uint_32 owner)
       }
 # endif
 
-#endif /* ZLIB_VERNUM >= 0x1240 */
 
       /* Set this for safety, just in case the previous owner left pointers to
        * memory allocations.
@@ -475,20 +473,12 @@ png_inflate_claim(png_structrp png_ptr, png_uint_32 owner)
 
       if ((png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) != 0)
       {
-#if ZLIB_VERNUM >= 0x1240
-         ret = inflateReset2(&png_ptr->zstream, window_bits);
-#else
-         ret = inflateReset(&png_ptr->zstream);
-#endif
+         ret = zng_inflateReset2(&png_ptr->zstream, window_bits);
       }
 
       else
       {
-#if ZLIB_VERNUM >= 0x1240
-         ret = inflateInit2(&png_ptr->zstream, window_bits);
-#else
-         ret = inflateInit(&png_ptr->zstream);
-#endif
+         ret = zng_inflateInit2(&png_ptr->zstream, window_bits);
 
          if (ret == Z_OK)
             png_ptr->flags |= PNG_FLAG_ZSTREAM_INITIALIZED;
@@ -514,7 +504,6 @@ png_inflate_claim(png_structrp png_ptr, png_uint_32 owner)
 #endif
 }
 
-#if ZLIB_VERNUM >= 0x1240
 /* Handle the start of the inflate stream if we called inflateInit2(strm,0);
  * in this case some zlib versions skip validation of the CINFO field and, in
  * certain circumstances, libpng may end up displaying an invalid image, in
@@ -535,9 +524,8 @@ png_zlib_inflate(png_structrp png_ptr, int flush)
       png_ptr->zstream_start = 0;
    }
 
-   return inflate(&png_ptr->zstream, flush);
+   return zng_inflate(&png_ptr->zstream, flush);
 }
-#endif /* Zlib >= 1.2.4 */
 
 #ifdef PNG_READ_COMPRESSED_TEXT_SUPPORTED
 #if defined(PNG_READ_zTXt_SUPPORTED) || defined (PNG_READ_iTXt_SUPPORTED)
@@ -721,7 +709,7 @@ png_decompress_chunk(png_structrp png_ptr,
              * with Z_FINISH in almost all cases, so the window will not be
              * maintained.
              */
-            if (inflateReset(&png_ptr->zstream) == Z_OK)
+            if (zng_inflateReset(&png_ptr->zstream) == Z_OK)
             {
                /* Because of the limit checks above we know that the new,
                 * expanded, size will fit in a size_t (let alone an

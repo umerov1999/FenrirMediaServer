@@ -126,7 +126,7 @@
       <AdditionalIncludeDirectories>src;libs\libogg\include;libs\libvorbis\include;libs\id3v2lib\include;libs\id3v2lib\include\id3v2lib;libs\minimp3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <LanguageStandard>stdcpp20</LanguageStandard>

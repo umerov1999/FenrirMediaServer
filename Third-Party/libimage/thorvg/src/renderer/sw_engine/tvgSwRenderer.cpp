@@ -168,7 +168,7 @@ struct SwShapeTask : SwTask
             auto clipper = static_cast<SwTask*>(*p);
             auto clipShapeRle = shape.rle ? clipper->clip(shape.rle) : true;
             auto clipStrokeRle = shape.strokeRle ? clipper->clip(shape.strokeRle) : true;
-            if (!clipShapeRle && !clipStrokeRle) goto err;
+            if (!clipShapeRle || !clipStrokeRle) goto err;
         }
 
         valid = true;
@@ -627,7 +627,7 @@ SwSurface* SwRenderer::request(int channelSize, bool square)
         //Inherits attributes from main surface
         cmp = new SwSurface(surface);
         cmp->compositor = new SwCompositor;
-        cmp->compositor->image.data = tvg::malloc<pixel_t*>(channelSize * w * h);
+        cmp->compositor->image.data = tvg::malloc<pixel_t>(channelSize * w * h);
         cmp->w = cmp->compositor->image.w = w;
         cmp->h = cmp->compositor->image.h = h;
         cmp->stride = cmp->compositor->image.stride = w;

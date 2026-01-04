@@ -85,7 +85,7 @@ bool WebpLoader::open(const char* path, const ColorReplace& colorReplacement)
 bool WebpLoader::open(const char* data, uint32_t size, TVG_UNUSED const char* rpath, bool copy, const ColorReplace& colorReplacement)
 {
     if (copy) {
-        this->data = tvg::malloc<unsigned char*>(size);
+        this->data = tvg::malloc<unsigned char>(size);
         if (!this->data) return false;
         memcpy((unsigned char *)this->data, data, size);
         freeData = true;

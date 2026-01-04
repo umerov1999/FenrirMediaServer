@@ -41,7 +41,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>..\..\Third-Party/XTPSkinFramework v22.1.0/SkinFramework;..\..\Third-Party/openssl/include;..\..\Third-Party/libcurl/include;.\;..\..\Third-Party/Extra;..\..\Third-Party/libimage;..\..\Third-Party\Extra\components;..\..\Third-Party\libzstd;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>

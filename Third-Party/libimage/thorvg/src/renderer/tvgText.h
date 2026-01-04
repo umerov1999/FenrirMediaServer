@@ -29,8 +29,8 @@
 #include "tvgFill.h"
 #include "tvgLoader.h"
 
-#define TEXT(A) static_cast<TextImpl*>(A)
-#define CONST_TEXT(A) static_cast<const TextImpl*>(A)
+namespace tvg
+{
 
 struct TextImpl : Text
 {
@@ -104,7 +104,7 @@ struct TextImpl : Text
     RenderRegion bounds()
     {
         if (!load()) return {};
-        return SHAPE(shape)->bounds();
+        return to<ShapeImpl>(shape)->bounds();
     }
 
     bool render(RenderMethod* renderer)
@@ -118,7 +118,7 @@ struct TextImpl : Text
     {
         if (!loader) return false;
         if (updated) {
-            if (loader->get(fm, utf8, SHAPE(shape)->rs.path)) {
+            if (loader->get(fm, utf8, to<ShapeImpl>(shape)->rs.path)) {
                 loader->transform(shape, fm, italicShear);
             }
             updated = false;
@@ -136,6 +136,7 @@ struct TextImpl : Text
     {
         if (fm.wrap == mode) return;
         fm.wrap = mode;
+        updated = true;
         impl.mark(RenderUpdateFlag::Path);
     }
 
@@ -145,6 +146,16 @@ struct TextImpl : Text
         updated = true;
     }
 
+    Result spacing(float letter, float line)
+    {
+        if (letter < 0.0f || line < 0.0f) return Result::InvalidArguments;
+
+        fm.spacing = {letter, line};
+        updated = true;
+
+        return Result::Success;
+    }
+
     bool update(RenderMethod* renderer, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flag, TVG_UNUSED bool clipper)
     {
         if (!load()) return true;
@@ -152,8 +163,8 @@ struct TextImpl : Text
         auto scale = fm.scale;
 
         //transform the gradient coordinates based on the final scaled font.
-        auto fill = SHAPE(shape)->rs.fill;
-        if (fill && SHAPE(shape)->impl.marked(RenderUpdateFlag::Gradient)) {
+        auto fill = to<ShapeImpl>(shape)->rs.fill;
+        if (fill && to<ShapeImpl>(shape)->impl.marked(RenderUpdateFlag::Gradient)) {
             if (fill->type() == Type::LinearGradient) {
                 LINEAR(fill)->p1 *= scale;
                 LINEAR(fill)->p2 *= scale;
@@ -174,7 +185,7 @@ struct TextImpl : Text
     bool intersects(const RenderRegion& region)
     {
         if (!load()) return false;
-        return SHAPE(shape)->intersects(region);
+        return to<ShapeImpl>(shape)->intersects(region);
     }
 
     bool bounds(Point* pt4, const Matrix& m, bool obb)
@@ -190,9 +201,9 @@ struct TextImpl : Text
         load();
 
         auto text = Text::gen();
-        auto dup = TEXT(text);
+        auto dup = to<TextImpl>(text);
 
-        SHAPE(shape)->duplicate(dup->shape);
+        to<ShapeImpl>(shape)->duplicate(dup->shape);
 
         if (loader) {
             dup->loader = loader;
@@ -213,5 +224,7 @@ struct TextImpl : Text
         return nullptr;
     }
 };
+
+}
 
 #endif //_TVG_TEXT_H

@@ -1,6 +1,6 @@
 /* pnglibconf.h - library build configuration */
 
-/* libpng version 1.6.50 */
+/* libpng version 1.6.53 */
 
 /* Copyright (c) 2018-2025 Cosmin Truta */
 /* Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson */
@@ -223,7 +223,6 @@
 #define PNG_USER_HEIGHT_MAX 1000000
 #define PNG_USER_WIDTH_MAX 1000000
 #define PNG_ZBUF_SIZE 8192
-#define PNG_ZLIB_VERNUM 0x1310
 #define PNG_Z_DEFAULT_COMPRESSION 9
 #define PNG_Z_DEFAULT_NOFILTER_STRATEGY 0
 #define PNG_Z_DEFAULT_STRATEGY 1

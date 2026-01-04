@@ -16,32 +16,12 @@
 
 #ifndef PNGSTRUCT_H
 #define PNGSTRUCT_H
-/* zlib.h defines the structure z_stream, an instance of which is included
- * in this structure and is required for decompressing the LZ compressed
- * data in PNG files.
- */
-#ifndef ZLIB_CONST
-   /* We must ensure that zlib uses 'const' in declarations. */
-#  define ZLIB_CONST
-#endif
-#include "GraphicLibrary/zlib/zlib.h"
-#ifdef const
-   /* zlib.h sometimes #defines const to nothing, undo this. */
-#  undef const
-#endif
+#include "GraphicLibrary/zlib/zlib-ng.h"
 
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
 
-/* zlib.h has mediocre z_const use before 1.2.6, this stuff is for compatibility
- * with older builds.
- */
-#if ZLIB_VERNUM < 0x1260
-#  define PNGZ_MSG_CAST(s) png_constcast(char*,s)
-#  define PNGZ_INPUT_CAST(b) png_constcast(png_bytep,b)
-#else
 #  define PNGZ_MSG_CAST(s) (s)
 #  define PNGZ_INPUT_CAST(b) (b)
-#endif
 
 /* zlib.h declares a magic type 'uInt' that limits the amount of data that zlib
  * can handle at once.  This type need be no larger than 16 bits (so maximum of
@@ -161,7 +141,7 @@ struct png_struct_def
    png_uint_32 transformations; /* which transformations to perform */
 
    png_uint_32 zowner;        /* ID (chunk type) of zstream owner, 0 if none */
-   z_stream    zstream;       /* decompression structure */
+   zng_stream    zstream;       /* decompression structure */
 
 #ifdef PNG_WRITE_SUPPORTED
    png_compression_bufferp zbuffer_list; /* Created on demand during write */
@@ -249,9 +229,7 @@ struct png_struct_def
                               /* pixel depth used for the row buffers */
    png_byte transformed_pixel_depth;
                               /* pixel depth after read/write transforms */
-#if ZLIB_VERNUM >= 0x1240
    png_byte zstream_start;    /* at start of an input zlib stream */
-#endif /* Zlib >= 1.2.4 */
 #if defined(PNG_READ_FILLER_SUPPORTED) || defined(PNG_WRITE_FILLER_SUPPORTED)
    png_uint_16 filler;           /* filler bytes for pixel expansion */
 #endif
@@ -407,7 +385,6 @@ struct png_struct_def
 
 #ifdef PNG_READ_QUANTIZE_SUPPORTED
 /* The following three members were added at version 1.0.14 and 1.2.4 */
-   png_bytep quantize_sort;          /* working sort array */
    png_bytep index_to_palette;       /* where the original index currently is
                                         in the palette */
    png_bytep palette_to_index;       /* which original index points to this

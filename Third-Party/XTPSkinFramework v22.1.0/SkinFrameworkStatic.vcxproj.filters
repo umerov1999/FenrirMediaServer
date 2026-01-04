@@ -111,6 +111,18 @@
     <Filter Include="Source\SkinFramework\Xml">
       <UniqueIdentifier>{2c2558c5-03d7-454a-87e9-ca5e13638651}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\GraphicLibrary\GraphicLibrary.libpng\intel">
+      <UniqueIdentifier>{caa0d62a-6775-4cd1-a5a5-c1a10cd80438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GraphicLibrary\GraphicLibrary.zlib\arch">
+      <UniqueIdentifier>{dffdac8e-789f-4046-af0a-456a38ceed2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic">
+      <UniqueIdentifier>{70005549-a2b7-4f43-87ac-7d2cce729e0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86">
+      <UniqueIdentifier>{3c708281-7925-4dcb-b6fa-f7b621a8eb33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SkinFramework\XTPResource.h">
@@ -538,39 +550,6 @@
     </ClInclude>
     <ClInclude Include="SkinFramework\GraphicLibrary\unzip\unzip.h">
       <Filter>Source\GraphicLibrary\GraphicLibrary.unzip</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\deflate.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\gzguts.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffast.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffixed.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inflate.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inftrees.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\trees.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zconf.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zlib.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zutil.h">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
     </ClInclude>
     <ClInclude Include="SkinFramework\SkinFramework\Includes.h">
       <Filter>Source\SkinFramework</Filter>
@@ -1046,6 +1025,141 @@
     <ClInclude Include="SkinFramework\XTPComboBoxNotEdited.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\adler32_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch_functions.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\chunkset_tpl.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\compare256_rle.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\cpu_features.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32_braid_comb_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32_braid_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32_braid_tbl.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\deflate.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\deflate_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\fallback_builtins.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\functable.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\gzguts.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffast_tpl.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffixed_tbl.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inflate.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inflate_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inftrees.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\insert_string_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\insert_string_tpl.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\match_tpl.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\trees.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\trees_emit.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\trees_tbl.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zbuild.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zconf-ng.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zendian.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zlib_name_mangling-ng.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zlib-ng.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zmemory.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zutil.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zutil_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\chunk_128bit_perm_idx_lut.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\chunk_256bit_perm_idx_lut.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\chunk_permute_table.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\compare256_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\generic_functions.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx2_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx512_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_ssse3_p.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\crc32_pclmulqdq_tpl.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\x86_features.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\x86_functions.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\x86_intrins.h">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SkinFramework\Common\XTPActiveScriptEngine.cpp">
@@ -1299,51 +1413,6 @@
     </ClCompile>
     <ClCompile Include="SkinFramework\GraphicLibrary\unzip\unzip.cpp">
       <Filter>Source\GraphicLibrary\GraphicLibrary.unzip</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\adler32.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\compress.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\crc32.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzclose.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzlib.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzread.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzwrite.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\infback.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inffast.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inflate.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inftrees.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\trees.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\uncompr.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\zutil.c">
-      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
     </ClCompile>
     <ClCompile Include="SkinFramework\SkinFramework\XTPSkinDrawTools.cpp">
       <Filter>Source\SkinFramework</Filter>
@@ -1782,6 +1851,159 @@
     </ClCompile>
     <ClCompile Include="SkinFramework\XTPComboBoxNotEdited.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\intel\filter_sse2_intrinsics.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\intel\intel_init.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.libpng\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\adler32.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\compress.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\cpu_features.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\crc32.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\crc32_braid_comb.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_fast.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_huff.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_medium.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_quick.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_rle.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_slow.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_stored.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\functable.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzlib.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzread.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzwrite.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\infback.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inflate.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inftrees.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\insert_string.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\trees.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\uncompr.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\zutil.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\adler32_c.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\chunkset_c.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\compare256_c.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\crc32_braid_c.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\crc32_chorba_c.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\slide_hash_c.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx2.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx512.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx512_vnni.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_sse42.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_ssse3.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chorba_sse2.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chorba_sse41.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chunkset_avx2.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chunkset_avx512.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chunkset_sse2.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chunkset_ssse3.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\compare256_avx2.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\compare256_avx512.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\compare256_sse2.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\crc32_pclmulqdq.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\crc32_vpclmulqdq.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\slide_hash_avx2.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\slide_hash_sse2.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\x86_features.c">
+      <Filter>Source\GraphicLibrary\GraphicLibrary.zlib\arch\x86</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

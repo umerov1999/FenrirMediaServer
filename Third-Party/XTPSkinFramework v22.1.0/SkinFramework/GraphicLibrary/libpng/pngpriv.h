@@ -310,7 +310,7 @@
 #   define PNG_LOONGARCH_LSX_IMPLEMENTATION 0
 #endif
 
-#if PNG_RISCV_RVV_OPT > 0
+#if PNG_RISCV_RVV_OPT > 0 && __riscv_v >= 1000000
 #  define PNG_FILTER_OPTIMIZATIONS png_init_filter_functions_rvv
 #  ifndef PNG_RISCV_RVV_IMPLEMENTATION
       /* Use the intrinsics code by default. */
@@ -318,7 +318,7 @@
 #  endif
 #else
 #  define PNG_RISCV_RVV_IMPLEMENTATION 0
-#endif
+#endif /* PNG_RISCV_RVV_OPT > 0 && __riscv_v >= 1000000 */
 
 /* Is this a build of a DLL where compilation of the object modules requires
  * different preprocessor settings to those required for a simple library?  If
@@ -720,7 +720,7 @@
 /* #define PNG_FLAG_KEEP_UNKNOWN_CHUNKS      0x8000U */
 /* #define PNG_FLAG_KEEP_UNSAFE_CHUNKS      0x10000U */
 #define PNG_FLAG_LIBRARY_MISMATCH        0x20000U
-#define PNG_FLAG_STRIP_ERROR_NUMBERS     0x40000U
+                                  /*     0x40000U    unused */
 #define PNG_FLAG_STRIP_ERROR_TEXT        0x80000U
 #define PNG_FLAG_BENIGN_ERRORS_WARN     0x100000U /* Added to libpng-1.4.0 */
 #define PNG_FLAG_APP_WARNINGS_WARN      0x200000U /* Added to libpng-1.6.0 */
@@ -1033,22 +1033,6 @@
 #include "pnginfo.h"
 
 #include "Common/Base/Diagnostic/XTPDisableAdvancedWarnings.h"
-
-/* Validate the include paths - the include path used to generate pnglibconf.h
- * must match that used in the build, or we must be using pnglibconf.h.prebuilt:
- */
-#if PNG_ZLIB_VERNUM != 0 && PNG_ZLIB_VERNUM != ZLIB_VERNUM
-#  error The include path of <zlib.h> is incorrect
-   /* When pnglibconf.h was built, the copy of zlib.h that it used was not the
-    * same as the one being used here.  Considering how libpng makes decisions
-    * to use the zlib API based on the zlib version number, the -I options must
-    * match.
-    *
-    * A possible cause of this mismatch is that you passed an -I option in
-    * CFLAGS, which is unlikely to work.  All the preprocessor options, and all
-    * the -I options in particular, should be in CPPFLAGS.
-    */
-#endif
 
 /* This is used for 16-bit gamma tables -- only the top level pointers are
  * const; this could be changed:
@@ -1560,7 +1544,7 @@ PNG_INTERNAL_FUNCTION(void,png_read_filter_row_paeth4_lsx,(png_row_infop
     row_info, png_bytep row, png_const_bytep prev_row),PNG_EMPTY);
 #endif
 
-#if PNG_RISCV_RVV_OPT > 0
+#if PNG_RISCV_RVV_IMPLEMENTATION == 1
 PNG_INTERNAL_FUNCTION(void,png_read_filter_row_up_rvv,(png_row_infop
     row_info, png_bytep row, png_const_bytep prev_row),PNG_EMPTY);
 PNG_INTERNAL_FUNCTION(void,png_read_filter_row_sub3_rvv,(png_row_infop
@@ -1603,13 +1587,9 @@ PNG_INTERNAL_FUNCTION(void,png_read_finish_row,(png_structrp png_ptr),
 /* Initialize the row buffers, etc. */
 PNG_INTERNAL_FUNCTION(void,png_read_start_row,(png_structrp png_ptr),PNG_EMPTY);
 
-#if ZLIB_VERNUM >= 0x1240
 PNG_INTERNAL_FUNCTION(int,png_zlib_inflate,(png_structrp png_ptr, int flush),
       PNG_EMPTY);
 #  define PNG_INFLATE(pp, flush) png_zlib_inflate(pp, flush)
-#else /* Zlib < 1.2.4 */
-#  define PNG_INFLATE(pp, flush) inflate(&(pp)->zstream, flush)
-#endif /* Zlib < 1.2.4 */
 
 #ifdef PNG_READ_TRANSFORMS_SUPPORTED
 /* Optional call to update the users info structure */
@@ -2189,7 +2169,7 @@ PNG_INTERNAL_FUNCTION(void, png_init_filter_functions_lsx,
     (png_structp png_ptr, unsigned int bpp), PNG_EMPTY);
 #endif
 
-#  if PNG_RISCV_RVV_OPT > 0
+#  if PNG_RISCV_RVV_IMPLEMENTATION == 1
 PNG_INTERNAL_FUNCTION(void, png_init_filter_functions_rvv,
    (png_structp png_ptr, unsigned int bpp), PNG_EMPTY);
 #endif

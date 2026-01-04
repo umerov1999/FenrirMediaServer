@@ -22,7 +22,7 @@ cd /d "C:/msys64"
 msys2_shell.cmd -full-path
 
 cd "C:\Users\Umerov\Desktop\ffmpeg"
-./configure --target-os=win64 --arch=x86_64 --extra-cflags="-D_WIN32_WINNT=0x0600" --disable-debug --enable-libmp3lame --enable-asm --enable-inline-asm --enable-nonfree --enable-stripping --disable-doc --enable-cross-compile --disable-ffplay --disable-ffprobe --disable-shared --enable-static --disable-vulkan --disable-v4l2-m2m --prefix=${PWD}/installed --toolchain=msvc
+./configure --target-os=win64 --arch=x86_64 --extra-cflags="-D_WIN32_WINNT=0x0A00" --disable-debug --enable-libmp3lame --enable-asm --enable-inline-asm --enable-nonfree --enable-stripping --disable-doc --enable-cross-compile --disable-ffplay --disable-ffprobe --disable-shared --enable-static --disable-vulkan --disable-v4l2-m2m --prefix=${PWD}/installed --toolchain=msvc
 
 Check codepage config.h and #define CC_IDENT
 End

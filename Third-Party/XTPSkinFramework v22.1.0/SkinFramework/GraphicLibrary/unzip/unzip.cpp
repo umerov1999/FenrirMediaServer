@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 
-#include "GraphicLibrary/zlib/zlib.h"
+#include "GraphicLibrary/zlib/zlib-ng.h"
 #include "GraphicLibrary/zlib/zutil.h"
 
 #include "unzip.h"
@@ -278,19 +278,6 @@ const uLong crc_table[256] = {
   0x2d02ef8dL
 };
 
-#define CRC_DO1(buf) crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
-#define CRC_DO2(buf)  CRC_DO1(buf); CRC_DO1(buf);
-#define CRC_DO4(buf)  CRC_DO2(buf); CRC_DO2(buf);
-#define CRC_DO8(buf)  CRC_DO4(buf); CRC_DO4(buf);
-
-uLong ucrc32(uLong crc, const Byte *buf, uInt len)
-{ if (buf == Z_NULL) return 0L;
-  crc = crc ^ 0xffffffffL;
-  while (len >= 8)  {CRC_DO8(buf); len -= 8;}
-  if (len) do {CRC_DO1(buf);} while (--len);
-  return crc ^ 0xffffffffL;
-}
-
 
 // =============================================================
 // some decryption routines
@@ -465,7 +452,7 @@ size_t lufread(void *ptr,size_t size,size_t n,LUFILE *stream)
 typedef struct
 {
 	char  *read_buffer;         // internal buffer for compressed data
-	z_stream stream;            // zLib stream structure for inflate
+	zng_stream stream;            // zLib stream structure for inflate
 
 	uLong pos_in_zipfile;       // position in byte on the zipfile, for fseek
 	uLong stream_initialised;   // flag set if stream structure is initialised
@@ -1187,7 +1174,7 @@ int unzOpenCurrentFile (unzFile file, const char *password)
 	  pfile_in_zip_read_info->stream.zfree = (free_func)0;
 	  pfile_in_zip_read_info->stream.opaque = (voidpf)0;
 
-		  err=inflateInit2(&pfile_in_zip_read_info->stream, -MAX_WBITS);
+		  err=zng_inflateInit2(&pfile_in_zip_read_info->stream, -MAX_WBITS);
 	  if (err == Z_OK)
 		pfile_in_zip_read_info->stream_initialised=1;
 		// windowBits is passed < 0 to tell that there is no zlib header.
@@ -1288,7 +1275,7 @@ int unzReadCurrentFile  (unzFile file, voidp buf, unsigned len, bool *reached_eo
 	  { uDoCopy = pfile_in_zip_read_info->stream.avail_in ;
 	  }
 	  for (i=0;i<uDoCopy;i++) *(pfile_in_zip_read_info->stream.next_out+i) = *(pfile_in_zip_read_info->stream.next_in+i);
-	  pfile_in_zip_read_info->crc32 = ucrc32(pfile_in_zip_read_info->crc32,pfile_in_zip_read_info->stream.next_out,uDoCopy);
+	  pfile_in_zip_read_info->crc32 = zng_crc32(pfile_in_zip_read_info->crc32,pfile_in_zip_read_info->stream.next_out,uDoCopy);
 	  pfile_in_zip_read_info->rest_read_uncompressed-=uDoCopy;
 	  pfile_in_zip_read_info->stream.avail_in -= uDoCopy;
 	  pfile_in_zip_read_info->stream.avail_out -= uDoCopy;
@@ -1303,14 +1290,14 @@ int unzReadCurrentFile  (unzFile file, voidp buf, unsigned len, bool *reached_eo
 	  const Byte *bufBefore;
 	  uLong uOutThis;
 	  int flush=Z_SYNC_FLUSH;
-	  uTotalOutBefore = pfile_in_zip_read_info->stream.total_out;
+	  uTotalOutBefore = (uLong)pfile_in_zip_read_info->stream.total_out;
 	  bufBefore = pfile_in_zip_read_info->stream.next_out;
 	  //
-	  err=inflate(&pfile_in_zip_read_info->stream,flush);
+	  err=zng_inflate(&pfile_in_zip_read_info->stream,flush);
 	  //
-	  uTotalOutAfter = pfile_in_zip_read_info->stream.total_out;
+	  uTotalOutAfter = (uLong)pfile_in_zip_read_info->stream.total_out;
 	  uOutThis = uTotalOutAfter-uTotalOutBefore;
-	  pfile_in_zip_read_info->crc32 = ucrc32(pfile_in_zip_read_info->crc32,bufBefore,(uInt)(uOutThis));
+	  pfile_in_zip_read_info->crc32 = zng_crc32(pfile_in_zip_read_info->crc32,bufBefore,(uInt)(uOutThis));
 	  pfile_in_zip_read_info->rest_read_uncompressed -= uOutThis;
 	  iRead += (uInt)(uTotalOutAfter - uTotalOutBefore);
 	  if (err==Z_STREAM_END || pfile_in_zip_read_info->rest_read_uncompressed==0)
@@ -1439,7 +1426,7 @@ int unzCloseCurrentFile (unzFile file)
 		}
 	pfile_in_zip_read_info->read_buffer = NULL;
 	if (pfile_in_zip_read_info->stream_initialised)
-		inflateEnd(&pfile_in_zip_read_info->stream);
+		zng_inflateEnd(&pfile_in_zip_read_info->stream);
 
 	pfile_in_zip_read_info->stream_initialised = 0;
 		if (pfile_in_zip_read_info!=0) zfree(pfile_in_zip_read_info); // unused pfile_in_zip_read_info=0;

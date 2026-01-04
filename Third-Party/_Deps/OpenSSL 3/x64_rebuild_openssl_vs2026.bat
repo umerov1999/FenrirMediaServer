@@ -28,7 +28,7 @@ powershell -Command "(gc Configurations/10-main.conf) -replace '\"-g\"', '\"\"' 
 powershell -Command "(gc Configurations/windows-makefile.tmpl) -replace '\"\$\(PERL\)\" \"\$\(SRCDIR\)\\util\\copy.pl\" ossl_static.pdb \"\$\(libdir\)\"', 'echo \"test\"' | Out-File -Encoding ascii Configurations/windows-makefile.tmpl"
 powershell -Command "(gc Configurations/windows-makefile.tmpl) -replace 'install_runtime\: install_programs', 'install_runtime\: install_runtime_libs' | Out-File -Encoding ascii Configurations/windows-makefile.tmpl"
 
-perl Configure VC-WIN64A --release no-shared no-engine no-module no-crypto-mdebug no-tests no-external-tests no-legacy no-weak-ssl-ciphers no-egd no-uplink no-quic --openssldir=%CurrentDir%\openssl-src-win64-VS2026/TargetInstall --prefix=%CurrentDir%\openssl-%OPENSSL_VERSION%-64bit-release-static-VS2026 -D_WIN32_WINNT=0x0600
+perl Configure VC-WIN64A --release no-shared no-engine no-module no-crypto-mdebug no-tests no-external-tests no-legacy no-weak-ssl-ciphers no-egd no-uplink no-quic --openssldir=%CurrentDir%\openssl-src-win64-VS2026/TargetInstall --prefix=%CurrentDir%\openssl-%OPENSSL_VERSION%-64bit-release-static-VS2026 -D_WIN32_WINNT=0x0A00
 nmake -f Makefile install
 
 cd ../

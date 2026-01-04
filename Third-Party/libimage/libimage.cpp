@@ -13,7 +13,7 @@
 #include "webp/decode.h"
 #include "libimage.h"
 #include "thorvg.h"
-#include "zlib.h"
+#include "zlib-ng.h"
 using namespace std;
 #define BitmapWidth(width, bitsPerPixel) (((width * bitsPerPixel + 31) & ~31) >> 3)
 #define JPGHeader "\xff\xd8\xff"
@@ -664,11 +664,11 @@ win_image LIB_IMAGE::PrepareImageFromBufferAutoType(HWND hwnd, const void* pData
 }
 
 std::string win_image::compress_gzip(const std::string& str, int compressionlevel) {
-	z_stream zs;
+	zng_stream zs;
 	memset(&zs, 0, sizeof(zs));
 	const int MOD_GZIP_ZLIB_WINDOWSIZE = 15;
 	const int MOD_GZIP_ZLIB_CFACTOR = 9;
-	if (deflateInit2(&zs,
+	if (zng_deflateInit2(&zs,
 		compressionlevel,
 		Z_DEFLATED,
 		MOD_GZIP_ZLIB_WINDOWSIZE + 16,
@@ -689,7 +689,7 @@ std::string win_image::compress_gzip(const std::string& str, int compressionleve
 		zs.next_out = reinterpret_cast<Bytef*>(outbuffer.data());
 		zs.avail_out = (uInt)outbuffer.size();
 
-		ret = deflate(&zs, Z_FINISH);
+		ret = zng_deflate(&zs, Z_FINISH);
 
 		if (outstring.size() < zs.total_out) {
 			outstring.append(outbuffer.data(),
@@ -697,7 +697,7 @@ std::string win_image::compress_gzip(const std::string& str, int compressionleve
 		}
 	} while (ret == Z_OK);
 
-	deflateEnd(&zs);
+	zng_deflateEnd(&zs);
 
 	if (ret != Z_STREAM_END) {
 		std::ostringstream oss;
@@ -709,10 +709,10 @@ std::string win_image::compress_gzip(const std::string& str, int compressionleve
 }
 
 std::string win_image::decompress_gzip(const std::string& str) {
-	z_stream zs;
+	zng_stream zs;
 	memset(&zs, 0, sizeof(zs));
 	const int MOD_GZIP_ZLIB_WINDOWSIZE = 15;
-	if (inflateInit2(&zs, MOD_GZIP_ZLIB_WINDOWSIZE + 16) != Z_OK) {
+	if (zng_inflateInit2(&zs, MOD_GZIP_ZLIB_WINDOWSIZE + 16) != Z_OK) {
 		throw(std::runtime_error("inflateInit failed while decompressing."));
 	}
 
@@ -727,7 +727,7 @@ std::string win_image::decompress_gzip(const std::string& str) {
 		zs.next_out = reinterpret_cast<Bytef*>(outbuffer.data());
 		zs.avail_out = (uInt)outbuffer.size();
 
-		ret = inflate(&zs, 0);
+		ret = zng_inflate(&zs, Z_NO_FLUSH);
 
 		if (outstring.size() < zs.total_out) {
 			outstring.append(outbuffer.data(),
@@ -736,7 +736,7 @@ std::string win_image::decompress_gzip(const std::string& str) {
 
 	} while (ret == Z_OK);
 
-	inflateEnd(&zs);
+	zng_inflateEnd(&zs);
 
 	if (ret != Z_STREAM_END) {
 		std::ostringstream oss;

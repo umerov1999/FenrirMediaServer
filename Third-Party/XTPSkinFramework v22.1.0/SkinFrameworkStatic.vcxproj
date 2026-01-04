@@ -47,7 +47,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>SkinFramework;SkinFramework/Common;./;SkinFramework/GraphicLibrary/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NOMINMAX;WIN32;_LIB;NDEBUG;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_LIB;NDEBUG;PNG_INTEL_SSE_OPT;X86_FEATURES;X86_SSE2;X86_SSSE3;X86_SSE41;X86_SSE42;X86_AVX2;X86_AVX512;X86_AVX512VNNI;X86_VPCLMULQDQ_CRC;X86_PCLMULQDQ_CRC;HAVE_CPUID_MS;WITH_GZFILEOP;WITH_OPTIM;_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -63,6 +63,8 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;XTP_MSVC_VER=160;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -79,6 +81,51 @@
     <ClInclude Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2022.h" />
     <ClInclude Include="SkinFramework\GraphicLibrary\lz4\lz4.h" />
     <ClInclude Include="SkinFramework\GraphicLibrary\lz4\lz4hc.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\adler32_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\chunk_128bit_perm_idx_lut.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\chunk_256bit_perm_idx_lut.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\chunk_permute_table.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\compare256_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\generic\generic_functions.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx2_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx512_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_ssse3_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\crc32_pclmulqdq_tpl.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\x86_features.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\x86_functions.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch\x86\x86_intrins.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\arch_functions.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\chunkset_tpl.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\compare256_rle.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\cpu_features.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32_braid_comb_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32_braid_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32_braid_tbl.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\deflate.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\deflate_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\fallback_builtins.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\functable.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\gzguts.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffast_tpl.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffixed_tbl.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inflate.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inflate_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inftrees.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\insert_string_p.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\insert_string_tpl.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\match_tpl.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\trees.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\trees_emit.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\trees_tbl.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zbuild.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zconf-ng.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zendian.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zlib-ng.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zlib_name_mangling-ng.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zmemory.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zutil.h" />
+    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zutil_p.h" />
     <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupGdiPlusMatrixTransform.h" />
     <ClInclude Include="SkinFramework\Markup\Transform\XTPMarkupMatrixTransform.h" />
     <ClInclude Include="SkinFramework\SkinFramework\Lz4Pack.h" />
@@ -230,17 +277,6 @@
     <ClInclude Include="SkinFramework\GraphicLibrary\libpng\pngpriv.h" />
     <ClInclude Include="SkinFramework\GraphicLibrary\libpng\pngstruct.h" />
     <ClInclude Include="SkinFramework\GraphicLibrary\unzip\unzip.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\crc32.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\deflate.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\gzguts.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffast.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inffixed.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inflate.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\inftrees.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\trees.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zconf.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zlib.h" />
-    <ClInclude Include="SkinFramework\GraphicLibrary\zlib\zutil.h" />
     <ClInclude Include="SkinFramework\SkinFramework\Includes.h" />
     <ClInclude Include="SkinFramework\SkinFramework\XTPSkinDrawTools.h" />
     <ClInclude Include="SkinFramework\SkinFramework\XTPSkinFrameworkIIDs.h" />
@@ -455,6 +491,14 @@
     <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeVisualStudio2015.cpp" />
     <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeWindowsClassic.cpp" />
     <ClCompile Include="SkinFramework\Common\ScrollBar\Themes\XTPScrollBarThemeWindowsUx.cpp" />
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\intel\filter_sse2_intrinsics.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\libpng\intel\intel_init.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SkinFramework\GraphicLibrary\lz4\lz4.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
@@ -530,7 +574,111 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\adler32_c.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\chunkset_c.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\compare256_c.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\crc32_braid_c.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\crc32_chorba_c.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\generic\slide_hash_c.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx2.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx512.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_avx512_vnni.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_sse42.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\adler32_ssse3.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chorba_sse2.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chorba_sse41.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chunkset_avx2.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chunkset_avx512.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chunkset_sse2.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\chunkset_ssse3.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\compare256_avx2.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\compare256_avx512.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\compare256_sse2.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\crc32_pclmulqdq.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\crc32_vpclmulqdq.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\slide_hash_avx2.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\slide_hash_sse2.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\arch\x86\x86_features.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SkinFramework\GraphicLibrary\zlib\compress.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\cpu_features.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
@@ -538,11 +686,43 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\crc32_braid_comb.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\gzclose.c">
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_fast.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_huff.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_medium.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_quick.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_rle.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_slow.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\deflate_stored.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\functable.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
@@ -562,15 +742,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inffast.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inflate.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SkinFramework\GraphicLibrary\zlib\inftrees.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SkinFramework\GraphicLibrary\zlib\insert_string.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
