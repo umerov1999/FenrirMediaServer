@@ -78,6 +78,7 @@ ColorEdit::ColorEdit() {
 	AutoScroll = true;
 	FullText = false;
 	TextAlign = Align::CENTER_ALIGN;
+	FontSizePX = -1;
 	THREAD_ACCESS_REGISTER_POINTERS(Async, &Lines, &RenderedLines, &BackgroundPicture);
 }
 
@@ -108,6 +109,8 @@ void ColorEdit::Init(Align TextAlign, HBITMAP pBackgroundPicture, bool isFullTex
 	m_pFont.Attach((HFONT)GetParent()->SendMessageW(WM_GETFONT, 0, 0));
 	this->TextAlign = TextAlign;
 	this->FullText = isFullTextMode;
+
+	FontSizePX = -1;
 
 	RECT scrollpos;
 	GetClientRect(&scrollpos);
@@ -179,6 +182,7 @@ ColorEdit::~ColorEdit() {
 	FullText = false;
 	AutoScroll = true;
 	TextAlign = Align::CENTER_ALIGN;
+	FontSizePX = -1;
 }
 
 
@@ -468,6 +472,7 @@ void ColorEdit::OnPaint() {
 
 	THREAD_ACCESS_LOCK(Async, &BackgroundPicture);
 	if (BackgroundPicture.m_hObject) {
+		bitmap.DeleteObject();
 		bitmap.Attach((HBITMAP)CopyImage(BackgroundPicture, IMAGE_BITMAP, rect.Width(), rect.Height(), 0));
 		dcMem.SelectObject(&bitmap);
 	}
@@ -480,20 +485,27 @@ void ColorEdit::OnPaint() {
 	dcMem.SelectObject(m_pFont);
 	TEXTMETRICW tm;
 	dcMem.GetTextMetricsW(&tm);
+	if (tm.tmHeight > 0) {
+		FontSizePX = tm.tmHeight;
+	}
 	THREAD_ACCESS_LOCK(Async, &RenderedLines);
 	if (LinesChenged || ScrollChenged) {
 		THREAD_ACCESS_LOCK(Async, &Lines);
 		RenderedLines.clear();
 		if (!ScrollChenged) {
 			if (Lines.size() <= 0) {
-				SetRange(&Scroll, 0, 0, rect.Height() / tm.tmHeight);
+				if (FontSizePX > 0) {
+					SetRange(&Scroll, 0, 0, rect.Height() / FontSizePX);
+				}
 				if (AutoScroll) {
 					HorizScroll.SetScrollPos(0);
 					Scroll.SetScrollPos(0);
 				}
 			}
 			else {
-				SetRange(&Scroll, 0, (int)(Lines.size()), rect.Height() / tm.tmHeight);
+				if (FontSizePX > 0) {
+					SetRange(&Scroll, 0, (int)(Lines.size()), rect.Height() / FontSizePX);
+				}
 				if (AutoScroll) {
 					HorizScroll.SetScrollPos(0);
 					Scroll.SetScrollPos((int)(Lines.size()));
@@ -501,7 +513,7 @@ void ColorEdit::OnPaint() {
 			}
 		}
 		if (Lines.size() > 0) {
-			for (size_t i = 0; i < min((size_t)(rect.Height() / tm.tmHeight), Lines.size() - Scroll.GetScrollPos()); i++) {
+			for (size_t i = 0; i < min((size_t)(rect.Height() / std::max(FontSizePX, 1)), Lines.size() - Scroll.GetScrollPos()); i++) {
 				RenderedLines.push_back(Lines[(int)i + Scroll.GetScrollPos()]);
 			}
 		}
@@ -510,19 +522,19 @@ void ColorEdit::OnPaint() {
 		THREAD_ACCESS_UNLOCK(Async, &Lines);
 	}
 	CRect recttemp = rect;
-	if (RenderedLines.size() <= 0) {
-		SetRange(&HorizScroll, 0, 0, rect.Width() / tm.tmHeight);
+	if (RenderedLines.size() <= 0 && FontSizePX > 0) {
+		SetRange(&HorizScroll, 0, 0, rect.Width() / FontSizePX);
 	}
 	for (auto& i : RenderedLines) {
 		if ((int)i.str.length() <= HorizScroll.GetScrollPos()) {
-			recttemp.top += tm.tmHeight;
+			recttemp.top += std::max(FontSizePX, 1);
 			continue;
 		}
 		wstring rs = i.str;
 		INT hMin, hMax;
 		HorizScroll.GetScrollRange(&hMin, &hMax);
-		if (hMax < (int)rs.length()) {
-			SetRange(&HorizScroll, 0, (int)rs.length(), rect.Width() / tm.tmHeight);
+		if (hMax < (int)rs.length() && FontSizePX > 0) {
+			SetRange(&HorizScroll, 0, (int)rs.length(), rect.Width() / FontSizePX);
 		}
 
 		rs = rs.substr(HorizScroll.GetScrollPos());
@@ -556,7 +568,7 @@ void ColorEdit::OnPaint() {
 			GetTextExtentPointW(dcMem.m_hDC, TempStr.c_str(), (int)TempStr.length(), &textsz);
 			Mod.left += textsz.cx;
 		}
-		recttemp.top += tm.tmHeight;
+		recttemp.top += std::max(FontSizePX, 1);
 	}
 	pDC.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), &dcMem, 0, 0, SRCCOPY);
 	THREAD_ACCESS_UNLOCK(Async, &RenderedLines);

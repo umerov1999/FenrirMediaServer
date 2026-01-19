@@ -82,6 +82,7 @@ private:
 	bool ScrollChenged;
 	bool AutoScroll;
 	bool FullText;
+	int FontSizePX;
 	CBitmap BackgroundPicture;
 	bool Inited;
 	Align TextAlign;

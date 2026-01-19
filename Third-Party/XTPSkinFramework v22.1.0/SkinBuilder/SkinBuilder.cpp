@@ -131,7 +131,7 @@ void UngenerateStyle(const wstring &File)
 	wrp->fread(Data.data(), 1, PSz);
 	CloseFileWraper(wrp);
 
-	Decompressor d(Data.data(), Data.size(), false);
+	Decompressor d(Data.data(), (int)Data.size(), false);
 	if (!d.read_headers()) {
 		cout << "Fatal Error!!!" << endl;
 		system("pause");

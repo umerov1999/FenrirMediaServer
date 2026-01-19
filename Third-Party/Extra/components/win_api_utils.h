@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <chrono>
 #include <thread>
+#include <sys/param.h>
 #else
 #include <Windows.h>
 #endif
@@ -60,7 +61,7 @@ public:
 				Protector[pntr] = new pthread_mutex_t();
 				pthread_mutex_init(Protector[pntr], nullptr);
 #else
-				Protector[pntr] = CreateMutexW(NULL, FALSE, NULL);
+				Protector[pntr] = CreateMutexW(nullptr, FALSE, nullptr);
 #endif
 			}
 		}
@@ -131,23 +132,63 @@ typedef pthread_t TH_HANDLE;
 #define SOCKET_ERROR -1
 #define THREAD_IMPL(name,arg) void* name(void* arg)
 
+#if defined(PTHREAD_STACK_MIN)
+# define SIMPLE_THREAD_STACKSIZE     MAX((((sizeof(void *) * 8 * 8) - 16) * 1024), PTHREAD_STACK_MIN)
+# define SIMPLE_THREAD_STACKSIZE_LOW MAX((((sizeof(void *) * 8 * 2) - 16) * 1024), PTHREAD_STACK_MIN)
+#else
+# define SIMPLE_THREAD_STACKSIZE     (((sizeof(void *) * 8 * 8) - 16) * 1024)
+# define SIMPLE_THREAD_STACKSIZE_LOW (((sizeof(void *) * 8 * 2) - 16) * 1024)
+#endif
+
 static inline pthread_t CreateThreadSimple(void* (*start_routine) (void*), const void* lpParameter = nullptr) {
+	bool dont_use_attr = false;
+	pthread_attr_t attr;
+	if (pthread_attr_init(&attr)) {
+		dont_use_attr = true;
+	} else {
+		pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
+		pthread_attr_setstacksize(&attr, SIMPLE_THREAD_STACKSIZE);
+	}
+
 	pthread_t ret = 0;
-	int thid = pthread_create(&ret, NULL, start_routine, (void*)lpParameter);
-	if (!thid) {
+	if (!pthread_create(&ret, dont_use_attr ? nullptr : &attr, start_routine, (void*)lpParameter)) {
+		if (!dont_use_attr) {
+			pthread_attr_destroy(&attr);
+		}
 		return ret;
 	}
-	else {
-		return 0;
+	else if (!dont_use_attr) {
+		pthread_attr_destroy(&attr);
 	}
+	return 0;
 }
 
 static inline bool CreateThreadDetachedSimple(void* (*start_routine) (void*), const void* lpParameter = nullptr) {
+	bool use_detach_method = false;
+	pthread_attr_t attr;
+	if (pthread_attr_init(&attr)) {
+		use_detach_method = true;
+	}
+
+	if (!use_detach_method && pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED)) {
+		use_detach_method = true;
+		pthread_attr_destroy(&attr);
+	}
+	if (!use_detach_method) {
+		pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
+		pthread_attr_setstacksize(&attr, SIMPLE_THREAD_STACKSIZE);
+	}
+
 	pthread_t ret = 0;
-	int thid = pthread_create(&ret, NULL, start_routine, (void*)lpParameter);
-	if (!thid) {
-		pthread_detach(ret);
+	if (!pthread_create(&ret, use_detach_method ? nullptr : &attr, start_routine, (void*)lpParameter)) {
+		if (use_detach_method) {
+			pthread_detach(ret);
+		} else {
+			pthread_attr_destroy(&attr);
+		}
 		return true;
+	} else if (!use_detach_method) {
+		pthread_attr_destroy(&attr);
 	}
 	return false;
 }
@@ -157,8 +198,8 @@ static inline void wait_for(unsigned long ms) {
 }
 
 static inline void wait_for_and_close(TH_HANDLE& thread) {
-	if (thread != 0) {
-		pthread_join(thread, NULL);
+	if (thread) {
+		pthread_join(thread, nullptr);
 		thread = 0;
 	}
 }
@@ -177,27 +218,27 @@ static inline void wait_for(unsigned long ms) {
 }
 
 static inline void wait_for_and_close(TH_HANDLE& thread) {
-	if (thread != NULL) {
+	if (thread) {
 		WaitForSingleObject(thread, INFINITE);
 		CloseHandle(thread);
-		thread = NULL;
+		thread = nullptr;
 	}
 }
 
 static inline HANDLE CreateThreadSimple(
 	LPTHREAD_START_ROUTINE  lpStartAddress,
-	const void* lpParameter = NULL, DWORD dwCreationFlags = 0
+	const void* lpParameter = nullptr, DWORD dwCreationFlags = 0
 ) {
 	DWORD thid = 0;
-	return ::CreateThread(NULL, 0, lpStartAddress, (LPVOID)lpParameter, dwCreationFlags, &thid);
+	return ::CreateThread(nullptr, 0, lpStartAddress, (LPVOID)lpParameter, dwCreationFlags, &thid);
 }
 
 static inline bool CreateThreadDetachedSimple(
 	LPTHREAD_START_ROUTINE  lpStartAddress,
-	const void* lpParameter = NULL, DWORD dwCreationFlags = 0
+	const void* lpParameter = nullptr, DWORD dwCreationFlags = 0
 ) {
 	DWORD thid = 0;
-	HANDLE th = ::CreateThread(NULL, 0, lpStartAddress, (LPVOID)lpParameter, dwCreationFlags, &thid);
+	HANDLE th = ::CreateThread(nullptr, 0, lpStartAddress, (LPVOID)lpParameter, dwCreationFlags, &thid);
 	if(!th) {
 		return false;
 	}
@@ -212,10 +253,10 @@ static inline bool CreateProcessSimple(
 	LPPROCESS_INFORMATION lpProcessInformation,
 	const std::wstring& lpCurrentDirectory = L"",
 	DWORD                 dwCreationFlags = 0,
-	LPSECURITY_ATTRIBUTES lpProcessAttributes = NULL,
-	LPSECURITY_ATTRIBUTES lpThreadAttributes = NULL,
+	LPSECURITY_ATTRIBUTES lpProcessAttributes = nullptr,
+	LPSECURITY_ATTRIBUTES lpThreadAttributes = nullptr,
 	bool                  bInheritHandles = false,
-	LPVOID                lpEnvironment = NULL
+	LPVOID                lpEnvironment = nullptr
 ) {
 	std::wstring cmdline;
 	if (lpApplicationName.empty() || lpCommandLine.empty()) {
@@ -224,9 +265,9 @@ static inline bool CreateProcessSimple(
 	else {
 		cmdline = L"\"" + lpApplicationName + L"\" " + lpCommandLine;
 	}
-	return ::CreateProcessW(lpApplicationName.empty() ? NULL : lpApplicationName.c_str(), cmdline.empty() ? NULL : (LPWSTR)cmdline.c_str(),
+	return ::CreateProcessW(lpApplicationName.empty() ? nullptr : lpApplicationName.c_str(), cmdline.empty() ? nullptr : (LPWSTR)cmdline.c_str(),
 		lpProcessAttributes, lpThreadAttributes, bInheritHandles ? TRUE : FALSE, dwCreationFlags, lpEnvironment,
-		lpCurrentDirectory.empty() ? NULL : lpCurrentDirectory.c_str(), lpStartupInfo, lpProcessInformation) == TRUE;
+		lpCurrentDirectory.empty() ? nullptr : lpCurrentDirectory.c_str(), lpStartupInfo, lpProcessInformation) == TRUE;
 }
 
 static inline bool CreateProcessWithLogonSimple(
@@ -240,7 +281,7 @@ static inline bool CreateProcessWithLogonSimple(
     DWORD dwLogonFlags = LOGON_WITH_PROFILE,
 	const std::wstring& lpCurrentDirectory = L"",
 	DWORD                 dwCreationFlags = 0,
-	LPVOID                lpEnvironment = NULL
+	LPVOID                lpEnvironment = nullptr
 ) {
 	std::wstring cmdline;
 	if (lpApplicationName.empty() || lpCommandLine.empty()) {
@@ -249,15 +290,15 @@ static inline bool CreateProcessWithLogonSimple(
 	else {
 		cmdline = L"\"" + lpApplicationName + L"\" " + lpCommandLine;
 	}
-	return ::CreateProcessWithLogonW(lpUsername.c_str(), lpDomain.empty() ? NULL : lpDomain.c_str(), lpPassword.c_str(), dwLogonFlags, lpApplicationName.empty() ? NULL : lpApplicationName.c_str(), cmdline.empty() ? NULL : (LPWSTR)cmdline.c_str(),
+	return ::CreateProcessWithLogonW(lpUsername.c_str(), lpDomain.empty() ? nullptr : lpDomain.c_str(), lpPassword.c_str(), dwLogonFlags, lpApplicationName.empty() ? nullptr : lpApplicationName.c_str(), cmdline.empty() ? nullptr : (LPWSTR)cmdline.c_str(),
 		dwCreationFlags, lpEnvironment,
-		lpCurrentDirectory.empty() ? NULL : lpCurrentDirectory.c_str(), lpStartupInfo, lpProcessInformation) == TRUE;
+		lpCurrentDirectory.empty() ? nullptr : lpCurrentDirectory.c_str(), lpStartupInfo, lpProcessInformation) == TRUE;
 }
 
 static inline bool IsAppRunningAsAdminMode() {
 	BOOL fIsRunAsAdmin = FALSE;
 	DWORD dwError = ERROR_SUCCESS;
-	PSID pAdministratorsGroup = NULL;
+	PSID pAdministratorsGroup = nullptr;
 
 	SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
 	if (!AllocateAndInitializeSid(
@@ -271,7 +312,7 @@ static inline bool IsAppRunningAsAdminMode() {
 		goto Cleanup;
 	}
 
-	if (!CheckTokenMembership(NULL, pAdministratorsGroup, &fIsRunAsAdmin)) {
+	if (!CheckTokenMembership(nullptr, pAdministratorsGroup, &fIsRunAsAdmin)) {
 		dwError = GetLastError();
 		goto Cleanup;
 	}
@@ -279,7 +320,7 @@ static inline bool IsAppRunningAsAdminMode() {
 Cleanup:
 	if (pAdministratorsGroup) {
 		FreeSid(pAdministratorsGroup);
-		pAdministratorsGroup = NULL;
+		pAdministratorsGroup = nullptr;
 	}
 
 	if (ERROR_SUCCESS != dwError) {

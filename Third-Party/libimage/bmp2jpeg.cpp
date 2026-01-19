@@ -221,11 +221,11 @@ JDIMENSION get_8bit_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 /* This version is for reading 8-bit colormap indexes */
 {
     bmp_source_ptr source = (bmp_source_ptr)sinfo;
-    register JSAMPARRAY colormap = source->colormap;
+    JSAMPARRAY colormap = source->colormap;
     JSAMPARRAY image_ptr;
-    register int t;
-    register JSAMPROW inptr, outptr;
-    register JDIMENSION col;
+    int t;
+    JSAMPROW inptr, outptr;
+    JDIMENSION col;
 
     /* Fetch next row from virtual array */
     source->source_row--;
@@ -265,8 +265,8 @@ JDIMENSION get_16bit_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 {
     bmp_source_ptr source = (bmp_source_ptr)sinfo;
     JSAMPARRAY image_ptr;
-    register JSAMPROW inptr, outptr;
-    register JDIMENSION col;
+    JSAMPROW inptr, outptr;
+    JDIMENSION col;
     unsigned long bit32_pix;
     char a, b;
     char* pix_ptr;
@@ -309,8 +309,8 @@ JDIMENSION get_24bit_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 {
     bmp_source_ptr source = (bmp_source_ptr)sinfo;
     JSAMPARRAY image_ptr;
-    register JSAMPROW inptr, outptr;
-    register JDIMENSION col;
+    JSAMPROW inptr, outptr;
+    JDIMENSION col;
 
     /* Fetch next row from virtual array */
     source->source_row--;
@@ -345,8 +345,8 @@ JDIMENSION get_32bit_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 {
     bmp_source_ptr source = (bmp_source_ptr)sinfo;
     JSAMPARRAY image_ptr;
-    register JSAMPROW inptr, outptr;
-    register JDIMENSION col;
+    JSAMPROW inptr, outptr;
+    JDIMENSION col;
 
     /* Fetch next row from virtual array */
     source->source_row--;
@@ -378,9 +378,9 @@ JDIMENSION get_32bit_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 JDIMENSION preload_image(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 {
     bmp_source_ptr source = (bmp_source_ptr)sinfo;
-    //  register FILE *infile = source->pub.input_file;
-    //  register int c;
-    register JSAMPROW out_ptr;
+    //  FILE *infile = source->pub.input_file;
+    //  int c;
+    JSAMPROW out_ptr;
     JSAMPARRAY image_ptr;
     JDIMENSION row;
 

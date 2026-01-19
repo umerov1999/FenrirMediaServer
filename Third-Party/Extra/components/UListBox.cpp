@@ -224,7 +224,7 @@ void UListBox::UpdateLines() {
 }
 
 void UListBox::OnLButtonDown(UINT nFlags, CPoint point) {
-	if (!Inited || FontSizePX == -1) {
+	if (!Inited || FontSizePX <= 0) {
 		return CStatic::OnRButtonDown(nFlags, point);
 	}
 	int SelectedIdTemp = 0;
@@ -310,7 +310,7 @@ std::wstring UListBox::GetSelectedLine() {
 }
 
 void UListBox::OnMouseMove(UINT nFlags, CPoint point) {
-	if (!Inited || FontSizePX == -1) {
+	if (!Inited || FontSizePX <= 0) {
 		return CStatic::OnMouseMove(nFlags, point);
 	}
 	int SelectedIdTemp = 0;
@@ -434,6 +434,7 @@ void UListBox::OnPaint() {
 
 	THREAD_ACCESS_LOCK(Async, &BackgroundPicture);
 	if (BackgroundPicture.m_hObject) {
+		bitmap.DeleteObject();
 		bitmap.Attach((HBITMAP)CopyImage(BackgroundPicture, IMAGE_BITMAP, rect.Width(), rect.Height(), 0));
 		dcMem.SelectObject(&bitmap);
 	}
@@ -446,21 +447,23 @@ void UListBox::OnPaint() {
 	dcMem.SelectObject(m_pFont);
 	TEXTMETRICW tm;
 	dcMem.GetTextMetricsW(&tm);
-	FontSizePX = tm.tmHeight;
+	if (tm.tmHeight > 0) {
+		FontSizePX = tm.tmHeight;
+	}
 	THREAD_ACCESS_LOCK(Async, &RenderedLines);
 	if (LinesChenged || ScrollChenged) {
 		THREAD_ACCESS_LOCK(Async, &Lines);
 		RenderedLines.clear();
-		if (!ScrollChenged) {
+		if (!ScrollChenged && FontSizePX > 0) {
 			if (Lines.size() <= 0) {
-				SetRange(&Scroll, 0, 0, rect.Height() / tm.tmHeight);
+				SetRange(&Scroll, 0, 0, rect.Height() / FontSizePX);
 			}
 			else {
-				SetRange(&Scroll, 0, (int)(Lines.size()), rect.Height() / tm.tmHeight);
+				SetRange(&Scroll, 0, (int)(Lines.size()), rect.Height() / FontSizePX);
 			}
 		}
 		if (Lines.size() > 0) {
-			for (size_t i = 0; i < min((size_t)(rect.Height() / tm.tmHeight), Lines.size() - Scroll.GetScrollPos()); i++) {
+			for (size_t i = 0; i < min((size_t)(rect.Height() / std::max(FontSizePX, 1)), Lines.size() - Scroll.GetScrollPos()); i++) {
 				RenderedLines.push_back(RenderedLine(Lines[(int)i + Scroll.GetScrollPos()], (int)i + Scroll.GetScrollPos()));
 			}
 		}
@@ -469,12 +472,12 @@ void UListBox::OnPaint() {
 		THREAD_ACCESS_UNLOCK(Async, &Lines);
 	}
 	CRect recttemp = rect;
-	if (RenderedLines.size() <= 0) {
-		SetRange(&HorizScroll, 0, 0, rect.Width() / tm.tmHeight);
+	if (RenderedLines.size() <= 0 && FontSizePX > 0) {
+		SetRange(&HorizScroll, 0, 0, rect.Width() / FontSizePX);
 	}
 	for (auto &i : RenderedLines) {
 		if ((int)i.Line.length() <= HorizScroll.GetScrollPos()) {
-			recttemp.top += tm.tmHeight;
+			recttemp.top += std::max(FontSizePX, 1);
 			continue;
 		}
 		wstring rs = i.Line;
@@ -485,8 +488,8 @@ void UListBox::OnPaint() {
 			dcMem.SelectObject(Poly);
 			dcMem.MoveTo(0, recttemp.top);
 			dcMem.LineTo(recttemp.Width(), recttemp.top);
-			dcMem.MoveTo(0, recttemp.top + tm.tmHeight);
-			dcMem.LineTo(recttemp.Width(), recttemp.top + tm.tmHeight);
+			dcMem.MoveTo(0, recttemp.top + std::max(FontSizePX, 1));
+			dcMem.LineTo(recttemp.Width(), recttemp.top + std::max(FontSizePX, 1));
 		}
 		else {
 			if (TouchId == i.Id) {
@@ -494,14 +497,14 @@ void UListBox::OnPaint() {
 				dcMem.SelectObject(Poly);
 				dcMem.MoveTo(0, recttemp.top);
 				dcMem.LineTo(recttemp.Width(), recttemp.top);
-				dcMem.MoveTo(0, recttemp.top + tm.tmHeight);
-				dcMem.LineTo(recttemp.Width(), recttemp.top + tm.tmHeight);
+				dcMem.MoveTo(0, recttemp.top + std::max(FontSizePX, 1));
+				dcMem.LineTo(recttemp.Width(), recttemp.top + std::max(FontSizePX, 1));
 			}
 		}
 		INT hMin, hMax;
 		HorizScroll.GetScrollRange(&hMin, &hMax);
-		if (hMax < (int)rs.length()) {
-			SetRange(&HorizScroll, 0, (int)rs.length(), rect.Width() / tm.tmHeight);
+		if (hMax < (int)rs.length() && FontSizePX > 0) {
+			SetRange(&HorizScroll, 0, (int)rs.length(), rect.Width() / FontSizePX);
 		}
 
 		rs = rs.substr(HorizScroll.GetScrollPos());
@@ -530,7 +533,7 @@ void UListBox::OnPaint() {
 			GetTextExtentPointW(dcMem.m_hDC, TempStr.c_str(), (int)TempStr.length(), &textsz);
 			Mod.left += textsz.cx;
 		}
-		recttemp.top += tm.tmHeight;
+		recttemp.top += std::max(FontSizePX, 1);
 	}
 	pDC.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), &dcMem, 0, 0, SRCCOPY);
 	THREAD_ACCESS_UNLOCK(Async, &RenderedLines);

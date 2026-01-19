@@ -593,7 +593,6 @@ PutLameVBR(lame_global_flags const *gfp, size_t nMusicLength, uint8_t * pbtStrea
     SessionConfig_t const *const cfg = &gfc->cfg;
 
     int     nBytesWritten = 0;
-    int     i;
 
     int     enc_delay = gfc->ov_enc.encoder_delay; /* encoder delay */
     int     enc_padding = gfc->ov_enc.encoder_padding; /* encoder padding  */

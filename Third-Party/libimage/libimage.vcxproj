@@ -490,12 +490,10 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0A00;TVG_STATIC;WEBP_USE_THREAD;WEBP_USE_SSE2;PPM_SUPPORTED;BMP_SUPPORTED;PNG_INTEL_SSE_OPT;NO_GETENV;X86_FEATURES;X86_SSE2;X86_SSSE3;X86_SSE41;X86_SSE42;X86_AVX2;X86_AVX512;X86_AVX512VNNI;X86_VPCLMULQDQ_CRC;X86_PCLMULQDQ_CRC;HAVE_CPUID_MS;WITH_GZFILEOP;WITH_OPTIM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./libjpeg-turbo;./libjpeg-turbo/simd;./libjpeg-turbo/simd/nasm;./png;./zlib;./webp/;./webp/src/;./webp/src/dec;./webp/src/dsp;./webp/src/utils;./webp/src/webp;./thorvg/inc;./thorvg/src/renderer;./thorvg/src/renderer/sw_engine;./thorvg/src/common;./thorvg/src/loaders/lottie;./thorvg/src/loaders/svg;./thorvg/src/loaders/raw;./thorvg/src/loaders/external_jpg;./thorvg/src/loaders/external_png;./thorvg/src/loaders/external_webp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TreatWarningAsError>false</TreatWarningAsError>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -504,6 +502,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName)_vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level1</WarningLevel>
+      <DisableSpecificWarnings>4005;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

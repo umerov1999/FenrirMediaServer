@@ -2324,7 +2324,7 @@ calc_maximum_input_samples_for_buffer_size(lame_internal_flags const* gfc, size_
     {
         int const pad = 1;
         int const bpf = ((cfg->version + 1) * 72000 * kbps / cfg->samplerate_out + pad);
-        frames_per_buffer = buffer_size / bpf;
+        frames_per_buffer = (int)buffer_size / bpf;
     }
     {
         double ratio = (double) cfg->samplerate_in / cfg->samplerate_out;
