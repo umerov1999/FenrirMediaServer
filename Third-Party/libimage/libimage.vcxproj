@@ -1,0 +1,529 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="bmp2jpeg.cpp" />
+    <ClCompile Include="bmp2png.cpp" />
+    <ClCompile Include="libimage.cpp" />
+    <ClCompile Include="libjpeg-turbo\cdjpeg.c" />
+    <ClCompile Include="libjpeg-turbo\jaricom.c" />
+    <ClCompile Include="libjpeg-turbo\jcapimin.c" />
+    <ClCompile Include="libjpeg-turbo\jcapistd.c" />
+    <ClCompile Include="libjpeg-turbo\jcarith.c" />
+    <ClCompile Include="libjpeg-turbo\jccoefct.c" />
+    <ClCompile Include="libjpeg-turbo\jccolor.c" />
+    <ClCompile Include="libjpeg-turbo\jcdctmgr.c" />
+    <ClCompile Include="libjpeg-turbo\jcdiffct.c" />
+    <ClCompile Include="libjpeg-turbo\jchuff.c" />
+    <ClCompile Include="libjpeg-turbo\jcicc.c" />
+    <ClCompile Include="libjpeg-turbo\jcinit.c" />
+    <ClCompile Include="libjpeg-turbo\jclhuff.c" />
+    <ClCompile Include="libjpeg-turbo\jclossls.c" />
+    <ClCompile Include="libjpeg-turbo\jcmainct.c" />
+    <ClCompile Include="libjpeg-turbo\jcmarker.c" />
+    <ClCompile Include="libjpeg-turbo\jcmaster.c" />
+    <ClCompile Include="libjpeg-turbo\jcomapi.c" />
+    <ClCompile Include="libjpeg-turbo\jcparam.c" />
+    <ClCompile Include="libjpeg-turbo\jcphuff.c" />
+    <ClCompile Include="libjpeg-turbo\jcprepct.c" />
+    <ClCompile Include="libjpeg-turbo\jcsample.c" />
+    <ClCompile Include="libjpeg-turbo\jctrans.c" />
+    <ClCompile Include="libjpeg-turbo\jdapimin.c" />
+    <ClCompile Include="libjpeg-turbo\jdapistd.c" />
+    <ClCompile Include="libjpeg-turbo\jdarith.c" />
+    <ClCompile Include="libjpeg-turbo\jdatadst-tj.c" />
+    <ClCompile Include="libjpeg-turbo\jdatadst.c" />
+    <ClCompile Include="libjpeg-turbo\jdatasrc-tj.c" />
+    <ClCompile Include="libjpeg-turbo\jdatasrc.c" />
+    <ClCompile Include="libjpeg-turbo\jdcoefct.c" />
+    <ClCompile Include="libjpeg-turbo\jdcolor.c" />
+    <ClCompile Include="libjpeg-turbo\jddctmgr.c" />
+    <ClCompile Include="libjpeg-turbo\jddiffct.c" />
+    <ClCompile Include="libjpeg-turbo\jdhuff.c" />
+    <ClCompile Include="libjpeg-turbo\jdicc.c" />
+    <ClCompile Include="libjpeg-turbo\jdinput.c" />
+    <ClCompile Include="libjpeg-turbo\jdlhuff.c" />
+    <ClCompile Include="libjpeg-turbo\jdlossls.c" />
+    <ClCompile Include="libjpeg-turbo\jdmainct.c" />
+    <ClCompile Include="libjpeg-turbo\jdmarker.c" />
+    <ClCompile Include="libjpeg-turbo\jdmaster.c" />
+    <ClCompile Include="libjpeg-turbo\jdmerge.c" />
+    <ClCompile Include="libjpeg-turbo\jdphuff.c" />
+    <ClCompile Include="libjpeg-turbo\jdpostct.c" />
+    <ClCompile Include="libjpeg-turbo\jdsample.c" />
+    <ClCompile Include="libjpeg-turbo\jdtrans.c" />
+    <ClCompile Include="libjpeg-turbo\jerror.cpp" />
+    <ClCompile Include="libjpeg-turbo\jfdctflt.c" />
+    <ClCompile Include="libjpeg-turbo\jfdctfst.c" />
+    <ClCompile Include="libjpeg-turbo\jfdctint.c" />
+    <ClCompile Include="libjpeg-turbo\jidctflt.c" />
+    <ClCompile Include="libjpeg-turbo\jidctfst.c" />
+    <ClCompile Include="libjpeg-turbo\jidctint.c" />
+    <ClCompile Include="libjpeg-turbo\jidctred.c" />
+    <ClCompile Include="libjpeg-turbo\jmemmgr.c" />
+    <ClCompile Include="libjpeg-turbo\jmemnobs.c" />
+    <ClCompile Include="libjpeg-turbo\jpeg_nbits.c" />
+    <ClCompile Include="libjpeg-turbo\jquant1.c" />
+    <ClCompile Include="libjpeg-turbo\jquant2.c" />
+    <ClCompile Include="libjpeg-turbo\jutils.c" />
+    <ClCompile Include="libjpeg-turbo\rdbmp.c" />
+    <ClCompile Include="libjpeg-turbo\rdppm.c" />
+    <ClCompile Include="libjpeg-turbo\simd\x86_64\jsimd.c" />
+    <ClCompile Include="libjpeg-turbo\tjutil.c" />
+    <ClCompile Include="libjpeg-turbo\transupp.c" />
+    <ClCompile Include="libjpeg-turbo\turbojpeg.c" />
+    <ClCompile Include="libjpeg-turbo\wrbmp.c" />
+    <ClCompile Include="libjpeg-turbo\wrppm.c" />
+    <ClCompile Include="png\intel\filter_sse2_intrinsics.c" />
+    <ClCompile Include="png\intel\intel_init.c" />
+    <ClCompile Include="png\png.c" />
+    <ClCompile Include="png\pngerror.c" />
+    <ClCompile Include="png\pngget.c" />
+    <ClCompile Include="png\pngmem.c" />
+    <ClCompile Include="png\pngpread.c" />
+    <ClCompile Include="png\pngread.c" />
+    <ClCompile Include="png\pngrio.c" />
+    <ClCompile Include="png\pngrtran.c" />
+    <ClCompile Include="png\pngrutil.c" />
+    <ClCompile Include="png\pngset.c" />
+    <ClCompile Include="png\pngtrans.c" />
+    <ClCompile Include="png\pngwio.c" />
+    <ClCompile Include="png\pngwrite.c" />
+    <ClCompile Include="png\pngwtran.c" />
+    <ClCompile Include="png\pngwutil.c" />
+    <ClCompile Include="thorvg\src\common\tvgColor.cpp" />
+    <ClCompile Include="thorvg\src\common\tvgCompressor.cpp" />
+    <ClCompile Include="thorvg\src\common\tvgMath.cpp" />
+    <ClCompile Include="thorvg\src\common\tvgStr.cpp" />
+    <ClCompile Include="thorvg\src\loaders\external_jpg\tvgJpgLoader.cpp" />
+    <ClCompile Include="thorvg\src\loaders\external_png\tvgPngLoader.cpp" />
+    <ClCompile Include="thorvg\src\loaders\external_webp\tvgWebpLoader.cpp" />
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieAnimation.cpp" />
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieBuilder.cpp" />
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieExpressions.cpp" />
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieInterpolator.cpp" />
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieLoader.cpp" />
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieModel.cpp" />
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieModifier.cpp" />
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieParser.cpp" />
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieParserHandler.cpp" />
+    <ClCompile Include="thorvg\src\loaders\raw\tvgRawLoader.cpp" />
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgCssStyle.cpp" />
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgLoader.cpp" />
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgPath.cpp" />
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgSceneBuilder.cpp" />
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgUtil.cpp" />
+    <ClCompile Include="thorvg\src\loaders\svg\tvgXmlParser.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwFill.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwImage.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwMath.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwMemPool.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwPostEffect.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwRaster.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwRenderer.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwRle.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwShape.cpp" />
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwStroke.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgAccessor.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgAnimation.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgCanvas.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgFill.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgInitializer.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgLoader.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgPaint.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgPicture.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgRender.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgSaver.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgScene.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgShape.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgTaskScheduler.cpp" />
+    <ClCompile Include="thorvg\src\renderer\tvgText.cpp" />
+    <ClCompile Include="webp\src\dec\alpha_dec.c" />
+    <ClCompile Include="webp\src\dec\buffer_dec.c" />
+    <ClCompile Include="webp\src\dec\frame_dec.c" />
+    <ClCompile Include="webp\src\dec\idec_dec.c" />
+    <ClCompile Include="webp\src\dec\io_dec.c" />
+    <ClCompile Include="webp\src\dec\quant_dec.c" />
+    <ClCompile Include="webp\src\dec\tree_dec.c" />
+    <ClCompile Include="webp\src\dec\vp8l_dec.c" />
+    <ClCompile Include="webp\src\dec\vp8_dec.c" />
+    <ClCompile Include="webp\src\dec\webp_dec.c" />
+    <ClCompile Include="webp\src\dsp\alpha_processing.c" />
+    <ClCompile Include="webp\src\dsp\alpha_processing_sse2.c" />
+    <ClCompile Include="webp\src\dsp\alpha_processing_sse41.c" />
+    <ClCompile Include="webp\src\dsp\cpu.c" />
+    <ClCompile Include="webp\src\dsp\dec.c" />
+    <ClCompile Include="webp\src\dsp\dec_clip_tables.c" />
+    <ClCompile Include="webp\src\dsp\dec_sse2.c" />
+    <ClCompile Include="webp\src\dsp\dec_sse41.c" />
+    <ClCompile Include="webp\src\dsp\filters.c" />
+    <ClCompile Include="webp\src\dsp\filters_sse2.c" />
+    <ClCompile Include="webp\src\dsp\lossless.c" />
+    <ClCompile Include="webp\src\dsp\lossless_avx2.c" />
+    <ClCompile Include="webp\src\dsp\lossless_sse2.c" />
+    <ClCompile Include="webp\src\dsp\lossless_sse41.c" />
+    <ClCompile Include="webp\src\dsp\rescaler.c" />
+    <ClCompile Include="webp\src\dsp\rescaler_sse2.c" />
+    <ClCompile Include="webp\src\dsp\ssim.c" />
+    <ClCompile Include="webp\src\dsp\ssim_sse2.c" />
+    <ClCompile Include="webp\src\dsp\upsampling.c" />
+    <ClCompile Include="webp\src\dsp\upsampling_sse2.c" />
+    <ClCompile Include="webp\src\dsp\upsampling_sse41.c" />
+    <ClCompile Include="webp\src\dsp\yuv.c" />
+    <ClCompile Include="webp\src\dsp\yuv_sse2.c" />
+    <ClCompile Include="webp\src\dsp\yuv_sse41.c" />
+    <ClCompile Include="webp\src\utils\bit_reader_utils.c" />
+    <ClCompile Include="webp\src\utils\bit_writer_utils.c" />
+    <ClCompile Include="webp\src\utils\color_cache_utils.c" />
+    <ClCompile Include="webp\src\utils\filters_utils.c" />
+    <ClCompile Include="webp\src\utils\huffman_encode_utils.c" />
+    <ClCompile Include="webp\src\utils\huffman_utils.c" />
+    <ClCompile Include="webp\src\utils\palette.c" />
+    <ClCompile Include="webp\src\utils\quant_levels_dec_utils.c" />
+    <ClCompile Include="webp\src\utils\quant_levels_utils.c" />
+    <ClCompile Include="webp\src\utils\random_utils.c" />
+    <ClCompile Include="webp\src\utils\rescaler_utils.c" />
+    <ClCompile Include="webp\src\utils\thread_utils.c" />
+    <ClCompile Include="webp\src\utils\utils.c" />
+    <ClCompile Include="zlib\adler32.c" />
+    <ClCompile Include="zlib\arch\generic\adler32_c.c" />
+    <ClCompile Include="zlib\arch\generic\adler32_fold_c.c" />
+    <ClCompile Include="zlib\arch\generic\chunkset_c.c" />
+    <ClCompile Include="zlib\arch\generic\compare256_c.c" />
+    <ClCompile Include="zlib\arch\generic\crc32_braid_c.c" />
+    <ClCompile Include="zlib\arch\generic\crc32_chorba_c.c" />
+    <ClCompile Include="zlib\arch\generic\crc32_fold_c.c" />
+    <ClCompile Include="zlib\arch\generic\slide_hash_c.c" />
+    <ClCompile Include="zlib\arch\x86\adler32_avx2.c" />
+    <ClCompile Include="zlib\arch\x86\adler32_avx512.c" />
+    <ClCompile Include="zlib\arch\x86\adler32_avx512_vnni.c" />
+    <ClCompile Include="zlib\arch\x86\adler32_sse42.c" />
+    <ClCompile Include="zlib\arch\x86\adler32_ssse3.c" />
+    <ClCompile Include="zlib\arch\x86\chorba_sse2.c" />
+    <ClCompile Include="zlib\arch\x86\chorba_sse41.c" />
+    <ClCompile Include="zlib\arch\x86\chunkset_avx2.c" />
+    <ClCompile Include="zlib\arch\x86\chunkset_avx512.c" />
+    <ClCompile Include="zlib\arch\x86\chunkset_sse2.c" />
+    <ClCompile Include="zlib\arch\x86\chunkset_ssse3.c" />
+    <ClCompile Include="zlib\arch\x86\compare256_avx2.c" />
+    <ClCompile Include="zlib\arch\x86\compare256_avx512.c" />
+    <ClCompile Include="zlib\arch\x86\compare256_sse2.c" />
+    <ClCompile Include="zlib\arch\x86\crc32_pclmulqdq.c" />
+    <ClCompile Include="zlib\arch\x86\crc32_vpclmulqdq.c" />
+    <ClCompile Include="zlib\arch\x86\slide_hash_avx2.c" />
+    <ClCompile Include="zlib\arch\x86\slide_hash_sse2.c" />
+    <ClCompile Include="zlib\arch\x86\x86_features.c" />
+    <ClCompile Include="zlib\compress.c" />
+    <ClCompile Include="zlib\cpu_features.c" />
+    <ClCompile Include="zlib\crc32.c" />
+    <ClCompile Include="zlib\crc32_braid_comb.c" />
+    <ClCompile Include="zlib\deflate.c" />
+    <ClCompile Include="zlib\deflate_fast.c" />
+    <ClCompile Include="zlib\deflate_huff.c" />
+    <ClCompile Include="zlib\deflate_medium.c" />
+    <ClCompile Include="zlib\deflate_quick.c" />
+    <ClCompile Include="zlib\deflate_rle.c" />
+    <ClCompile Include="zlib\deflate_slow.c" />
+    <ClCompile Include="zlib\deflate_stored.c" />
+    <ClCompile Include="zlib\functable.c" />
+    <ClCompile Include="zlib\gzlib.c" />
+    <ClCompile Include="zlib\gzread.c" />
+    <ClCompile Include="zlib\gzwrite.c" />
+    <ClCompile Include="zlib\infback.c" />
+    <ClCompile Include="zlib\inflate.c" />
+    <ClCompile Include="zlib\inftrees.c" />
+    <ClCompile Include="zlib\insert_string.c" />
+    <ClCompile Include="zlib\insert_string_roll.c" />
+    <ClCompile Include="zlib\trees.c" />
+    <ClCompile Include="zlib\uncompr.c" />
+    <ClCompile Include="zlib\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lancir.h" />
+    <ClInclude Include="libimage.h" />
+    <ClInclude Include="libjpeg-turbo\cderror.h" />
+    <ClInclude Include="libjpeg-turbo\cdjpeg.h" />
+    <ClInclude Include="libjpeg-turbo\cmyk.h" />
+    <ClInclude Include="libjpeg-turbo\jchuff.h" />
+    <ClInclude Include="libjpeg-turbo\jcmaster.h" />
+    <ClInclude Include="libjpeg-turbo\jconfig.h" />
+    <ClInclude Include="libjpeg-turbo\jconfigint.h" />
+    <ClInclude Include="libjpeg-turbo\jdcoefct.h" />
+    <ClInclude Include="libjpeg-turbo\jdct.h" />
+    <ClInclude Include="libjpeg-turbo\jdhuff.h" />
+    <ClInclude Include="libjpeg-turbo\jdmainct.h" />
+    <ClInclude Include="libjpeg-turbo\jdmaster.h" />
+    <ClInclude Include="libjpeg-turbo\jdmerge.h" />
+    <ClInclude Include="libjpeg-turbo\jdsample.h" />
+    <ClInclude Include="libjpeg-turbo\jerror.h" />
+    <ClInclude Include="libjpeg-turbo\jinclude.h" />
+    <ClInclude Include="libjpeg-turbo\jlossls.h" />
+    <ClInclude Include="libjpeg-turbo\jmemsys.h" />
+    <ClInclude Include="libjpeg-turbo\jmorecfg.h" />
+    <ClInclude Include="libjpeg-turbo\jpegapicomp.h" />
+    <ClInclude Include="libjpeg-turbo\jpegint.h" />
+    <ClInclude Include="libjpeg-turbo\jpeglib.h" />
+    <ClInclude Include="libjpeg-turbo\jpeg_nbits.h" />
+    <ClInclude Include="libjpeg-turbo\jsamplecomp.h" />
+    <ClInclude Include="libjpeg-turbo\jsimd.h" />
+    <ClInclude Include="libjpeg-turbo\jsimddct.h" />
+    <ClInclude Include="libjpeg-turbo\jversion.h" />
+    <ClInclude Include="libjpeg-turbo\simd\jsimd.h" />
+    <ClInclude Include="libjpeg-turbo\simd\nasm\jsimdcfg.inc.h" />
+    <ClInclude Include="libjpeg-turbo\tjutil.h" />
+    <ClInclude Include="libjpeg-turbo\transupp.h" />
+    <ClInclude Include="libjpeg-turbo\turbojpeg.h" />
+    <ClInclude Include="png\png.h" />
+    <ClInclude Include="png\pngconf.h" />
+    <ClInclude Include="png\pngdebug.h" />
+    <ClInclude Include="png\pnginfo.h" />
+    <ClInclude Include="png\pnglibconf.h" />
+    <ClInclude Include="png\pngpriv.h" />
+    <ClInclude Include="png\pngstruct.h" />
+    <ClInclude Include="thorvg\inc\colorreplace.h" />
+    <ClInclude Include="thorvg\inc\thorvg.h" />
+    <ClInclude Include="thorvg\src\common\tvgArray.h" />
+    <ClInclude Include="thorvg\src\common\tvgColor.h" />
+    <ClInclude Include="thorvg\src\common\tvgCompressor.h" />
+    <ClInclude Include="thorvg\src\common\tvgInlist.h" />
+    <ClInclude Include="thorvg\src\common\tvgMath.h" />
+    <ClInclude Include="thorvg\src\common\tvgStr.h" />
+    <ClInclude Include="thorvg\src\loaders\external_jpg\tvgJpgLoader.h" />
+    <ClInclude Include="thorvg\src\loaders\external_png\tvgPngLoader.h" />
+    <ClInclude Include="thorvg\src\loaders\external_webp\tvgWebpLoader.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\thorvg_lottie.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieBuilder.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieCommon.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieExpressions.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieInterpolator.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieLoader.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieModel.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieModifier.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieParser.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieParserHandler.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieProperty.h" />
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieRenderPooler.h" />
+    <ClInclude Include="thorvg\src\loaders\raw\tvgRawLoader.h" />
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgCssStyle.h" />
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgLoader.h" />
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgLoaderCommon.h" />
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgPath.h" />
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgSceneBuilder.h" />
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgUtil.h" />
+    <ClInclude Include="thorvg\src\loaders\svg\tvgXmlParser.h" />
+    <ClInclude Include="thorvg\src\renderer\config.h" />
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwCommon.h" />
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterAvx.h" />
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterC.h" />
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterNeon.h" />
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterTexmap.h" />
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRenderer.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgBinaryDesc.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgCanvas.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgCommon.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgFill.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgFrameModule.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgIteratorAccessor.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgLoader.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgLoadModule.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgPaint.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgPicture.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgRender.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgSaveModule.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgScene.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgShape.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgTaskScheduler.h" />
+    <ClInclude Include="thorvg\src\renderer\tvgText.h" />
+    <ClInclude Include="webp\src\dec\alphai_dec.h" />
+    <ClInclude Include="webp\src\dec\common_dec.h" />
+    <ClInclude Include="webp\src\dec\vp8i_dec.h" />
+    <ClInclude Include="webp\src\dec\vp8li_dec.h" />
+    <ClInclude Include="webp\src\dec\vp8_dec.h" />
+    <ClInclude Include="webp\src\dec\webpi_dec.h" />
+    <ClInclude Include="webp\src\dsp\common_sse2.h" />
+    <ClInclude Include="webp\src\dsp\common_sse41.h" />
+    <ClInclude Include="webp\src\dsp\cpu.h" />
+    <ClInclude Include="webp\src\dsp\dsp.h" />
+    <ClInclude Include="webp\src\dsp\lossless.h" />
+    <ClInclude Include="webp\src\dsp\lossless_common.h" />
+    <ClInclude Include="webp\src\dsp\quant.h" />
+    <ClInclude Include="webp\src\dsp\yuv.h" />
+    <ClInclude Include="webp\src\utils\bit_reader_inl_utils.h" />
+    <ClInclude Include="webp\src\utils\bit_reader_utils.h" />
+    <ClInclude Include="webp\src\utils\bit_writer_utils.h" />
+    <ClInclude Include="webp\src\utils\color_cache_utils.h" />
+    <ClInclude Include="webp\src\utils\endian_inl_utils.h" />
+    <ClInclude Include="webp\src\utils\filters_utils.h" />
+    <ClInclude Include="webp\src\utils\huffman_encode_utils.h" />
+    <ClInclude Include="webp\src\utils\huffman_utils.h" />
+    <ClInclude Include="webp\src\utils\palette.h" />
+    <ClInclude Include="webp\src\utils\quant_levels_dec_utils.h" />
+    <ClInclude Include="webp\src\utils\quant_levels_utils.h" />
+    <ClInclude Include="webp\src\utils\random_utils.h" />
+    <ClInclude Include="webp\src\utils\rescaler_utils.h" />
+    <ClInclude Include="webp\src\utils\thread_utils.h" />
+    <ClInclude Include="webp\src\utils\utils.h" />
+    <ClInclude Include="webp\src\webp\decode.h" />
+    <ClInclude Include="webp\src\webp\demux.h" />
+    <ClInclude Include="webp\src\webp\encode.h" />
+    <ClInclude Include="webp\src\webp\format_constants.h" />
+    <ClInclude Include="webp\src\webp\mux.h" />
+    <ClInclude Include="webp\src\webp\mux_types.h" />
+    <ClInclude Include="webp\src\webp\types.h" />
+    <ClInclude Include="zlib\adler32_p.h" />
+    <ClInclude Include="zlib\arch\generic\chunk_128bit_perm_idx_lut.h" />
+    <ClInclude Include="zlib\arch\generic\chunk_256bit_perm_idx_lut.h" />
+    <ClInclude Include="zlib\arch\generic\chunk_permute_table.h" />
+    <ClInclude Include="zlib\arch\generic\compare256_p.h" />
+    <ClInclude Include="zlib\arch\generic\generic_functions.h" />
+    <ClInclude Include="zlib\arch\x86\adler32_avx2_p.h" />
+    <ClInclude Include="zlib\arch\x86\adler32_avx512_p.h" />
+    <ClInclude Include="zlib\arch\x86\adler32_ssse3_p.h" />
+    <ClInclude Include="zlib\arch\x86\crc32_fold_pclmulqdq_tpl.h" />
+    <ClInclude Include="zlib\arch\x86\crc32_fold_vpclmulqdq_tpl.h" />
+    <ClInclude Include="zlib\arch\x86\crc32_pclmulqdq_tpl.h" />
+    <ClInclude Include="zlib\arch\x86\x86_features.h" />
+    <ClInclude Include="zlib\arch\x86\x86_functions.h" />
+    <ClInclude Include="zlib\arch\x86\x86_intrins.h" />
+    <ClInclude Include="zlib\arch_functions.h" />
+    <ClInclude Include="zlib\chunkset_tpl.h" />
+    <ClInclude Include="zlib\compare256_rle.h" />
+    <ClInclude Include="zlib\cpu_features.h" />
+    <ClInclude Include="zlib\crc32.h" />
+    <ClInclude Include="zlib\crc32_braid_comb_p.h" />
+    <ClInclude Include="zlib\crc32_braid_p.h" />
+    <ClInclude Include="zlib\crc32_braid_tbl.h" />
+    <ClInclude Include="zlib\deflate.h" />
+    <ClInclude Include="zlib\deflate_p.h" />
+    <ClInclude Include="zlib\fallback_builtins.h" />
+    <ClInclude Include="zlib\functable.h" />
+    <ClInclude Include="zlib\gzguts.h" />
+    <ClInclude Include="zlib\gzread_mangle.h" />
+    <ClInclude Include="zlib\inffast_tpl.h" />
+    <ClInclude Include="zlib\inffixed_tbl.h" />
+    <ClInclude Include="zlib\inflate.h" />
+    <ClInclude Include="zlib\inflate_p.h" />
+    <ClInclude Include="zlib\inftrees.h" />
+    <ClInclude Include="zlib\insert_string_tpl.h" />
+    <ClInclude Include="zlib\match_tpl.h" />
+    <ClInclude Include="zlib\trees.h" />
+    <ClInclude Include="zlib\trees_emit.h" />
+    <ClInclude Include="zlib\trees_tbl.h" />
+    <ClInclude Include="zlib\zbuild.h" />
+    <ClInclude Include="zlib\zconf-ng.h" />
+    <ClInclude Include="zlib\zendian.h" />
+    <ClInclude Include="zlib\zlib-ng.h" />
+    <ClInclude Include="zlib\zlib_name_mangling-ng.h" />
+    <ClInclude Include="zlib\zmemory.h" />
+    <ClInclude Include="zlib\zutil.h" />
+    <ClInclude Include="zlib\zutil_p.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libjpeg-turbo\simd\nasm\jcolsamp.inc" />
+    <None Include="libjpeg-turbo\simd\nasm\jdct.inc" />
+    <None Include="libjpeg-turbo\simd\nasm\jsimdcfg.inc" />
+    <None Include="libjpeg-turbo\simd\nasm\jsimdext.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jccolor-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jccolor-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcgray-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcgray-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jchuff-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcphuff-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcsample-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcsample-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdcolor-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdcolor-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdmerge-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdmerge-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdsample-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdsample-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctflt-sse.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctfst-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctint-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctint-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctflt-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctfst-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctint-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctint-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctred-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquantf-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquanti-avx2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquanti-sse2.asm" />
+    <NASM Include="libjpeg-turbo\simd\x86_64\jsimdcpu.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libjpeg-turbo\libjpeg-turbo-12.vcxproj">
+      <Project>{8970db45-4dec-4683-9d08-c8fc911d0cd2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libjpeg-turbo\libjpeg-turbo-16.vcxproj">
+      <Project>{ca98ccc0-175a-45b6-955d-6ef88a5c0ff8}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D6973076-9317-4EF2-A0B8-B7A18AC0713E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>libimage</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="../Extra/nasm.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IntDir>$(SolutionDir)\OBJ\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <CustomBuildBeforeTargets />
+    <OutDir>$(SolutionDir)\Lib\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_LIB;_WIN32_WINNT=0x0A00;TVG_STATIC;RAPIDJSON_SSE2;WEBP_USE_THREAD;WEBP_USE_SSE2;PPM_SUPPORTED;BMP_SUPPORTED;PNG_INTEL_SSE_OPT;NO_GETENV;X86_FEATURES;X86_SSE2;X86_SSSE3;X86_SSE41;X86_SSE42;X86_AVX2;X86_AVX512;X86_AVX512VNNI;X86_VPCLMULQDQ_CRC;X86_PCLMULQDQ_CRC;HAVE_CPUID_MS;WITH_GZFILEOP;WITH_OPTIM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./libjpeg-turbo;./libjpeg-turbo/simd;./libjpeg-turbo/simd/nasm;./png;./zlib;./webp/;./webp/src/;./webp/src/dec;./webp/src/dsp;./webp/src/utils;./webp/src/webp;./thorvg/inc;./thorvg/src/renderer;./thorvg/src/renderer/sw_engine;./thorvg/src/common;./thorvg/src/loaders/lottie;./thorvg/src/loaders/svg;./thorvg/src/loaders/raw;./thorvg/src/loaders/external_jpg;./thorvg/src/loaders/external_png;./thorvg/src/loaders/external_webp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <StringPooling>true</StringPooling>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName)_vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level1</WarningLevel>
+      <DisableSpecificWarnings>4005;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib />
+    <NASM>
+      <IncludePaths>$(ProjectDir)\libjpeg-turbo\simd;$(ProjectDir)\libjpeg-turbo\simd\nasm;$(ProjectDir)\libjpeg-turbo\simd\x86_64</IncludePaths>
+      <PreprocessorDefinitions>WIN64;MSVC;__x86_64__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </NASM>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="../Extra/nasm.targets" />
+  </ImportGroup>
+</Project>

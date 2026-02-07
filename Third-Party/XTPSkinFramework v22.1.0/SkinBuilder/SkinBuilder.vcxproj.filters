@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Исходные файлы\lz4">
+      <UniqueIdentifier>{b450a8cc-4dc8-43f5-a1ad-698116ac9995}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="WSTRUtils.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SkinFramework\GraphicLibrary\lz4\lz4.h">
+      <Filter>Исходные файлы\lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SkinFramework\GraphicLibrary\lz4\lz4hc.h">
+      <Filter>Исходные файлы\lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="Lz4Pack.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinBuilder.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SkinFramework\GraphicLibrary\lz4\lz4hc.c">
+      <Filter>Исходные файлы\lz4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SkinFramework\GraphicLibrary\lz4\lz4.c">
+      <Filter>Исходные файлы\lz4</Filter>
+    </ClCompile>
+    <ClCompile Include="Lz4Pack.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

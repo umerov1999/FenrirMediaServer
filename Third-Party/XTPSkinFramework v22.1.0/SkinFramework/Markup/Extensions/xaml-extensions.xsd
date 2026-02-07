@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema
+  targetNamespace="urn:schemas-codejock-com:xaml-extensions"
+  xmlns:xtp="urn:schemas-codejock-com:xaml-extensions"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified">
+  <xs:simpleType name="Language">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="VBScript" />
+      <xs:enumeration value="JScript" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Script">
+    <xs:complexType mixed="true">
+      <xs:attribute name="Language"
+                    type="xtp:Language"
+                    use="optional"
+                    default="JScript" />
+      <xs:attribute name="Source"
+                    type="xs:string"
+                    use="required" />
+      <xs:anyAttribute processContents="lax" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

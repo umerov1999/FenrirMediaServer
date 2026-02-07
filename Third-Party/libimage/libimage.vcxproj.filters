@@ -1,0 +1,1432 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{ab425bae-6ffe-4b3f-b87c-b6b959353c56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы включений">
+      <UniqueIdentifier>{34052ca4-8756-471c-8449-91dfe4066b48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\png">
+      <UniqueIdentifier>{f84d4372-7758-424f-8719-a12bbb689e14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\zlib">
+      <UniqueIdentifier>{3a533a1c-88d9-4062-843d-b846b48a3a7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg">
+      <UniqueIdentifier>{9ed503e4-b337-4f4f-909a-09bf781ec377}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\inc">
+      <UniqueIdentifier>{50304e6c-1459-4902-8789-1528fe9135ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders">
+      <UniqueIdentifier>{22438a27-d4a5-433c-98a1-532e8dc73ee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\raw">
+      <UniqueIdentifier>{a4edeeaa-6f3e-470e-8e7b-9a7599e460f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\svg">
+      <UniqueIdentifier>{2efb54a5-16a0-45bd-b71a-37a45162f21f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\renderer">
+      <UniqueIdentifier>{6166fcdc-0506-44a8-845d-a704837ea012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\renderer\sw_engine">
+      <UniqueIdentifier>{8e015226-1cb5-4148-9fa9-31e7cbea4f80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\common">
+      <UniqueIdentifier>{914ad0d7-3154-4e63-832b-6b643bf6bea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\external_png">
+      <UniqueIdentifier>{2be8e13f-3f00-48e5-881f-6e719692de18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\lottie">
+      <UniqueIdentifier>{1bff548a-d4c8-4a88-b282-f13b2b552ac4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\external_webp">
+      <UniqueIdentifier>{a9155b7e-8571-4820-9e4d-a740ede578a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp">
+      <UniqueIdentifier>{6823ce5e-3905-4db7-88e7-96af1314bc1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp\dec">
+      <UniqueIdentifier>{4329f5d6-41d5-40ad-a2af-0b11a9977752}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp\dsp">
+      <UniqueIdentifier>{2f952236-bf7d-44e3-a4ad-7ad9557bf656}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp\utils">
+      <UniqueIdentifier>{30702ed2-64c3-423a-999c-fba469abc18a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\webp\webp">
+      <UniqueIdentifier>{7a0aeaf0-d1a0-455f-bc0c-339342dd4d3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libjpeg-turbo">
+      <UniqueIdentifier>{73fa1d20-2d83-4ef8-b555-638716da75c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libjpeg-turbo\simd">
+      <UniqueIdentifier>{a967cd4a-2a93-4fc2-92b3-86ccdac452c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libjpeg-turbo\simd\nasm">
+      <UniqueIdentifier>{3b3022ea-33d4-4504-8202-1817809a620e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\libjpeg-turbo\simd\x86_64">
+      <UniqueIdentifier>{0cd05dc8-fae1-4d46-b9a4-4a3583e0b4bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\thorvg\loaders\external_jpg">
+      <UniqueIdentifier>{f9f7f366-0219-483d-947f-3b415dfa46d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\png\intel">
+      <UniqueIdentifier>{5621d0d5-dd59-46c6-9574-c6a507755be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\zlib\arch">
+      <UniqueIdentifier>{44be0e0e-4fbb-478b-a065-a0b454fdea7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\zlib\arch\generic">
+      <UniqueIdentifier>{10702c15-43f1-4098-aea0-38883a9f03cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\zlib\arch\x86">
+      <UniqueIdentifier>{d3ff11df-a6a8-4560-8698-827fdbaf209e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="libimage.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngpread.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngread.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngrio.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngrtran.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngrutil.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngset.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngtrans.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngwio.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngwrite.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngwtran.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngwutil.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\png.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngerror.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngget.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="png\pngmem.c">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgCssStyle.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgPath.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgSceneBuilder.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgSvgUtil.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\svg\tvgXmlParser.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\raw\tvgRawLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\raw</Filter>
+    </ClCompile>
+    <ClCompile Include="bmp2jpeg.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="bmp2png.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwFill.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwImage.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwMath.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwMemPool.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwRaster.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwRenderer.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwRle.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwShape.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwStroke.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgAccessor.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgAnimation.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgCanvas.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgFill.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgInitializer.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgPaint.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgPicture.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgRender.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgSaver.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgScene.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgShape.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgTaskScheduler.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\common\tvgCompressor.cpp">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\common\tvgMath.cpp">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\common\tvgStr.cpp">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\tvgText.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\renderer\sw_engine\tvgSwPostEffect.cpp">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\external_png\tvgPngLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_png</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieAnimation.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieBuilder.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieExpressions.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieInterpolator.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieModel.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieModifier.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieParser.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\lottie\tvgLottieParserHandler.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\external_webp\tvgWebpLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_webp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\alpha_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\buffer_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\frame_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\idec_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\io_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\quant_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\tree_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\vp8l_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\vp8_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dec\webp_dec.c">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\alpha_processing.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\alpha_processing_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\cpu.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\dec.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\dec_clip_tables.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\dec_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\filters.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\filters_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\lossless.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\lossless_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\rescaler.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\rescaler_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\ssim.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\ssim_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\upsampling.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\upsampling_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\yuv.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\yuv_sse2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\bit_reader_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\bit_writer_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\color_cache_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\filters_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\huffman_encode_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\huffman_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\palette.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\quant_levels_dec_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\quant_levels_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\random_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\rescaler_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\thread_utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\utils\utils.c">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\common\tvgColor.cpp">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\cdjpeg.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jaricom.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcapimin.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcapistd.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcarith.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jccoefct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jccolor.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcdctmgr.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcdiffct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jchuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcicc.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcinit.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jclhuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jclossls.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcmainct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcmarker.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcmaster.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcomapi.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcparam.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcphuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcprepct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jcsample.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jctrans.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdapimin.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdapistd.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdarith.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdatadst.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdatadst-tj.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdatasrc.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdatasrc-tj.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdcoefct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdcolor.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jddctmgr.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jddiffct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdhuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdicc.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdinput.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdlhuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdlossls.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdmainct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdmarker.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdmaster.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdmerge.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdphuff.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdpostct.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdsample.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jdtrans.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jerror.cpp">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jfdctflt.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jfdctfst.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jfdctint.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jidctflt.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jidctfst.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jidctint.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jidctred.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jmemmgr.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jmemnobs.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jpeg_nbits.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jquant1.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jquant2.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\jutils.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\tjutil.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\transupp.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\turbojpeg.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\simd\x86_64\jsimd.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="thorvg\src\loaders\external_jpg\tvgJpgLoader.cpp">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_jpg</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\wrbmp.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\wrppm.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\rdppm.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="libjpeg-turbo\rdbmp.c">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClCompile>
+    <ClCompile Include="png\intel\filter_sse2_intrinsics.c">
+      <Filter>Файлы исходного кода\png\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="png\intel\intel_init.c">
+      <Filter>Файлы исходного кода\png\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\alpha_processing_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\dec_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\lossless_avx2.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\lossless_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\upsampling_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="webp\src\dsp\yuv_sse41.c">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\adler32.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\compress.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\cpu_features.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\crc32.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\crc32_braid_comb.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_fast.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_huff.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_medium.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_quick.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_rle.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_slow.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate_stored.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\functable.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzlib.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzread.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzwrite.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\infback.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inflate.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inftrees.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\insert_string.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\trees.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\uncompr.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\zutil.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\adler32_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\chunkset_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\compare256_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\crc32_braid_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\crc32_chorba_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\slide_hash_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_avx2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_avx512.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_avx512_vnni.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_sse42.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\adler32_ssse3.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chorba_sse2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chorba_sse41.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chunkset_avx2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chunkset_avx512.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chunkset_sse2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\chunkset_ssse3.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\compare256_avx2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\compare256_avx512.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\compare256_sse2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\crc32_pclmulqdq.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\crc32_vpclmulqdq.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\slide_hash_avx2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\slide_hash_sse2.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\x86\x86_features.c">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\insert_string_roll.c">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\adler32_fold_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\arch\generic\crc32_fold_c.c">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="libimage.h">
+      <Filter>Файлы включений</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pnginfo.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pnglibconf.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pngpriv.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pngstruct.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\png.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pngconf.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="png\pngdebug.h">
+      <Filter>Файлы исходного кода\png</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\inc\thorvg.h">
+      <Filter>Файлы исходного кода\thorvg\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgCssStyle.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgLoaderCommon.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgPath.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgSceneBuilder.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgSvgUtil.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\svg\tvgXmlParser.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\raw\tvgRawLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\raw</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwCommon.h">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterAvx.h">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterC.h">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterNeon.h">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRasterTexmap.h">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\sw_engine\tvgSwRenderer.h">
+      <Filter>Файлы исходного кода\thorvg\renderer\sw_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\config.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgCommon.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgFill.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgFrameModule.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgIteratorAccessor.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgLoader.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgLoadModule.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgPaint.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgRender.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgSaveModule.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgTaskScheduler.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgCompressor.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgMath.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgStr.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgArray.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgPicture.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgScene.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgShape.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgCanvas.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgInlist.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgText.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\renderer\tvgBinaryDesc.h">
+      <Filter>Файлы исходного кода\thorvg\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\external_png\tvgPngLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_png</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\thorvg_lottie.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieBuilder.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieCommon.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieExpressions.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieInterpolator.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieModel.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieModifier.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieParser.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieParserHandler.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieProperty.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\lottie\tvgLottieRenderPooler.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\lottie</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\external_webp\tvgWebpLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\alphai_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\common_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\vp8i_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\vp8li_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\vp8_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dec\webpi_dec.h">
+      <Filter>Файлы исходного кода\webp\dec</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\common_sse2.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\cpu.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\dsp.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\lossless.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\lossless_common.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\quant.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\yuv.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\bit_reader_inl_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\bit_reader_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\bit_writer_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\color_cache_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\endian_inl_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\filters_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\huffman_encode_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\huffman_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\palette.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\quant_levels_dec_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\quant_levels_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\random_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\rescaler_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\thread_utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\utils\utils.h">
+      <Filter>Файлы исходного кода\webp\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\decode.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\demux.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\encode.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\format_constants.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\mux.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\mux_types.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\webp\types.h">
+      <Filter>Файлы исходного кода\webp\webp</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\inc\colorreplace.h">
+      <Filter>Файлы исходного кода\thorvg\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="lancir.h">
+      <Filter>Файлы включений</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\common\tvgColor.h">
+      <Filter>Файлы исходного кода\thorvg\common</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\cderror.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\cdjpeg.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\cmyk.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jchuff.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jcmaster.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jconfig.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jconfigint.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdcoefct.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdct.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdhuff.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdmainct.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdmaster.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdmerge.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jdsample.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jerror.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jinclude.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jlossls.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jmemsys.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jmorecfg.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jpeg_nbits.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jpegapicomp.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jpegint.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jpeglib.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jsamplecomp.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jsimd.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jsimddct.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\jversion.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\tjutil.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\transupp.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\turbojpeg.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\simd\jsimd.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="libjpeg-turbo\simd\nasm\jsimdcfg.inc.h">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </ClInclude>
+    <ClInclude Include="thorvg\src\loaders\external_jpg\tvgJpgLoader.h">
+      <Filter>Файлы исходного кода\thorvg\loaders\external_jpg</Filter>
+    </ClInclude>
+    <ClInclude Include="webp\src\dsp\common_sse41.h">
+      <Filter>Файлы исходного кода\webp\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\adler32_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch_functions.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\chunkset_tpl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\compare256_rle.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\cpu_features.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32_braid_comb_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32_braid_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32_braid_tbl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\deflate.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\deflate_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\fallback_builtins.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\functable.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\gzguts.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inffast_tpl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inffixed_tbl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inflate.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inflate_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inftrees.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\insert_string_tpl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\match_tpl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\trees.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\trees_emit.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\trees_tbl.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zbuild.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zconf-ng.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zendian.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zlib_name_mangling-ng.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zlib-ng.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zmemory.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zutil.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zutil_p.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\chunk_128bit_perm_idx_lut.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\chunk_256bit_perm_idx_lut.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\chunk_permute_table.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\compare256_p.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\generic\generic_functions.h">
+      <Filter>Файлы исходного кода\zlib\arch\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\adler32_avx2_p.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\adler32_avx512_p.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\adler32_ssse3_p.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\crc32_pclmulqdq_tpl.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\x86_features.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\x86_functions.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\x86_intrins.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\gzread_mangle.h">
+      <Filter>Файлы исходного кода\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\crc32_fold_pclmulqdq_tpl.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\arch\x86\crc32_fold_vpclmulqdq_tpl.h">
+      <Filter>Файлы исходного кода\zlib\arch\x86</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libjpeg-turbo\simd\nasm\jsimdcfg.inc">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </None>
+    <None Include="libjpeg-turbo\simd\nasm\jsimdext.inc">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </None>
+    <None Include="libjpeg-turbo\simd\nasm\jcolsamp.inc">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </None>
+    <None Include="libjpeg-turbo\simd\nasm\jdct.inc">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\nasm</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jsimdcpu.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jccolor-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jccolor-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcgray-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcgray-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jchuff-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcphuff-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcsample-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jcsample-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdcolor-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdcolor-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdmerge-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdmerge-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdsample-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jdsample-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctflt-sse.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctfst-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctint-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jfdctint-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctflt-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctfst-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctint-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctint-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jidctred-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquantf-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquanti-avx2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+    <NASM Include="libjpeg-turbo\simd\x86_64\jquanti-sse2.asm">
+      <Filter>Файлы исходного кода\libjpeg-turbo\simd\x86_64</Filter>
+    </NASM>
+  </ItemGroup>
+</Project>

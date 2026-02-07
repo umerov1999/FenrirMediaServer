@@ -1,0 +1,11 @@
+﻿#include "pch.h"
+#pragma message("[Including Common Libs...]")
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "Iphlpapi.lib")
+#pragma comment(lib, "wldap32.lib")
+#pragma comment(lib, "Crypt32.lib")
+#pragma comment(lib, "Shlwapi.lib")
+#pragma message("[Including SSL,CURL...]")
+#pragma comment(lib, "libcrypto.lib")
+#pragma comment(lib, "libssl.lib")
+#pragma comment(lib, "libcurl.lib")

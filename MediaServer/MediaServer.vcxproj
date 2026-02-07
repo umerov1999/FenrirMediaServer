@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{0BF055E3-C518-46E1-8A86-3ED639560D88}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>MediaServer</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)\Bin\</OutDir>
+    <IntDir>$(SolutionDir)\OBJ\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(Platform)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;CURL_STATICLIB;_WIN32_WINNT=0x0A00;ZSTD_MULTITHREAD=1;ZSTD_LEGACY_SUPPORT=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>../Third-Party/XTPSkinFramework v22.1.0/SkinFramework;../Third-Party/openssl/include;./;../Third-Party/Extra;../Third-Party/libimage;../Third-Party/Extra/components;../Third-Party/libcurl/include;../Third-Party/libzstd;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <StringPooling>true</StringPooling>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName)_vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <AdditionalLibraryDirectories>../Third-Party/openssl/lib/x64;../Third-Party/libcurl/lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AddModuleNamesToAssembly>
+      </AddModuleNamesToAssembly>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <LargeAddressAware>true</LargeAddressAware>
+      <MergeSections>
+      </MergeSections>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="MediaServerMediaFoldersDialog.h" />
+    <ClInclude Include="MediaServerTask.h" />
+    <ClInclude Include="MediaServerDialog.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="MediaServerInitMFC.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Third-Party\Extra\app_font.cpp" />
+    <ClCompile Include="..\Third-Party\Extra\app_style_blue.cpp" />
+    <ClCompile Include="CommonLibraries.cpp" />
+    <ClCompile Include="MediaServerMediaFoldersDialog.cpp" />
+    <ClCompile Include="MediaServerTask.cpp" />
+    <ClCompile Include="MediaServerDialog.cpp" />
+    <ClCompile Include="MediaServerInitMFC.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MediaServer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\audio_stop.svg" />
+    <None Include="Res\Cursor.cur" />
+    <None Include="Res\Delete.svg" />
+    <None Include="Res\folder_add.svg" />
+    <None Include="Res\Logo.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Third-Party\Extra\components\components.vcxproj">
+      <Project>{b886e0f4-5d86-4af7-87b7-66163cfd6e61}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Third-Party\Extra\components\components_mfc.vcxproj">
+      <Project>{433709a8-9119-4051-9593-2c0698abf6bc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Third-Party\libimage\libimage.vcxproj">
+      <Project>{d6973076-9317-4ef2-a0b8-b7a18ac0713e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Third-Party\libzstd\libzstd.vcxproj">
+      <Project>{7954752c-4bef-4a9a-bf1e-b34245bd4e80}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Third-Party\USound\USound.vcxproj">
+      <Project>{60da55f1-5825-3da3-bf06-0bafa6b95cdf}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Third-Party\XTPSkinFramework v22.1.0\SkinFrameworkStatic.vcxproj">
+      <Project>{44399486-2259-2815-3336-338422327369}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

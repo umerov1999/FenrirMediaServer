@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{27232b82-7e96-4466-9a94-52cb6b1363e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы">
+      <UniqueIdentifier>{1ff44611-712f-4ca4-988e-1bb37402ebd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{9bcd1975-2e0b-43c3-b936-467570455c63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\pe_lib">
+      <UniqueIdentifier>{2258085e-6a22-4189-8e1d-2dbb028b71ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\pe_lib\headers">
+      <UniqueIdentifier>{020565c1-2ec0-42ca-87b0-2f83d4949ed7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SectionPeEditorInitMFC.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="SectionPeEditorDialog.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="SectionPeEditorSectionsInfoDialog.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="SectionPeEditorSectionSetNameDialog.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Third-Party\Extra\app_style.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Hex2BinDialog.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\entropy.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\file_version_info.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\message_table.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_base.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_bound_import.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_checksum.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_debug.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_directory.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_dotnet.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_exception.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_exception_directory.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_exports.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_factory.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_imports.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_load_config.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_properties.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_properties_generic.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_rebuilder.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_relocations.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_resource_manager.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_resource_viewer.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_resources.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_rich_data.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_section.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\pe_tls.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_bitmap_reader.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_bitmap_writer.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_cursor_icon_reader.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_cursor_icon_writer.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_data_info.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_message_list_reader.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_string_table_reader.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_version_info_reader.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\resource_version_info_writer.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\utils.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\version_info_editor.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pe_lib\version_info_viewer.cpp">
+      <Filter>Файлы исходного кода\pe_lib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SectionPeEditorInitMFC.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="SectionPeEditorDialog.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="SectionPeEditorSectionsInfoDialog.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="SectionPeEditorSectionSetNameDialog.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Hex2BinDialog.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\message_table.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_base.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_bliss.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_bliss_resources.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_bound_import.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_checksum.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_debug.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_directory.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_dotnet.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_exception.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_exception_directory.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_exports.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_factory.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_imports.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_load_config.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_properties.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_properties_generic.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_rebuilder.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_relocations.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_resource_manager.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_resource_viewer.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_resources.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_rich_data.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_section.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_structures.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\pe_tls.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_bitmap_reader.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_bitmap_writer.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_cursor_icon_reader.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_cursor_icon_writer.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_data_info.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_internal.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_message_list_reader.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_string_table_reader.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_version_info_reader.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\resource_version_info_writer.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\stdint_defs.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\utils.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\version_info_editor.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\version_info_types.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\version_info_viewer.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\entropy.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pe_lib\file_version_info.h">
+      <Filter>Файлы исходного кода\pe_lib\headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SectionPeEditor.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\Icon.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Res\Hex.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
