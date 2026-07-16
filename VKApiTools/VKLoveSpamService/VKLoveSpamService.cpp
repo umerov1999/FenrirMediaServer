@@ -548,7 +548,8 @@ int main() {
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nShowCmd)
 {
-	srand((unsigned int)time(0));
+	std::random_device dev;
+	srand(dev());
 	if (wstring(lpCmdLine).find(L"--service") != wstring::npos) {
 		SERVICE_TABLE_ENTRYW ServiceTable[1];
 		ServiceTable[0].lpServiceName = (LPWSTR)SERVICENAME;

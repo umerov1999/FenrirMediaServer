@@ -53,7 +53,7 @@ static inline bool parseJsonConfig(const std::wstring &file_name, nlohmann::json
         fseek(fl, offbom, SEEK_SET);
         fread((char*)jsonS.data(), 1, jsonS.size() - 1, fl);
         fclose(fl);
-        cfg = nlohmann::json::parse(jsonS);
+        cfg = nlohmann::json::parse(jsonS, nullptr, true, true);
     }
     else {
         return false;

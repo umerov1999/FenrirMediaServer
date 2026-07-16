@@ -26,36 +26,7 @@
 #include <algorithm>
 #include "tvgMath.h"
 #include "tvgPaint.h"
-
-
-struct SceneIterator : Iterator
-{
-    list<Paint*>* paints;
-    list<Paint*>::iterator itr;
-
-    SceneIterator(list<Paint*>* p) : paints(p)
-    {
-        begin();
-    }
-
-    const Paint* next() override
-    {
-        if (itr == paints->end()) return nullptr;
-        auto paint = *itr;
-        ++itr;
-        return paint;
-    }
-
-    uint32_t count() override
-    {
-       return paints->size();
-    }
-
-    void begin() override
-    {
-        itr = paints->begin();
-    }
-};
+#include "tvgAccessor.h"
 
 struct SceneImpl : Scene
 {
@@ -156,22 +127,24 @@ struct SceneImpl : Scene
         return true;
     }
 
-    bool render(RenderMethod* renderer)
+    bool render(RenderMethod* renderer, CompositionFlag flag)
     {
         if (paints.empty()) return true;
 
         RenderCompositor* cmp = nullptr;
+        // its parent is already in composition mode, maybe parasitize its surface
+        auto incomposite = (uint8_t(CompositionFlag::PostProcessing) & uint8_t(flag)) && !effects;
         auto ret = true;
 
         renderer->blend(impl.blendMethod);
 
-        if (impl.cmpFlag) {
+        if (!incomposite && impl.cmpFlag) {
             cmp = renderer->target(bounds(), renderer->colorSpace(), impl.cmpFlag);
             renderer->beginComposite(cmp, MaskMethod::None, opacity);
         }
 
         for (auto paint : paints) {
-            ret &= paint->pImpl->render(renderer);
+            ret &= paint->pImpl->render(renderer, impl.cmpFlag);
         }
 
         if (cmp) {
@@ -387,8 +360,27 @@ struct SceneImpl : Scene
         return Result::Success;
     }
 
-    Iterator* iterator()
+    AccessorIterator* iterator()
     {
+        struct SceneIterator : AccessorIterator
+        {
+            list<Paint*>* paints;
+            list<Paint*>::iterator itr;
+
+            SceneIterator(list<Paint*>* p) : paints(p)
+            {
+                itr = paints->begin();
+            }
+
+            const Paint* next() override
+            {
+                if (itr == paints->end()) return nullptr;
+                auto paint = *itr;
+                ++itr;
+                return paint;
+            }
+        };
+
         return new SceneIterator(&paints);
     }
 

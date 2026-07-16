@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include <random>
 #include "SSLRequestInitMFC.h"
 #include "SSLRequestDialog.h"
 
@@ -48,7 +49,8 @@ SSLRequest theApp;
 BOOL SSLRequest::InitInstance()
 {
 	AfxEnableControlContainer();
-	srand((unsigned int)time(0));
+	std::random_device dev;
+	srand(dev());
 
 	LoadStyle();
 	CreateDialogMFC();

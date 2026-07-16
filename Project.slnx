@@ -28,13 +28,9 @@
     <Project Path="Third-Party/Extra/components/components.vcxproj" Id="b886e0f4-5d86-4af7-87b7-66163cfd6e61" />
     <Project Path="Third-Party/Extra/components/components_mfc.vcxproj" Id="433709a8-9119-4051-9593-2c0698abf6bc" />
     <Project Path="Third-Party/lame_mp3/lame_mp3.vcxproj" Id="47ca2f82-664f-4dcf-95e2-51f90e0cca14" />
+    <Project Path="Third-Party/libimage/libimage.vcxproj" Id="d6973076-9317-4ef2-a0b8-b7a18ac0713e" />
     <Project Path="Third-Party/libzstd/libzstd.vcxproj" Id="7954752c-4bef-4a9a-bf1e-b34245bd4e80" />
     <Project Path="Third-Party/USound/USound.vcxproj" Id="60da55f1-5825-3da3-bf06-0bafa6b95cdf" />
-  </Folder>
-  <Folder Name="/Lib/libimage_/">
-    <Project Path="Third-Party/libimage/libimage.vcxproj" Id="d6973076-9317-4ef2-a0b8-b7a18ac0713e" />
-    <Project Path="Third-Party/libimage/libjpeg-turbo/libjpeg-turbo-12.vcxproj" Id="8970db45-4dec-4683-9d08-c8fc911d0cd2" />
-    <Project Path="Third-Party/libimage/libjpeg-turbo/libjpeg-turbo-16.vcxproj" Id="ca98ccc0-175a-45b6-955d-6ef88a5c0ff8" />
   </Folder>
   <Folder Name="/Lib/XTPSkinFramework/">
     <Project Path="Third-Party/XTPSkinFramework v22.1.0/SkinBuilder/SkinBuilder.vcxproj" Id="49d09cf9-44b0-407f-a5ba-581b3e4ee0e3" />

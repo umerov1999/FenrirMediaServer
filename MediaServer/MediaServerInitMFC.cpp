@@ -1,9 +1,9 @@
 ﻿#include "pch.h"
+#include <random>
+#include <string>
 #include "MediaServerInitMFC.h"
 #include "MediaServerDialog.h"
 #include "CriticalDebug.h"
-#include <string>
-#include <ctime>
 using namespace std;
 
 #ifdef _WIN64
@@ -71,7 +71,8 @@ MediaServer theApp;
 
 BOOL MediaServer::InitInstance() {
 	AfxEnableControlContainer();
-	srand((unsigned int)time(0));
+	std::random_device dev;
+	srand(dev());
 
 	SetCurrentDirectoryW(ExtractAppPath().c_str());
 	LoadFont();

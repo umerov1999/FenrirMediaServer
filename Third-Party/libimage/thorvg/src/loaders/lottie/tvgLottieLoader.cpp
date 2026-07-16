@@ -81,7 +81,8 @@ void LottieLoader::release()
 /* External Class Implementation                                        */
 /************************************************************************/
 
-LottieLoader::LottieLoader() : FrameModule(FileType::Lot), builder(new LottieBuilder)
+LottieLoader::LottieLoader() :
+    AnimLoader(FileType::Lot), builder(new LottieBuilder)
 {
 
 }
@@ -100,12 +101,11 @@ LottieLoader::~LottieLoader()
     tvg::free(dirName);
 }
 
-
 bool LottieLoader::header()
 {
     //A single thread doesn't need to perform intensive tasks.
     if (TaskScheduler::threads() == 0) {
-        LoadModule::read();
+        Loader::read();
         if (prepare()) {
             w = static_cast<float>(comp->w);
             h = static_cast<float>(comp->h);
@@ -207,35 +207,37 @@ bool LottieLoader::header()
     return true;
 }
 
-
-bool LottieLoader::open(const char* data, uint32_t size, const char* rpath, bool copy, const ColorReplace& colorReplacement)
+bool LottieLoader::open(const char* data, uint32_t size, const LoaderOps* _ops, bool copy)
 {
-    colorReplaceInternal = colorReplacement;
+    auto ops = static_cast<const PictureOps*>(_ops);
+    if (ops->caller != tvg::Type::Picture) return false;
+
+    colorReplaceInternal = ops->colorReplacement ? *ops->colorReplacement : ColorReplace();
     if (copy) {
         content = tvg::malloc<char>(size + 1);
-        if (!content) return false;
         memcpy((char*)content, data, size);
         const_cast<char*>(content)[size] = '\0';
     } else content = data;
 
     this->size = size;
     this->copy = copy;
-
-    if (!rpath) this->dirName = duplicate(".");
-    else this->dirName = duplicate(rpath);
+    dirName = ops->rpath ? duplicate(ops->rpath) : duplicate(".");
+    builder->resolver = ops->resolver;
 
     return header();
 }
 
-
-bool LottieLoader::open(const char* path, const ColorReplace& colorReplacement)
+bool LottieLoader::open(const char* path, const LoaderOps* ops)
 {
 #ifdef THORVG_FILE_IO_SUPPORT
-    colorReplaceInternal = colorReplacement;
+    if (ops->caller != tvg::Type::Picture) return false;
 
-    if ((content = LoadModule::open(path, size, true))) {
+    if ((content = Loader::open(path, size, true))) {
         dirName = tvg::dirname(path);
         copy = true;
+        builder->resolver = static_cast<const PictureOps*>(ops)->resolver;
+        auto cr = static_cast<const PictureOps*>(ops)->colorReplacement;
+        colorReplaceInternal = cr ? *cr : ColorReplace();
         return header();
     }
 #endif
@@ -262,8 +264,8 @@ bool LottieLoader::resize(Paint* paint, float w, float h)
 
 bool LottieLoader::read()
 {
-    //the loading has been already completed
-    if (!LoadModule::read()) return true;
+    // the loading has been already completed
+    if (!Loader::read()) return true;
 
     if (!content || size == 0) return false;
 
@@ -328,6 +330,7 @@ bool LottieLoader::del(uint32_t slotcode, bool byDefault)
         }
         this->slots.remove(slot);
         delete(slot);
+        if (curSlot == slotcode) curSlot = 0;
         break;
     }
     return true;
@@ -430,7 +433,10 @@ void LottieLoader::sync()
 {
     done();
 
-    if (build) run(0);
+    if (build) {
+        if (comp) comp->clear();
+        run(0);
+    }
 }
 
 
@@ -439,14 +445,14 @@ uint32_t LottieLoader::markersCnt()
     return ready() ? comp->markers.count : 0;
 }
 
-
-const char* LottieLoader::markers(uint32_t index)
+const char* LottieLoader::markers(uint32_t index, float* begin, float* end)
 {
     if (!ready() || index >= comp->markers.count) return nullptr;
-    auto marker = comp->markers.begin() + index;
-    return (*marker)->name;
+    auto marker = comp->markers[index];
+    if (begin) *begin = marker->time;
+    if (end) *end = marker->time + marker->duration;
+    return marker->name;
 }
-
 
 Result LottieLoader::segment(float begin, float end)
 {
@@ -508,16 +514,6 @@ bool LottieLoader::tween(float from, float to, float progress)
     return true;
 }
 
-
-bool LottieLoader::assign(const char* layer, uint32_t ix, const char* var, float val)
-{
-    if (!ready() || !comp->expressions) return false;
-    comp->root->assign(layer, ix, var, val);
-
-    return true;
-}
-
-
 bool LottieLoader::quality(uint8_t value)
 {
     if (!ready()) return false;
@@ -529,7 +525,7 @@ bool LottieLoader::quality(uint8_t value)
 }
 
 
-void LottieLoader::set(const AssetResolver* resolver)
+void LottieLoader::resolver(std::function<void(const tvg::LottieAudioResolver&, void*)> func, void* data)
 {
-    builder->resolver = resolver;
+    builder->audioResolver = {std::move(func), data};
 }

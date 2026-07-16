@@ -134,10 +134,9 @@ RenderRegion Paint::Impl::bounds()
     return ret;
 }
 
-
-Iterator* Paint::Impl::iterator()
+AccessorIterator* Paint::Impl::iterator()
 {
-    Iterator* ret;
+    AccessorIterator* ret;
     PAINT_METHOD(ret, iterator());
     return ret;
 }
@@ -162,7 +161,7 @@ Paint* Paint::Impl::duplicate(Paint* ret)
 }
 
 
-bool Paint::Impl::render(RenderMethod* renderer)
+bool Paint::Impl::render(RenderMethod* renderer, CompositionFlag flag)
 {
     if (hidden || opacity == 0) return true;
 
@@ -188,7 +187,7 @@ bool Paint::Impl::render(RenderMethod* renderer)
     if (cmp) renderer->beginComposite(cmp, maskData->method, maskData->target->pImpl->opacity);
 
     bool ret;
-    PAINT_METHOD(ret, render(renderer));
+    PAINT_METHOD(ret, render(renderer, flag));
 
     if (cmp) renderer->endComposite(cmp);
 

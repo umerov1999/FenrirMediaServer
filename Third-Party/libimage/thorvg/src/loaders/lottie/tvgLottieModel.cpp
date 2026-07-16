@@ -39,7 +39,7 @@ Point LottieTextFollowPath::split(float dLen, float lenSearched, float& angle)
         }
         case PathCommand::LineTo: {
             auto dp = *pts - *(pts - 1);
-            angle = tvg::atan2(dp.y, dp.x);
+            angle = tvg::atan(dp);
             break;
         }
         case PathCommand::CubicTo: {
@@ -50,7 +50,7 @@ Point LottieTextFollowPath::split(float dLen, float lenSearched, float& angle)
         }
         case PathCommand::Close: {
             auto dp = *start - *(pts - 1);
-            angle = tvg::atan2(dp.y, dp.x);
+            angle = tvg::atan(dp);
             break;
         }
     }
@@ -61,6 +61,14 @@ Point LottieTextFollowPath::split(float dLen, float lenSearched, float& angle)
 /* External Class Implementation                                        */
 /************************************************************************/
 
+void LottieTextFollowPath::rewind()
+{
+    pts = path.pts.data;
+    cmds = path.cmds.data;
+    cmdsCnt = path.cmds.count;
+    currentLen = 0.0f;
+}
+
 float LottieTextFollowPath::prepare(LottieMask* mask, float frameNo, float scale, Tween& tween, LottieExpressions* exps)
 {
     this->mask = mask;
@@ -68,11 +76,8 @@ float LottieTextFollowPath::prepare(LottieMask* mask, float frameNo, float scale
     path.clear();
     mask->pathset(frameNo, path, &m, tween, exps);
 
-    pts = path.pts.data;
-    cmds = path.cmds.data;
-    cmdsCnt = path.cmds.count;
+    rewind();
     totalLen = tvg::length(cmds, cmdsCnt, pts, path.pts.count);
-    currentLen = 0.0f;
     start = pts;
 
     return firstMargin(frameNo, tween, exps) / scale;
@@ -85,17 +90,13 @@ Point LottieTextFollowPath::position(float lenSearched, float& angle)
         //shape is closed -> wrapping
         if (path.cmds.last() == PathCommand::Close) {
             while (lenSearched < 0.0f) lenSearched += totalLen;
-            pts = path.pts.data;
-            cmds = path.cmds.data;
-            cmdsCnt = path.cmds.count;
-            currentLen = 0.0f;
         //linear interpolation
         } else {
             if (cmds >= path.cmds.data + path.cmds.count - 1) return *start;
             switch (*(cmds + 1)) {
                 case PathCommand::LineTo: {
                     auto dp = *(pts + 1) - *pts;
-                    angle = tvg::atan2(dp.y, dp.x);
+                    angle = tvg::atan(dp);
                     return {pts->x + lenSearched * cos(angle), pts->y + lenSearched * sin(angle)};
                 }
                 case PathCommand::CubicTo: {
@@ -125,10 +126,6 @@ Point LottieTextFollowPath::position(float lenSearched, float& angle)
         //shape is closed -> wrapping
         if (path.cmds.last() == PathCommand::Close) {
             while (lenSearched > totalLen) lenSearched -= totalLen;
-            pts = path.pts.data;
-            cmds = path.cmds.data;
-            cmdsCnt = path.cmds.count;
-            currentLen = 0.0f;
         //linear interpolation
         } else {
             while (cmdsCnt > 1) shift();
@@ -139,7 +136,7 @@ Point LottieTextFollowPath::position(float lenSearched, float& angle)
                 case PathCommand::LineTo: {
                     auto len = lenSearched - totalLen;
                     auto dp = *pts - *(pts - 1);
-                    angle = tvg::atan2(dp.y, dp.x);
+                    angle = tvg::atan(dp);
                     return {pts->x + len * cos(angle), pts->y + len * sin(angle)};
                 }
                 case PathCommand::CubicTo: {
@@ -150,7 +147,7 @@ Point LottieTextFollowPath::position(float lenSearched, float& angle)
                 case PathCommand::Close: {
                     auto len = lenSearched - totalLen;
                     auto dp = *start - *(pts - 1);
-                    angle = tvg::atan2(dp.y, dp.x);
+                    angle = tvg::atan(dp);
                     return {(pts - 1)->x + len * cos(angle), (pts - 1)->y + len * sin(angle)};
                 }
             }
@@ -158,12 +155,7 @@ Point LottieTextFollowPath::position(float lenSearched, float& angle)
     }
 
     //reset required if text partially crosses curve start
-    if (lenSearched < currentLen) {
-        pts = path.pts.data;
-        cmds = path.cmds.data;
-        cmdsCnt = path.cmds.count;
-        currentLen = 0.0f;
-    }
+    if (lenSearched < currentLen) rewind();
 
     auto length = [&]() -> float {
         switch (*cmds) {
@@ -201,61 +193,14 @@ void LottieSlot::reset()
 }
 
 
-void LottieSlot::apply(LottieProperty* prop, bool byDefault, ColorReplace* colorReplacement)
+void LottieSlot::apply(LottieProperty* prop, bool byDefault)
 {
-    auto copy = !overridden && !byDefault;
+    auto release = overridden || byDefault;
 
     //apply slot object to all targets
     ARRAY_FOREACH(pair, pairs) {
-        //backup the original properties before overwriting
-        switch (type) {
-            case LottieProperty::Type::Float: {
-                if (copy) pair->prop = new LottieFloat(static_cast<LottieTransform*>(pair->obj)->rotation);
-                pair->obj->override(prop, !copy);
-                break;
-            }
-            case LottieProperty::Type::Scalar: {
-                if (copy) pair->prop = new LottieScalar(static_cast<LottieTransform*>(pair->obj)->scale);
-                pair->obj->override(prop, !copy);
-                break;
-            }
-            case LottieProperty::Type::Vector: {
-                if (copy) pair->prop = new LottieVector(static_cast<LottieTransform*>(pair->obj)->position);
-                pair->obj->override(prop, !copy);
-                break;
-            }
-            case LottieProperty::Type::Color: {
-                auto color = static_cast<LottieSolid*>(pair->obj)->color;
-                colorReplacement->getCustomColorLottie32(color.value.r, color.value.g, color.value.b);
-                if (copy) pair->prop = new LottieColor(color);
-                pair->obj->override(&color, !copy);
-                break;
-            }
-            case LottieProperty::Type::Opacity: {
-                if (copy) {
-                    if (pair->obj->type == LottieObject::Type::Transform) pair->prop = new LottieOpacity(static_cast<LottieTransform*>(pair->obj)->opacity);
-                    else pair->prop = new LottieOpacity(static_cast<LottieSolid*>(pair->obj)->opacity);
-                }
-                pair->obj->override(prop, !copy);
-                break;
-            }
-            case LottieProperty::Type::ColorStop: {
-                if (copy) pair->prop = new LottieColorStop(static_cast<LottieGradient*>(pair->obj)->colorStops);
-                pair->obj->override(prop, !copy);
-                break;
-            }
-            case LottieProperty::Type::TextDoc: {
-                if (copy) pair->prop = new LottieTextDoc(static_cast<LottieText*>(pair->obj)->doc);
-                pair->obj->override(prop, !copy);
-                break;
-            }
-            case LottieProperty::Type::Image: {
-                if (copy) pair->prop = new LottieBitmap(static_cast<LottieImage*>(pair->obj)->bitmap);
-                pair->obj->override(prop, !copy);
-                break;
-            }
-            default: break;
-        }
+        auto backup = pair->obj->override(prop, release);
+        if (!release) pair->prop = backup;
     }
 
     if (!byDefault) overridden = true;
@@ -346,19 +291,19 @@ float LottieTextRange::factor(float frameNo, float totalLen, float idx)
 
 void LottieFont::prepare()
 {
-    if (!b64src) return;
-
-    Text::load(name, b64src, size, "ttf", false);
+    if (b64src) Text::load(name, b64src, size, mime, false);
 }
 
 
-void LottieImage::prepare()
+void LottieImage::prepare(bool external)
 {
     LottieObject::type = LottieObject::Image;
 
     //Prepare the Picture image
+    auto result = Result::Unknown;
     auto picture = Picture::gen();
-    auto result = (bitmap.size > 0) ? picture->load((const char*)bitmap.data, bitmap.size, bitmap.mimeType) : picture->load(bitmap.path);
+    if (bitmap.size > 0) result = picture->load((const char*)bitmap.data, bitmap.size, bitmap.mimeType);
+    else if (external) result = picture->load(bitmap.path);
     if (result == Result::Success) resolved = true;
     picture->size(bitmap.width, bitmap.height);
     bitmap.picture = picture;
@@ -509,7 +454,7 @@ Fill* LottieGradient::fill(float frameNo, uint8_t opacity, Tween& tween, LottieE
         if (tvg::zero(progress)) {
             static_cast<RadialGradient*>(fill)->radial(s.x, s.y, r, s.x, s.y, 0.0f);
         } else {
-            auto startAngle = rad2deg(tvg::atan2(e.y - s.y, e.x - s.x));
+            auto startAngle = rad2deg(tvg::atan(e - s));
             auto angle = deg2rad((startAngle + this->angle(frameNo, tween, exps)));
             auto fx = s.x + cos(angle) * progress * r;
             auto fy = s.y + sin(angle) * progress * r;
@@ -626,6 +571,12 @@ void LottieGroup::prepare(LottieObject::Type type)
     }
 }
 
+LottieLayer::LottieLayer()
+{
+    autoOrient = false;
+    matteSrc = false;
+    effect = false;
+}
 
 LottieLayer::~LottieLayer()
 {
@@ -636,6 +587,7 @@ LottieLayer::~LottieLayer()
     ARRAY_FOREACH(p, effects) delete(*p);
 
     delete(transform);
+    delete(audioCtrl);
     tvg::free(name);
 }
 
@@ -687,21 +639,6 @@ float LottieLayer::remap(LottieComposition* comp, float frameNo, LottieExpressio
     }
     return (frameNo - startFrame) / timeStretch;
 }
-
-
-bool LottieLayer::assign(const char* layer, uint32_t ix, const char* var, float val)
-{
-    //find the target layer by name
-    auto target = layerById(djb2Encode(layer));
-    if (!target) return false;
-
-    //find the target property by ix
-    auto property = target->property(ix);
-    if (property && property->exp) return property->exp->assign(var, val);
-
-    return false;
-}
-
 
 LottieComposition::~LottieComposition()
 {

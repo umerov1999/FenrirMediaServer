@@ -19,6 +19,8 @@ extern UserInfo CallToGetUserNameById(const string &Token, const string &UserAge
 extern VKApiToolsDialog dlgS;
 static Map::Map<string, string>KateUsers;
 
+static string cur_sms_sid;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -168,8 +170,9 @@ void VKApiToolsInputLogin::OnLogin()
 	{
 		CString SMSCOde;
 		SMS.GetWindowTextW(SMSCOde);
-		Link << "&code=" << url_encode(wchar_to_UTF8(SMSCOde.GetString()));
+		Link << "&code=" << url_encode(wchar_to_UTF8(SMSCOde.GetString())) << "&sid=" << cur_sms_sid;
 		SMS.SetWindowTextW(L"");
+		cur_sms_sid = "";
 	}
 	DoCurlGet(Link.str(), ANDROID_USERAGENT, AnswerVK, true);
 	json jres;
@@ -191,8 +194,10 @@ void VKApiToolsInputLogin::OnLogin()
 					PhoneMask = (const char*)u8"Неопознанная двухфакторная авторизация";
 				else
 					PhoneMask = (const char*)u8"Введите код, отправленный на" + jres.at("phone_mask").get<string>();
-				if (jres.find("validation_sid") != jres.end())
+				if (jres.find("validation_sid") != jres.end()) {
+					cur_sms_sid = jres.at("validation_sid").get<string>();
 					DoCurlGet(string("https://api.vk.ru/method/auth.validatePhone?client_id=") + "2274003" + "&api_id=" + "2274003" + "&client_secret=" + "hHbZxrka2uZ6jB1inYsH" + "&sid=" + jres.at("validation_sid").get<string>() + "&v=" + VKAPI_VERSION_AUTH, ANDROID_USERAGENT, AnswerVK, true);
+				}
 				SMS.EnableWindow(TRUE);
 				(win_message().message_type(MSG_TYPE::TYPE_WARNING) << L"Валидация: " << PhoneMask).show();
 			}

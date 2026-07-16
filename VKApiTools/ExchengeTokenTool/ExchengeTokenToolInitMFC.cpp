@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include <random>
 #include "ExchengeTokenToolInitMFC.h"
 #include "ExchengeTokenToolDialog.h"
 
@@ -61,7 +62,8 @@ ExchengeTokenTool theApp;
 BOOL ExchengeTokenTool::InitInstance()
 {
 	AfxEnableControlContainer();
-	srand((unsigned int)time(0));
+	std::random_device dev;
+	srand(dev());
 
 	SetCurrentDirectoryW(ExtractAppPath().c_str());
 

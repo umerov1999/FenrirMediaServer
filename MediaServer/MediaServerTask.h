@@ -3,6 +3,7 @@
 #include <vector>
 #include <ctime>
 #include <regex>
+#include <unordered_map>
 #include "json.hpp"
 #include "Map.h"
 #include "sha1.hpp"
@@ -582,6 +583,7 @@ public:
 				Inode sRt;
 				sRt.name = h;
 				parent.entries.push_back(sRt);
+				parent.indexes[sRt.name] = &parent.entries.back();
 				return &parent.entries.back();
 			}
 			return parent.find_by_path(h);
@@ -688,6 +690,7 @@ public:
 			}
 		}
 		parentNode.entries.push_back(*this);
+		parentNode.indexes[name] = &parentNode.entries.back();
 		return &parentNode.entries.back();
 	}
 	Inode* find_by_path(const std::wstring& path) {
@@ -698,12 +701,7 @@ public:
 		Inode* tp = this;
 		auto bb = wsplit(path, L"\\\\|\\/");
 		for (auto& i :bb) {
-			for (auto& s : tp->entries) {
-				if (s.name == i) {
-					tp = &s;
-					break;
-				}
-			}
+			tp = tp->indexes[i];
 			if (tp == ret) {
 				return nullptr;
 			}
@@ -714,6 +712,7 @@ public:
 
 	void clear() {
 		entries.clear();
+		indexes.clear();
 	}
 	nlohmann::json serialize(const RequestParserStruct& Req, bool isSSL, size_t &count);
 private:
@@ -725,6 +724,7 @@ private:
 	long long size;
 	Inode* parent;
 	std::list<Inode> entries;
+	std::unordered_map<std::wstring, Inode*> indexes;
 
 	int id;
 	int owner_id;

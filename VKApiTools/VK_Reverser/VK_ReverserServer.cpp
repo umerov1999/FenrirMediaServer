@@ -11,6 +11,7 @@
 #include <Shlwapi.h>
 #include <openssl/rsa.h>
 #include <openssl/crypto.h>
+#include <openssl/asn1.h>
 #include <openssl/x509.h>
 #include <openssl/pem.h>
 #include <openssl/ssl.h>
@@ -348,42 +349,17 @@ static void SetTimeOutsSocket(SOCKET_C Socket) {
 	setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 }
 
-static time_t ASN1_GetTimeT(ASN1_TIME* time) {
-	struct tm t;
-	const char* str = (const char*)time->data;
-	size_t i = 0;
-
-	memset(&t, 0, sizeof(t));
-
-	if (time->type == V_ASN1_UTCTIME) {
-		t.tm_year = (str[i++] - '0') * 10;
-		t.tm_year += (str[i++] - '0');
-		if (t.tm_year < 70)
-			t.tm_year += 100;
+static time_t asn1_time_to_time_t(const ASN1_TIME* time) {
+	struct tm tm;
+	if (ASN1_TIME_to_tm(time, &tm) != 1) {
+		return (time_t)-1; // error
 	}
-	else if (time->type == V_ASN1_GENERALIZEDTIME) {
-		t.tm_year = (str[i++] - '0') * 1000;
-		t.tm_year += (str[i++] - '0') * 100;
-		t.tm_year += (str[i++] - '0') * 10;
-		t.tm_year += (str[i++] - '0');
-		t.tm_year -= 1900;
-	}
-	t.tm_mon = (str[i++] - '0') * 10;
-	t.tm_mon += (str[i++] - '0') - 1;
-	t.tm_mday = (str[i++] - '0') * 10;
-	t.tm_mday += (str[i++] - '0');
-	t.tm_hour = (str[i++] - '0') * 10;
-	t.tm_hour += (str[i++] - '0');
-	t.tm_min = (str[i++] - '0') * 10;
-	t.tm_min += (str[i++] - '0');
-	t.tm_sec = (str[i++] - '0') * 10;
-	t.tm_sec += (str[i++] - '0');
 
-	return mktime(&t);
+	return mktime(&tm);
 }
 
 inline void PrintSertValid(X509* Sert, const wstring& Name) {
-	PrintMessage(L"Сертификат " + Name + L" Действителен с " + GetTimeAT(ASN1_GetTimeT(X509_get_notBefore(Sert))) + L" по " + GetTimeAT(ASN1_GetTimeT(X509_get_notAfter(Sert))), URGB(140, 140, 140));
+	PrintMessage(L"Сертификат " + Name + L" Действителен с " + GetTimeAT(asn1_time_to_time_t(X509_get_notBefore(Sert))) + L" по " + GetTimeAT(asn1_time_to_time_t(X509_get_notAfter(Sert))), URGB(140, 140, 140));
 }
 
 static SSL_CTX* initialize_ctx(bool print_sert, bool server = true) {

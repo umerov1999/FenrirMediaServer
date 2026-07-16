@@ -8,7 +8,12 @@ rm -r -f ".git"
 
 
 #Patch configure
-del "enabled libmp3lame        && require "libmp3lame >= 3.98.3" lame/lame.h lame_set_VBR_quality -lmp3lame $libm_extralibs"
+#
+host_cc_default="cl.exe"
+
+del: "enabled libmp3lame        && require "libmp3lame >= 3.98.3" lame/lame.h lame_set_VBR_quality -lmp3lame $libm_extralibs"
+#
+
 #Patch libmp3lame.c
 
 Add:

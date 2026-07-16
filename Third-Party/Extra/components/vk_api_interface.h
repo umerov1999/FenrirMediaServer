@@ -3,12 +3,15 @@
 #include <list>
 #include <cstring>
 #include <cstdint>
+#if defined(__linux__)
+#include <chrono>
+#include <thread>
+#endif
 #include "WSTRUtils.h"
 #include "do_curl.h"
 #include "json.hpp"
 
-class VKAPI_ANSWER
-{
+class VKAPI_ANSWER {
 public:
 	VKAPI_ANSWER() {
 		IsError = false;
@@ -19,45 +22,38 @@ public:
 	bool IsError;
 };
 
-class VK_ApiMethodParam
-{
+class VK_ApiMethodParam {
 public:
-	VK_ApiMethodParam(const std::string &tname, const std::string &tvalue, bool tis_string)
-	{
-		name = tname;
-		value = tvalue;
-		is_string = tis_string;
+	VK_ApiMethodParam(const std::string &name, const std::string &value, bool is_string) {
+		this->name = name;
+		this->value = value;
+		this->is_string = is_string;
 	}
 	std::string name;
 	std::string value;
 	bool is_string;
 };
 
-static VK_ApiMethodParam VK(const std::string &name, const std::string &value, bool urlencode = true)
-{
+static VK_ApiMethodParam VK(const std::string &name, const std::string &value, bool urlencode = true) {
 	return VK_ApiMethodParam(urlencode ? WSTRUtils::url_encode(name) : name, urlencode ? WSTRUtils::url_encode(value) : value, true);
 }
+
 template <typename T>
-static VK_ApiMethodParam VKI(const std::string &name, T value, bool urlencode = true)
-{
+static VK_ApiMethodParam VKI(const std::string &name, T value, bool urlencode = true) {
 	return VK_ApiMethodParam(urlencode ? WSTRUtils::url_encode(name) : name, urlencode ? WSTRUtils::url_encode(std::to_string(value)) : std::to_string(value), false);
 }
 
-class HP
-{
+class HP {
 public:
-	HP(const std::string &TName, const std::string &TParam)
-	{
+	HP(const std::string &TName, const std::string &TParam) {
 		Name = WSTRUtils::url_encode(TName);
 		Param = WSTRUtils::url_encode(TParam);
 	}
-	HP(const std::string &TName, int32_t TParam)
-	{
+	HP(const std::string &TName, int32_t TParam) {
 		Name = WSTRUtils::url_encode(TName);
 		Param = WSTRUtils::url_encode(std::to_string(TParam));
 	}
-	HP(const std::string& TName, int64_t TParam)
-	{
+	HP(const std::string& TName, int64_t TParam) {
 		Name = WSTRUtils::url_encode(TName);
 		Param = WSTRUtils::url_encode(std::to_string(TParam));
 	}
@@ -65,20 +61,17 @@ public:
 	std::string Param;
 };
 
-class HTTPParams
-{
+class HTTPParams {
 public:
 	template<typename ...Args>
 	static constexpr std::size_t va_count(const Args...) { return sizeof...(Args); }
-	static HTTPParams make_param(size_t count, ...)
-	{
+	static HTTPParams make_param(size_t count, ...) {
 		HTTPParams Ret;
 		if (count <= 0)
 			return Ret;
 		va_list args;
 		va_start(args, count);
-		for (size_t i = 0; i < count; i++)
-		{
+		for (size_t i = 0; i < count; i++) {
 			HP pp = va_arg(args, HP);
 			Ret.Params.push_back(pp);
 		}
@@ -89,11 +82,9 @@ public:
 	std::list<HP> Params;
 };
 
-class VK_APIMETHOD
-{
+class VK_APIMETHOD {
 public:
-	static int VKHasError(const nlohmann::json& jres, bool IgnoreExecuteErrors = false)
-	{
+	static int VKHasError(const nlohmann::json& jres, bool IgnoreExecuteErrors = false) {
 		if (jres.size() == 0 || jres.is_null() == true)
 			return -1;
 		if (!IgnoreExecuteErrors && jres.find("execute_errors") != jres.end())
@@ -105,41 +96,34 @@ public:
 			return -1;
 		return uot.at("error_code").get<int>();
 	}
-	VK_APIMETHOD(const std::string &Access_Token, const std::string &IUserAgent)
-	{
+	VK_APIMETHOD(const std::string &Access_Token, const std::string &IUserAgent) {
 		Token = Access_Token;
 		UserAgent = IUserAgent;
 		Disabled = false;
 		IgnoreExecuteErrors = false;
 	}
-	VK_APIMETHOD& operator<<(const HTTPParams& ParamU)
-	{
-		for (auto& i : ParamU.Params)
-		{
+	VK_APIMETHOD& operator<<(const HTTPParams& ParamU) {
+		for (auto& i : ParamU.Params) {
 			VK_ApiMethodParam pp(i.Name, i.Param, true);
 			Params.push_back(pp);
 		}
 		return *this;
 	}
-	VK_APIMETHOD& operator<<(const VK_ApiMethodParam &ParamU)
-	{
+	VK_APIMETHOD& operator<<(const VK_ApiMethodParam &ParamU) {
 		Params.push_back(ParamU);
 		return *this;
 	}
-	VK_APIMETHOD& operator[](const std::string &LMethod)
-	{
+	VK_APIMETHOD& operator[](const std::string &LMethod) {
 		Method = LMethod;
 		Params.clear();
 		return *this;
 	}
-	std::string GetExecuteMethod()
-	{
+	std::string GetExecuteMethod() {
 		std::string Ret = "API." + Method + "({";
 		std::list<VK_ApiMethodParam> TempParams = Params;
 		TempParams.push_back(VK("v", VKAPI_VERSION));
 		bool FirstParam = true;
-		for (auto& i : TempParams)
-		{
+		for (auto& i : TempParams) {
 			if (FirstParam == true)
 				FirstParam = false;
 			else
@@ -153,8 +137,7 @@ public:
 		Ret += "})";
 		return Ret;
 	}
-	VKAPI_ANSWER operator()()
-	{
+	VKAPI_ANSWER operator()() {
 		int errorcode = 0;
 		VKAPI_ANSWER ret;
 		ret.IsError = true;
@@ -162,15 +145,13 @@ public:
 		if (Disabled == true || Method.length() <= 0)
 			return ret;
 		std::list<VK_ApiMethodParam> TempParams = Params;
-		TempParams.push_back(VK("access_token", Token));
 		TempParams.push_back(VK("lang", "ru"));
 		TempParams.push_back(VK("v", VKAPI_VERSION));
 
 		std::string ResultLink = std::string("https://api.vk.ru/method") + "/" + Method;
 		std::string PostParam;
 		bool FirstParam = true;
-		for (auto& i : TempParams)
-		{
+		for (auto& i : TempParams) {
 			if (FirstParam == true)
 				FirstParam = false;
 			else
@@ -181,14 +162,19 @@ public:
 		std::string BackupPostParam = PostParam;
 		ret.Request = ResultLink;
 		ret.PostParams = PostParam;
-		do
-		{
-			if (errorcode == 6 || errorcode == 1 || errorcode == 9 || errorcode == 10)
+		do {
+			if (errorcode == 6 || errorcode == 1 || errorcode == 9 || errorcode == 10) {
+#if defined(__linux__)
+				this_thread::sleep_for(chrono::milliseconds(1100));
+#else
 				Sleep(1100);
+#endif
+			}
 
 			std::string Rsj;
-			if (DoCurlPost(ResultLink, PostParam, UserAgent, Rsj, true) <= 0)
+			if (DoCurlPost(ResultLink, PostParam, UserAgent, Rsj, true, 20, {"Authorization: Bearer " + Token}) <= 0) {
 				return ret;
+			}
 
 			try {
 				ret.Object = nlohmann::json::parse(Rsj);
@@ -199,8 +185,7 @@ public:
 			errorcode = VKHasError(ret.Object, IgnoreExecuteErrors);
 			if (errorcode == 0)
 				ret.IsError = false;
-			else if (errorcode == 14)
-			{
+			else if (errorcode == 14) {
 				if (PostParam.find("captcha_sid=") != std::string::npos)
 					PostParam = BackupPostParam;
 				nlohmann::json info = ret.Object.at("error").get<nlohmann::json>();
@@ -220,16 +205,13 @@ public:
 	bool VK_APIMETHOD_doCapcha(const std::string& captcha_img, const std::string& user_agent, std::string& code);
 	void VK_APIMETHOD_doLimit(const std::string& Method);
 
-	void Disable()
-	{
+	void Disable() {
 		Disabled = true;
 	}
-	void setIgnoreExecuteErrors()
-	{
+	void setIgnoreExecuteErrors() {
 		IgnoreExecuteErrors = true;
 	}
-	bool IsDisabled() const
-	{
+	bool IsDisabled() const {
 		return Disabled;
 	}
 private:

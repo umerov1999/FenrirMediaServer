@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include <random>
 #include "MakeSSLInitMFC.h"
 #include "MakeSSLDialog.h"
 
@@ -48,7 +49,8 @@ MakeSSL theApp;
 BOOL MakeSSL::InitInstance()
 {
 	AfxEnableControlContainer();
-	srand((unsigned int)time(0));
+	std::random_device dev;
+	srand(dev());
 
 	LoadStyle();
 	CreateDialogMFC();

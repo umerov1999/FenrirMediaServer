@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include <random>
 #include "VKApiToolsInitMFC.h"
 #include "VKApiToolsDialog.h"
 #include "WinMessageBox.h"
@@ -77,7 +78,8 @@ VKApiTools theApp;
 BOOL VKApiTools::InitInstance()
 {
 	AfxEnableControlContainer();
-	srand((unsigned int)time(0));
+	std::random_device dev;
+	srand(dev());
 
 	SetCurrentDirectoryW(ExtractAppPath().c_str());
 	LoadFont();
